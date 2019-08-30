@@ -1,2 +1,2 @@
-# masterAI
-Master in Artificial Intelligence Research
+# A7
+MÉTODOS SUPERVISADOS
