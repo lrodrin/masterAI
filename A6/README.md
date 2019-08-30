@@ -1,2 +1,2 @@
-# masterAI
-Master in Artificial Intelligence Research
+# A6
+INTRODUCCIÓN A LA INVESTIGACIÓN
