@@ -1,2 +1,2 @@
-# masterAI
-Master in Artificial Intelligence Research
+# A8
+MÉTODOS NO SUPERVISADOS Y DETECCIÓN DE ANOMALÍAS
