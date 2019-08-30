@@ -1,2 +1,2 @@
-# masterAI
-Master in Artificial Intelligence Research
+# A2
+RESOLUCIÓN DE PROBLEMAS CON METAHEURÍSTICOS
