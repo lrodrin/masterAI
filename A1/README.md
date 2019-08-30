@@ -1,2 +1,2 @@
-# masterAI
-Master in Artificial Intelligence Research
+# A1
+TÉCNICAS AVANZADAS DE REPRESENTACIÓN DEL CONOCIMIENTO Y RAZONAMIENTO
