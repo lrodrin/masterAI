@@ -1,2 +1,2 @@
-# masterAI
-Master in Artificial Intelligence Research
+# A3
+CIENCIA DE DATOS Y APRENDIZAJE AUTOMÁTICO
