@@ -1,2 +1,2 @@
 # masterAI
-Master in Artificial Intelligence Research
+MÁSTER UNIVERSITARIO EN INVESTIGACIÓN EN INTELIGENCIA ARTIFICIAL
