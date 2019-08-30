@@ -1,2 +1,2 @@
-# masterAI
-Master in Artificial Intelligence Research
+# A10
+BIG DATA: HERRAMIENTAS PARA EL PROCESAMIENTO DE DATOS MASIVOS
