@@ -1,38 +1,27 @@
 \documentclass[a4paper,10pt,twoside]{report}
 
 \usepackage{Packages}
-\usepackage[framed,numbered,autolinebreaks,useliterate]{Listings}
 
 \addto\captionsbritish{\renewcommand{\contentsname}{Table of Contents}}
 
 %\linenumbers
 
-\newcommand{\researchgroup}{Experimental Physics 3}
-
 \newcommand{\shortdoctitle}{Doc title}
-\newcommand{\doctitle}{Title}
-\newcommand{\docsubtitle}{}
+\newcommand{\doctitle}{Formalización del problema de la partición del grafo}
+%\newcommand{\docsubtitle}{}
 
-\newcommand{\authorone}{Author 1}
-\newcommand{\sauthorone}{s-number I}
-\newcommand{\authortwo}{Author II}
-\newcommand{\sauthortwo}{s-number II}
-\newcommand{\keywords}{keyword1, keyword2, keyword3}
-\newcommand{\version}{First version}
-\newcommand{\monthYear}{MONTH 2019}
-
-\newcommand{\firstCommitteeMember}{NAME PRACTICUM SUPERVISOR}
-\newcommand{\secondCommitteeMember}{}
-\newcommand{\thirdCommitteeMember}{}
+\newcommand{\authorone}{Laura Rodríguez Navas}
+%\newcommand{\keywords}{keyword1, keyword2, keyword3}
+\newcommand{\monthYear}{Diciembre 2019}
 
 \author{\me}
 
 \hypersetup
 {
-    pdfauthor   = {\authorone and \authortwo},
+    pdfauthor   = {\authorone},
     pdftitle    = {\shortdoctitle},
     pdfsubject  = {\doctitle},
-    pdfkeywords = {\keywords}
+    %pdfkeywords = {\keywords}
 }
 
 \begin{document}
@@ -72,7 +61,7 @@
 
 \appendix
 \addcontentsline{toc}{chapter}{Appendix}
-\chapter{My First Appendix}\label{chapter:Appendix A}
+\chapter{Appendix}\label{chapter:Appendix A}
 \input{Appendices/Appendix_A.tex}
 
 \end{document}
