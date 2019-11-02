@@ -1,0 +1,123 @@
+
+\ProvidesPackage{Packages}
+
+\usepackage{a4wide}
+\usepackage{amsmath}
+\usepackage[greek, british]{babel}
+\usepackage{fancyhdr}
+\usepackage{gensymb}
+\usepackage{graphicx,wrapfig}
+\usepackage{grffile}
+\usepackage{pifont}
+\usepackage{float}
+
+\usepackage{caption}
+\captionsetup{format=plain, labelfont=bf, skip=0pt}
+
+\usepackage{paralist}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{moreverb}
+\usepackage{lscape}
+\usepackage[nottoc]{tocbibind}
+\usepackage{verbatim}
+\usepackage{datetime}
+\usepackage{array}
+
+\usepackage{color}
+\definecolor{darkred}{rgb}{0.5,0,0}
+\definecolor{darkgreen}{rgb}{0,0.5,0}
+\definecolor{darkblue}{rgb}{0,0,0.5}
+\definecolor{gray}{rgb}{0.35,0.35,0.35}
+
+\usepackage[pagebackref=true,
+            colorlinks=true,
+            linkcolor=gray,
+            bookmarks=true,
+            filecolor=gray,
+            urlcolor=gray,
+            citecolor=gray
+           ]{hyperref}
+
+\usepackage{titlesec}
+\titleformat{\chapter}{\normalfont\huge\bf}{\thechapter.}{20pt}{\huge\bf}   
+\titlespacing*{\chapter}{0pt}{-50pt}{0pt}
+\titlespacing\section{0pt}{12pt plus 4pt minus 2pt}{0pt plus 2pt minus 2pt}
+\titlespacing\subsection{0pt}{12pt plus 4pt minus 2pt}{0pt plus 2pt minus 2pt}
+\titlespacing\subsubsection{0pt}{12pt plus 4pt minus 2pt}{0pt plus 2pt minus 2pt}
+
+\usepackage{lineno}
+\usepackage{longtable}
+\usepackage[section]{placeins}
+\usepackage{url}
+\usepackage{makeidx}
+\usepackage{hyperref}
+\usepackage{subfig}
+\captionsetup[subfloat]{position=bottom}
+\usepackage{booktabs}
+\usepackage{rotating}
+\usepackage[absolute]{textpos}
+
+\usepackage{listings}
+\lstset{
+language=XML,
+basicstyle=\footnotesize,
+%numbers=left,
+%numberstyle=\footnotesize,
+%stepnumber=5,
+%numbersep=5pt,
+%backgroundcolor=\color{white},
+showspaces=false,
+showstringspaces=false,
+%showtabs=false,
+frame=single,
+tabsize=2,
+captionpos=b,
+breaklines=true,
+breakatwhitespace=false,
+%escapeinside={\%*}{*)}
+deletekeywords={Timestamp},
+morekeywords={encoding, log, trace, event, string, boolean, float, int},
+keywordstyle=\color[rgb]{0,0,1},
+commentstyle=\color[rgb]{0.133,0.545,0.133},
+stringstyle=\color[rgb]{0.627,0.126,0.941},
+}
+
+\setlength{\parindent}{0.0in}
+\setlength{\parskip}{0.1in}
+\setlength{\marginparwidth}{2.3cm}
+
+\newcommand\todo[1]{
+  \-\marginpar[\raggedleft\footnotesize #1]
+  {
+    \raggedright\footnotesize #1
+  }
+}
+
+\newcommand\ltodo[1]{
+  \-\marginpar[\raggedleft\footnotesize ]
+  {
+    \raggedright\footnotesize
+  }
+}
+
+%\docdate
+%\newcommand{\docdate}{\today}
+
+%\newcommand{\clearemptydoublepage}{
+%    \newpage{\pagestyle{empty}
+%    \cleardoublepage}
+%}
+
+\fancypagestyle{plain}{
+\fancyhf{}
+\fancyfoot[LO,RE]{\doctitle}
+\fancyfoot[RO, LE]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0.4pt}}
+
+\pagestyle{plain}
+
+\modulolinenumbers[5]
+
+\newcommand{\tick}{\textcolor{darkgreen}{\ding{51}}}
+\newcommand{\cross}{\textcolor{darkred}{\ding{55}}}

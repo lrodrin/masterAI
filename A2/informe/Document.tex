@@ -1,0 +1,78 @@
+\documentclass[a4paper,10pt,twoside]{report}
+
+\usepackage{Packages}
+\usepackage[framed,numbered,autolinebreaks,useliterate]{Listings}
+
+\addto\captionsbritish{\renewcommand{\contentsname}{Table of Contents}}
+
+%\linenumbers
+
+\newcommand{\researchgroup}{Experimental Physics 3}
+
+\newcommand{\shortdoctitle}{Doc title}
+\newcommand{\doctitle}{Title}
+\newcommand{\docsubtitle}{}
+
+\newcommand{\authorone}{Author 1}
+\newcommand{\sauthorone}{s-number I}
+\newcommand{\authortwo}{Author II}
+\newcommand{\sauthortwo}{s-number II}
+\newcommand{\keywords}{keyword1, keyword2, keyword3}
+\newcommand{\version}{First version}
+\newcommand{\monthYear}{MONTH 2019}
+
+\newcommand{\firstCommitteeMember}{NAME PRACTICUM SUPERVISOR}
+\newcommand{\secondCommitteeMember}{}
+\newcommand{\thirdCommitteeMember}{}
+
+\author{\me}
+
+\hypersetup
+{
+    pdfauthor   = {\authorone and \authortwo},
+    pdftitle    = {\shortdoctitle},
+    pdfsubject  = {\doctitle},
+    pdfkeywords = {\keywords}
+}
+
+\begin{document}
+
+\include{Titlepage}
+
+\normalsize
+
+\chapter*{Abstract}\label{chapter:Abstract}
+\setcounter{page}{0}
+\pagenumbering{roman}
+\addcontentsline{toc}{chapter}{Abstract}
+\input{Chapters/Chapter0_Abstract.tex}
+
+\tableofcontents
+
+\chapter{Introduction}\label{chapter:Introduction}
+\setcounter{page}{0}
+\pagenumbering{arabic}
+\input{Chapters/Chapter1_Introduction.tex}
+
+\chapter{Theory}\label{chapter:Theory}
+\input{Chapters/Chapter2_Theory.tex}
+
+\chapter{Experimental set-up}\label{chapter:Experimental set-up}
+\input{Chapters/Chapter3_Experimental_set-up.tex}
+
+\chapter{Results and discussion}\label{chapter:Results and discussion}
+\input{Chapters/Chapter4_Results_and_discussion.tex}
+
+\chapter{Conclusion}\label{chapter:Conclusion}
+\input{Chapters/Chapter5_Conclusion.tex}
+
+\bibliographystyle{unsrt}
+\bibliography{References}
+\newpage
+
+\appendix
+\addcontentsline{toc}{chapter}{Appendix}
+\chapter{My First Appendix}\label{chapter:Appendix A}
+\input{Appendices/Appendix_A.tex}
+
+\end{document}
