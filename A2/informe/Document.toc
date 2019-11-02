@@ -1,7 +1,8 @@
 \babel@toc {british}{}
 \contentsline {chapter}{Abstract}{{\fontencoding {OT1}\selectfont i}}{chapter*.1}% 
 \contentsline {chapter}{\numberline {1}Introduction}{1}{chapter.1}% 
-\contentsline {chapter}{\numberline {2}Theory}{2}{chapter.2}% 
+\contentsline {chapter}{\numberline {2}Algorithms}{2}{chapter.2}% 
+\contentsline {section}{\numberline {2.1}Kernighan-Lin}{2}{section.2.1}% 
 \contentsline {chapter}{\numberline {3}Experimental set-up}{3}{chapter.3}% 
 \contentsline {chapter}{\numberline {4}Results and discussion}{4}{chapter.4}% 
 \contentsline {chapter}{\numberline {5}Conclusion}{5}{chapter.5}% 

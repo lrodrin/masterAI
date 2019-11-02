@@ -1,0 +1,6 @@
+Dado que el problema de la partición de un grafo es un problema NP-completo, las soluciones prácticas se basan en la heurística y existen dos categorías: local y global. Los métodos locales más conocidos son el algoritmo Kernighan-Lin\cite{KernighanLin} y el algoritmo Fiduccia-Mattheyses\cite{FiducciaMattheyses}. Su principal inconveniente es la partición inicial arbitraria del conjunto de vértices, que puede afectar la calidad de la solución óptima final. En cambio, los métodos globales se basan en las propiedades de todo el grafo y no se basan en una partición inicial arbitraria. El ejemplo más común es la partición espectral, donde una partición se deriva de los vectores propios aproximados de la matriz de adyacencia, o la agrupación espectral que agrupa los vértices del grafo usando la descomposición propia de la matriz Laplaciana del grafo.
+
+\section{Kernighan-Lin}
+El algoritmo de Kernighan-Lin\cite{KernighanLin} es un algoritmo heurístico para resolver el problema de la partición de un grafo con complejidad computacional $O({n}^2logn)$. Este algoritmo, propuesto en 1970 por Shen Lin y Brian Kernighan, tiene aplicaciones importantes para el diseño de circuitos digitales y VLSI. 
+
+Es un ejemplo de Algoritmo Voraz.

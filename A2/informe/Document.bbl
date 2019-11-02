@@ -1,13 +1,14 @@
 \begin{thebibliography}{1}
 
-\bibitem{MScBuijs2010}
-J.C.A.M. Buijs.
-\newblock {Mapping Data Sources to XES in a Generic Way}.
-\newblock Master's thesis, {Eindhoven University of Technology}, 2010.
+\bibitem{KernighanLin}
+B.~W. Kernighan and S.~Lin.
+\newblock An efficient heuristic procedure for partitioning graphs.
+\newblock {\em Bell System Technical Journal}, 49:291--307, 1970.
 
-\bibitem{MScNugteren2010}
-G.M. Nugteren.
-\newblock {Process Model Simplification}.
-\newblock Master's thesis, {Eindhoven University of Technology}, 2010.
+\bibitem{FiducciaMattheyses}
+C.M. Fiduccia and R.M. Mattheyses.
+\newblock A linear-time heuristic for improving network partitions.
+\newblock In {\em 19th Design Automation Conference, Las Vegas, NV, USA, 14-16
+  June, 1982}. {IEEE}, 1982.
 
 \end{thebibliography}
