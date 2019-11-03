@@ -8,10 +8,11 @@ class Graph:
             self.nodes[i] = graph_dict['nodes'][i]
             temp_dict[graph_dict['nodes'][i]] = i
 
-        self.matrix = [[0 for x in graph_dict['nodes']] for y in graph_dict['nodes']]
+        self.matrix = [[0 for _ in graph_dict['nodes']] for _ in graph_dict['nodes']]  # matrix initialization
+
         for i in graph_dict['edges']:
-            self.matrix[temp_dict.get(i[0])][temp_dict.get(i[1])] = i[2]
-            self.matrix[temp_dict.get(i[1])][temp_dict.get(i[0])] = i[2]
+            self.matrix[temp_dict.get(i[0])][temp_dict.get(i[1])] = int(i[2])
+            self.matrix[temp_dict.get(i[1])][temp_dict.get(i[0])] = int(i[2])
 
     def getSize(self):
         return len(self.matrix)

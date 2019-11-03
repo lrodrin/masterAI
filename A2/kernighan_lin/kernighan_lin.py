@@ -1,14 +1,24 @@
-import json
+import csv
 import sys
 
 from A2.kernighan_lin.graph import Graph
 
 
 def createGraph():
-    with open('graph.json', 'r') as f:
-        graph_dic = json.load(f)
+    reader = csv.reader(open('graph.csv'))
+    graph_dict = dict.fromkeys(['nodes', 'edges'])
+    edges = list()
+    nodes = list()
+    for row in reader:
+        edges.append(row)
+        if row[0] not in nodes:
+            nodes.append(row[0])
+        if row[1] not in nodes:
+            nodes.append(row[1])
 
-    return Graph(graph_dic)
+    graph_dict['nodes'] = nodes
+    graph_dict['edges'] = edges
+    return Graph(graph_dict)
 
 
 def sumWeights(graph, internalSet, node):
