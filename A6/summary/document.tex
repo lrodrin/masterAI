@@ -2,36 +2,39 @@
 \usepackage[utf8]{inputenc}
 \title{Description-Oriented Community Detection using Exhaustive Subgroup Discovery}
 
-\date{Summarised: DATE}
+\date{Summarised: January 9, 2020}
 \author{Martin Atzmuellera, Stephan Doerfela, Folke Mitzlaffa}
 \begin{document}
 \maketitle
 \section{Justification}
-Communities can intuitively be defined as subsets of nodes of a graph with a dense structure in the corresponding subgraph. However, for mining such communities usually only structural aspects are taken into account. Typically, no concise nor easily interpretable community description is provided. 
+%breu descripció de l'abstract amb les meves paraules. quina és la contribució principal que ataca el problema X de tal manera? Perquè recomanaria aquest article?
 
-For tackling this issue, this paper focuses on description-oriented community detection using subgroup discovery. In order to provide both structurally valid and interpretable communities we utilize the graph structure as well as additional descriptive features of the graph’s nodes.A descriptive community pattern built upon these features then describes and identifies a community.
+This paper focuses on description-oriented community detection using subgroup discovery in order to provide structural and interpretable aspects to communities. Because for mining, such communities, typically no concise and no easily interpretable community description is provided. 
 
-We aim at identifying communities according to standard community quality measures, while providing characteristic descriptions of these communities at the same time. For this task, we propose several optimistic estimates of standard community quality functions to be used for efficient pruning of the search space in an exhaustive branch-and-bound algorithm.
+The task of identifying communities as sets of nodes together with a description such a community pattern that can provide an intuitive description of the community. is usually not achieved by classical community mining methods that consider the nodes of a network (e. g., denoting users in a social network) as mere strings or ids.
 
-//
-Quality measure?
-Graph space?
-Branch-and-bound algorithm?
+For tackling this issue, is used a graph structure as well as additional descriptive features of the graph's nodes. A descriptive community pattern is built upon these features then describes and identifies a community. The identification of the communities is made according to standard community quality measures, while providing characteristic descriptions of these communities at the same time. Specifically, for this task, is proposed several optimistic estimates of standard community quality functions to be used for efficient pruning of the search space in an exhaustive branch-and-bound algorithm.
 
-idea principal - we approach the task of identifying communities as sets of nodes together with a description. Such a community pattern then provides an intuitive description of the community. his is usually not achieved by classical community mining methods that consider the nodes of a network (e. g., denoting users in a social network) as mere strings or ids.
+{\bf per què la investigació es duu a terme?} Because the while classic community detection, e. g., {\bf [17]} for a survey, just identifies sub- groups of nodes with a dense structure, lacking an interpretable description, this paper focuses on the task of description-oriented comunity detection. Using ad- ditional descriptive features of the nodes contained in the network, we approach the task of identifying communities as sets of nodes together with a description, i. e., a logical formula on the values of the nodes’ descriptive features. Such a community pattern then provides an intuitive description of the community, e. g., by an easily interpretable conjunction of attribute-value pairs. This is usually not achieved by classical community mining methods that consider the nodes of a network (e. g., denoting users in a social network) as mere strings or ids.
 
-Per què la investigació es duu a terme?
-Because the while classic community detection, e. g., [17] for a survey, just identifies sub- groups of nodes with a dense structure, lacking an interpretable description, this paper focuses on the task of description-oriented comunity detection.
-%\begin{itemize}
-  %\item 
-  %\item 
-  %\item 
-%\end{itemize}
+{\bf s'ha escrit com a solució} 
+\begin{itemize}
+	\item We first introduce description-oriented community detectionandpresentthe COMODO algorithm for obtaining the k-best community patterns using a given community evaluation measure. COMODO is a branch-and-bound algorithm based on an exhaustive subgroup discovery approach.
+	\item For fast description-oriented community detection using COMODO, we propose optimistic estimates [25, 62] which are efficient to compute. We consider a number of standard community quality functions: The segrega- tion index [19], the inverse average ODF (out degree fraction) [38], and the modularity [49]. We discuss the different measures for unweighted and weighted graphs, and extend the optimistic estimates accordingly.
+	\item We evaluate the presented approach using five data sets from three real- world social applications, i. e., from the social bookmarking systems Bib- Sonomy and delicious2, and from the social media platform last.fm3.
+\end{itemize}
+
+We present an algorithm for description-oriented community detection of the top-k communities (described by community patterns) with respect to a number of standard community evaluation functions. The method is based on an adapted subgroup discovery approach [10, 36], and also tackles typical problems that are not addressed by standard approaches for community detection such as patholog- ical cases like small community sizes. We focus on interpretable patterns that can easily be incorporated into a practical application, for example, for recommenda- tions in social bookmarking systems. It is important to note that we focus on static social graphs and do not take the dynamics into account since we aim to charac- terize a given community (allocation) for a given fixed interaction structure. Also, since in practice the entities in a network tend to belong to a number of different communities, the presented method naturally captures overlapping community al- locations. Moreover, in contrast to global approaches, we focus on the discovery of local communities. According to the idea of local pattern mining, e. g., [20], we do not try to find a complete (global) partitioning of the network. Instead, we consider a set of local, potentially overlapping communities. These should be as exceptional as possible with respect to a given community quality measure.
+We demonstrate our approach on several social media applications such as so- cial networking and social bookmarking systems that provide interaction networks like explicit friendship relations between users. However, the presented approach is not limited to such systems and can be applied to any kind of graph-structured data for which additional descriptive features (node labels) are available, e. g., cer- tain activity in telephone networks or interactions in face-to-face contacts [6] that also utilize tags or topic descriptions for the contained relations.
+
+As an accompanying example, throughout the paper we use the friendship graph of the social bookmarking system BibSonomy1 [15]. In BibSonomy, users can declare their friendship toward other users, thus, creating a directed graph with users as nodes. At the same time, each user collects and tags resources like publications and web pages. Thus, a user’s set of tags can be considered as a description of that user’s interests. The community mining task here is to find user groups, where users are well connected by their friendship links and share a common interest in one or more features (tags).
+Overall, the contribution of this paper can be summarized as follows:
 
 \section{Main Points}
 \begin{itemize}
-  \item 
-  \item 
+  \item Description-oriented comunity detection
+  \item Optimistic estimates
+  \item Evaluation
 \end{itemize}
 
 \section{Results}
@@ -39,3 +42,7 @@ Because the while classic community detection, e. g., [17] for a survey, just id
   \item
 \end{itemize}
 \end{document}
+
+% modificacions de la taula de continguts. quines modificacions recomenaries. estructura que canviaries. referències que canviaries.
+
+% tot està a la transparència de preparació oral.
