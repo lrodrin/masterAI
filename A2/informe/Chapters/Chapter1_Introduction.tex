@@ -1,1 +1,15 @@
-El problema de dividir un grafo en diversas particiones del mismo tamaño tiene muchas utilidades en el área de la electrónica, así como en el desarrollo de sistemas operativos. Este problema ha sido demostrado como un problema NP-completo (\url{https://es.wikipedia.org/wiki/NP-hard}), lo que implica que las soluciones para él no pueden ser encontradas en tiempos razonables. El particionamiento de grafos es un problema importante que tiene aplicaciones extensas en muchas áreas.
+\section{Introducción}
+En los últimos años el problema de la partición de grafos ha sido ampliamente estudiado. El problema se deriva de situaciones del mundo real por lo que tiene aplicación en varias ramas de la ingeniería y de la investigación. La partición de grafos es una disciplina ubicada entre las ciencias computacionales y la matemática aplicada. El problema es un problema importante que tiene aplicaciones extensas en muchas áreas ya que se busca minimizar los costes o maximizar los beneficios a través de la correcta distribución de recursos. 
+
+La primera aplicación del problema fue en la partición de componentes de un circuito en un conjunto de tarjetas que juntas realizaban tareas en un dispositivo electrónico. Las tarjetas tenían un tamaño limitado, de tal manera que el dispositivo no llegara a ser muy grande, y el número de elementos de cada tarjeta estaba restringido. Si el circuito era demasiado grande podía ser dividido en varias tarjetas las cuales estaban interconectadas, sin embargo, el coste de interconexión era muy elevado por el que el número de interconexiones debía ser minimizado.
+
+La aplicación descrita anteriormente fue presentada en \cite{KernighanLin}, debido a Kernighan y Lin (1970), en la cuan se define un algoritmo eficiente para encontrar buenas soluciones. En la aplicación, el circuito es asociado a un grafo y las tarjetas como subconjuntos de una partición. Los nodos del grafo son representados por los componentes electrónicos y las aristas forman las interconexiones entre los componentes y las tarjetas.
+
+\section{Descripción el problema}
+El problema de partición de grafos puede formularse como un problema de programación entera. Los problemas de programación entera generalmente están relacionados directamente a problemas combinatorios, esto genera que al momento de resolver los problemas de programación entera se encuentren restricciones dado el coste computacional de resolverlos; por ese motivo se han desarrollado algoritmos que buscan soluciones de una forma más directa, la restricción de los mismos es que no se puede garantizar que la solución encontrada sea la óptima. 
+
+Este problema ha sido demostrado como un problema NP-completo (\url{https://es.wikipedia.org/wiki/NP-hard}), lo que implica que las soluciones para él no pueden ser encontradas en tiempos razonables.
+
+En el presente trabajo se pretende estudiar el algoritmo descrito en \cite{KernighanLin}, \cite{FiducciaMattheyses} i 
+
+\section{Partición de grafos}
