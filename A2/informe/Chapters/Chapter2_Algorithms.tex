@@ -1,8 +1,70 @@
-Dado que el problema de la partición de un grafo es un problema NP-completo, las soluciones prácticas se basan en la heurística y existen dos categorías: local y global. Los métodos locales más conocidos son el algoritmo Kernighan-Lin\cite{KernighanLin} y el algoritmo Fiduccia-Mattheyses\cite{FiducciaMattheyses}. Su principal inconveniente es la partición inicial arbitraria del conjunto de vértices, que puede afectar la calidad de la solución óptima final. En cambio, los métodos globales se basan en las propiedades de todo el grafo y no se basan en una partición inicial arbitraria. El ejemplo más común es la partición espectral, donde una partición se deriva de los vectores propios aproximados de la matriz de adyacencia, o la agrupación espectral que agrupa los vértices del grafo usando la descomposición propia de la matriz Laplaciana del grafo.
+%Dado que el problema de la partición de un grafo es un problema NP-completo, las soluciones prácticas se basan en la heurística y existen dos categorías: local y global. Los métodos locales más conocidos son el algoritmo Kernighan-Lin\cite{KernighanLin} y el algoritmo Fiduccia-Mattheyses\cite{FiducciaMattheyses}. Su principal inconveniente es la partición inicial arbitraria del conjunto de vértices, que puede afectar la calidad de la solución óptima final. En cambio, los métodos globales se basan en las propiedades de todo el grafo y no se basan en una partición inicial arbitraria. El ejemplo más común es la partición espectral, donde una partición se deriva de los vectores propios aproximados de la matriz de adyacencia, o la agrupación espectral que agrupa los vértices del grafo usando la descomposición propia de la matriz Laplaciana del grafo.
 
 \section{Kernighan-Lin}
-El algoritmo de Kernighan-Lin\cite{KernighanLin} es un algoritmo heurístico para resolver el problema de la partición de un grafo con complejidad computacional $O({n}^2logn)$. Este algoritmo, propuesto en 1970 por Shen Lin y Brian Kernighan, tiene aplicaciones importantes para el diseño de circuitos digitales y VLSI. 
+%El algoritmo de Kernighan-Lin\cite{KernighanLin} es un algoritmo heurístico para resolver el problema de la partición de un grafo con complejidad computacional $O({n}^2logn)$. Este algoritmo, propuesto en 1970 por Shen Lin y Brian Kernighan, tiene aplicaciones importantes para el diseño de circuitos digitales y VLSI. 
+%
+%Es un ejemplo de Algoritmo Voraz.
+%
+%Comienza con alguna partición que satisfaga el requisito de tamaño que intercambie repetidamente nodos entre las particiones.
 
-Es un ejemplo de Algoritmo Voraz.
+The Kernigan-Lin algorithm\cite{KernighanLin}, often abbreviated as K/L, is one of the earliest graph partitioning algorithm and was originally developed to optimize the placement of electronic circuits onto printed circuit cards so as to minimize the number of connections between cards.
 
-Comienza con alguna partición que satisfaga el requisito de tamaño que intercambie repetidamente nodos entre las particiones.
+The K/L algorithm does not create partitions but rather improves them iteratively (there is no need for the partitions to be of equal size). The original idea was to take a random partition and apply Kernigan-Lin to it. This would be repeated several times and the best result chosen. While small graphs this delivers reasonable results, it is quite inefficient for problem sizes.
+
+\begin{lstlisting}[language=Python]
+
+from graph import Graph
+
+def switch(graph, A, B):
+	D = computeD(graph, A, B)
+	costs = []
+	X = []
+	Y = []
+	
+	for i in range(int(graph.getSize() / 2)):
+		x, y, cost = maxSwitchCostNodes(graph, A, B, D)
+		A.remove(x)
+		B.remove(y)
+		
+		costs.append(cost)
+		X.append(x)
+		Y.append(y)
+		
+		D = updateD(graph, A, B, D, x, y)
+	
+	maxCost, k = getMaxCostAndIndex(costs)
+	
+	if maxCost > 0:
+		A = Y[:k + 1] + X[k + 1:]
+		B = X[:k + 1] + Y[k + 1:]
+		return A, B, False
+	else:
+		A = [i for i in X]
+		B = [i for i in Y]
+		return A, B, True
+
+def k_lin():
+	graph = createGraph()
+	A = [i for i in range(int(graph.getSize() / 2))]
+	B = [i for i in range(int(graph.getSize() / 2), graph.getSize())]
+	done = False
+	
+	while not done:
+		A, B, done = switch(graph, A, B)
+	
+	print("Partition A: ", end=' ')
+		for i in A:
+		print(graph.getNodeLabel(i), end=' ')
+	print("\nPartition B: ", end=' ')
+		for i in B:
+		print(graph.getNodeLabel(i), end=' ')
+
+\end{lstlisting}
+
+\subsection{Example}
+
+\section{Fiduccia-Mattheyses}
+
+\section{Spectral Bisection}
+
+

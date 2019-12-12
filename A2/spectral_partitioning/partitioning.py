@@ -2,7 +2,6 @@ import subprocess
 
 import numpy as np
 
-
 def import_nodes(nodes_file):
     """
     Import the nodes from the file
@@ -100,9 +99,15 @@ def algorithm():
     # Partition on the sign of the eigenvector's coordinates
     partition = [val >= 0 for val in eigenvectors[:, index_fnzev]]
 
+    print(partition)
+
     # Compute the edges in between
     nodes_in_A = [nodeA for (nodeA, nodeCommunity) in enumerate(partition) if nodeCommunity]
     nodes_in_B = [nodeB for (nodeB, nodeCommunity) in enumerate(partition) if not nodeCommunity]
+
+    print(nodes_in_A)
+    print(nodes_in_B)
+
     edges_in_between = []
     for edge in edges:
         node1, node2 = edge
