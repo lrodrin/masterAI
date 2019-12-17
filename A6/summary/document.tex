@@ -7,40 +7,40 @@
 \begin{document}
 \maketitle
 \section{Abstract}
-For mining of communities, defining communities as subsets of nodes of a graph with a dense structure in the corresponding sub graph, usually only the structural aspects of the communities are taken into account. Typically, no concise nor easily interpretable for each community description is provided. 
+Usually, for mining of communities, defining communities as subsets of nodes of a graph with dense structure in the corresponding sub graph, only the structural aspects of this communities are taken into account. Typically, for each community, their description provided is no concise and easily interpretable. 
 \vskip 0.3cm
 
-This paper focuses on description-oriented community detection using subgroup discovery to provide both structurally valid and interpretable communities, with the graph structure and descriptive features of the graph’s nodes. A descriptive community pattern, created with the descriptive features, describes and identifies each community, i. e., a set of nodes, and vice versa. Essentially, patterns are looked up characterizing interesting set of nodes (i. e., subgroups) in the graph. The interestingness set of nodes that forms a community is evaluated by a selectable standard community quality measure. The selection is based on several optimistic estimates of standard quality functions used for efficient pruning of the search space in an exhaustive branch and bound algorithm. 
+This article is focuses on the description-oriented community detection, using subgroup discovery to provide an structurally valid and interpretable description for the communities, with a graph's structures and descriptive features of a graph’s nodes. A descriptive community pattern, created with descriptive features of a graph, describes and identifies each community and vice versa. Essentially, patterns are looked up characterizing interesting set of nodes (i. e., subgroups) in the graph. The interestingness set of nodes that forms a community is evaluated by a selectable standard community's quality measure. The selection is based on several optimistic estimates of standard quality functions used for efficient pruning of the search space in an exhaustive branch and bound algorithm. 
 \vskip 0.3cm
 
-Finally, the approach is evaluated using five real world datasets, obtained from different social media applications.
+The approach of this article is evaluated using five real world datasets, obtained from different social media applications.
 
 \section{Introduction}
-Since 2010, the classical community detection in graphs for a survey, just identifies subgroups of nodes with dense structure, lacking an interpretable description.
+Since 2010, the classical community detection in graphs, just identify subgroups of nodes of a graph with dense structure, lacking an interpretable description.
 \vskip 0.3cm
 
-As a novelty, this work focuses on the task of description-oriented community detection based on additional descriptive functions of the nodes contained in the network, to identify communities such as sets of nodes, along with a description. Specifically, with a logical formula on the values of nodes, named community pattern, that describes characteristics of the nodes, providing and intuitive description of the community by and easily interpretable conjunction of attribute-value pairs.
+As a innovation, this article focuses on the task of description-oriented community detection, based on additional descriptive functions of the nodes of a graph contained in the network, to identify communities such as sets of nodes, along with a description. Specifically, for the identification is used a logical formula on the values of nodes, named community pattern, that describes characteristics of the nodes, providing and intuitive description of the community by and easily interpretable conjunction of attribute-value pairs.
 \vskip 0.3cm
 
-This approach is usually not achieved by classical community mining methods that consider the nodes of a network as mere strings or ids.
+The approach of this article is usually not achieved by classical community mining methods, that consider the nodes of a network as mere strings or ids.
 \vskip 0.3cm
 
-The great interest for this article is that the method is discovered can resolve problems that typically are not addressed by standard approaches for community detection. And the community patterns can easily be incorporated into a practical application, for example, for recommendations in social bookmarking systems.
+The great interest of this article is that the discovered method can solve problems that are generally not addressed through standard approaches to community detection. Also because the community patterns can easily be incorporated into practical applications, for example, for recommendations in social bookmarking systems, like BibSonomy or delicious.
 \vskip 0.3cm
 
-In contrast to global approaches, the method is exceptional. Because given community quality measures to local partitioning of a network can be considered, potentially overlapping communities. Also, is not limited to such systems and can be applied to any kind of graph-structured data for which additional descriptive features are available.
+In contrast to global approaches, the method is exceptional. Because given community quality measures to local partitioning of a network , potentially overlapping communities can be considered. Also, is not limited to any systems and can be applied to any kind of graph-structured data for which additional descriptive features are available.
 
 \section{Main Points}
-%The contribution of this paper is structured as follows:
-%\vskip 0.3cm
+The contribution of this paper is structured as follows:
+\vskip 0.3cm
 
-First, is introduced the approach for description-driven community detection using exhaustive subgroup discovery and is mentioned the COMODO algorithm for the discovery of community patters through a community quality measure. The COMODO algorithm is a branch-and-bound algorithm that use an efficient branch-and-bound method with appropriate pruning techniques based on exhaustive subgroup discovery using optimistic estimates. 
+First, is introduced the approach for description-driven community detection using exhaustive subgroup discovery and is mentioned the COMODO algorithm for the search of community patterns through a quality measure. The COMODO algorithm is a branch and bound algorithm, that use an efficient branch and bound method with appropriate pruning techniques based on exhaustive subgroup discovery using optimistic estimates. The implemented COMODO algorithm contains a pruning scheme that makes the approach scalable for longer data sets.
 \vskip 0.3cm
 	
-The proposed optimistic estimates for a range of standard community quality functions, which are efficient to compute faster the description-oriented community detection using the COMODO algorithm. Specifically, are consider a number of standard community quality functions: The segregation index, the inverse average ODF (out degree fraction) and the modularity. In addition, the different community quality measures are discussed and extended the optimistic estimates accordingly. 
+The proposed optimistic estimates for a range of standard community quality functions, which are efficient to compute faster the description-oriented community detection using the COMODO algorithm. Specifically, are consider a number of standard community quality functions: The segregation index, the inverse average ODF (out degree fraction) and the local modularity. In addition, the different community quality measures are discussed and extended the optimistic estimates accordingly. 
 \vskip 0.3cm
 
-In the following, summarizes basics of subgroup discovery, and provides general notions of graphs and community quality measures. 
+In the following X, summarizes basics of subgroup discovery, and provides general notions of graphs and community quality measures. 
 \vskip 0.3cm
 
 Next, introduce the proposed approach for description-oriented community detection and presents a number of optimistic estimates for standard community evaluation functions. 
@@ -49,10 +49,11 @@ Next, introduce the proposed approach for description-oriented community detecti
 After that, discusses related work. 
 \vskip 0.3cm
 
-For demonstrating the effectiveness and validity of the presented approach,  that provides experiments using five data sets and discusses their results in the context of the three real-world applications. 
+For demonstrating the efficiency of proposed optimistic estimates and validity of the obtained community patterns, are performed experiments using five different data sets. The experiments demonstrated the effectiveness of proposed descriptive mining approach applying the presented optimistic estimates. Furthermore, the implemented is concerns the validity of the patterns by the structural properties of the patterns and the sub graphs induced by the respective community patterns, and compared COMODO to three baseline community detection algorithms.
+ Then discusses their results in the context of three real-world applications. The results indicate statisdically valid and significant results that de not exhibit the typical problems and pathological cases such as small communities sizes that are often encountered when using typical community mining methods. Because the COMODO lagorithm is able to detect communities that are typically captured by shorter descriptions leading to a lower description complexity, compared to the baseline.
 \vskip 0.3cm
 
-Finally, concludes the paper with a summary and directions for future research.
+Finally, concludes the paper with a summary and directions for future work. Apply method in more diverse data and extend the approach for community detection on dynamic networks.
 % emplenar amb conclusions
 
 \end{document}
