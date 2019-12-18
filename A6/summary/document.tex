@@ -34,26 +34,18 @@ In contrast to global approaches, the method is exceptional. Because given commu
 The contribution of this paper is structured as follows:
 \vskip 0.3cm
 
-First, is introduced the approach for description-driven community detection using exhaustive subgroup discovery and is mentioned the COMODO algorithm for the search of community patterns through a quality measure. The COMODO algorithm is a branch and bound algorithm, that use an efficient branch and bound method with appropriate pruning techniques based on exhaustive subgroup discovery using optimistic estimates. The implemented COMODO algorithm contains a pruning scheme that makes the approach scalable for longer data sets.
-\vskip 0.3cm
-	
-The proposed optimistic estimates for a range of standard community quality functions, which are efficient to compute faster the description-oriented community detection using the COMODO algorithm. Specifically, are consider a number of standard community quality functions: The segregation index, the inverse average ODF (out degree fraction) and the local modularity. In addition, the different community quality measures are discussed and extended the optimistic estimates accordingly. 
+First, is introduced an approach for description-oriented community detection using exhaustive subgroup discovery and then, is mentioned the COMODO algorithm for searching community patterns through a quality measure. The COMODO algorithm's is an algorithm that use an efficient branch and bound method with appropriate pruning techniques based on exhaustive subgroup discovery using optimistic estimates. The implemented COMODO algorithm's in this article contains a pruning scheme that makes the approach scalable for big data sets. Furthermore, the proposed optimistic estimates, for a range of standard community quality measure, are efficient to compute faster the description-oriented community detection using the COMODO algorithm. Specifically, the article consider a three standard community quality measures: The segregation index, the inverse average ODF (out degree fraction) and the local modularity. At the end, the different community quality measures are discussed and extended the optimistic estimates accordingly. 
 \vskip 0.3cm
 
-In the following X, summarizes basics of subgroup discovery, and provides general notions of graphs and community quality measures. 
+The article continues to summarize the basic concepts of subgroup discovery and provides general notions of graphs and community quality measures. Next, the approach to description-oriented community detection presents a series of optimistic estimates for standard community assessment functions. After that, is discussed the related work.
 \vskip 0.3cm
 
-Next, introduce the proposed approach for description-oriented community detection and presents a number of optimistic estimates for standard community evaluation functions. 
+For demonstrating the efficiency of proposed optimistic estimates and validity of the obtained community patterns, are performed experiments using five different data sets. The experiments demonstrate the effectiveness of proposed descriptive mining approach applying the presented optimistic estimates. Furthermore, the implementation of COMODO's algorithm, confirm the validity of the comunity patterns with the structural properties of the patterns and the sub graphs induced by the respective patterns. As a consequence, the COMODO algorithm is compared to three baseline community detection algorithms.
 \vskip 0.3cm
 
-After that, discusses related work. 
+Then, the article analisy the results of the experiments in the context of three real-world applications. The results indicate statisdically valid and significant results that de not exhibit typical problems and pathological cases such an small communities sizes that are often encountered when is using a typical community mining method. This is facilitated by the COMODO algorithm is able to detect communities that are typically captured by a shorter descriptions leading to a lower description complexity, compared to the baseline community detection algorithms.
 \vskip 0.3cm
 
-For demonstrating the efficiency of proposed optimistic estimates and validity of the obtained community patterns, are performed experiments using five different data sets. The experiments demonstrated the effectiveness of proposed descriptive mining approach applying the presented optimistic estimates. Furthermore, the implemented is concerns the validity of the patterns by the structural properties of the patterns and the sub graphs induced by the respective community patterns, and compared COMODO to three baseline community detection algorithms.
- Then discusses their results in the context of three real-world applications. The results indicate statisdically valid and significant results that de not exhibit the typical problems and pathological cases such as small communities sizes that are often encountered when using typical community mining methods. Because the COMODO lagorithm is able to detect communities that are typically captured by shorter descriptions leading to a lower description complexity, compared to the baseline.
-\vskip 0.3cm
-
-Finally, concludes the paper with a summary and directions for future work. Apply method in more diverse data and extend the approach for community detection on dynamic networks.
-% emplenar amb conclusions
+At the end, the article concludes with a summary and directions for future work with the intention to apply the presented method with more diverse data and extend the approach for community detection to dynamic networks.
 
 \end{document}
