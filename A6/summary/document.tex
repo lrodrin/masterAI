@@ -1,6 +1,7 @@
 \documentclass[a4paper]{article}
-
 \usepackage[utf8]{inputenc}
+\setlength{\parskip}{\baselineskip}%
+\setlength{\parindent}{0pt}%
 
 \title{Description-Oriented Community Detection using Exhaustive Subgroup Discovery}
 
@@ -13,17 +14,13 @@
 
 \section*{The main contribution of the article}
 This article is focuses on the description-oriented community detection, using exhaustive subgroup discovery to provide an structurally valid and interpretable description for communities (i. e., a set of nodes), with a graph's structures and descriptive features of a graph’s nodes. In addition, presents the COMODO algorithm that use an efficient branch and bound method with appropriate pruning techniques to provide the exhaustive subgroup discovery. The article as well shows an implementation of COMODO algorithm that is evaluated by a selectable community quality measures using real world datasets, and analysed the results.
-\vskip 0.35cm
 
 As a personal opinion, I consider the approach of this article so interesting and introduces an innovation because can solve problems that in contrast to global approaches is usually not achieved by classical community mining methods, that consider the nodes of a network as mere strings or ids. Also the discovered COMODO algorithm it is very relevant since can easily be incorporated into practical applications and is not limited to any system and can be applied to any kind of graph-structured data.
-\vskip 0.35cm
 
 Another thing to comment, is the evaluation of the COMODO algorithm during the experiments. It is also very relevant, because reveals that the COMODO algorithm it is an efficient and scalable algorithm for large datasets. Thus, that is not encountered in the typical mining methods. Additionally, the results of the experiments are statistically proved, which makes them more valid and significant.
 
 \section*{The secondary contributions of the article}
 As a relevant secondary contribution of the article, it should be mentioned the suitable optimistic estimates for a range of standard community quality measures or also called community quality functions.
-
-\newpage
 
 This secondary contribution it is relevant because the optimistic estimates:
 
@@ -34,28 +31,21 @@ This secondary contribution it is relevant because the optimistic estimates:
 \end{itemize}
 
 Another secondary contribution that should be mentioned of the article is the method proposed for detection of overlapping communities. In my opinion, the detection of overlapping communities should be more delved deeper.
-\vskip 0.35cm
 
 Because contrary to the methods commonly used for detection of overlapping communities, the method proposed in this article focuses on local and non-global patterns, as is common with methods more used.
-\vskip 0.35cm
 
 And it is important to note too, that the COMODO algorithm directly uses this method to search overlapping communities according to standard community quality measures to add the description for the communities, referring the main contribution of the article.
 
 \section*{The structure of the article}
 The article has the structure that an article should have as a general scheme: the abstract, the introduction, the methodology, the results of the research, the conclusions and a list of references. As well, includes other sections like: the preliminaries, the related work and the acknowledgements.
-\vskip 0.35cm
 
 In the structure, I found it is very curious that the article has 66 references. Is the first article that I read with this big number of references.
-\vskip 0.35cm
 
 Specifically, the article is structured as follows: first introduce the description-oriented community detection and present the COMODO algorithm. Then, summarizes basics of subgroup discovery, and provides general notions of graphs and community quality measures. After that, considers the three standard community quality measures: The segregation index, the inverse average ODF (out degree fraction) and the local modularity.
-\vskip 0.35cm
 
 For this three standard community quality measures, that there are introduced in the introduction section, I would like to comment that initially it seems to be an optional process, which would be applied after the COMODO algorithm and remember that the experiments are based on these standards. Maybe, it should be described in the related work section. Because the related work section contains the main information of this article in grater detail.
-\vskip 0.35cm
 
 The remainder of the article contains the related work and provides experiments using five data sets and discusses their results in the context of three real-world applications. Finally, the article concludes with a summary and directions for future research.
-\vskip 0.35cm
 
 Besides from what I have commented previously, on the community quality measures, I think it is a well structured article. Maybe it is a bit long and complicated. Complicated because I have found it is difficult to read, specially the part of the experiments. For the big number of examples and their simultaneous comparison. I think that with fewer examples it would be easer to understand and clearer.
 

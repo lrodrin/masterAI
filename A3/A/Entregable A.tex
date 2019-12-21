@@ -1,12 +1,13 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
+\usepackage{natbib}
+\usepackage{graphicx}
+\setlength{\parskip}{\baselineskip}%
+\setlength{\parindent}{0pt}%
 
 \title{Entregable Módulo de Introducción: CRISP-DM}
 \author{Laura Rodríguez Navas}
-\date{December 2019}
-
-\usepackage{natbib}
-\usepackage{graphicx}
+\date{Marzo 2019}
 
 \begin{document}
 
@@ -17,16 +18,16 @@ En este entregable se considera la aplicación de cada una de las fases de la me
 \section{Comprensión del Negocio}
 
 \subsection{Determinar los Objetivos del Negocio}
-El objetivo de la minería de datos que se va a aplicar en este problema práctico es el de hacer predicciones lo más fiables a partir de los atributos recogidos por un screening general que se ha realizado durante 20 años a todos los hombres cuando cumplían los 45 años. El objetivo de les predicciones es reducir el sobrediagnóstico (falsos positivos) de cáncer de próstata, manteniendo los falsos negativos en $<$ 1\%, usando la información de muchos de estos pacientes acerca de si han sufrido o no cáncer de próstata en los años posteriores al screening.
+El objetivo de la minería de datos que se va a aplicar en este problema práctico es el de hacer predicciones lo más fiables a partir de los atributos recogidos por un screening general de un sistema de salud que se ha realizado durante 20 años a todos los hombres cuando cumplían los 45 años. El objetivo de les predicciones es reducir el sobre-diagnóstico (falsos positivos) de cáncer de próstata, manteniendo los falsos negativos en $<$ 1\%, usando la información de muchos de estos pacientes acerca de si han sufrido o no cáncer de próstata en los años posteriores al screening.
 
 \subsubsection{Contexto}
 En referencia a la situación de negocio en el sistema de salud al principio de este problema práctico se puede decir que se cuenta con una base de datos de pacientes y existe un estudio en profundidad acerca de si han sufrido o no cáncer de próstata en los años posteriores al screening general del que se pueden sacar conclusiones o patrones para hacer predicciones sobre los futuros pacientes.
 
 \subsubsection{Objetivos del negocio}
-El objetivo del negocio, como ya se ha mencionado, es la reducción de los falsos positivos de pacientes de cáncer de próstata, de tal manera que se puedan hacer unas predicciones fiables partiendo de los datos que ya tenemos de dichos pacientes. Las predicciones pueden ser muy útiles para la detección i reducción de errores no deseados en las exploraciones físicas de esta enfermedad. Todo esto permitirá al sistema de salud disminuir la cantidad de ansiedad y angustia que un falso positivo causa tanto a los médicos como a los pacientes.
+El objetivo del negocio, como ya se ha mencionado, es la reducción de los falsos positivos de pacientes de cáncer de próstata, de tal manera que se puedan hacer unas predicciones fiables partiendo de los datos que ya tenemos de dichos pacientes. Las predicciones pueden ser muy útiles para la detección i reducción de errores no deseados en las exploraciones físicas de esta enfermedad. Además permitirá al sistema de salud disminuir la cantidad de ansiedad y angustia que un falso positivo causa tanto a los médicos como a los pacientes.
 	
 \subsubsection{Criterios de éxito del negocio}
-Desde el punto de vista del negocio se establece como criterio de éxito la posibilidad de realizar predicciones a cinco años sobre nuevos pacientes con un elevado porcentaje de fiabilidad, de tal forma que se puedan reducir los futuros falsos positivos, manteniendo los falsos negativos en $<$ 1\%.
+Desde el punto de vista del negocio se establece como criterio de éxito la posibilidad de realizar predicciones sobre nuevos pacientes con un elevado porcentaje de fiabilidad, de tal forma que se puedan reducir los futuros falsos positivos, manteniendo los falsos negativos en $<$ 1\%.
 
 \subsection{Evaluación de la Situación}
 
@@ -35,13 +36,13 @@ En cuanto a recursos de software disponemos del programa de minería de datos Or
 
 \begin{itemize}
 	\item Marca: Apple ©
-	\item Modelo: MacBook Pro del 2013
+	\item Modelo: MacBook Pro
 	\item Procesador: Intel © Core 7 de cuatro núcleos a 3,2 GHz
 	\item Memoria RAM: 8 GB
 	\item Capacidad de almacenamiento: 256 GB
 \end{itemize}
 
-La fuente de datos es una base de datos Oracle con la información de los pacientes que ha sido almacenada durante 20 años. Esta información incluye el identificador de cada paciente y si han sufrido o no cáncer de próstata a la edad de 45 años.
+La fuente de datos es una base de datos Oracle con la información de los pacientes que incluye el identificador de cada paciente y si han sufrido o no cáncer de próstata a la edad de 45 años.
 
 \subsubsection{Requisitos, supuestos y restricciones}
 Al no poder utilizar los datos personales de los pacientes reales debido a cuestiones legales, se ha tenido que utilizar una base de datos ficticia con datos no reales de pacientes inventados.
@@ -58,7 +59,7 @@ Al no poder utilizar los datos personales de los pacientes reales debido a cuest
 \subsubsection{Costes y beneficios}
 Los datos de este proyecto no suponen ningún coste adicional al sistema de salud ya que estos datos pertenecen al propio sistema de salud.
 
-En cuanto a beneficios, no se puede decir que este proyecto genere algún beneficio económico para el sistema de salud directamente, pero sí que se puede suponer indirectamente ya que el objetivo principal es reducir la cantidad de falsos positivos, y por tanto la satisfacción de los pacientes y los médicos augmenta, y esto se traduce en prestigio para el sistema de salud, lo cual hará que más pacientes consideren hacerse la exploración física y que más médicos trabajen en él.
+En cuanto a beneficios, no se puede decir que este proyecto genere algún beneficio económico para el sistema de salud directamente, pero sí que se puede suponer indirectamente ya que el objetivo principal es reducir la cantidad de falsos positivos, y por tanto la satisfacción de los pacientes y los médicos aumenta, y esto se traduce en prestigio para el sistema de salud, lo cual hará que más pacientes consideren hacerse la exploración física y que más médicos trabajen en él.
 
 \subsection{Determinar los Objetivos de la Minería de Datos}
 \subsection{Realizar el Plan del Proyecto}
