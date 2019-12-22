@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e883f2f9-3b03-42b3-8933-af87a22a4261" name="Default Changelist" comment="update summary A6 and informe A2" />
+    <list default="true" id="e883f2f9-3b03-42b3-8933-af87a22a4261" name="Default Changelist" comment="update summary A6 and informe A2">
+      <change beforePath="$PROJECT_DIR$/A3/A/Entregable A.aux" beforeDir="false" afterPath="$PROJECT_DIR$/A3/A/Entregable A.aux" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/A3/A/Entregable A.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/A3/A/Entregable A.pdf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/A3/A/Entregable A.synctex.gz" beforeDir="false" afterPath="$PROJECT_DIR$/A3/A/Entregable A.synctex.gz" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/A3/A/Entregable A.tex" beforeDir="false" afterPath="$PROJECT_DIR$/A3/A/Entregable A.tex" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,7 +23,7 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/A2/spectral_partitioning/partitioning.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-266">
+            <state relative-caret-position="17">
               <caret line="86" selection-start-line="86" selection-end-line="86" />
               <folding>
                 <element signature="e#0#17#0" expanded="true" />
@@ -194,6 +199,7 @@
       <workItem from="1572786689071" duration="7740000" />
       <workItem from="1575715054393" duration="6104000" />
       <workItem from="1576408517928" duration="1091000" />
+      <workItem from="1577021731204" duration="596000" />
     </task>
     <task id="LOCAL-00001" summary="created first version of kernighan_lin algorithm in Python3">
       <created>1572787346048</created>
@@ -227,12 +233,12 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="20438000" />
+    <option name="totallyTimeSpent" value="21034000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.16577825" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1673774" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -302,13 +308,13 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/A2/kernighan_lin/graph.csv">
+      <provider editor-type-id="csv-table-editor">
+        <state showInfoPanel="true" fixedHeaders="false" rowLines="3" />
+      </provider>
       <provider selected="true" editor-type-id="csv-text-editor">
         <state>
           <caret column="7" selection-start-column="7" selection-end-column="7" />
         </state>
-      </provider>
-      <provider editor-type-id="csv-table-editor">
-        <state showInfoPanel="true" fixedHeaders="false" rowLines="3" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/A2/kernighan_lin/README.md">
@@ -333,7 +339,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/A2/spectral_partitioning/partitioning.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-266">
+        <state relative-caret-position="17">
           <caret line="86" selection-start-line="86" selection-end-line="86" />
           <folding>
             <element signature="e#0#17#0" expanded="true" />
