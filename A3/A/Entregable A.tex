@@ -9,7 +9,7 @@
 
 \title{Entregable Módulo de Introducción: CRISP-DM}
 \author{Laura Rodríguez Navas}
-\date{Marzo 2019}
+\date{Diciembre 2019}
 
 \begin{document}
 
@@ -23,13 +23,16 @@ En este entregable se considera la aplicación de cada una de las fases de la me
 El objetivo de la minería de datos que se va a aplicar en este problema práctico es el de hacer predicciones lo más fiables a partir de los atributos recogidos por un screening general de un sistema de salud que se ha realizado durante 20 años a todos los hombres cuando cumplían los 45 años. El objetivo de les predicciones es reducir el sobre-diagnóstico (falsos positivos) de cáncer de próstata, manteniendo los falsos negativos en $<$ 1\%, usando la información de muchos de estos pacientes acerca de si han sufrido o no cáncer de próstata en los años posteriores al screening.
 
 \subsubsection{Contexto}
-En referencia a la situación de negocio en el sistema de salud al principio de este problema práctico se puede decir que se cuenta con una base de datos de pacientes y existe un estudio en profundidad acerca de si han sufrido o no cáncer de próstata durante la realización del screening general y en los años posteriores al screening general del que se pueden sacar conclusiones o patrones para hacer predicciones sobre los futuros pacientes.
+En referencia a la situación de negocio en el sistema de salud, inicialmente se puede decir que se cuenta con una base de datos de pacientes y existe un estudio en profundidad acerca de si han sufrido o no cáncer de próstata durante los 20 años de la realización del screening general y en los años posteriores 5 años al screening general, del que se pueden sacar conclusiones o patrones para hacer predicciones sobre futuros pacientes.
 
 \subsubsection{Objetivos del negocio}
-El objetivo del negocio, como ya se ha mencionado, es la reducción de los falsos positivos de pacientes de cáncer de próstata, de tal manera que se puedan hacer unas predicciones fiables partiendo de los datos que ya tenemos de dichos pacientes. Las predicciones pueden ser muy útiles para la detección i reducción de errores no deseados en las exploraciones físicas de esta enfermedad. Además permitirá al sistema de salud disminuir la cantidad de ansiedad y angustia que un falso positivo causa tanto a los médicos como a los pacientes.
+El objetivo del negocio, como ya se ha mencionado, es la reducción de los falsos positivos de pacientes de cáncer de próstata, de tal manera que se puedan hacer unas predicciones fiables partiendo de los datos que ya tenemos de dichos pacientes. 
+
+En este caso, las predicciones pueden ser muy útiles para la detección i reducción de errores no deseados en las exploraciones físicas de esta enfermedad. Además permitirá al sistema de salud disminuir la cantidad de ansiedad y angustia
+que provoca un falso positivo, tanto a los médicos como a los pacientes.
 	
 \subsubsection{Criterios de éxito del negocio}
-Desde el punto de vista del negocio se establece como criterio de éxito la posibilidad de realizar predicciones sobre los pacientes con un elevado porcentaje de fiabilidad, de tal forma que se puedan reducir los falsos positivos, manteniendo los falsos negativos en $<$ 1\%.
+Desde el punto de vista del negocio se establece como criterio de éxito la posibilidad de realizar predicciones sobre los pacientes diagnosticados con un elevado porcentaje de fiabilidad, de tal forma que se puedan reducir los falsos positivos, manteniendo los falsos negativos en $<$ 1\%.
 
 \subsection{Evaluación de la Situación}
 
@@ -44,10 +47,10 @@ En cuanto a recursos de software disponemos del programa de minería de datos WE
 	\item Capacidad de almacenamiento: 256 GB
 \end{itemize}
 
-La fuente de datos es una base de datos SQLite, creada a partir de un fichero CSV que contiene la información de los pacientes. Cada línea del fichero CSV corresponde a un paciente diferente, que incluye su identificador y si han sufrido o no cáncer de próstata a la edad de 45 años y en los 5 años posteriores.
+La fuente de datos es una base de datos SQLite, creada a partir de un fichero CSV que contiene la información de todos los pacientes. Cada línea del fichero CSV corresponde a un paciente diferente, que incluye su identificador y si han sufrido o no cáncer de próstata a la edad de 45 años y en los 5 años posteriores.
 
 \subsubsection{Requisitos, supuestos y restricciones}
-Al poder utilizar los datos personales de pacientes reales, esta sección no es aplicable en el proyecto.
+Al poder utilizar los datos personales de pacientes reales y que son propiedad del mismo sistema de salud, no existen requisitos, supuestos y restricciones.
 
 \subsubsection{Terminología}
 
@@ -59,20 +62,19 @@ Al poder utilizar los datos personales de pacientes reales, esta sección no es 
 \end{itemize}
 
 \subsubsection{Costes y beneficios}
-Los datos de este problema práctico no suponen ningún coste adicional al sistema de salud ya que estos datos pertenecen al propio sistema de salud.
+Los datos de este proyecto no suponen ningún coste adicional al sistema de salud ya que estos datos pertenecen al propio sistema de salud.
 
-En cuanto a beneficios, no se puede decir que este problema práctico genere algún beneficio económico para el sistema de salud directamente, pero sí que se puede suponer indirectamente, ya que el objetivo principal es reducir la cantidad de falsos positivos, y por tanto la satisfacción de los pacientes y los médicos aumentaría, y esto se traduce en mayor prestigio para el sistema de salud, lo cual hará que más pacientes consideren hacerse la exploración física y que más médicos trabajen en él.
+En cuanto a beneficios, no se puede decir que este problema práctico genere algún beneficio económico para el sistema de salud directamente, pero sí que se puede suponer indirectamente, ya que el objetivo principal es reducir la cantidad de falsos positivos, y como consecuencia aumentará la satisfacción de los pacientes y los médicos, y esto se traduce en mayor prestigio para el sistema de salud.
 
 \subsection{Determinar los Objetivos de la Minería de Datos}\label{Objetivos de la Minería de Datos}
-Los objetivos en términos de minería de datos son:
+El objetivo en términos de minería de datos es:
 
 \begin{itemize}
-	\item Predecir falsos positivos para reducir el sobre-diagnóstico de cáncer de próstata de futuros pacientes.
-	\item Mantener las predicciones de falsos negativos en futuros pacientes inferiores al 1\%, acorde a la predicción de falsos positivos.
+	\item Predecir falsos positivos para reducir el sobre-diagnóstico de cáncer de próstata de futuros pacientes, manteniendo las predicciones de falsos negativos inferiores al 1\%, acorde a la predicción de falsos positivos.
 \end{itemize}
 
 \subsubsection{Criterios de éxito de minería de datos}
-Desde el punto de vista de la minería de datos se establece como criterio de éxito la posibilidad de realizar predicciones sobre los pacientes con un elevado porcentaje de fiabilidad, concretamente se podría definir este porcentaje en un 80\%. Aunque el grado de fiabilidad lo determinará el algoritmo específico que se emplee a la hora de conseguir el modelo de la minería de datos, por lo que este tema se aborda más adelante en la metodología (evaluación).
+Desde el punto de vista de la minería de datos se establece como criterio de éxito la posibilidad de realizar predicciones sobre los pacientes diagnosticados con un elevado porcentaje de fiabilidad, concretamente se podría definir este porcentaje en un 80\%. Aunque el grado de fiabilidad lo determinará el algoritmo específico que se emplee a la hora de conseguir el modelo de la minería de datos, por lo que este tema se aborda más adelante en la metodología (evaluación).
 
 \subsection{Realizar el Plan del Proyecto}
 El proyecto se dividirá en las siguientes etapas para facilitar su organización y estimar el tiempo de realización del mismo:
@@ -83,14 +85,14 @@ El proyecto se dividirá en las siguientes etapas para facilitar su organizació
 	\item Etapa 3: Preparación de los datos (selección, limpieza, conversión y formateo, si fuera necesario) para facilitar la minería de datos sobre ellos. Tiempo estimado: 3 semanas.
 	\item Etapa 4: Elección de las técnicas de modelado y ejecución de las mismas sobre los datos. Tiempo estimado: 1 semana.
 	\item Etapa 5: Análisis de los resultados obtenidos en la etapa anterior, si fuera necesario repetir la etapa 4. Tiempo estimado: 1 semana.
-	\item Etapa 6: Producción de informes con los resultados obtenidos en función de los objetivos de negocio y los criterios de éxito establecidos. Tiempo estimado: 1 semana.
+	\item Etapa 6: Producción de informes con los resultados obtenidos en función del objetivo de negocio y los criterios de éxito establecidos. Tiempo estimado: 1 semana.
 	\item Etapa 7: Presentación de los resultados finales. Tiempo estimado: 1 semana.
 \end{itemize}
 
 \subsubsection{Evaluación inicial de herramientas y técnicas}\label{Evaluación inicial de herramientas y técnicas}
 La herramienta que se va a utilizar para llevar a cabo este proyecto de minería de datos es WEKA, como ya se comentó en el apartado \ref{Inventario de recursos}. 
 
-Se podría añadir que WEKA, aparte de ser un programa de código abierto, ofrece una colección de herramientas de visualización y algoritmos para el análisis de datos y modelado predictivo, considerado para llevar a cabo este proyecto de minería de datos.  
+WEKA, aparte de ser un programa de código abierto, ofrece una colección de herramientas de visualización y algoritmos para el análisis de datos y modelado predictivo, considerado para llevar a cabo este proyecto de minería de datos.  
 
 \section{Comprensión de los Datos}
 
@@ -121,18 +123,18 @@ Por ejemplo, la tabla Pacientes se estructuraría:
 \subsection{Exploración de los Datos}
 
 \subsection{Verificar la Calidad de los Datos}
-Después de hacer la exploración inicial de los datos se puede afirmar que estos serían completos. Los datos cubren los casos requeridos para la obtención de los resultados necesarios para poder cumplir los objetivos del proyecto y no contienen errores, ya que son datos generados automáticamente por el script de inserción de datos. Tampoco se encontrarían valores fuera de rango, ya que los datos son controlados desde el mismo script, por lo que no hay riesgo de ruido en el proceso de la minería de datos.
+Después de hacer la exploración inicial de los datos se podría afirmar que estos son completos. Los datos cubren los casos requeridos para la obtención de los resultados necesarios para poder cumplir los objetivos del proyecto y no contienen errores, ya que son datos generados automáticamente por el script de inserción de los datos. Tampoco se encuentran valores fuera de rango, ya que los datos son controlados desde el mismo script, por lo que no hay riesgo de ruido en el proceso de la minería de datos.
 
 \section{Preparación de los Datos}
 
 \subsection{Seleccionar los Datos}
-En términos de registros, para el análisis se van a utilizar todos los campos de IDPaciente, 45 y +45, dentro de la tabla Pacientes que compone la base de datos, ya que al ser ésta una base de datos específicamente creada para este proyecto, el número de pacientes que se han insertado ha sido elegido a propósito. 
+En términos de registros, para el análisis se van a utilizar todos los campos de las columnas IDPaciente, 45 y +45, dentro de la tabla Pacientes que compone la base de datos, ya que al ser ésta una base de datos específicamente creada para este proyecto, el número de pacientes que se han insertado ha sido elegido a propósito. 
 
 \subsection{Limpiar los Datos}
 La base de datos con la que se cuenta para el proyecto contiene toda la información necesaria para poder cumplir los objetivos de la minería de datos, además, estos datos al haber sido introducidos ex profeso para el caso práctico que se presenta, son datos limpios que no contienen valores nulos y por lo tanto no hay necesidad de hacer una limpieza sobre ellos.
 
 \subsection{Construir los Datos}\label{Construir los Datos}
-No seria aplicable la construcción de datos en este proyecto porqué no es necesario que se realicen operaciones de transformación sobre atributos derivados de los datos. Tampoco será necesario generar nuevos atributos ni nuevos registros sobre la base de datos, ya que está completa y ha sido creada específicamente para su uso en este proyecto.
+No seria aplicable la construcción de datos en este proyecto porqué no es necesario que se realicen operaciones de transformación sobre atributos derivados de los datos. Tampoco será necesario generar nuevos atributos ni nuevos registros sobre la base de datos, ya que esta está completa y ha sido creada específicamente para su uso en este proyecto.
 
 \subsection{Integrar los Datos}
 Como se acaba de comentar en el apartado \ref{Construir los Datos}, no seria necesaria la creación de nuevas estructuras (atributos, registros, etc.), ni la fusión entre distintas tablas de la base de datos ya que solo existe una tabla.
@@ -143,19 +145,30 @@ No será necesario cambiar el orden de ningún campo dentro de los registros, ni
 \section{Modelado}
 
 \subsection{Escoger la Técnica de Modelado}
-Debido a que se va a utilizar el software WEKA para realizar la minería de datos, se utilizará alguna de las técnicas de modelado que nos ofrece esta herramienta de acuerdo con los objetivos del proyecto que están reflejados en el apartado \ref{Objetivos de la Minería de Datos}.
+Debido a que se va a utilizar el programa WEKA para realizar la minería de datos, se utilizará alguna de las técnicas de modelado que nos ofrece esta herramienta de acuerdo con el objetivo del proyecto que está reflejado en el apartado \ref{Objetivos de la Minería de Datos}.
 
-De los modelos que nos ofrece WEKA, el que mejor se adapta a nuestros objetivos sería un modelo de regresión, puesto que los problemas que queremos resolver son problemas de predicción y los campos que se quieren predecir contienen valores continuos.
+Concretamente, de los modelos que ofrece el programa WEKA, el que mejor se adapta al objetivo del proyecto sería un modelo lineal de regresión, puesto que los problema que se quiere resolver es un problema de predicción, los campos que se quieren predecir contienen valores continuos y la variable de salida precedida sería numérica: el \% de falsos positivos.
 
-\subsection{Generar el Plan de Prueba}
+El modelo de regresión lineal se utilizaría para estudiar la relación entre los pacientes. Seria de interés conocer el efecto que uno o varios pacientes pueden causar sobre otro, e incluso predecir en mayor o menor grado relaciones de un paciente a partir de otro.
+
+\subsection{Generar el Plan de Prueba}\label{Plan de Prueba}
+El procedimiento que se empleará para probar la calidad y validez del modelo será el de utilizar las medidas del error cuadrático medio (root mean squared error) y el error absoluto medio (mean absolute error). Estas medidas de error las calcula automáticamente el programa WEKA al ejecutar los modelos de regresión.
+
+WEKA también ofrece la opción de dividir los datos en dos grupos automáticamente antes de generar el modelo: por un lado tendríamos el conjunto de datos que se van a utilizar para generar el modelo, basados en el screening general, y un segundo conjunto de datos basados en los diagnósticos de los 5 años posteriores al screening general, que se empleará para realizar las pruebas y medir la calidad del modelo. 
+
 \subsection{Construir el Modelo}
+El primer paso para construir el modelo seria observar si puede existir o no dependencia/relación entre pacientes, por ejemplo, representando gráficamente los datos observados mediante una nube de puntos, lo que se conoce como diagrama de dispersión (SPSS, 2007).
+
+Una vez representados los datos y tras detectar que entre dos o más pacientes existe una relación el siguiente paso sería intentar modelar dicha relación usando una expresión matemática que permita predecir, de forma aproximada.  
+
 \subsection{Evaluar el Modelo}
+Una buena manera de evaluar la efectividad del modelo es utilizando los dos indicadores que se establecieron en el plan de pruebas de este proyecto, en el apartado \ref{Plan de Prueba}. Además de estos dos indicadores, la herramienta WEKA nos da más información acerca de los modelos que es muy útil a la hora de evaluarlos, como son el indicador de confianza predictiva (predictive confidence) y el valor predicho medio junto al valor medio real.
 
 \section{Evaluación}
 \subsection{Evaluar los Resultados}
 \subsection{Revisar el Proceso}
 \subsection{Determinar los Próximos Pasos}
-El siguiente paso a realizar en el proyecto es el de ejecutar la etapa de implantación para los objetivos 1 y 2.
+El siguiente paso a realizar es el de ejecutar la etapa de implantación para el objetivo del proyecto.
 
 \section{Implantación}
 \subsection{Planear la Implantación}
