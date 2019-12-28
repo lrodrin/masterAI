@@ -18,6 +18,9 @@
 
 En este entregable se considera la aplicación de cada una de las fases de la metodología CRISP-DM al problema práctico que se nos plantea, que es la extracción y explotación de datos de un sistema de salud.
 
+\renewcommand{\contentsname}{Índice}
+\tableofcontents
+
 \section{Comprensión del Negocio}
 
 \subsection{Determinar los Objetivos del Negocio}
@@ -38,7 +41,10 @@ Desde el punto de vista del negocio se establece como criterio de éxito la posi
 \subsection{Evaluación de la Situación}
 
 \subsubsection{Inventario de recursos}\label{Inventario de recursos}
-En cuanto a recursos de software, disponemos del programa de minería de datos \href{https://www.cs.waikato.ac.nz/~ml/weka/}{WEKA} que proporciona herramientas para realizar tareas de minería de datos sobre una base de datos \href{https://www.sqlite.org/copyright.html}{SQLite} que es con la que he decidido contar para el almacenamiento de los datos. Además, los recursos de hardware de los que disponemos son un ordenador portátil con las siguientes características:
+En cuanto a recursos de software, disponemos del programa de minería de datos \href{https://www.cs.waikato.ac.nz/~ml/weka/}{WEKA} que proporciona herramientas para realizar tareas de minería de datos sobre una base de datos \href{https://www.sqlite.org/copyright.html}{SQLite} que es con la que he decidido contar para el almacenamiento de los datos. 
+
+\newpage
+Además, los recursos de hardware de los que disponemos son un ordenador portátil con las siguientes características:
 
 \begin{itemize}
 	\item Marca: Apple ©
@@ -149,9 +155,9 @@ No será necesario cambiar el orden de ningún campo dentro de los registros, ni
 \subsection{Escoger la Técnica de Modelado}
 Debido a que se va a utilizar el programa \href{https://www.cs.waikato.ac.nz/~ml/weka/}{WEKA} para realizar la minería de datos, se utilizará alguna de las técnicas de modelado que nos ofrece esta herramienta de acuerdo con el objetivo del proyecto que está reflejado en el apartado \ref{Objetivos de la Minería de Datos} .
 
-Concretamente, de los modelos que ofrece el programa \href{https://www.cs.waikato.ac.nz/~ml/weka/}{WEKA} , el que mejor se adapta al objetivo del proyecto es un modelo lineal de regresión, puesto que el problema que se quiere resolver es un problema de predicción, los campos que se quieren predecir contienen valores continuos y la variable de salida precedida es numérica: el \% de falsos positivos.
+Concretamente, de los modelos que ofrece el programa \href{https://www.cs.waikato.ac.nz/~ml/weka/}{WEKA} , el que mejor se adapta al objetivo del proyecto es un modelo lineal de regresión, puesto que el problema que se quiere resolver es un problema de predicción, los campos que se quieren predecir contienen valores continuos y la variable de salida precedida es numérica: el \% de falsos positivos. Así, se empleará el algoritmo \href{https://es.wikipedia.org/wiki/Modelo_lineal_generalizado}{GLM} .
 
-El modelo de regresión lineal se utilizará para estudiar la relación entre los pacientes diagnosticados. Seria de interés conocer el efecto que uno o varios pacientes pueden causar sobre otro, e incluso predecir en mayor o menor grado relaciones de un paciente a partir de otro.
+El modelo y el algoritmo de regresión lineal se utilizará para estudiar la relación entre los pacientes diagnosticados. Seria de interés conocer el efecto que uno o varios pacientes pueden causar sobre otro, e incluso predecir en mayor o menor grado relaciones de un paciente a partir de otro.
 
 \subsection{Generar el Plan de Prueba}\label{Plan de Prueba}
 El procedimiento que se emplea para probar la calidad y validez del modelo es el de utilizar las medidas del error cuadrático medio (root mean squared error) y el error absoluto medio (mean absolute error). Estas medidas de error las calcula automáticamente el programa \href{https://www.cs.waikato.ac.nz/~ml/weka/}{WEKA} al ejecutar los modelos de regresión.
@@ -159,9 +165,11 @@ El procedimiento que se emplea para probar la calidad y validez del modelo es el
 \href{https://www.cs.waikato.ac.nz/~ml/weka/}{WEKA} también ofrece la opción de dividir los datos en dos grupos automáticamente antes de generar el modelo: por un lado tendríamos el conjunto de datos que se van a utilizar para generar el modelo, basados en el screening general, y un segundo conjunto de datos basados en los diagnósticos de los 5 años posteriores al screening general, que se empleará para realizar las pruebas y medir la calidad del modelo. 
 
 \subsection{Construir el Modelo}
-El primer paso para construir el modelo seria observar si puede existir o no dependencia/relación entre los pacientes diagnosticados, por ejemplo, representando gráficamente los datos observados mediante una nube de puntos, lo que se conoce como \href{https://es.wikipedia.org/wiki/Diagrama_de_dispersi\%C3\%B3n}{diagrama de dispersión} .
+Los campos sobre los cuales se va hacer la predicción son "cancer\_con\_45\_años", "cancer\_con\_+45\_años" y el identificador del paciente. En cuanto a los parámetros empleados para el algoritmo de GLM, se utilizan los parámetros que vienen por defecto en \href{https://www.cs.waikato.ac.nz/~ml/weka/}{WEKA} .
 
-Una vez representados los datos y tras detectar que entre dos o más pacientes existe una relación, el siguiente paso sería intentar modelar dicha relación usando una expresión matemática que permita predecir, de forma aproximada.  
+Y para construir el modelo de regresión, el primer paso seria observar si puede existir o no dependencia/relación entre los pacientes diagnosticados, por ejemplo, representando gráficamente los datos observados mediante una nube de puntos, lo que se conoce como \href{https://es.wikipedia.org/wiki/Diagrama_de_dispersi\%C3\%B3n}{diagrama de dispersión} .
+
+Una vez representados los datos y tras detectar que entre dos o más pacientes existe una relación, el siguiente paso sería intentar modelar dicha relación usando una expresión matemática que permita predecir, de forma aproximada. 
 
 \subsection{Evaluar el Modelo}
 Una buena manera de evaluar la efectividad del modelo es utilizando los dos indicadores que se establecieron en el plan de pruebas de este proyecto, en el apartado \ref{Plan de Prueba} . Además de estos dos indicadores, la herramienta \href{https://www.cs.waikato.ac.nz/~ml/weka/}{WEKA} nos da más información acerca de los modelos que es muy útil a la hora de evaluarlos, como son el indicador de confianza predictiva (predictive confidence) y el valor predicho medio junto al valor medio real.
@@ -183,7 +191,6 @@ El siguiente paso a realizar es el de ejecutar la etapa de implantación para el
 \subsection{Planear la Implantación}
 Para poder implantar este proyecto sería necesario en primer lugar tener acceso a la base de datos, es decir la base de datos que contiene toda la información relativa a los pacientes del sistema de salud. A partir de ahí, los pasos a seguir serían los mismos que se han seguido en este documento desde la comprensión del negocio hasta la implantación. Si bien, cabe decir que habrá algunas fases, como la de comprensión y preparación de los datos, que probablemente sea más compleja y llevará más tiempo ya que la base de datos real contiene muchos registros.
 
-\newpage
 En segundo lugar sería necesario que en el sistema de salud se use una base de datos \href{https://www.sqlite.org/copyright.html}{SQLite} , de no ser así se tendrían dos opciones, la primera sería exportar la base de datos actual a otro tipo de base de datos, compatible con el programa de de minería de datos utilizado en este proyecto (\href{https://www.cs.waikato.ac.nz/~ml/weka/}{WEKA} ). Si no fuera posible se buscaría otro software para este propósito.
 
 \subsection{Planear la Monitorización y el Mantenimiento}
