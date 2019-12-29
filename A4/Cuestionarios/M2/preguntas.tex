@@ -25,34 +25,50 @@ La {\bf Tecnología de la Lengua}, también conocida como Ingeniería Lingüíst
 
 La primera diferencia es que la Lingüística generativa fundamenta que el lenguaje es un mecanismo tan complejo que no puede ser adquirido por los sentidos. Contrariamente, la Tecnología de la Lengua fundamenta que la mente humana tiene la capacidad innata de establecer asociaciones, reconocer patrones y de generalizar ocurrencias de eventos que son percibidos a través de los sentidos. Por lo tanto, el lenguaje puede ser adquirido por los sentidos.
 
-La segunda diferencia es que la Lingüística generativa se refiere al Lenguaje-I ("lengua interna" o interiorizada) que contrasta con el uso del Lenguaje-E ("lengua exterior") de la Tecnología de la Lengua. Técnicamente el Lenguaje-I se refiere a la representación mental o conocimiento lingüístico inconsciente que un hablante tiene de su lengua y por tanto es un objeto mental. En cambio, el Lenguaje-E abarca los aspectos de lengua relacionados con su uso social, los hábitos socio-lingüísticos y aspectos externos del uso de la lengua en comunidades humanas. 
+La segunda diferencia es que la Lingüística generativa se refiere al Lenguaje-I ("lengua interna" o interiorizada) que contrasta con el uso del Lenguaje-E ("lengua exterior") de la Tecnología de la Lengua. Técnicamente el Lenguaje-I se refiere a la representación mental o conocimiento lingüístico inconsciente que un hablante tiene de su lengua y por tanto es un objeto mental. En cambio, el Lenguaje-E abarca los aspectos de lengua relacionados con su uso social, los hábitos sociolingüísticos y aspectos externos del uso de la lengua en comunidades humanas. 
 
 \question ¿Cuáles son los niveles de análisis o procesamiento de un sistema típico de PLN? No se limite a indicar los nombres, defínalos y explique las relaciones existentes entre ellos.
 
 Los niveles de análisis o procesamiento de un sistema típico de PLN son: Tokenización y Segmentación, Análisis Léxico, Análisis Sintáctico, Análisis Semántico y Análisis Pragmático.
 
-El proceso de {\bf Tokenización y Segmentación} consiste en, dado un fragmento de texto, identificar las palabras y tokens, así como el conjunto de oraciones en el que se organiza el texto.
+El método de {\bf Tokenización y Segmentación} consiste en, dado un fragmento de texto, identificar las palabras y tokens, así como el conjunto de oraciones en el que se organiza el texto.
 
 El {\bf Análisis Léxico} \\
-El análisis léxico requiere haber identificado las unidades mínimas que constituyen un mensaje (palabras y tokens), así como su organización en oraciones. Por tanto primero se debe realizar el proceso de Tokenización y Segmentación.
+El Análisis Léxico requiere haber identificado las unidades mínimas que constituyen un mensaje (palabras y tokens), así como su organización en oraciones. Por tanto, primero se debe realizar el método de Tokenización y Segmentación.
 
-El proceso de {\bf Análisis Sintáctico} consiste en analizar la estructura de un mensaje y si se adecua a la gramática de una lengua.
+El método de {\bf Análisis Sintáctico} consiste en analizar la estructura de un mensaje y si se adecua a la gramática de una lengua.
 
-Antes del análisis sintáctico se requiere identificar las unidades mínimas del lenguaje: las palabras y tokens, así como toda la información relativa a ellas. Por tanto primero se debe realizar el análisis léxico.
+Antes del Análisis sintáctico se requiere identificar las unidades mínimas del lenguaje: las palabras y tokens, así como toda la información relativa a ellas. Por esta razón, primero se debe realizar el Análisis Léxico.
 
-El proceso de {\bf Análisis Semántico} consiste en identificar el significado de las palabras y de las figuras lingüísticas presentes en un mensaje.
+El método de {\bf Análisis Semántico} consiste en identificar el significado de las palabras y de las figuras lingüísticas presentes en un mensaje.
 
-En el proceso de {\bf Análisis Pragmático} se trata de determinar el significado del discurso subyacente en el mensaje.
+En el método de {\bf Análisis Pragmático} se trata de determinar el significado del discurso subyacente en el mensaje.
 
 \question Indique cuáles son las dependencias que se deben tener en cuenta a la hora de desarrollar un tokenizador. No se limite a nombrar las dependencias, desarrolle su respuesta.
 
-La {\bf Codificación de caracteres}
+Las dependencias que se deben tener en cuenta a la hora de desarrollar un tokenizador son: la Codificación de caracteres, el Idioma, Corpus y la Aplicación.
 
-El {\bf Idioma}
+La {\bf Codificación de caracteres} es el método que permite convertir un carácter de un lenguaje natural (alfabeto o silabario) en un símbolo de otro sistema de representación y se basa en definir tablas que indiquen el carácter en el lenguaje natural y su correspondencia en el lenguaje del sistema informático. Ejemplos: el código Morse, la norma ASCII o la UTF-8, entre otros. 
 
-El {\bf Corpus}
+La Codificación de caracteres es un aspecto fundamental de los sistemas informáticos para trabajar con textos, ya que estos utilizan la Codificación de caracteres para convertir y representar los diferentes lenguajes escritos del mundo a una representación que dicho sistema entienda, y así poder almacenar o transmitir dicha información.
 
-La {\bf Aplicación}
+Uno ejemplo claro sobre su importancia es que actualmente todos los sistemas operativos Windows, Linux e iOS utilizan la Codificación de caracteres UTF-8, porqué anteriormente codificaciones diferentes provocaban problemas ya que hacían que los ficheros creados en un sistema Windows mostraran los caracteres de manera diferente en el resto de sistemas operativos. 
+
+Cada {\bf Idioma} define sus unidades mínimas de su gramática y esto obliga a conocerlo, para aplicar el método de Tokenización y Segmentación adecuado.
+
+Por ejemplo, en la mayoría de los idiomas, la separación de palabras se realiza con espacios y la separación de oraciones con puntos. Eso facilita la identificación de las palabras y tokens, así como el conjunto de oraciones en el que se organiza un texto método de Tokenización y Segmentación), frente a los idiomas que no separan las palabras y tokens con espacios, y tampoco separan las oraciones con puntos.
+
+En un {\bf Corpus}, no todos los fragmentos de texto están bien formados, por lo que deben prepararse antes del método de Tokenización y Segmentación. Algunos ejemplos:
+
+\begin{itemize}
+	\item Deben ser	eliminadas todas las etiquetas HTML de los textos que provienen de la Web.
+	\item Deben corregirse los textos con errores ortográficos, con el fin de que las siguientes fases de análisis trabajen con textos de la máxima calidad.
+	\item Deben ser traducidas las onomatopeyas y abreviaturas a sus vocablos correspondientes de los textos provenientes de redes de microblogging. 
+\end{itemize}
+
+Determinar en cierta manera el tratamiento más adecuado sobre las palabras y tokens, y sobre las oraciones, es un método que depende de la {\bf Aplicación} y del procedimiento posterior.
+
+Por ejemplo, en la lengua castellana, ¿que sería más adecuado para el tratamiento de las palabras unidas con guion como mini-USB, departamento científico-técnico, pro-Obama, etc. separar los términos o considerar un único término unido por un guion? Pues eso dependerá de su Aplicación.
 
 \question Explique las diferencias existentes entre un analizador y un generador léxico. Se valorará positivamente la descripción de ejemplos de analizadores y generadores léxicos. 
 
