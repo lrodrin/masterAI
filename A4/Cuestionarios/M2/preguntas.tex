@@ -1,19 +1,18 @@
 \documentclass{exam}
-\usepackage[utf8]{inputenc}
-%\usepackage{vmargin}
-%\setpapersize{A4}
-%\setlength{\parskip}{\baselineskip}%
-%\setlength{\parindent}{0pt}%
 
 \title{Evaluación del Modulo 2}
 \author{Laura Rodríguez Navas \\ rodrigueznavas@posgrado.uimp.es}
 \date{Enero 2020}
 
 \begin{document}
-	
+
 \maketitle
 
+\setcounter{page}{1}
+
 \begin{questions}
+	
+% Pregunta 1
 \question Explique cuáles son los dos grandes paradigmas del PLN e indique sus diferencias. Trate de ampliar la información que hay en la lección.
 
 Los dos grandes paradigmas del PLN son la Lingüística generativa y la Tecnología de la Lengua.
@@ -27,14 +26,14 @@ La primera diferencia es que la Lingüística generativa fundamenta que el lengu
 
 La segunda diferencia es que la Lingüística generativa se refiere al Lenguaje-I ("lengua interna" o interiorizada) que contrasta con el uso del Lenguaje-E ("lengua exterior") de la Tecnología de la Lengua. Técnicamente el Lenguaje-I se refiere a la representación mental o conocimiento lingüístico inconsciente que un hablante tiene de su lengua y por tanto es un objeto mental. En cambio, el Lenguaje-E abarca los aspectos de lengua relacionados con su uso social, los hábitos sociolingüísticos y aspectos externos del uso de la lengua en comunidades humanas. 
 
+% Pregunta 2
 \question ¿Cuáles son los niveles de análisis o procesamiento de un sistema típico de PLN? No se limite a indicar los nombres, defínalos y explique las relaciones existentes entre ellos.
 
 Los niveles de análisis o procesamiento de un sistema típico de PLN son: Tokenización y Segmentación, Análisis Léxico, Análisis Sintáctico, Análisis Semántico y Análisis Pragmático.
 
 El método de {\bf Tokenización y Segmentación} consiste en, dado un fragmento de texto, identificar las palabras y tokens, así como el conjunto de oraciones en el que se organiza el texto.
 
-El {\bf Análisis Léxico} \\
-El Análisis Léxico requiere haber identificado las unidades mínimas que constituyen un mensaje (palabras y tokens), así como su organización en oraciones. Por tanto, primero se debe realizar el método de Tokenización y Segmentación.
+El {\bf Análisis Léxico} asocia a las palabras y tokens, información relacionada con su propia naturaleza y con la función que desempeñan en la oración. Como consecuencia requiere haber identificado las unidades mínimas que constituyen un mensaje (palabras y tokens), así como su organización en oraciones. Por tanto, primero se debe realizar el método de Tokenización y Segmentación.
 
 El método de {\bf Análisis Sintáctico} consiste en analizar la estructura de un mensaje y si se adecua a la gramática de una lengua.
 
@@ -44,6 +43,7 @@ El método de {\bf Análisis Semántico} consiste en identificar el significado 
 
 En el método de {\bf Análisis Pragmático} se trata de determinar el significado del discurso subyacente en el mensaje.
 
+% Pregunta 3
 \question Indique cuáles son las dependencias que se deben tener en cuenta a la hora de desarrollar un tokenizador. No se limite a nombrar las dependencias, desarrolle su respuesta.
 
 Las dependencias que se deben tener en cuenta a la hora de desarrollar un tokenizador son: la Codificación de caracteres, el Idioma, Corpus y la Aplicación.
@@ -70,11 +70,25 @@ Determinar en cierta manera el tratamiento más adecuado sobre las palabras y to
 
 Por ejemplo, en la lengua castellana, ¿que sería más adecuado para el tratamiento de las palabras unidas con guion como mini-USB, departamento científico-técnico, pro-Obama, etc. separar los términos o considerar un único término unido por un guion? Pues eso dependerá de su Aplicación.
 
+% Pregunta 4
 \question Explique las diferencias existentes entre un analizador y un generador léxico. Se valorará positivamente la descripción de ejemplos de analizadores y generadores léxicos. 
 
+Un analizador léxico tiene la capacidad de analizar e identificar toda la información relacionada con un término. En cambio, un generador léxico realiza la operación contraria al análisis, a partir de un lema puede generar toda la información relacionada con un término.
+
+El analizador léxico generalmente se basa en una máquina de estados finitos que codificada dentro de ella información sobre las posibles lexemas que pueden estar contenidos dentro de cualquiera de los tokens que maneja.
+
+Un lexer es parte de un compilador que convierte las declaraciones en código en varias categorías de palabras clave, constantes, variables, etc.
+
+Un analizador define reglas de gramática para estos tokens y determina si estas declaraciones son semánticamente correctas
+
+
+
+% Pregunta 5
 \question La lección se ha centrado en los analizadores sintácticos basados en Gramáticas Libres de Contexto, por lo que ¿podría describir las operaciones fundamentales de un analizador LR(0)?
 
+% Pregunta 6
 \question Defina qué es la identificación de roles semánticos, así como qué es FrameNet. Recuerde que se valorarán positivamente la presentación de ejemplos.
 
 \end{questions}
+
 \end{document}
