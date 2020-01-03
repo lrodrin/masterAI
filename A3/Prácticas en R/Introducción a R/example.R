@@ -70,18 +70,46 @@ table(students$gender, students$population)
 # Use data frame operations first and then do the same using
 # the function subset. Use the help to understand how subset
 # works.
+# byGender_split <- split(students, students$gender)
+male_s1 <- students[students$gender == "male", c("height", "shoesize", "population")]
+female_s1 <- students[students$gender == "female", c("height", "shoesize", "population")]
+male_s1
+female_s1
 
+male_s2 <- subset(students, gender=="male", c("height", "shoesize", "population"))
+female_s2 <- subset(students, gender=="female", c("height", "shoesize", "population"))
+male_s2
+female_s2
 
 # (i) Make two subsets containing individuals below and above the
 # median height. Use data frame operations first and then do the
 # same using the function subset.
+under_median_s1 <- students[students$height < median(students$height), c("height", "shoesize", "population")]
+above_median_s1 <- students[students$height >= median(students$height), c("height", "shoesize", "population")]
+under_median_s1
+above_median_s1
 
+under_median_s2 <- subset(students, height < median(students$height), c("height", "shoesize", "population"))
+above_median_s2 <- subset(students, height >= median(students$height), c("height", "shoesize", "population"))
+under_median_s2
+above_median_s2
 
 # (j) Change height from centimetres to metres for all rows in the
 # data frame. Do this using in three different ways: with basic
 # primitives, a loop using for and the function apply.
-
+students[1] <- students[1]*0.01
+# for(i in 1){
+#   students[1] <- students[1]*0.01
+# }
+# students[1] <- apply(students[1],2, function(x) x * 0.01)
 
 # (k) Plot height against shoesize, using blue circles for males and magenta
 # crosses for females. Add a legend.
+male_s3 <- subset(students, gender=="male", c("height", "shoesize"))
+female_s3 <- subset(students, gender=="female", c("height", "shoesize"))
+plot(male_s3, col="blue")
+par(new = T)
+plot(female_s3, pch=4, col="magenta", axes= F, xlab=NA,ylab=NA)
+title(main = "height vs shoesize")
+legend("bottomright", c("male","female"), col = c("blue","magenta"), lty = c(1,1))
 
