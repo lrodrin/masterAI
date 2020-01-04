@@ -36,11 +36,13 @@ El método de {\bf Tokenización y Segmentación} consiste en, dado un fragmento
 
 El {\bf Análisis Léxico} asocia a las palabras y tokens, información relacionada con su propia naturaleza y con la función que desempeñan en la oración. Como consecuencia requiere haber identificado las unidades mínimas que constituyen un mensaje (palabras y tokens), así como su organización en oraciones. Por tanto, primero se debe realizar el método de Tokenización y Segmentación.
 
-El método de {\bf Análisis Sintáctico} consiste en analizar la estructura de un mensaje y si se adecua a la gramática de una lengua.
+El método de {\bf Análisis Sintáctico} consiste en analizar cada una de las oraciones de un mensaje para determinar si se adecua a la gramática formal de una lengua. 
 
-Antes del Análisis sintáctico se requiere identificar las unidades mínimas del lenguaje: las palabras y tokens, así como toda la información relativa a ellas. Por esta razón, primero se debe realizar el Análisis Léxico.
+Antes del Análisis Sintáctico se requiere identificar las unidades mínimas del lenguaje: las palabras y tokens, así como toda la información relativa a ellas. Por esta razón, primero se debe realizar el Análisis Léxico.
 
-El método de {\bf Análisis Semántico} consiste en identificar el significado de las palabras y de las figuras lingüísticas presentes en un mensaje.
+Además, según el analizador léxico que se utilice durante el Análisis Léxico, genera un árbol sintáctico en el que se indican las oraciones y sus relaciones.
+
+El método de {\bf Análisis Semántico} consiste en identificar, de la información procedente del Análisis Sintáctico, el significado de las palabras y de las figuras lingüísticas presentes en un mensaje, y representar conceptual-mente el significado subyacente de este.
 
 En el método de {\bf Análisis Pragmático} se trata de determinar el significado del discurso subyacente en el mensaje.
 
@@ -84,6 +86,14 @@ Un analizador define reglas de gramática para estos tokens y determina si estas
 
 % Pregunta 5
 \question La lección se ha centrado en los analizadores sintácticos basados en Gramáticas Libres de Contexto, por lo que ¿podría describir las operaciones fundamentales de un analizador LR(0)?
+
+Un analizador LR (0) realiza el análisis sintáctico a través las operaciones fundamentales: desplaza, reduce y Goto. 
+
+\begin{itemize}
+	\item La operación desplaza se produce por la lectura de un símbolo terminal válido atendiendo a las reglas de la gramática. El desplazamiento se realiza de izquierda a derecha.
+	\item Cuando se está al final de un elemento (regla) se utiliza la operación reduce (substituye) a los símbolos terminales por la parte izquierda de su elemento (regla). Ya que, para la reducción se aplica la derivación más a la derecha.
+	\item La operación Goto consiste en un desplazamiento provocado por símbolos no terminales y pueden dar lugar a una	reducción.
+\end{itemize}
 
 % Pregunta 6
 \question Defina qué es la identificación de roles semánticos, así como qué es FrameNet. Recuerde que se valorarán positivamente la presentación de ejemplos.
