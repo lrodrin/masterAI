@@ -1,7 +1,8 @@
 \documentclass[11pt]{exam}
 \usepackage[utf8]{inputenc}
+\usepackage{hyperref}
 
-\title{Evaluación del Modulo 2}
+\title{Evaluación del Módulo 2}
 \author{Laura Rodríguez Navas \\ rodrigueznavas@posgrado.uimp.es}
 \date{Enero 2020}
 
@@ -42,7 +43,9 @@ Antes del Análisis Sintáctico se requiere identificar las unidades mínimas de
 
 Además, según el analizador léxico que se utilice durante el Análisis Léxico, genera un árbol sintáctico en el que se indican las oraciones y sus relaciones.
 
-El método de {\bf Análisis Semántico} consiste en identificar, de la información procedente del Análisis Sintáctico, el significado de las palabras y de las figuras lingüísticas presentes en un mensaje, y representar conceptual-mente el significado subyacente de este.
+El método de {\bf Análisis Semántico} consiste en identificar, de la información procedente del Análisis Sintáctico, el significado de las palabras y de las figuras lingüísticas presentes en un mensaje, y representar conceptualmente el significado subyacente de este.
+
+El Análisis Semántico está relacionado con la resolución de la ambigüedad.
 
 En el método de {\bf Análisis Pragmático} se trata de determinar el significado del discurso subyacente en el mensaje.
 
@@ -78,14 +81,16 @@ Por ejemplo, en la lengua castellana, ¿que sería más adecuado para el tratami
 
 Un analizador léxico tiene la capacidad de analizar e identificar toda la información relacionada con un término. En cambio, un generador léxico realiza la operación contraria al análisis, a partir de un lema puede generar toda la información relacionada con un término.
 
-El analizador léxico generalmente se basa en una máquina de estados finitos que codificada dentro de ella información sobre las posibles lexemas que pueden estar contenidos dentro de cualquiera de los tokens que maneja.
+El analizador léxico generalmente se basa en una máquina de estados finitos que codificada dentro de ella información sobre los posibles lexemas que pueden estar contenidos dentro de cualquiera de los tokens que maneja.
 
-Un lexer es parte de un compilador que convierte las declaraciones en código en varias categorías de palabras clave, constantes, variables, etc.
+Un ejemplo de analizador léxico es Lex. El programa propietario Lex es el analizador léxico estándar en los sistemas Unix, y se incluye en el estándar de POSIX. Lex toma como entrada una especificación de analizador léxico y devuelve como salida el código fuente implementando el analizador léxico en C. Se utiliza comúnmente con el programa Yacc, un generador léxico implementado en C, que se sirve para generar análisis sintáctico. La versión libre de Lex es \href{https://github.com/westes/flex/}{Flex} .
 
-Un analizador define reglas de gramática para estos tokens y determina si estas declaraciones son semánticamente correctas
+Un ejemplo de generador léxico como Yacc, comentado anteriormente, es \href{https://www.gnu.org/software/bison/}{Bison} . Bison pertenece al proyecto GNU y está disponible para prácticamente todos los sistemas operativos, y se usa normalmente acompañado de Flex aunque es compatible con otros analizadores léxicos. Su función es convertir la descripción formal de un lenguaje en un programa en C, C++, o Java que realiza análisis sintáctico. 
+
+Tiene compatibilidad total con Yacc e igual que este, necesita un analizador léxico y normalmente se utiliza juntamente con Flex.
 
 % Pregunta 5
-\question La lección se ha centrado en los analizadores sintácticos basados en Gramáticas Libres de Contexto, por lo que ¿podría describir las operaciones fundamentales de un analizador LR(0)?
+\question La lección se ha centrado en los analizadores sintácticos basados en Gramáticas Libres de Contexto, por lo que ¿podría describir las operaciones fundamentales de un analizador LR (0)?
 
 Un analizador LR (0) realiza el análisis sintáctico a través las operaciones fundamentales: desplaza, reduce y Goto. 
 
@@ -97,6 +102,33 @@ Un analizador LR (0) realiza el análisis sintáctico a través las operaciones 
 
 % Pregunta 6
 \question Defina qué es la identificación de roles semánticos, así como qué es FrameNet. Recuerde que se valorarán positivamente la presentación de ejemplos.
+
+Uno de los tipos de relaciones semánticas que existen entre el significado de los términos que constituyen un enunciado, son los roles semánticos. Que identifican y relacionan los agentes de una oración, es decir, los actores y las acciones descritas.
+
+Enfoques de los roles semánticos:
+
+\newcommand{\SubItem}[1]{
+	{\setlength\itemindent{15pt} \item[-] #1}
+}
+
+\begin{itemize}
+	\item Localistas
+		\SubItem{Fueron introducidos por Gruber en 1965.}
+		\SubItem{Contienen un número reducido de roles.}
+		\SubItem {Se centran en roles con relaciones entre ellos del tipo: agente-acción.}
+		\SubItem {De cada relación simple entre los roles surgen relaciones más abstractas.}
+	
+	\item No localistas
+		\SubItem{Fueron introducidos por Fillmore en 1968.}
+		\SubItem {Mayor número de roles.}
+		\SubItem {Normalmente son dirigidos por subclases verbales.}
+\end{itemize}
+
+Un recurso electrónico basado en roles semánticos no localistas es \href{https://framenet.icsi.berkeley.edu/fndrupal/}{FrameNet} y es en gran medida una creación de Fillmore.
+
+Actualmente FrameNet es un proyecto está construyendo una base de datos léxica en inglés que es legible tanto por humanos como por máquinas, basada en ejemplos de anotaciones de cómo se usan las palabras en textos reales. Las más de 200.000 oraciones que contiene proporcionan un conjunto de datos de entrenamiento único para el etiquetado de roles semánticos. 
+
+Los datos de la base de datos léxica están disponibles gratuitamente para su descarga y también se han creado bases de datos similares para otros idiomas. Por ejemplo, en castellano \href{http://spanishfn.org/}{SFN} , alemán \href{http://www.laits.utexas.edu/gframenet/}{GF} y en japonés \href{http://jfn.st.hc.keio.ac.jp/}{JFN}.
 
 \end{questions}
 
