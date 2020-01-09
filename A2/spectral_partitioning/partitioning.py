@@ -31,6 +31,8 @@ def import_nodes(nodes_file):
         adjacency_matrix[node1][node2] = 1
         adjacency_matrix[node2][node1] = 1
 
+    print(adjacency_matrix)
+
     return number_nodes, edges, adjacency_matrix
 
 
