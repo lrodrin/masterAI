@@ -1,6 +1,9 @@
-# import subprocess
+import argparse
 
+import networkx as nx
 import numpy as np
+
+from A2.draw_graphs import draw_graph_partitioned, draw_graph
 
 
 def import_nodes(filename):
@@ -13,7 +16,7 @@ def import_nodes(filename):
     # Open the file
     with open(filename, "r") as datafile:
         for line in datafile:
-            node1, node2 = line.split()
+            node1, node2 = line.split(',')
             node1 = int(node1)
             node2 = int(node2)
             edges.append({node1, node2})
@@ -42,26 +45,6 @@ def degree_nodes(adjacency_matrix, nnodes):
         d.append(sum([adjacency_matrix[i][j] for j in range(nnodes)]))
 
     return d
-
-
-# def print_graph(edges, partition, outputfile):
-#     """
-#     Writes a .gv file to use with dot
-#     """
-#     with open("../dataset/graph.gv", "w") as gv:
-#         gv.write("strict graph communities {")
-#
-#         for node, community in enumerate(partition):
-#             gv.write("node{} [color={}];".format(node, "red" if community else "blue"))
-#
-#         for node1, node2 in edges:
-#             gv.write("node{} -- node{};".format(node1, node2))
-#
-#         gv.write("}")
-#         gv.close()
-#
-#     subprocess.call(["dot", "-Tpng", "graph.gv", "-o", outputfile])
-#     print("Wrote {} with the two communities.".format(outputfile))
 
 
 def spectral_bisection():
@@ -113,12 +96,11 @@ def spectral_bisection():
 
 
 if __name__ == '__main__':
-    import argparse
-
     parser = argparse.ArgumentParser(description="Compute the partition of a graph using the Spectral Partition "
                                                  "Algorithm.")
 
-    parser.add_argument('--nodes-file', '-f', help="the file containing the data", default="../dataset/data.txt")
+    parser.add_argument('--nodes-file', '-f', help="the file containing the data",
+                        default="../dataset/data_no_weighted_edges.csv")
     # parser.add_argument('--output-file', '-o', help='the filename of the communities PNG graph to be written')
 
     args = parser.parse_args()
@@ -128,6 +110,7 @@ if __name__ == '__main__':
     print("Partition A: {}".format(A))
     print("Partition B: {}".format(B))
 
-    # if args.output_file:
-    #     # Print the graph
-    #     print_graph(edges, partition, outputfile=args.output_file)
+    # drawing results
+    G = nx.read_edgelist("../dataset/data_no_weighted_edges.csv", delimiter=",")
+    draw_graph(G, False)
+    draw_graph_partitioned(G, A, B)
