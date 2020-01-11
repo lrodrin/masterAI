@@ -1,9 +1,9 @@
 \babel@toc {british}{}
 \contentsline {chapter}{Abstract}{{\fontencoding {OT1}\selectfont i}}{chapter*.1}% 
 \contentsline {chapter}{\numberline {1}The problem}{1}{chapter.1}% 
-\contentsline {section}{\numberline {1.1}Introducci\IeC {\'o}n}{1}{section.1.1}% 
-\contentsline {section}{\numberline {1.2}Descripci\IeC {\'o}n el problema}{1}{section.1.2}% 
-\contentsline {section}{\numberline {1.3}Partici\IeC {\'o}n de grafos}{1}{section.1.3}% 
+\contentsline {section}{\numberline {1.1}Introducción}{1}{section.1.1}% 
+\contentsline {section}{\numberline {1.2}Descripción el problema}{1}{section.1.2}% 
+\contentsline {section}{\numberline {1.3}Partición de grafos}{1}{section.1.3}% 
 \contentsline {chapter}{\numberline {2}Algorithms}{2}{chapter.2}% 
 \contentsline {section}{\numberline {2.1}Kernighan-Lin}{2}{section.2.1}% 
 \contentsline {subsection}{\numberline {2.1.1}Example}{3}{subsection.2.1.1}% 

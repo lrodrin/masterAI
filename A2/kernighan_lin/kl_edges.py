@@ -24,12 +24,9 @@ class Graph:
     def getWeight(self, node1, node2):
         return self.matrix[node1][node2]
 
-    def getNodeLabel(self, node):
-        return self.nodes.get(node)
 
-
-def createGraph():
-    reader = csv.reader(open('../dataset/data.csv'))
+def createGraph(filename):
+    reader = csv.reader(open(filename))
     graph_dict = dict.fromkeys(['nodes', 'edges'])
     edges = list()
     nodes = list()
@@ -132,7 +129,7 @@ def switch(graph, A, B):
 
 
 def kernighan_lin():
-    graph = createGraph()
+    graph = createGraph('../dataset/data.csv')
     A = [i for i in range(int(graph.getSize() / 2))]
     B = [i for i in range(int(graph.getSize() / 2), graph.getSize())]
     done = False
