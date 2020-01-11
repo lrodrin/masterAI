@@ -14,8 +14,6 @@ class Graph:
             self.matrix[temp_dict.get(i[0])][temp_dict.get(i[1])] = int(i[2])
             self.matrix[temp_dict.get(i[1])][temp_dict.get(i[0])] = int(i[2])
 
-        print(self.matrix)
-
     def getSize(self):
         return len(self.matrix)
 

@@ -8,7 +8,7 @@ import csv
 
 G2 = nx.Graph()
 
-reader = csv.reader(open('graph.csv'))
+reader = csv.reader(open('data.csv'))
 for row in reader:
     G2.add_edge(row[0], row[1], weight=row[2])
 

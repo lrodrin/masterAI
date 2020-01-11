@@ -1,11 +1,11 @@
 import csv
 import sys
 
-from graph import Graph
+from A2.graph import Graph
 
 
 def createGraph():
-    reader = csv.reader(open('graph.csv'))
+    reader = csv.reader(open('../dataset/data.csv'))
     graph_dict = dict.fromkeys(['nodes', 'edges'])
     edges = list()
     nodes = list()
@@ -107,7 +107,7 @@ def switch(graph, A, B):
         return A, B, True
 
 
-def k_lin():
+def kernighan_lin():
     graph = createGraph()
     A = [i for i in range(int(graph.getSize() / 2))]
     B = [i for i in range(int(graph.getSize() / 2), graph.getSize())]
@@ -116,17 +116,9 @@ def k_lin():
     while not done:
         A, B, done = switch(graph, A, B)
 
-    print("Partition A: ", end=' ')
-    for i in A:
-        print(graph.getNodeLabel(i), end=' ')
-    print("\nPartition B: ", end=' ')
-    for i in B:
-        print(graph.getNodeLabel(i), end=' ')
-
-
-def main():
-    k_lin()
+    print("Partition A: {}".format(set(A)))
+    print("Partition B: {}".format(set(B)))
 
 
 if __name__ == '__main__':
-    main()
+    kernighan_lin()

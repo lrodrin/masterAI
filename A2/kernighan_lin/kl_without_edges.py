@@ -1,5 +1,3 @@
-"""Functions for computing the Kernighan–Lin bipartition algorithm."""
-
 from collections import defaultdict
 from itertools import accumulate, islice
 from operator import itemgetter
@@ -8,11 +6,17 @@ import networkx as nx
 from networkx.algorithms.community.community_utils import is_partition
 from networkx.utils import not_implemented_for, py_random_state
 
-__all__ = ['kernighan_lin_bisection']
 
+def compute_delta(G, A, B, weight):
+    """
+    Helper to compute initial swap deltas for a pass.
 
-def _compute_delta(G, A, B, weight):
-    # helper to compute initial swap deltas for a pass
+    :param G: graph
+    :param A:
+    :param B:
+    :param weight: Edge data key to use as weight. If None, the weights are all set to one.
+    :return:
+    """
     delta = defaultdict(float)
     for u, v, d in G.edges(data=True):
         w = d.get(weight, 1)
@@ -33,8 +37,19 @@ def _compute_delta(G, A, B, weight):
     return delta
 
 
-def _update_delta(delta, G, A, B, u, v, weight):
-    # helper to update swap deltas during single pass
+def update_delta(delta, G, A, B, u, v, weight):
+    """
+    Helper to update swap deltas during single pass.
+
+    :param delta:
+    :param G: graph
+    :param A:
+    :param B:
+    :param u:
+    :param v:
+    :param weight: Edge data key to use as weight. If None, the weights are all set to one.
+    :return:
+    """
     for _, nbr, d in G.edges(u, data=True):
         w = d.get(weight, 1)
         if nbr in A:
@@ -50,11 +65,18 @@ def _update_delta(delta, G, A, B, u, v, weight):
     return delta
 
 
-def _kernighan_lin_pass(G, A, B, weight):
-    # do a single iteration of Kernighan–Lin algorithm
-    # returns list of  (g_i,u_i,v_i) for i node pairs u_i,v_i
+def kernighan_lin_pass(G, A, B, weight):
+    """
+    Do a single iteration of Kernighan–Lin algorithm.
+
+    :param G: graph
+    :param A:
+    :param B:
+    :param weight: Edge data key to use as weight. If None, the weights are all set to one.
+    :return: list of  (g_i,u_i,v_i) for i node pairs u_i,v_i.
+    """
     multigraph = G.is_multigraph()
-    delta = _compute_delta(G, A, B, weight)
+    delta = compute_delta(G, A, B, weight)
     swapped = set()
     gains = []
     while len(swapped) < len(G):
@@ -74,61 +96,33 @@ def _kernighan_lin_pass(G, A, B, weight):
         maxg, u, v = max(gain, key=itemgetter(0))
         swapped |= {u, v}
         gains.append((maxg, u, v))
-        delta = _update_delta(delta, G, A - swapped, B - swapped, u, v, weight)
+        delta = update_delta(delta, G, A - swapped, B - swapped, u, v, weight)
     return gains
 
 
 @py_random_state(4)
 @not_implemented_for('directed')
-def kernighan_lin_bisection(G, partition=None, max_iter=10, weight='weight',
-                            seed=None):
-    """Partition a graph into two blocks using the Kernighan–Lin
-    algorithm.
-
-    This algorithm paritions a network into two sets by iteratively
-    swapping pairs of nodes to reduce the edge cut between the two sets.
-
-    Parameters
-    ----------
-    G : graph
-
-    partition : tuple
-        Pair of iterables containing an initial partition. If not
-        specified, a random balanced partition is used.
-
-    max_iter : int
-        Maximum number of times to attempt swaps to find an
-        improvemement before giving up.
-
-    weight : key
-        Edge data key to use as weight. If None, the weights are all
-        set to one.
-
-    seed : integer, random_state, or None (default)
-        Indicator of random number generation state.
-        See :ref:`Randomness<randomness>`.
-        Only used if partition is None
-
-    Returns
-    -------
-    partition : tuple
-        A pair of sets of nodes representing the bipartition.
-
-    Raises
-    -------
-    NetworkXError
-        If partition is not a valid partition of the nodes of the graph.
-
-    References
-    ----------
-    .. [1] Kernighan, B. W.; Lin, Shen (1970).
-       "An efficient heuristic procedure for partitioning graphs."
-       *Bell Systems Technical Journal* 49: 291--307.
-       Oxford University Press 2011.
-
+def kernighan_lin_bisection(G, partition=None, max_iter=10, weight='weight', seed=None):
     """
-    # If no partition is provided, split the nodes randomly into a
-    # balanced partition.
+    Partition a graph into two blocks using the Kernighan–Lin algorithm.
+
+    This algorithm paritions a network into two sets by iteratively swapping pairs of nodes to reduce the edge cut
+    between the two sets.
+
+    :param G: graph
+    :param partition: Pair of iterables containing an initial partition. If not specified,
+    a random balanced partition is used.
+    :param max_iter: Maximum number of times to attempt swaps to find an improvemement before giving up.
+    :param weight: Edge data key to use as weight. If None, the weights are all set to one.
+    :param seed: Indicator of random number generation state. Only used if partition is None.
+    :type partition: tuple
+    :type max_iter: int
+    :type seed: integer, random_state, or None (default)
+    :returns: A pair of sets of nodes representing the bipartition.
+    :rtype: tuple
+    :raises: NetworkXError if partition is not a valid partition of the nodes of the graph.
+    """
+    # If no partition is provided, split the nodes randomly into a balanced partition.
     if partition is None:
         nodes = list(G)
         seed.shuffle(nodes)
@@ -144,7 +138,7 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight='weight',
     for i in range(max_iter):
         # `gains` is a list of triples of the form (g, u, v) for each
         # node pair (u, v), where `g` is the gain of that node pair.
-        gains = _kernighan_lin_pass(G, A, B, weight)
+        gains = kernighan_lin_pass(G, A, B, weight)
         csum = list(accumulate(g for g, u, v in gains))
         max_cgain = max(csum)
         if max_cgain <= 0:
@@ -163,7 +157,7 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight='weight',
 
 
 if __name__ == '__main__':
-    G = nx.read_edgelist("data.txt", create_using=nx.Graph(), nodetype=int)
+    G = nx.read_edgelist("../dataset/data.txt", create_using=nx.Graph(), nodetype=int)
     A, B = kernighan_lin_bisection(G)
-    print(A)
-    print(B)
+    print("Partition A: {}".format(A))
+    print("Partition B: {}".format(B))
