@@ -1,1 +1,0 @@
-# Spectral Graph Partitioning Algorithm

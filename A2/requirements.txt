@@ -5,3 +5,4 @@ networkx
 nxmetis
 csv
 matplotlib
+numpy

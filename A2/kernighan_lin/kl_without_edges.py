@@ -159,5 +159,6 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight='weight', see
 if __name__ == '__main__':
     G = nx.read_edgelist("../dataset/data.txt", create_using=nx.Graph(), nodetype=int)
     A, B = kernighan_lin_bisection(G)
+
     print("Partition A: {}".format(A))
     print("Partition B: {}".format(B))

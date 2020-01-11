@@ -1,4 +1,4 @@
-# Kernighan-Lin
+# Kernighan-Lin algorithm
 
 Simple Python 3 implementation of the Kernighan-Lin heuristic algorithm for the graph partitioning problem.
 
