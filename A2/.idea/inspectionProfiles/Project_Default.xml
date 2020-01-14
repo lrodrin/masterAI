@@ -6,6 +6,7 @@
         <list>
           <option value="N806" />
           <option value="N802" />
+          <option value="N803" />
         </list>
       </option>
     </inspection_tool>
@@ -13,6 +14,7 @@
       <option name="ignoredNames">
         <list>
           <option value="id" />
+          <option value="sum" />
         </list>
       </option>
     </inspection_tool>
@@ -20,6 +22,7 @@
       <option name="ignoredIdentifiers">
         <list>
           <option value="kernighan_lin.kl.Vertex.partition_label" />
+          <option value="kernighan_lin.kernighan_lin.graph" />
         </list>
       </option>
     </inspection_tool>
