@@ -10,29 +10,20 @@ any(is.na(data))
 #2. Lee la sección "data splitting" de la web de “caret”. A continuación parte los
 #datos en 70% para entrenamiento y 30% de test manteniendo la proporción original de 
 #clases.
+library(caret)
 inTraining <- createDataPartition(data$Class, p=.7, list=FALSE)
 data_training <- data[ inTraining,]
 data_testing  <- data[-inTraining,]
 
 #3.
-fitControl <- trainControl(
-  method = "naive_bayes",
-  number = 10,
-  repeats = 10)
-
-set.seed(825)
-
+#train_control <- trainControl(method="boot", number=100)
+#model <- train(Class~., data=data_training, trControl=train_control, method="nb")
+#print(model)
 library(naivebayes)
-naive_bayes <- train(Class ~ ., data = data_training, 
-                 method = "naive_bayes", 
-                 trControl = fitControl,
-                 verbose = FALSE)
-naive_bayes
+set.seed(1)
+naive_bayes_via_caret <- train(Class ~ ., 
+                               data = data_training, 
+                               method = "naive_bayes", 
+                               usepoisson = TRUE)
 
-
-
-
-
-
-
-gbmFit1
+naive_bayes_via_caret
