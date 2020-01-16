@@ -6,7 +6,7 @@ import networkx as nx
 from networkx.algorithms.community.community_utils import is_partition
 from networkx.utils import not_implemented_for, py_random_state
 
-from A2.draw_graphs import draw_graph_partitioned, draw_graph
+from draw_graphs import draw_graph, draw_graph_partitioned
 
 
 def compute_delta(graph, A, B, weight):

@@ -1,8 +1,5 @@
-collections
-itertools
-operator
 networkx
 nxmetis
-csv
 matplotlib
 numpy
+cython

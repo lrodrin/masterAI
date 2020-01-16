@@ -3,7 +3,7 @@ import argparse
 import networkx as nx
 import numpy as np
 
-from A2.draw_graphs import draw_graph_partitioned, draw_graph
+from draw_graphs import draw_graph, draw_graph_partitioned
 
 
 def import_nodes(filename):
