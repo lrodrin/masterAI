@@ -44,6 +44,11 @@ nn <- train(Class ~ ., data = data_training,
             trControl = fitControl)
 
 # Nearest Neighbour
+library(snn)
+set.seed(825)
+snn <- train(Class ~ ., data = data_training, 
+             method = "snn",
+             trControl = fitControl)
 
 # SVM (linear kernel)
 library(kernlab)
@@ -53,8 +58,8 @@ svm <- train(Class ~ ., data = data_training,
             trControl = fitControl)
 
 resamps <- resamples(list(NB = nb,
-                          DT = dt,
                           NN = nn,
+                          KNN = snn,
                           SVM = svm))
 resamps
 summary(resamps)

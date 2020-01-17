@@ -1,0 +1,59 @@
+---
+title: "Practical 2: Model Evaluation"
+author: "Laura Rodriguez Navas"
+date: "17/01/2020"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Questions
+
+1. Load the data into R. Name the columns to better identify the board, as visited from left to right and from top to down. Check for missing values.
+
+```{r}
+data <- read.table("tic-tac-toe.data.txt", header=FALSE, sep=",")
+names(data) <- c("top-left-square", 
+                 "top-middle-square", 
+                 "top-right-square",
+                 "middle-left-square", 
+                 "middle-middle-square", 
+                 "middle-right-square", 
+                 "bottom-left-square", 
+                 "bottom-middle-square", 
+                 "bottom-right-square", 
+                 "Class")
+# data
+```
+
+```{r}
+any(is.na(data))
+```
+
+
+2. Read the "data splitting" section at the web page of caret. Then split the data into 70% training and 30% test by keeping the original proportion of classes.
+
+```{r include=FALSE}
+library(caret)
+```
+
+```{r}
+set.seed(998)
+inTraining <- createDataPartition(data$Class, p=.7, list=FALSE)
+data_training <- data[ inTraining,]
+data_testing  <- data[-inTraining,]
+# data_training
+# data_testing
+```
+
+3. Read "the model training and parameter tuning" section at the web page of caret to know how to train a model using cross validation. Read also the list of models available at the "Sortable Model List" link in order to know the name of the method that implements each technique we are going to apply as well as the package you must install to use it. Remember to use the same seed for training the models in order to make a fair comparison of their performances. Do not modify the tuning parameters chosen by default for the train function. The values of the measures used for selecting the best model (by default, the accuracy and/or the kappa measures are used for classification models) are printed by typing the name of the model in the console. An alternative way of collecting the resampling results is to use the resamples function (from the caret package). Complete the following table with the final values of accuracy and kappa for the training data:
+
+```{r echo=FALSE, results='asis'}
+library(knitr)
+table(row.names = c("Accuracy", "KAppa"))
+```
+
