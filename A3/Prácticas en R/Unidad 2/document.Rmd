@@ -1,7 +1,7 @@
 ---
 title: "Practical 2: Model Evaluation"
 author: "Laura Rodriguez Navas"
-date: "17/01/2020"
+date: "January 2020"
 output:
   html_document: default
   pdf_document: default
@@ -11,49 +11,147 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Questions
-
-1. Load the data into R. Name the columns to better identify the board, as visited from left to right and from top to down. Check for missing values.
+### Question 1
+Load the data into R. Name the columns to better identify the board, as visited from left to right and from top to down.
 
 ```{r}
 data <- read.table("tic-tac-toe.data.txt", header=FALSE, sep=",")
 names(data) <- c("top-left-square", 
                  "top-middle-square", 
-                 "top-right-square",
+                 "top-right-square", 
                  "middle-left-square", 
                  "middle-middle-square", 
                  "middle-right-square", 
                  "bottom-left-square", 
-                 "bottom-middle-square", 
+                 "bottom-middle-square",
                  "bottom-right-square", 
                  "Class")
-# data
 ```
+
+Make valid column names.
+
+```{r}
+colnames(data) <- make.names(colnames(data))
+```
+
+Check for missing values.
 
 ```{r}
 any(is.na(data))
 ```
 
-
-2. Read the "data splitting" section at the web page of caret. Then split the data into 70% training and 30% test by keeping the original proportion of classes.
+### Question 2
+Read the "data splitting" section at the web page of caret. Then split the data into 70% training and 30% test by keeping the original proportion of classes.
 
 ```{r include=FALSE}
+library(lattice)
+library(ggplot2)
 library(caret)
 ```
 
 ```{r}
-set.seed(998)
+set.seed(825)
 inTraining <- createDataPartition(data$Class, p=.7, list=FALSE)
 data_training <- data[ inTraining,]
 data_testing  <- data[-inTraining,]
-# data_training
-# data_testing
 ```
 
-3. Read "the model training and parameter tuning" section at the web page of caret to know how to train a model using cross validation. Read also the list of models available at the "Sortable Model List" link in order to know the name of the method that implements each technique we are going to apply as well as the package you must install to use it. Remember to use the same seed for training the models in order to make a fair comparison of their performances. Do not modify the tuning parameters chosen by default for the train function. The values of the measures used for selecting the best model (by default, the accuracy and/or the kappa measures are used for classification models) are printed by typing the name of the model in the console. An alternative way of collecting the resampling results is to use the resamples function (from the caret package). Complete the following table with the final values of accuracy and kappa for the training data:
+### Question 3
+Specifiy the type of resampling.
 
-```{r echo=FALSE, results='asis'}
-library(knitr)
-table(row.names = c("Accuracy", "KAppa"))
+```{r}
+fitControl <- trainControl(method="repeatedcv", 
+                           number=10, 
+                           repeats=1)
 ```
 
+Apply the next models to the data training dataset.
+
+1. Model Naive Bayes
+
+```{r include=FALSE}
+library(e1071)
+library(naivebayes)
+```
+
+```{r}
+set.seed(825)
+nb <- train(Class ~ ., 
+            data=data_training, 
+            method="naive_bayes",
+            trControl=fitControl)
+nb
+```
+
+2. Model Decision Tree
+
+```{r include=FALSE}
+library(rpart)
+```
+
+```{r}
+set.seed(825)
+dt <- train(Class ~ ., 
+            data=data_training, 
+            method="rpart2",
+            trControl=fitControl)
+dt
+```
+
+3. Model Neural Network
+
+```{r include=FALSE}
+library(nnet)
+```
+
+```{r}
+set.seed(825)
+nn <- train(Class ~ ., 
+            data=data_training, 
+            method="nnet",
+            trControl=fitControl)
+nn
+
+```
+
+4. Nearest Neighbour
+
+```{r}
+set.seed(825)
+knn <- train(Class ~ ., 
+             data=data_training, 
+             method="knn",
+             trControl=fitControl)
+knn
+```
+
+5. Model SVM (linear kernel)
+
+```{r include=FALSE}
+library(kernlab)
+```
+
+```{r}
+set.seed(825)
+svm <- train(Class ~ ., 
+             data=data_training, 
+             method="svmLinear",
+             trControl=fitControl)
+svm
+```
+
+Collect the resampling results for all the models.
+
+```{r}
+resamps <- resamples(list("Naive Bayes"=nb,
+                          "Decision Tree"=dt,
+                          "Neural Network"=nn,
+                          "Nearest Neighbour"=knn,
+                          "SVM (linear kernel)" = svm))
+summary(resamps)
+```
+
+Complete the following table with the final values of accuracy and kappa for the training data:
+
+### Question 4
+Apply the next models to the data test dataset.
