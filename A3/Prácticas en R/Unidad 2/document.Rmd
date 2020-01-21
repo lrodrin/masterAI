@@ -26,6 +26,7 @@ names(data) <- c("top-left-square",
                  "bottom-middle-square",
                  "bottom-right-square", 
                  "Class")
+str(data)
 ```
 
 Make valid column names.
@@ -54,6 +55,8 @@ set.seed(825)
 inTraining <- createDataPartition(data$Class, p=.7, list=FALSE)
 data_training <- data[ inTraining,]
 data_testing  <- data[-inTraining,]
+str(data_training)
+str(data_testing)
 ```
 
 ### Question 3
@@ -62,10 +65,11 @@ Specifiy the type of resampling.
 ```{r}
 fitControl <- trainControl(method="repeatedcv", 
                            number=10, 
-                           repeats=1)
+                           repeats=1,
+                           classProbs=TRUE)
 ```
 
-Apply the next models to the data training dataset.
+Apply the models: Naive Bayes, Decision Tree, Neural Networks, Nearest Neighbour and SVM (linear kernel) to the data training dataset and using the same seed.
 
 1. Model Naive Bayes
 
@@ -111,10 +115,9 @@ nn <- train(Class ~ .,
             method="nnet",
             trControl=fitControl)
 nn
-
 ```
 
-4. Nearest Neighbour
+4. Model Nearest Neighbour
 
 ```{r}
 set.seed(825)
@@ -140,7 +143,7 @@ svm <- train(Class ~ .,
 svm
 ```
 
-Collect the resampling results for all the models.
+Collect the results for all the models.
 
 ```{r}
 resamps <- resamples(list("Naive Bayes"=nb,
@@ -154,4 +157,161 @@ summary(resamps)
 Complete the following table with the final values of accuracy and kappa for the training data:
 
 ### Question 4
-Apply the next models to the data test dataset.
+Apply the models: Naive Bayes, Decision Tree, Neural Networks, Nearest Neighbour and SVM (linear kernel) to the data testing dataset. Print the confusion matrix of each model.
+
+1. Model Naive Bayes
+
+```{r}
+nbPredict <- predict(nb, newdata=data_testing)
+confusionMatrix(nbPredict, data_testing$Class)
+```
+
+2. Model Decision Tree
+
+```{r}
+dtPredict <- predict(dt, newdata=data_testing)
+confusionMatrix(dtPredict, data_testing$Class)
+```
+
+3. Model Neural Network
+
+```{r}
+nnPredict <- predict(nn, newdata=data_testing)
+confusionMatrix(nnPredict, data_testing$Class)
+```
+
+4. Model Nearest Neighbour
+
+```{r}
+knnPredict <- predict(knn, newdata=data_testing)
+confusionMatrix(knnPredict, data_testing$Class)
+```
+
+5. Model SVM (linear kernel)
+
+```{r}
+svmPredict <- predict(svm, newdata=data_testing)
+confusionMatrix(svmPredict, data_testing$Class)
+```
+
+Calculate the AUC value for all the models.
+
+```{r}
+
+```
+
+Complete the following table with the final values of accuracy, kappa and AUC for the testing data. 
+
+### Question 5
+Plot the ROC curves of the models.
+```{r include=FALSE}
+library(ROCR)
+```
+
+a) Calculate again the predictions on the test set but now setting the type parameter of the predict function to "prob".
+
+1. Model Naive Bayes
+
+```{r}
+nbPredictProb <- predict(nb, newdata=data_testing, type = "prob")
+head(nbPredictProb)
+```
+
+2. Model Decision Tree
+
+```{r}
+dtPredictProb <- predict(dt, newdata=data_testing, type = "prob")
+head(dtPredictProb)
+```
+
+3. Model Neural Network
+
+```{r}
+nnPredictProb <- predict(nn, newdata=data_testing, type = "prob")
+head(nnPredictProb)
+```
+
+4. Model Nearest Neighbour
+
+```{r}
+knnPredictProb <- predict(knn, newdata=data_testing, type = "prob")
+head(knnPredictProb)
+```
+
+5. Model SVM (linear kernel)
+
+```{r}
+svmPredictProb <- predict(svm, newdata=data_testing, type = "prob")
+head(svmPredictProb)
+```
+
+b) Construct a "prediction" object for each classifier using the vector of estimated probabilities for the positive class as the first parameter, and the vector of actual class labels as the second parameter.
+
+1. Model Naive Bayes
+
+```{r}
+nbPred <- prediction(nbPredictProb$positive, data_testing$Class)   
+```
+
+2. Model Decision Tree
+
+```{r}
+dtPred <- prediction(dtPredictProb$positive, data_testing$Class)   
+```
+
+3. Model Neural Network
+```{r}
+nnPred <- prediction(nnPredictProb$positive, data_testing$Class)   
+```
+
+4. Model Nearest Neighbour
+```{r}
+knnPred <- prediction(knnPredictProb$positive, data_testing$Class)   
+```
+
+5. Model SVM (linear kernel)
+
+```{r}
+svmPred <- prediction(svmPredictProb$positive, data_testing$Class)   
+```
+
+c) Calculate the measures we want to plot on the y-axis (TPR) and on the x-axis (FPR) by using the performance function.
+
+1. Model Naive Bayes
+```{r}
+nbPerf <- performance(nbPred, "tpr", "fpr")
+```
+
+2. Model Decision Tree
+```{r}
+dtPerf <- performance(dtPred, "tpr", "fpr")
+```
+
+3. Model Neural Network
+
+```{r}
+nnPerf <- performance(nnPred, "tpr", "fpr")
+```
+
+4. Model Nearest Neighbour
+```{r}
+knnPerf <- performance(knnPred, "tpr","fpr")
+```
+
+5. Model SVM (linear kernel)
+```{r}
+svmPerf <- performance(svmPred, "tpr","fpr")
+```
+
+d) Draw all the curves in the same plot.
+
+```{r}
+plot(nbPerf, col="orange", add=FALSE, main="Curvas ROC")
+plot(dtPerf, col="blue", add=TRUE, main="Curvas ROC")
+plot(nnPerf, col="red", add=TRUE, main="Curvas ROC")
+plot(knnPerf, col="green", add=TRUE, main="Curvas ROC")
+plot(svmPerf, col="magenta", add=TRUE, main="Curvas ROC")
+legend("bottomright", legend = c("NB","DT", "NN", "kNN", "SVM"), 
+       col = c("orange", "blue", "red", "green", "magenta"), 
+       lty = 1, lwd = 1)
+```

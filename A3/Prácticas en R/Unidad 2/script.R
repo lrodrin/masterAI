@@ -10,10 +10,11 @@ names(data) <- c("top-left-square",
                  "bottom-middle-square",
                  "bottom-right-square", 
                  "Class")
-# make valid Column Names 
+
+# Make valid column names 
 colnames(data) <- make.names(colnames(data))
 
-# check for missing values
+# Check for missing values
 any(is.na(data))
 
 # 2.
@@ -26,10 +27,11 @@ data_training <- data[ inTraining,]
 data_testing  <- data[-inTraining,]
 
 #3.
-# specifiy the type of resampling
+# Specifiy the type of resampling
 fitControl <- trainControl(method="repeatedcv", 
                            number=10, 
-                           repeats=1)
+                           repeats=1,
+                           classProbs=TRUE)
 # Model Naive Bayes
 library(e1071)
 library(naivebayes)
@@ -80,7 +82,7 @@ resamps <- resamples(list("Naive Bayes"=nb,
                           "Decision Tree"=dt,
                           "Neural Network"=nn,
                           "Nearest Neighbour"=knn,
-                          "SVM (linear kernel)" = svm))
+                          "SVM (linear kernel)"=svm))
 summary(resamps)
 
 #4.
@@ -114,7 +116,75 @@ postResample(svmPredict, data_testing$Class)
 # Calculate AUC value
 library(AUC)
 
-#5.
-#a)
-#b)
-#c)
+#5. Plot the ROC curves of the models
+library(ROCR)
+
+# a) Calculate again the predictions on the test set but now setting the type parameter of the 
+# predict function to "prob"
+
+# Model Naive Bayes
+nbPredictProb <- predict(nb, newdata=data_testing, type = "prob")
+head(nbPredictProb)
+
+# Model Decision Tree
+dtPredictProb <- predict(dt, newdata=data_testing, type = "prob")
+head(dtPredictProb)
+
+# Model Neural Network
+nnPredictProb <- predict(nn, newdata=data_testing, type = "prob")
+head(nnPredictProb)
+
+# Model Nearest Neighbour
+knnPredictProb <- predict(knn, newdata=data_testing, type = "prob")
+head(knnPredictProb)
+
+# Model SVM (linear kernel)
+svmPredictProb <- predict(svm, newdata=data_testing, type = "prob")
+head(svmPredictProb)
+
+# b) Construct a "prediction" object for each classifier using the vector of estimated 
+# probabilities for the positive class as the first parameter, and the vector of actual class 
+# labels as the second parameter.
+
+# Model Naive Bayes
+nbPred <- prediction(nbPredictProb$positive, data_testing$Class)   
+
+# Model Decision Tree
+dtPred <- prediction(dtPredictProb$positive, data_testing$Class)   
+
+# Model Neural Network
+nnPred <- prediction(nnPredictProb$positive, data_testing$Class)   
+
+# Model Nearest Neighbour
+knnPred <- prediction(knnPredictProb$positive, data_testing$Class)   
+
+# Model SVM (linear kernel)
+svmPred <- prediction(svmPredictProb$positive, data_testing$Class)   
+
+# c) Calculate the measures we want to plot on the y-axis (TPR) and on the x-axis (FPR) by 
+# using the performance function.
+
+# Model Naive Bayes
+nbPerf <- performance(nbPred,"tpr","fpr")
+
+# Model Decision Tree
+dtPerf <- performance(dtPred,"tpr","fpr")
+
+# Model Neural Network
+nnPerf <- performance(nnPred,"tpr","fpr")
+
+# Model Nearest Neighbour
+knnPerf <- performance(knnPred,"tpr","fpr")
+
+# Model SVM (linear kernel)
+svmPerf <- performance(svmPred,"tpr","fpr")
+
+# d) Draw all the curves in the same plot.
+plot(nbPerf, col="orange", add=FALSE, main="Curvas ROC")
+plot(dtPerf, col="blue", add=TRUE, main="Curvas ROC")
+plot(nnPerf, col="red", add=TRUE, main="Curvas ROC")
+plot(knnPerf, col="green", add=TRUE, main="Curvas ROC")
+plot(svmPerf, col="magenta", add=TRUE, main="Curvas ROC")
+legend("bottomright", legend = c("NB","DT", "NN", "kNN", "SVM"), 
+       col = c("orange", "blue", "red", "green", "magenta"), 
+       lty = 1, lwd = 1)
