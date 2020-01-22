@@ -3,8 +3,8 @@ title: "Practical 2: Model Evaluation"
 author: "Laura Rodriguez Navas"
 date: "January 2020"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -29,9 +29,7 @@ names(data) <- c("top-left-square",
 str(data)
 ```
 
-Make valid column names.
-
-```{r}
+```{r echo=FALSE}
 colnames(data) <- make.names(colnames(data))
 ```
 
@@ -69,7 +67,7 @@ fitControl <- trainControl(method="repeatedcv",
                            classProbs=TRUE)
 ```
 
-Apply the models: Naive Bayes, Decision Tree, Neural Networks, Nearest Neighbour and SVM (linear kernel) to the data training dataset and using the same seed.
+Apply the models: Naive Bayes, Decision Tree, Neural Networks, Nearest Neighbour and SVM (linear kernel) to the data training dataset using the same seed.
 
 1. Model Naive Bayes
 
@@ -150,7 +148,7 @@ resamps <- resamples(list("Naive Bayes"=nb,
                           "Decision Tree"=dt,
                           "Neural Network"=nn,
                           "Nearest Neighbour"=knn,
-                          "SVM (linear kernel)" = svm))
+                          "SVM (linear kernel)"=svm))
 summary(resamps)
 ```
 
@@ -196,8 +194,16 @@ confusionMatrix(svmPredict, data_testing$Class)
 
 Calculate the AUC value for all the models.
 
-```{r}
+```{r include=FALSE}
+library(AUC)
+```
 
+```{r}
+auc(roc(nbPredict, data_testing$Class))
+auc(roc(dtPredict, data_testing$Class))
+auc(roc(nnPredict, data_testing$Class))
+auc(roc(knnPredict, data_testing$Class))
+auc(roc(svmPredict, data_testing$Class))
 ```
 
 Complete the following table with the final values of accuracy, kappa and AUC for the testing data. 
@@ -260,11 +266,13 @@ dtPred <- prediction(dtPredictProb$positive, data_testing$Class)
 ```
 
 3. Model Neural Network
+
 ```{r}
 nnPred <- prediction(nnPredictProb$positive, data_testing$Class)   
 ```
 
 4. Model Nearest Neighbour
+
 ```{r}
 knnPred <- prediction(knnPredictProb$positive, data_testing$Class)   
 ```
@@ -278,11 +286,13 @@ svmPred <- prediction(svmPredictProb$positive, data_testing$Class)
 c) Calculate the measures we want to plot on the y-axis (TPR) and on the x-axis (FPR) by using the performance function.
 
 1. Model Naive Bayes
+
 ```{r}
 nbPerf <- performance(nbPred, "tpr", "fpr")
 ```
 
 2. Model Decision Tree
+
 ```{r}
 dtPerf <- performance(dtPred, "tpr", "fpr")
 ```
@@ -295,12 +305,12 @@ nnPerf <- performance(nnPred, "tpr", "fpr")
 
 4. Model Nearest Neighbour
 ```{r}
-knnPerf <- performance(knnPred, "tpr","fpr")
+knnPerf <- performance(knnPred, "tpr", "fpr")
 ```
 
 5. Model SVM (linear kernel)
 ```{r}
-svmPerf <- performance(svmPred, "tpr","fpr")
+svmPerf <- performance(svmPred, "tpr", "fpr")
 ```
 
 d) Draw all the curves in the same plot.
@@ -311,7 +321,8 @@ plot(dtPerf, col="blue", add=TRUE, main="Curvas ROC")
 plot(nnPerf, col="red", add=TRUE, main="Curvas ROC")
 plot(knnPerf, col="green", add=TRUE, main="Curvas ROC")
 plot(svmPerf, col="magenta", add=TRUE, main="Curvas ROC")
-legend("bottomright", legend = c("NB","DT", "NN", "kNN", "SVM"), 
+legend("bottomright", 
+       legend = c("NB","DT", "NN", "kNN", "SVM"), 
        col = c("orange", "blue", "red", "green", "magenta"), 
        lty = 1, lwd = 1)
 ```

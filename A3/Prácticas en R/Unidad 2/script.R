@@ -44,6 +44,7 @@ nb
 
 # Model Decision Tree
 library(rpart)
+
 set.seed(825)
 dt <- train(Class ~ ., 
             data=data_training, 
@@ -115,6 +116,11 @@ postResample(svmPredict, data_testing$Class)
 
 # Calculate AUC value
 library(AUC)
+auc(roc(nbPredict, data_testing$Class))
+auc(roc(dtPredict, data_testing$Class))
+auc(roc(nnPredict, data_testing$Class))
+auc(roc(knnPredict, data_testing$Class))
+auc(roc(svmPredict, data_testing$Class))
 
 #5. Plot the ROC curves of the models
 library(ROCR)
