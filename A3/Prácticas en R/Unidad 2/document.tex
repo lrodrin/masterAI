@@ -111,8 +111,8 @@
 \begin{document}
 \maketitle
 
-\hypertarget{question-1}{%
-\subsection{Question 1}\label{question-1}}
+\hypertarget{section-1}{%
+\subsection{Section 1}\label{section-1}}
 
 Load the data into R. Name the columns to better identify the board, as
 visited from left to right and from top to down.
@@ -160,8 +160,8 @@ Check for missing values.
 ## [1] FALSE
 \end{verbatim}
 
-\hypertarget{question-2}{%
-\subsection{Question 2}\label{question-2}}
+\hypertarget{section-2}{%
+\subsection{Section 2}\label{section-2}}
 
 Read the ``data splitting'' section at the web page of caret. Then split
 the data into 70\% training and 30\% test by keeping the original
@@ -211,8 +211,8 @@ proportion of classes.
 ##  $ Class               : Factor w/ 2 levels "negative","positive": 2 2 2 2 2 2 2 2 2 2 ...
 \end{verbatim}
 
-\hypertarget{question-3}{%
-\subsection{Question 3}\label{question-3}}
+\hypertarget{section-3}{%
+\subsection{Section 3}\label{section-3}}
 
 Specifiy the type of resampling.
 
@@ -499,15 +499,15 @@ for the training data:
 		\hline
 		Naive Bayes & 0.6845565 & 0.1130575 \\ 
 		Decision Tree & 0.9107511 & 0.7973708 \\ 
-		Neural Network & 0.0.9776997 & 0.9499157 \\
+		Neural Network & 0.9776997 & 0.9499157 \\
 		Nearest Network & 0.9420751 & 0.8667396 \\
 		SVM (linear tree) & 0.9806629 & 0.9563793 \\
 		\hline
 	\end{tabular}
 \end{center}
 
-\hypertarget{question-4}{%
-\subsection{Question 4}\label{question-4}}
+\hypertarget{section-4}{%
+\subsection{Section 4}\label{section-4}}
 
 Apply the models: Naive Bayes, Decision Tree, Neural Networks, Nearest
 Neighbour and SVM (linear kernel) to the data testing dataset. Print the
@@ -845,8 +845,8 @@ and AUC for the testing data.
 	\end{tabular}
 \end{center}
 
-\hypertarget{question-5}{%
-\subsection{Question 5}\label{question-5}}
+\hypertarget{section-5}{%
+\subsection{Section 5}\label{section-5}}
 
 Plot the ROC curves of the models.
 
@@ -1163,5 +1163,29 @@ Plot the ROC curves of the models.
 \end{Shaded}
 
 \includegraphics{document_files/figure-latex/unnamed-chunk-44-1.pdf}
+
+\hypertarget{question-1}{%
+	\subsection{Q1. ¿Si el modelo A tiene mayor Accuracy que B, siempre tendrá mayor Kappa que B? Justifica tu respuesta.}\label{question-1}}
+
+Sí.
+
+\hypertarget{question-2}{%
+	\subsection{Q2. ¿Vemos eso en tus resultados?}\label{question-2}}
+
+Sí
+
+\hypertarget{question-3}{%
+	\subsection{Q3. ¿Te cambian los resultados cuando cambias la semilla?}\label{question-3}}
+
+Sí.
+
+\hypertarget{question-4}{%
+	\subsection{Q4. ¿Es recomendable quedarse con los resultados mejores después de cambiar las semillas varias veces? Justifica la respuesta.}\label{question-4}}
+
+\hypertarget{question-5}{%
+	\subsection{Q5. ¿Qué modelos puedes descartar porque van a ser siempre subóptimos (asumiendo una buena evaluación)?}\label{question-5}}
+
+\hypertarget{question-6}{%
+	\subsection{Q6.  ¿Por qué puedes descartar esos modelos?}\label{question-6}}
 
 \end{document}
