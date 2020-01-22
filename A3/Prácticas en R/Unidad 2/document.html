@@ -369,8 +369,8 @@ summary {
 </div>
 
 
-<div id="question-1" class="section level3">
-<h3>Question 1</h3>
+<div id="question-1" class="section level2">
+<h2>Question 1</h2>
 <p>Load the data into R. Name the columns to better identify the board, as visited from left to right and from top to down.</p>
 <pre class="r"><code>data &lt;- read.table(&quot;tic-tac-toe.data.txt&quot;, header=FALSE, sep=&quot;,&quot;)
 names(data) &lt;- c(&quot;top-left-square&quot;, 
@@ -399,8 +399,8 @@ str(data)</code></pre>
 <pre class="r"><code>any(is.na(data))</code></pre>
 <pre><code>## [1] FALSE</code></pre>
 </div>
-<div id="question-2" class="section level3">
-<h3>Question 2</h3>
+<div id="question-2" class="section level2">
+<h2>Question 2</h2>
 <p>Read the “data splitting” section at the web page of caret. Then split the data into 70% training and 30% test by keeping the original proportion of classes.</p>
 <pre class="r"><code>set.seed(825)
 inTraining &lt;- createDataPartition(data$Class, p=.7, list=FALSE)
@@ -431,8 +431,8 @@ str(data_training)</code></pre>
 ##  $ bottom.right.square : Factor w/ 3 levels &quot;b&quot;,&quot;o&quot;,&quot;x&quot;: 2 2 2 1 1 2 3 1 2 1 ...
 ##  $ Class               : Factor w/ 2 levels &quot;negative&quot;,&quot;positive&quot;: 2 2 2 2 2 2 2 2 2 2 ...</code></pre>
 </div>
-<div id="question-3" class="section level3">
-<h3>Question 3</h3>
+<div id="question-3" class="section level2">
+<h2>Question 3</h2>
 <p>Specifiy the type of resampling.</p>
 <pre class="r"><code>fitControl &lt;- trainControl(method=&quot;repeatedcv&quot;, 
                            number=10, 
@@ -1808,8 +1808,8 @@ summary(resamps)</code></pre>
 ## SVM (linear kernel) 1.0000000    0</code></pre>
 <p>Complete the following table with the final values of accuracy and kappa for the training data:</p>
 </div>
-<div id="question-4" class="section level3">
-<h3>Question 4</h3>
+<div id="question-4" class="section level2">
+<h2>Question 4</h2>
 <p>Apply the models: Naive Bayes, Decision Tree, Neural Networks, Nearest Neighbour and SVM (linear kernel) to the data testing dataset. Print the confusion matrix of each model.</p>
 <ol style="list-style-type: decimal">
 <li>Model Naive Bayes</li>
@@ -1972,20 +1972,35 @@ confusionMatrix(svmPredict, data_testing$Class)</code></pre>
 ##        'Positive' Class : negative        
 ## </code></pre>
 <p>Calculate the AUC value for all the models.</p>
+<ol style="list-style-type: decimal">
+<li>Model Naive Bayes</li>
+</ol>
 <pre class="r"><code>auc(roc(nbPredict, data_testing$Class))</code></pre>
 <pre><code>## [1] 0.5353535</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>Model Decison Tree</li>
+</ol>
 <pre class="r"><code>auc(roc(dtPredict, data_testing$Class))</code></pre>
 <pre><code>## [1] 0.9272133</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>Model Neural Network</li>
+</ol>
 <pre class="r"><code>auc(roc(nnPredict, data_testing$Class))</code></pre>
 <pre><code>## [1] 0.9848485</code></pre>
+<ol start="4" style="list-style-type: decimal">
+<li>Model Nearest Network</li>
+</ol>
 <pre class="r"><code>auc(roc(knnPredict, data_testing$Class))</code></pre>
 <pre><code>## [1] 0.9646465</code></pre>
+<ol start="5" style="list-style-type: decimal">
+<li>Model SVM (linear kernel)</li>
+</ol>
 <pre class="r"><code>auc(roc(svmPredict, data_testing$Class))</code></pre>
 <pre><code>## [1] 0.9848485</code></pre>
 <p>Complete the following table with the final values of accuracy, kappa and AUC for the testing data.</p>
 </div>
-<div id="question-5" class="section level3">
-<h3>Question 5</h3>
+<div id="question-5" class="section level2">
+<h2>Question 5</h2>
 <p>Plot the ROC curves of the models.</p>
 <ol style="list-style-type: lower-alpha">
 <li>Calculate again the predictions on the test set but now setting the type parameter of the predict function to “prob”.</li>

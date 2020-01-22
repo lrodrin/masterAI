@@ -3,15 +3,19 @@ title: "Practical 2: Model Evaluation"
 author: "Laura Rodriguez Navas"
 date: "January 2020"
 output:
-  pdf_document: default
-  html_document: default
+  pdf_document: 
+    fig_caption: yes
+    keep_tex: yes
+  html_document: 
+    df_print: default
+    fig_caption: yes
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-### Question 1
+## Question 1
 Load the data into R. Name the columns to better identify the board, as visited from left to right and from top to down.
 
 ```{r}
@@ -39,7 +43,7 @@ Check for missing values.
 any(is.na(data))
 ```
 
-### Question 2
+## Question 2
 Read the "data splitting" section at the web page of caret. Then split the data into 70% training and 30% test by keeping the original proportion of classes.
 
 ```{r include=FALSE}
@@ -57,7 +61,7 @@ str(data_training)
 str(data_testing)
 ```
 
-### Question 3
+## Question 3
 Specifiy the type of resampling.
 
 ```{r}
@@ -154,7 +158,7 @@ summary(resamps)
 
 Complete the following table with the final values of accuracy and kappa for the training data:
 
-### Question 4
+## Question 4
 Apply the models: Naive Bayes, Decision Tree, Neural Networks, Nearest Neighbour and SVM (linear kernel) to the data testing dataset. Print the confusion matrix of each model.
 
 1. Model Naive Bayes
@@ -198,17 +202,38 @@ Calculate the AUC value for all the models.
 library(AUC)
 ```
 
+1. Model Naive Bayes
 ```{r}
 auc(roc(nbPredict, data_testing$Class))
+```
+
+2. Model Decison Tree
+
+```{r}
 auc(roc(dtPredict, data_testing$Class))
+```
+
+3. Model Neural Network
+
+```{r}
 auc(roc(nnPredict, data_testing$Class))
+```
+
+4. Model Nearest Network
+
+```{r}
 auc(roc(knnPredict, data_testing$Class))
+```
+
+5. Model SVM (linear kernel)
+
+```{r}
 auc(roc(svmPredict, data_testing$Class))
 ```
 
 Complete the following table with the final values of accuracy, kappa and AUC for the testing data. 
 
-### Question 5
+## Question 5
 Plot the ROC curves of the models.
 ```{r include=FALSE}
 library(ROCR)

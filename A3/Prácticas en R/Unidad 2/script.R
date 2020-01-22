@@ -114,7 +114,7 @@ postResample(nnPredict, data_testing$Class)
 postResample(knnPredict, data_testing$Class)
 postResample(svmPredict, data_testing$Class)
 
-# Calculate AUC value
+# Calculate AUC value for all the models
 library(AUC)
 auc(roc(nbPredict, data_testing$Class))
 auc(roc(dtPredict, data_testing$Class))
