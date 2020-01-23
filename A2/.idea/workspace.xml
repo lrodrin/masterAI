@@ -2,9 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a584df96-556b-45d8-a7dc-cbb2c7dcc7fb" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../A3/Prácticas en R/Unidad 2/document.aux" beforeDir="false" afterPath="$PROJECT_DIR$/../A3/Prácticas en R/Unidad 2/document.aux" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../A3/Prácticas en R/Unidad 2/document.out" beforeDir="false" afterPath="$PROJECT_DIR$/../A3/Prácticas en R/Unidad 2/document.out" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../A3/Prácticas en R/Unidad 2/document.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/../A3/Prácticas en R/Unidad 2/document.pdf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../A3/Prácticas en R/Unidad 2/document.synctex.gz" beforeDir="false" afterPath="$PROJECT_DIR$/../A3/Prácticas en R/Unidad 2/document.synctex.gz" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../A3/Prácticas en R/Unidad 2/document.tex" beforeDir="false" afterPath="$PROJECT_DIR$/../A3/Prácticas en R/Unidad 2/document.tex" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,7 +56,7 @@
       <recent name="$PROJECT_DIR$/spectral_partitioning" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.kl (1)">
+  <component name="RunManager" selected="Python.spectral_bisection">
     <configuration name="kernighan_lin" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="A2" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -190,9 +193,9 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.spectral_bisection" />
         <item itemvalue="Python.kl (1)" />
         <item itemvalue="Python.multilevel_bisection" />
-        <item itemvalue="Python.spectral_bisection" />
         <item itemvalue="Python.partition" />
         <item itemvalue="Python.kernighan_lin" />
       </list>
@@ -309,22 +312,22 @@
       <screen x="0" y="23" width="1440" height="797" />
     </state>
     <state x="342" y="26" key="CommitChangelistDialog2/0.23.1440.797@0.23.1440.797" timestamp="1579215968062" />
-    <state width="1419" height="203" key="GridCell.Tab.0.bottom" timestamp="1579276103277">
+    <state width="1419" height="203" key="GridCell.Tab.0.bottom" timestamp="1579805002866">
       <screen x="0" y="23" width="1440" height="797" />
     </state>
-    <state width="1419" height="203" key="GridCell.Tab.0.bottom/0.23.1440.797@0.23.1440.797" timestamp="1579276103277" />
-    <state width="1419" height="203" key="GridCell.Tab.0.center" timestamp="1579276103276">
+    <state width="1419" height="203" key="GridCell.Tab.0.bottom/0.23.1440.797@0.23.1440.797" timestamp="1579805002866" />
+    <state width="1419" height="203" key="GridCell.Tab.0.center" timestamp="1579805002866">
       <screen x="0" y="23" width="1440" height="797" />
     </state>
-    <state width="1419" height="203" key="GridCell.Tab.0.center/0.23.1440.797@0.23.1440.797" timestamp="1579276103276" />
-    <state width="1419" height="203" key="GridCell.Tab.0.left" timestamp="1579276103275">
+    <state width="1419" height="203" key="GridCell.Tab.0.center/0.23.1440.797@0.23.1440.797" timestamp="1579805002866" />
+    <state width="1419" height="203" key="GridCell.Tab.0.left" timestamp="1579805002865">
       <screen x="0" y="23" width="1440" height="797" />
     </state>
-    <state width="1419" height="203" key="GridCell.Tab.0.left/0.23.1440.797@0.23.1440.797" timestamp="1579276103275" />
-    <state width="1419" height="203" key="GridCell.Tab.0.right" timestamp="1579276103276">
+    <state width="1419" height="203" key="GridCell.Tab.0.left/0.23.1440.797@0.23.1440.797" timestamp="1579805002865" />
+    <state width="1419" height="203" key="GridCell.Tab.0.right" timestamp="1579805002866">
       <screen x="0" y="23" width="1440" height="797" />
     </state>
-    <state width="1419" height="203" key="GridCell.Tab.0.right/0.23.1440.797@0.23.1440.797" timestamp="1579276103276" />
+    <state width="1419" height="203" key="GridCell.Tab.0.right/0.23.1440.797@0.23.1440.797" timestamp="1579805002866" />
     <state x="513" y="139" key="RollbackChangesDialog" timestamp="1579215487177">
       <screen x="0" y="23" width="1440" height="797" />
     </state>

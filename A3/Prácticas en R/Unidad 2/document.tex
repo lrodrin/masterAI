@@ -1165,27 +1165,186 @@ Plot the ROC curves of the models.
 \includegraphics{document_files/figure-latex/unnamed-chunk-44-1.pdf}
 
 \hypertarget{question-1}{%
-	\subsection{Q1. ¿Si el modelo A tiene mayor Accuracy que B, siempre tendrá mayor Kappa que B? Justifica tu respuesta.}\label{question-1}}
+	\subsection{Question 1. ¿Si el modelo A tiene mayor Accuracy que B, siempre tendrá mayor Kappa que B? Justifica tu respuesta.}\label{question-1}}
 
-Sí.
+Sí, porqué los valores Accuracy y Kappa están relacionados, ya que son considerados dos medidas de exactitud en la técnica de validación cruzada utilizada durante esta práctica. Concretamente, el valor Accuracy representa la exactitud en el porcentaje de aciertos del modelo clasificador, y el valor Kappa representa la concordancia de este, es decir, una medida que valora y valida la exactitud lograda en cada clasificación realizada por el modelo clasificador. Así que, si un modelo clasificador A, tiene mayor Accuracy que un modelo clasificador B, también tendrá mayor Kappa, porqué un modelo con poca coincidencia de aciertos, no puede obtener un alto porcentaje de aciertos. Estas medidas están relacionadas y un alto porcentaje de aciertos implicará una alta coincidencia.
 
 \hypertarget{question-2}{%
-	\subsection{Q2. ¿Vemos eso en tus resultados?}\label{question-2}}
+	\subsection{Question 2. ¿Vemos eso en tus resultados?}\label{question-2}}
 
-Sí
+Sí. Si nos fijamos en la primera tabla de resultados de la \ref{section-3}{section 3} podemos observar que el modelo SVM (linear kernel) tiene el valor más alto de Accuracy y siempre tiene mayor Kappa que el resto de modelos. Lo mismo sucede si seguimos comparando, por ejemplo con el modelo Nearest Neighbour con el resto de modelos. El valor Accuracy es mayor y el valor Kappa también. Contrariamente, como el valor Accuracy y Kappa del modelo Nearest Neighbour es menor que en el modelo SVM (linear kernel), no se cumple la pregunta formulada anteriormente.
 
 \hypertarget{question-3}{%
-	\subsection{Q3. ¿Te cambian los resultados cuando cambias la semilla?}\label{question-3}}
+	\subsection{Question 3. ¿Te cambian los resultados cuando cambias la semilla?}\label{question-3}}
 
-Sí.
+Sí. Como se puede observar en las secciones anteriores la semilla utilizada es 825 y la tabla resultante recordamos que ha sido:
+
+\begin{center}
+	\begin{tabular}{ |c|c|c|c| } 
+		\hline
+		& Accuracy & Kappa \\
+		\hline
+		Naive Bayes & 0.6845565 & 0.1130575 \\ 
+		Decision Tree & 0.9107511 & 0.7973708 \\ 
+		Neural Network & 0.9776997 & 0.9499157 \\
+		Nearest Network & 0.9420751 & 0.8667396 \\
+		SVM (linear tree) & 0.9806629 & 0.9563793 \\
+		\hline
+	\end{tabular}
+\end{center}
+
+Aplicando una semilla diferente, por ejemplo utilizando la semilla 123, el resultado es diferente como podemos ver a continuación:
+
+\begin{enumerate}
+	\def\labelenumi{\arabic{enumi}.}
+	\tightlist
+	\item
+	Model Naive Bayes
+\end{enumerate}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
+\NormalTok{nb <-}\StringTok{ }\KeywordTok{train}\NormalTok{(Class }\OperatorTok{~}\StringTok{ }\NormalTok{., }
+	\DataTypeTok{data=}\NormalTok{data_training, }
+	\DataTypeTok{method=}\StringTok{"naive_bayes"}\NormalTok{,}
+	\DataTypeTok{trControl=}\NormalTok{fitControl)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{enumerate}
+	\def\labelenumi{\arabic{enumi}.}
+	\setcounter{enumi}{1}
+	\tightlist
+	\item
+	Model Decision Tree
+\end{enumerate}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
+\NormalTok{dt <-}\StringTok{ }\KeywordTok{train}\NormalTok{(Class }\OperatorTok{~}\StringTok{ }\NormalTok{., }
+	\DataTypeTok{data=}\NormalTok{data_training, }
+	\DataTypeTok{method=}\StringTok{"rpart2"}\NormalTok{,}
+	\DataTypeTok{trControl=}\NormalTok{fitControl)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{enumerate}
+	\def\labelenumi{\arabic{enumi}.}
+	\setcounter{enumi}{2}
+	\tightlist
+	\item
+	Model Neural Network
+\end{enumerate}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
+\NormalTok{nn <-}\StringTok{ }\KeywordTok{train}\NormalTok{(Class }\OperatorTok{~}\StringTok{ }\NormalTok{., }
+	\DataTypeTok{data=}\NormalTok{data_training, }
+	\DataTypeTok{method=}\StringTok{"nnet"}\NormalTok{,}
+	\DataTypeTok{trControl=}\NormalTok{fitControl)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{enumerate}
+	\def\labelenumi{\arabic{enumi}.}
+	\setcounter{enumi}{3}
+	\tightlist
+	\item
+	Model Nearest Neighbour
+\end{enumerate}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
+\NormalTok{knn <-}\StringTok{ }\KeywordTok{train}\NormalTok{(Class }\OperatorTok{~}\StringTok{ }\NormalTok{., }
+	\DataTypeTok{data=}\NormalTok{data_training, }
+	\DataTypeTok{method=}\StringTok{"knn"}\NormalTok{,}
+	\DataTypeTok{trControl=}\NormalTok{fitControl)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{enumerate}
+	\def\labelenumi{\arabic{enumi}.}
+	\setcounter{enumi}{4}
+	\tightlist
+	\item
+	Model SVM (linear kernel)
+\end{enumerate}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
+\NormalTok{svm <-}\StringTok{ }\KeywordTok{train}\NormalTok{(Class }\OperatorTok{~}\StringTok{ }\NormalTok{., }
+	\DataTypeTok{data=}\NormalTok{data_training, }
+	\DataTypeTok{method=}\StringTok{"svmLinear"}\NormalTok{,}
+	\DataTypeTok{trControl=}\NormalTok{fitControl)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+\NormalTok{resamps <-}\StringTok{ }\KeywordTok{resamples}\NormalTok{(}\KeywordTok{list}\NormalTok{(}\StringTok{"Naive Bayes"}\NormalTok{=nb,}
+			\StringTok{"Decision Tree"}\NormalTok{=dt,}
+			\StringTok{"Neural Network"}\NormalTok{=nn,}
+			\StringTok{"Nearest Neighbour"}\NormalTok{=knn,}
+			\StringTok{"SVM (linear kernel)"}\NormalTok{=svm))}
+\KeywordTok{summary}\NormalTok{(resamps)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## summary.resamples(object = resamps)
+## 
+## Models: Naive Bayes, Decision Tree, Neural Network, Nearest Neighbour, SVM (linear kernel) 
+## Number of resamples: 10 
+## 
+## Accuracy 
+##                          Min.   1st Qu.    Median      Mean   3rd Qu.      Max.
+## Naive Bayes         0.6417910 0.6716418 0.6940299 0.7021291 0.7126866 0.7941176
+## Decision Tree       0.8235294 0.8544776 0.8964004 0.8974539 0.9253731 0.9701493
+## Neural Network      0.9701493 0.9702590 0.9850746 0.9791703 0.9850746 0.9852941
+## Nearest Neighbour   0.8805970 0.9107770 0.9402985 0.9360184 0.9665825 0.9701493
+## SVM (linear kernel) 0.9701493 0.9702590 0.9850746 0.9806629 0.9850746 1.0000000
+##                     NA's
+## Naive Bayes            0
+## Decision Tree          0
+## Neural Network         0
+## Nearest Neighbour      0
+## SVM (linear kernel)    0
+## 
+## Kappa 
+##                          Min.   1st Qu.    Median      Mean   3rd Qu.      Max.
+## Naive Bayes         0.1886983 0.2728508 0.2973763 0.3301961 0.3446200 0.5576208
+## Decision Tree       0.5732218 0.6782198 0.7673132 0.7653352 0.8318554 0.9350775
+## Neural Network      0.9323915 0.9328844 0.9665502 0.9533158 0.9670654 0.9674952
+## Nearest Neighbour   0.7112069 0.7982758 0.8644097 0.8534526 0.9244398 0.9337945
+## SVM (linear kernel) 0.9323915 0.9328844 0.9665502 0.9565920 0.9670654 1.0000000
+##                     NA's
+## Naive Bayes            0
+## Decision Tree          0
+## Neural Network         0
+## Nearest Neighbour      0
+## SVM (linear kernel)    0
+\end{verbatim}
 
 \hypertarget{question-4}{%
-	\subsection{Q4. ¿Es recomendable quedarse con los resultados mejores después de cambiar las semillas varias veces? Justifica la respuesta.}\label{question-4}}
+	\subsection{Question 4. ¿Es recomendable quedarse con los resultados mejores después de cambiar las semillas varias veces? Justifica la respuesta.}\label{question-4}}
+
+No. Porqué en estos casos la calibración es aleatoria y no podemos valorar cuales son los mejores resultados entre ellos. Además, con una probabilidad de entrenamiento del 70\%, la calibración se considera perfecta y el primer resultado ya se podría considerar como el mejor.
 
 \hypertarget{question-5}{%
-	\subsection{Q5. ¿Qué modelos puedes descartar porque van a ser siempre subóptimos (asumiendo una buena evaluación)?}\label{question-5}}
+	\subsection{Question 5. ¿Qué modelos puedes descartar porque van a ser siempre menos óptimos (asumiendo una buena evaluación)?}\label{question-5}}
+
+Los modelos Naive Bayes y Decision Tree.
 
 \hypertarget{question-6}{%
-	\subsection{Q6.  ¿Por qué puedes descartar esos modelos?}\label{question-6}}
+	\subsection{Question 6.  ¿Por qué puedes descartar esos modelos?}\label{question-6}}
+
+Si nos fijamos en el gráfico de Curvas ROC que representa el análisis ROC que hemos realizado en esta práctica, podemos descartar estos modelos porqué están por debajo del casco convexo formado por todos los clasificadores considerados, y además no constan en ninguna de las buenas zonas o zonas de dominancia.
 
 \end{document}

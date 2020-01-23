@@ -1,0 +1,146 @@
+---
+title: "Practical 2: Model Evaluation"
+author: "Laura Rodriguez Navas"
+date: "January 2020"
+output:
+  pdf_document: 
+    fig_caption: yes
+    keep_tex: yes
+  html_document: 
+    df_print: default
+    fig_caption: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1
+Load the data into R. Name the columns to better identify the board, as visited from left to right and from top to down.
+
+```{r}
+data <- read.table("tic-tac-toe.data.txt", header=FALSE, sep=",")
+names(data) <- c("top-left-square", 
+                 "top-middle-square", 
+                 "top-right-square", 
+                 "middle-left-square", 
+                 "middle-middle-square", 
+                 "middle-right-square", 
+                 "bottom-left-square", 
+                 "bottom-middle-square",
+                 "bottom-right-square", 
+                 "Class")
+```
+
+```{r echo=FALSE}
+colnames(data) <- make.names(colnames(data))
+```
+
+Check for missing values.
+
+```{r}
+any(is.na(data))
+```
+
+## Question 2
+Read the "data splitting" section at the web page of caret. Then split the data into 70% training and 30% test by keeping the original proportion of classes.
+
+```{r include=FALSE}
+library(lattice)
+library(ggplot2)
+library(caret)
+```
+
+```{r}
+set.seed(123)
+inTraining <- createDataPartition(data$Class, p=.7, list=FALSE)
+data_training <- data[ inTraining,]
+data_testing  <- data[-inTraining,]
+```
+
+## Question 3
+Specifiy the type of resampling.
+
+```{r}
+fitControl <- trainControl(method="repeatedcv", 
+                           number=10, 
+                           repeats=1,
+                           classProbs=TRUE)
+```
+
+Apply the models: Naive Bayes, Decision Tree, Neural Networks, Nearest Neighbour and SVM (linear kernel) to the data training dataset using the same seed.
+
+1. Model Naive Bayes
+
+```{r include=FALSE}
+library(e1071)
+library(naivebayes)
+```
+
+```{r}
+set.seed(123)
+nb <- train(Class ~ ., 
+            data=data_training, 
+            method="naive_bayes",
+            trControl=fitControl)
+```
+
+2. Model Decision Tree
+
+```{r include=FALSE}
+library(rpart)
+```
+
+```{r}
+set.seed(123)
+dt <- train(Class ~ ., 
+            data=data_training, 
+            method="rpart2",
+            trControl=fitControl)
+```
+
+3. Model Neural Network
+
+```{r include=FALSE}
+library(nnet)
+```
+
+```{r}
+set.seed(123)
+nn <- train(Class ~ ., 
+            data=data_training, 
+            method="nnet",
+            trControl=fitControl)
+```
+
+4. Model Nearest Neighbour
+
+```{r}
+set.seed(123)
+knn <- train(Class ~ ., 
+             data=data_training, 
+             method="knn",
+             trControl=fitControl)
+```
+
+5. Model SVM (linear kernel)
+
+```{r include=FALSE}
+library(kernlab)
+```
+
+```{r}
+set.seed(123)
+svm <- train(Class ~ ., 
+             data=data_training, 
+             method="svmLinear",
+             trControl=fitControl)
+```
+
+```{r}
+resamps <- resamples(list("Naive Bayes"=nb,
+                          "Decision Tree"=dt,
+                          "Neural Network"=nn,
+                          "Nearest Neighbour"=knn,
+                          "SVM (linear kernel)"=svm))
+summary(resamps)
