@@ -19,11 +19,11 @@
 
 Los tipos de recursos lingüísticos que puede usar un sistema de PLN son: Lexicones y Diccionarios, Ontologías y Corpus.
 
-Los {\bf Lexicones} son series ordenadas de palabras de una lengua, una persona, una región, una materia o una época determinadas. Y podemos clasificar-los como generales o especializados.
+Los {\bf Lexicones} son series ordenadas de palabras de una lengua, una persona, una región, una materia o una época determinada. Y podemos clasificar-los como generales o especializados.
 
 Los lexicones generales son repositorios de palabras. Pueden ser tan simples como una lista de palabras o pueden ser tan complejos como una base de datos terminológica. También incorporan información o conocimiento sobre las palabras; como información fonológica, morfológica, sintáctica, semántica y pragmática.
 
-De lexicones especializados hay de muchos tipos, dentro de distintas categorías, como por ejemplo:
+Hay de muchos tipos de lexicones especializados, dentro de distintas categorías, como, por ejemplo:
 
 \begin{itemize}
 	\item Diccionarios de locuciones.
@@ -35,13 +35,71 @@ De lexicones especializados hay de muchos tipos, dentro de distintas categorías
 	\item Detectores de fechas, números, fórmulas, etc.
 \end{itemize}
 
-En realidad, los lexicones especializados están orientados a ciertas aplicaciones o a ciertos dominios concretos. Por ejemplo, en las aplicaciones de análisis de sentimientos se pueden utilizar listas de términos polares; y en las aplicaciones de recuperación de información geográfica se pueden utilizar lista de topónimos e localizaciones. Para los dominios, por ejemplo, de tipo biomédico se pueden usar listas de términos médicos o ontologías médicas; y para dominios de tipo turístico se pueden usar listas de monumentos, ciudades, etc. o también listas de topónimos, como en el caso de las aplicaciones.
+En realidad, los lexicones especializados están orientados a ciertas aplicaciones o a ciertos dominios concretos. Por ejemplo, en las aplicaciones de análisis de sentimientos aparecen listas de términos polares (positivos y negativos); y en las aplicaciones de recuperación de información geográfica se pueden tener listas de topónimos y localizaciones. Por otra parte, en los dominios de tipo biomédico aparecen listas de términos u ontologías médicas; y en los dominios de tipo turístico se pueden tener listas de monumentos, ciudades, etc.; o también listas de topónimos, como en el caso de las aplicaciones.
 
-Un Diccionario
+Los {\bf Diccionarios} son listas de palabras, donde cada palabra contiene su definición y a veces su etimología. Existen diferentes tipos de diccionarios dependiendo de si son normativos, de uso, de aprendizaje, etc. Y según el número de lenguas utilizadas puede ser diccionarios monolingües, bilingües o multilingües.
+
+Dentro de este tipo también se encuentran las enciclopedias y los tesauros que son recursos lingüísticos parecidos a los diccionarios, pero son un poco más avanzados. Por ejemplo, un tesauro es una lista de palabras o términos controlados, empleados para representar conceptos.
 
 Una Ontología
 
 Corpus
+
+\section*{Ejemplos}
+
+\subsection*{Lexicones}
+
+Dos ejemplos de lexicones en español que merecen especial atención son WordNet y Acquilex, que son considerados bases de datos léxicas multilingüe o también ontologías léxicas multilingüe. 
+
+{\bf WordNet} es un sistema electrónico de referencia léxica multilingüe, desarrollado en forma de base de datos léxica. Su diseño está en consonancia con teorías psicolingüísticas relativas a la organización de la información léxica en la mente del hablante. Además constituye el intento de reflejar un modelo de memoria léxica, basado en redes semánticas, en un modelo lexicográfico de organización léxica. 
+
+Los objetivos principales de WordNet son: 
+
+\begin{itemize}
+	\item La validación de las teorías psicolingüísticas sobre organización léxica anteriormente mencionadas.
+	\item Su previsible utilización en diversas aplicaciones que requieran acceso a información léxica.
+\end{itemize}
+
+Concretamente, el WordNet en español que sigue el marco de EuroWordNet, se estructuran de la misma manera que el WordNet americano para el inglés (\href{https://wordnet.princeton.edu/}{Princeton WordNet}) en términos de conjuntos de sinónimos de palabras con relaciones semánticas básicas entre ellos. Los sustantivos, verbos y adjetivos en español se organizan en conjuntos de sinónimos, cada uno de los cuales representa un concepto léxico subyacente. Y diferentes relaciones son las encargadas de vincular los conjuntos de sinónimos. 
+
+La diferencia básica entre éste y otros lexicones es que pertenece a un único proyecto a gran escala en el que se ha tenido como idea fundamental la organización léxica en campos semánticos. 
+
+Por otra parte, {\bf Acquilex} se basa en la utilización de diccionarios de soporte magnético (M.R.Ds, Machine Readable Dictionaries) para la construcción de componentes léxicos. Los diccionarios automatizados constituyen una fuente de adquisición de información léxica y conceptual que, potencialmente, permite abordar algunos aspectos especialmente costos de la construcción de una base de datos léxica multilingüe a partir de estos.
+
+La extracción de la información de los MRDs está formada por:
+
+\begin{itemize}
+	\item Análisis sintáctico de las definiciones.
+	\item Extracción de información semántica de las definiciones analizadas.
+	\item Desambiguación del género contenido en las definiciones y la construcción de taxonomías.
+	\item Filtrado de la información contenida en la parte correspondiente a la diferencia específica de las definiciones.
+	\item Conversión de los resultados de los procedimientos de extracción en un sistema de representación formal.
+\end{itemize}
+
+Acquilex se encuentra en un área poco explorada, debido a la dificultad que supone el tratamiento complejo de grandes volúmenes de información en el proceso de conversión de los MRDs a una base de datos léxica.
+
+\subsection*{Diccionarios, Enciclopedias, Tesauros}
+
+En esta sección se destacan tres ejemplos. Un ejemplo de diccionario (el diccionario de la lengua española), un ejemplo de enciclopedia (la Wikipedia en español) y un ejemplo de tesauro (\href{https://digital.csic.es/handle/10261/30257}{el ISOC de Economía}).
+
+\begin{itemize}
+	\item El diccionario de la lengua española es un diccionario normativo del idioma español editado y elaborado por la Real Academia Española (RAE). El diccionario incluye palabras de uso común extendido, al menos en un ámbito representativo de entre aquellos en los que se habla el español o castellano y además incluye numerosos arcaísmos y vocablos hoy en desuso, para entender la literatura castellana antigua. Actualmente, es la obra lexicográfica académica española por excelencia y se ha convertido en el diccionario de referencia y consulta del español.
+	
+	\item La Wikipedia es una enciclopedia \texttt{libre} \footnote{no posee restricciones legales significativas en relación con el derecho de uso, la redistribución y la creación de versiones modificadas o derivadas por parte de terceros.} políglota y editada de manera colaborativa, que permite la recopilación, el almacenamiento y la transmisión de la información de forma estructurada. Una de sus ediciones es en español.
+	
+	La Wikipedia está sustituyendo a todas las enciclopedias españolas conocidas, como por ejemplo a la Enciclopedia Libre Universal en Español o la enciclopedia Encarta de Microsoft, aunque a veces su fiabilidad es cuestionada ya que puede ser editada por todo el mundo.
+	
+	Un dato importante en términos de PLN es que es una enciclopedia que se incorpora muy bien con los sistemas PLN, con resultados realmente sorprendentes.
+	
+	\item El tesauro ISOC de Economía tiene como objetivo, facilitar un análisis homogéneo de los documentos que se incorporen a las bases de datos terminológicas y permitir al usuario la recuperación de estos de forma precisa y exhaustiva. El rasgo determinante de este tesauro es su base empírica y su utilidad contrastada durante décadas en distintos sistemas de información económica especializada. Por lo demás, su estructura interna responde al modelo tradicional de los tesauros que articula los términos en torno a una red de relaciones jerárquicas, asociativas y de equivalencia, eliminando así las posibles ambigüedades y polisemias, y facilitando la percepción de la afinidad y/o diferenciación semántica entre ellos. 
+	
+	En concreto, este tesauro contiene 6.792 términos (5.464 descriptores y 1.328 no descriptores) distribuidos en 13 áreas temáticas y consta de un índice alfabético, otro jerárquico y un tercero permutado. Se completa con dos anexos: uno de identificadores, que recoge nombres de personas, instituciones, partidos políticos, etc.; y otro con la denominación de las monedas nacionales. 
+	 
+\end{itemize}
+
+\subsection*{Ontologías}
+
+\subsection*{Corpus}
 
 % Pregunta 2
 {\bf \question Explique las aplicaciones de PLN que pueden estar interesadas en el uso de un Gazetter (2 puntos).}
