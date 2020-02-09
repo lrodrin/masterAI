@@ -60,7 +60,7 @@ Los tipos de ontologías conocidas son:
 	(procesos de producción, cardiología, ...).
 \end{itemize}
 
-En la actualidad, el uso de las ontologías y su integración en los sistemas de PLN se está potenciando muchísimo precisamente porqué están apareciendo nuevas tendencias que requieren de su potencial para trabajar con información que puede ser ingerida o de sentido común y con ello poder generar y desarrollar nuevos sistemas mucho más eficientes. Alguna de esas nuevas tendencias son la Web semántica, la implicación textual, la minería de datos y el Big Data. 
+En la actualidad, el uso de las ontologías y su integración en los sistemas de PLN se está potenciando muchísimo precisamente porqué están apareciendo nuevas tareas que requieren de su potencial para trabajar con información que puede ser ingerida o de sentido común y con ello poder generar y desarrollar nuevos sistemas mucho más eficientes. Alguna de esas nuevas tareas son la Web semántica, la implicación textual, la minería de datos y el Big Data. 
 
 Este uso de las ontologías es para:
 
@@ -71,7 +71,21 @@ Este uso de las ontologías es para:
 	\item Gestionar los datos definiendo los conceptos y sus relaciones básicas para la comprensión de un área.
 \end{itemize}
 
-{\bf Corpus}
+Un {\bf Corpus} es una colección de textos representativos de una lengua, de un dialecto o un subconjunto de una lengua, que se utiliza para el análisis lingüístico. Si además incluye información lingüística adicional, representa una herramienta y un recurso fundamental con un valor añadido para integrarse en tareas del PLN. De hecho, son uno de los recursos lingüísticos más utilizados en el ámbito del PLN con la aparición de la Web y Internet; y el uso de estos se ha fomentado porqué proporcionan la obtención de recursos de manera fácil y accesible.
+
+Los Corpus se pueden clasificar,
+
+\begin{itemize}
+	\item según el material que incorporan como textuales o orales.
+	\item según el propósito como generales o específicos.
+		\subitem Los corpus con fines generales, tienen como objetivo principal, constituir una fuente de información textual de una lengua para fines y aplicaciones diversas.
+		\subitem En cambio, los corpus con fines específicos, se han creado como respuesta a un propósito particular, como el
+		estudio de aspectos	concretos de la gramática o	del léxico de la lengua para un	dominio concreto, para una aplicación concreta, o para una tarea concreta.
+	\item según el número de lenguas utilizadas como monolingües o multilingües. Dentro de los corpus multilingües hay que distinguir entre los corpus paralelos y los corpus comparables.
+		\subitem Los corpus paralelos son un conjunto de textos donde cada uno de éstos es la traducción exacta y fiable del idioma original a otras lenguas.
+		\subitem Los corpus comparables son un conjunto de textos en varios idiomas que contienen información sobre un tema común pero que no requieren una traducción exacta del idioma original a otras lenguas.
+	\item según la información lingüística que incorporan como anotados (etiquetados) o no anotados (no-etiquetados). Los corpus no anotados pueden ser recolecciones directas desde Internet. Y los corpus anotados son fundamentales ya que proporcionan una información valiosísima adicional en forma de marcas o anotaciones incluidas en cada secuencia de	caracteres de los textos para trabajar con los sistemas del PLN.
+\end{itemize}
 
 \section*{Ejemplos}
 
@@ -138,6 +152,28 @@ Su uso mayoritario es en aplicaciones de sistemas multilingües de PLN. Y el con
 Familiarmente a WordNet, BabelNet agrupa palabras de diferentes idiomas en conjuntos de sinónimos. Para cada conjunto de sinónimos, BabelNet provee pequeñas definiciones en muchos idiomas obtenidos tanto de WordNet como de Wikipedia.
 
 \subsection*{Corpus}
+
+Dos ejemplos de corpus que incorporan el español son el corpus oral \href{http://www.talp.upc.edu/content/albayzin}{Albayzin} y el corpus anotado \href{https://www.dlsi.ua.es/projectes/3lb/}{3LB}. 
+
+El corpus oral español {\bf Albayzin} consta de 3 subcorpus de señales de 16 kHz y 16 bits, grabadas por 304 hablantes de castellano.
+
+Los 3 subcorpus son:
+
+\begin{itemize}
+	\item un corpus fonético con 6.800 enunciados de oraciones fonéticamente equilibradas, incluidos 1000 enunciados con segmentación fonética.
+	\item un corpus geográfico con 6.800 enunciados de oraciones extraídas de una base de datos geográfica española.
+	\item un corpus "lombardo" con 2.000 declaraciones de diferentes corpus.
+\end{itemize}
+
+Albayzin fue producido en 1998 después de ser diseñado entre los años 1991 y 1993 por un consorcio de 6 grupos de investigación españoles liderados por el grupo de Procesamiento del Habla de la UPC.
+
+Por otro lado, el corpus anotado {\bf 3LB} es un proyecto para la construcción de una base de datos de árboles sintáctico-semánticos que tiene como objetivo la construcción de tres corpus anotados sintácticamente para el español, el catalán y el euskera.
+
+A pesar de que la construcción de tres corpus anotados sintácticamente es una tarea costosa, es una labor imprescindible para el desarrollo de aplicaciones reales en el área del PLN y como tal para el desarrollo de la sociedad de la información. 
+Resulta imprescindible la obtención de gramáticas computacionales a partir de corpus que son un primer paso hacia procesos posteriores que requieren más elaboración. Entre estos procesos se halla la delimitación de las entidades discursivas, lo que, junto con la identificación de los elementos anafóricos y correferentes mejora sustancialmente la calidad de todos los sistemas de Traducción Automática (TA), Extracción de Información (EI), Recuperación de Información (RI), Resumen Automático (RA) y sistemas de Pregunta-Respuesta (PR). 
+
+Otras tareas lingüísticas que pueden abordarse si se dispone de tres corpus anotados sintácticamente son el aprendizaje de restricciones de selección o el de los patrones de subcategorización de los verbos.
+
 
 % Pregunta 2
 {\bf \question Explique las aplicaciones de PLN que pueden estar interesadas en el uso de un Gazetter (2 puntos).}
