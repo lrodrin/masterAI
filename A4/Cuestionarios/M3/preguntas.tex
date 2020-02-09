@@ -35,21 +35,49 @@ Hay de muchos tipos de lexicones especializados, dentro de distintas categorías
 	\item Detectores de fechas, números, fórmulas, etc.
 \end{itemize}
 
-En realidad, los lexicones especializados están orientados a ciertas aplicaciones o a ciertos dominios concretos. Por ejemplo, en las aplicaciones de análisis de sentimientos aparecen listas de términos polares (positivos y negativos); y en las aplicaciones de recuperación de información geográfica se pueden tener listas de topónimos y localizaciones. Por otra parte, en los dominios de tipo biomédico aparecen listas de términos u ontologías médicas; y en los dominios de tipo turístico se pueden tener listas de monumentos, ciudades, etc.; o también listas de topónimos, como en el caso de las aplicaciones.
+En realidad, los lexicones especializados están orientados a ciertas aplicaciones o a ciertos dominios concretos. Por ejemplo, en las aplicaciones de análisis de sentimientos aparecen listas de términos polares (positivos y negativos); y en las aplicaciones de recuperación de información geográfica se pueden tener listas de topónimos y localizaciones. Por otra parte, en los dominios de tipo biomédico aparecen listas de términos; y en los dominios de tipo turístico se pueden tener listas de monumentos, ciudades, etc.; o también listas de topónimos, como en el caso de las aplicaciones.
 
 Los {\bf Diccionarios} son listas de palabras, donde cada palabra contiene su definición y a veces su etimología. Existen diferentes tipos de diccionarios dependiendo de si son normativos, de uso, de aprendizaje, etc. Y según el número de lenguas utilizadas puede ser diccionarios monolingües, bilingües o multilingües.
 
 Dentro de este tipo también se encuentran las enciclopedias y los tesauros que son recursos lingüísticos parecidos a los diccionarios, pero son un poco más avanzados. Por ejemplo, un tesauro es una lista de palabras o términos controlados, empleados para representar conceptos.
 
-Una Ontología
+Una {\bf Ontología} es la especificación formal y explícita de una conceptualización compartida.
 
-Corpus
+\begin{itemize}
+	\item Conceptualización porqué es una forma de entender o describir un dominio. 
+	\item Compartida porqué se entiende consensuada por un grupo y por varias partes.
+	\item Explícita porqué está descrita en un lenguaje.
+	\item Formal porqué es comprensible por las máquinas.
+\end{itemize}
+
+Los tipos de ontologías conocidas son:
+
+\begin{itemize}
+	\item Las genéricas, que describen conceptos genéricos (espacio, tiempo, objeto, ...).
+	\item Las específicas para un dominio, que expresan conceptos de dominios particulares (medicina, bioquímica, turismo, ...).
+	\item Las específicas para una tarea, que expresan conceptos sobre la resolución de problemas (diagnósticos, ventas, ...).
+	\item Las que están diseñadas específicamente para una aplicación, que describen conceptos que dependen tanto de un dominio específico como de una tarea específica
+	(procesos de producción, cardiología, ...).
+\end{itemize}
+
+En la actualidad, el uso de las ontologías y su integración en los sistemas de PLN se está potenciando muchísimo precisamente porqué están apareciendo nuevas tendencias que requieren de su potencial para trabajar con información que puede ser ingerida o de sentido común y con ello poder generar y desarrollar nuevos sistemas mucho más eficientes. Alguna de esas nuevas tendencias son la Web semántica, la implicación textual, la minería de datos y el Big Data. 
+
+Este uso de las ontologías es para:
+
+\begin{itemize}
+	\item Definir e unificar un espacio global de la información para compartir conocimiento, facilitar el razonamiento automático, etc.
+	\item Estandarizar tipos de datos.
+	\item Simplificar el acceso a los datos.
+	\item Gestionar los datos definiendo los conceptos y sus relaciones básicas para la comprensión de un área.
+\end{itemize}
+
+{\bf Corpus}
 
 \section*{Ejemplos}
 
 \subsection*{Lexicones}
 
-Dos ejemplos de lexicones en español que merecen especial atención son WordNet y Acquilex, que son considerados bases de datos léxicas multilingüe o también ontologías léxicas multilingüe. 
+Dos ejemplos de lexicones en español que merecen especial atención son WordNet y Acquilex, que son considerados bases de datos léxicas multilingüe. 
 
 {\bf WordNet} es un sistema electrónico de referencia léxica multilingüe, desarrollado en forma de base de datos léxica. Su diseño está en consonancia con teorías psicolingüísticas relativas a la organización de la información léxica en la mente del hablante. Además constituye el intento de reflejar un modelo de memoria léxica, basado en redes semánticas, en un modelo lexicográfico de organización léxica. 
 
@@ -89,7 +117,7 @@ En esta sección se destacan tres ejemplos. Un ejemplo de diccionario (el diccio
 	
 	La Wikipedia está sustituyendo a todas las enciclopedias españolas conocidas, como por ejemplo a la Enciclopedia Libre Universal en Español o la enciclopedia Encarta de Microsoft, aunque a veces su fiabilidad es cuestionada ya que puede ser editada por todo el mundo.
 	
-	Un dato importante en términos de PLN es que es una enciclopedia que se incorpora muy bien con los sistemas PLN, con resultados realmente sorprendentes.
+	Un dato importante en términos de PLN es que es una enciclopedia que se incorpora muy bien con los sistemas de PLN, con resultados realmente sorprendentes.
 	
 	\item El tesauro ISOC de Economía tiene como objetivo, facilitar un análisis homogéneo de los documentos que se incorporen a las bases de datos terminológicas y permitir al usuario la recuperación de estos de forma precisa y exhaustiva. El rasgo determinante de este tesauro es su base empírica y su utilidad contrastada durante décadas en distintos sistemas de información económica especializada. Por lo demás, su estructura interna responde al modelo tradicional de los tesauros que articula los términos en torno a una red de relaciones jerárquicas, asociativas y de equivalencia, eliminando así las posibles ambigüedades y polisemias, y facilitando la percepción de la afinidad y/o diferenciación semántica entre ellos. 
 	
@@ -98,6 +126,16 @@ En esta sección se destacan tres ejemplos. Un ejemplo de diccionario (el diccio
 \end{itemize}
 
 \subsection*{Ontologías}
+
+De ejemplos de ontologías hay muchísimos.
+
+Curiosamente, el lexicón {\bf WordNet}, comentado anteriormente, también puede ser un ejemplo de ontología ya que muchos de sus autores lo consideran como una auténtica ontología. De hecho porqué las ontologías generan cierta controversia en el campo de la Inteligencia Artificial (IA), ya que no existe claridad entre las ontologías y los lexicones.
+
+Otro ejemplo parecido a WordNet, es \href{https://babelnet.org/}{BabelNet} . {\bf BabelNet} es una red semántica multilingüe creada a partir de la integración de WordNet y Wikipedia, y también una ontología lexicalizada. BabelNet ha sido creado automáticamente integrando la Wikipedia en la base de datos léxica WordNet. La integración se realiza a través de un mapeo automático, al tiempo que se llenan los huecos de idiomas con pocos recursos con la ayuda de traductores automáticos. El resultado es un diccionario enciclopédico que provee conceptos y entidades lexicalizadas en muchos idiomas, incluido el español, y conectadas a través de relaciones semánticas. 
+
+Su uso mayoritario es en aplicaciones de sistemas multilingües de PLN. Y el conocimiento lexicalizado que se encuentra disponible en BabelNet también se ha utilizado para obtener los mejores resultados conocidos hasta el momento en similitud semántica y desambiguación multilingüe.
+
+Familiarmente a WordNet, BabelNet agrupa palabras de diferentes idiomas en conjuntos de sinónimos. Para cada conjunto de sinónimos, BabelNet provee pequeñas definiciones en muchos idiomas obtenidos tanto de WordNet como de Wikipedia.
 
 \subsection*{Corpus}
 
