@@ -178,12 +178,18 @@ Otras tareas lingüísticas que pueden abordarse si se dispone de tres corpus an
 % Pregunta 2
 {\bf \question Explique las aplicaciones de PLN que pueden estar interesadas en el uso de un Gazetter (2 puntos).}
 
+Un Gazetter o diccionario geográfico es un índice geográfico o directorio utilizado junto con un mapa o un atlas.
+
+En el mundo digital actual, un diccionario geográfico se usa comúnmente en la computación gráfica y los Sistemas de Información Geográfica (SIG), como índice de ciudades, pueblos, aldeas, aeropuertos, puertos y otros puntos de interés. Los nombres se almacenan con atributos como la ubicación (una coordenada de latitud / longitud) y, a veces, estadísticas como la población.
+
+Un ejemplo de diccionario geográfico digital moderno es \href{https://www.europa.uk.com/map-data/global/global-360/}{Global 360}.
+
+Global 360 es un diccionario geográfico global en forma de base de datos que contiene más de 980.000 ubicaciones. La aplicación enumera lugares, países, regiones administrativas, islas, aeropuertos, puertos, parques nacionales, lagos y puntos de interés general (como lugares turísticos). Es ideal para cualquier aplicación que requiera un recurso de ubicación global consistente para búsquedas basadas en la Web, la geocodificación, etc. y constituye un componente valioso de una Infraestructura de Datos Espaciales (SDI). 
+
 % Pregunta 3
 {\bf \question Describa las diferencias entre un reconocedor de entidades y un clasificador de entidades (2 puntos).}
 
-Un reconocedor de entidades solo detecta las palabras, dentro de un documento, que se comportan como entidades sin indicar de que tipo son. En cambio, un clasificador de entidades además de detectar las palabras que se comportan como entidades, clasifica las entidades reconocidas según su tipo.
-
-Un clasificador de entidades también incorpora otra subtarea que un reconocedor de entidades no utiliza, que consiste en el proceso de la desambiguación de las entidades reconocidas.
+Un reconocedor de entidades solo detecta las palabras, dentro de un documento, que se comportan como entidades sin indicar de que tipo son. En cambio, un clasificador de entidades además de detectar las palabras que se comportan como entidades, clasifica las entidades reconocidas según su tipo. Un clasificador de entidades también incorpora otra subtarea que un reconocedor de entidades no utiliza, que consiste en el proceso de la desambiguación de las entidades reconocidas.
 
 % Pregunta 4
 {\bf \question Indique al menos 5 ejemplos de entidades ambiguas (2 puntos).}
@@ -198,6 +204,12 @@ Un clasificador de entidades también incorpora otra subtarea que un reconocedor
 
 % Pregunta 5
 {\bf \question Razone si el uso de un reconocedor de entidades sería beneficioso para el Análisis de Opiniones. El Análisis de Opiniones es la tarea que se encarga de la clasificación automática de opiniones (2 puntos).}
+
+El uso de un reconocedor de entidades para el análisis de opiniones consistiría en utilizar los comentarios como entidades con la que generar el modelo de PLN. Dichos comentarios serían etiquetados previamente en base a las diferentes emociones detectadas en el comentario. Una vez etiquetado el suficiente volumen de comentarios se procedería a entrenar el modelo con el cual se analizarían los nuevos comentarios producidos.
+
+Con dicho modelo, cada nueva opinión puede ser evaluada de manera automática sin revisión constante de una persona, y el sistema se limitaría a revisar los resultados del análisis automático y a extraer conclusiones.
+
+Con un aumento en las actividades de las redes sociales, las opiniones son vistas como productos valiosos desde una perspectiva comercial y este tipo de modelo es muy útil si se quiere analizar a gran escala las emociones que transmite una marca, una campaña o un competidor. Muchas aplicaciones, ya escuchan las redes y analizan instantáneamente miles de mensajes para detectar opiniones acerca de un tema, una persona o un producto. También, sirven para dibujar las comunidades de internautas, sus usuarios más influyentes y las relaciones entre ellos.
 
 \end{questions}
 
