@@ -181,8 +181,20 @@ Otras tareas lingüísticas que pueden abordarse si se dispone de tres corpus an
 % Pregunta 3
 {\bf \question Describa las diferencias entre un reconocedor de entidades y un clasificador de entidades (2 puntos).}
 
+Un reconocedor de entidades solo detecta las palabras, dentro de un documento, que se comportan como entidades sin indicar de que tipo son. En cambio, un clasificador de entidades además de detectar las palabras que se comportan como entidades, clasifica las entidades reconocidas según su tipo.
+
+Un clasificador de entidades también incorpora otra subtarea que un reconocedor de entidades no utiliza, que consiste en el proceso de la desambiguación de las entidades reconocidas.
+
 % Pregunta 4
 {\bf \question Indique al menos 5 ejemplos de entidades ambiguas (2 puntos).}
+
+\begin{itemize}
+	\item La Universidad de Barcelona, ya que puede ser de tipo organización (ORG) o localización (LOC).
+	\item La ciudad de París, ya que puede ser de tipo localización (LOC) como capital de Francia, o de tipo personas (PER) como Paris Hilton.
+	\item Sun, ya que puede ser de tipo organización (ORG) como la empresa informática, o de tipo personas (PER) como el personaje de ficción de la serie Perdidos.
+	\item La gran manzana, ya que puede ser de tipo localización (LOC) como la Ciudad de Nueva York, o de tipo miscelánea (MISC) como una manzana de gran tamaño.
+	\item Floyd, ya que puede ser de tipo localización (LOC) como la población de Iowa, o de tipo personas (PER) como el grupo de música Pink Floyd.
+\end{itemize}
 
 % Pregunta 5
 {\bf \question Razone si el uso de un reconocedor de entidades sería beneficioso para el Análisis de Opiniones. El Análisis de Opiniones es la tarea que se encarga de la clasificación automática de opiniones (2 puntos).}
