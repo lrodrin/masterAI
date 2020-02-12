@@ -1,0 +1,143 @@
+---
+title: "Practical: Data Preparation"
+author: "Laura Rodriguez Navas"
+date: "February 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Exercise 1: Inspection of data.
+The “titanic.csv” file (available on the platform) contains data on the sinking of the Titanic. Copy the file in your working directory. Then, go to R and use the command:
+
+```{r}
+titanic <- read.csv("titanic.csv",header=TRUE, sep=",")
+```
+
+Show the names of the columns.
+
+```{r}
+head(titanic, 1)
+```
+
+Observe that the first column (whose name is "X") is redundant (it denotes the identifier of each in- stance) so it could be removed. To do this, use the subset command as follows (use help if needed):
+
+```{r}
+titanic <- subset(titanic, select=-X)
+```
+
+Now try the following commands:
+```{r}
+titanic
+head(titanic)
+summary(titanic)
+plot(titanic)
+```
+
+Which variables are quantitative and which variables are categorical? How can we know it?
+
+## TODO
+
+## Exercise 2: Working with basic graphics.
+Download the file “cars.csv” from the platform. This file contains information about the speed and stopping distances of cars.
+
+```{r}
+cars <- read.csv("cars.csv", header=TRUE, sep=",")
+cars <- subset(cars, select=-X)
+cars
+```
+
+Make a plot of the distance field in terms of the speed field (use the $ syntax).
+
+```{r}
+plot(cars$dist, cars$speed, main="CARS", col.main = "blue", xlab="Distance", ylab="Speed")
+```
+
+Make a histogram of the distance variable.
+
+```{r}
+hist(cars$dist, main="Histogram of CARS distance", col.main = "blue", xlab="Distance", col="red")
+```
+
+Make a histogram of the speed variable.
+
+```{r}
+hist(cars$speed, main="Histogram of CARS speed", col.main = "blue", xlab="Speed", col="red")
+```
+
+## Exercise 3: Transformations of variables and datasets.
+Now, assume that data from two more cars are made available:
+
+# TODO
+
+Construct a new data frame with the above data.
+
+```{r}
+new_cars <- data.frame(speed=c(21, 34), dist=c(47, 87))
+new_cars
+```
+
+Add the constructed data frame to the cars data frame.
+
+```{r}
+tail(cars)
+cars <- rbind(cars, new_cars)
+tail(cars)
+```
+
+Sort the data in the resulting dataset by column speed (ascending).
+
+```{r}
+cars <- cars[order(cars$speed), ]
+cars
+```
+
+## Exercise 4: Data manipulation.
+Download the file “airquality.csv” from the platform. This dataset contains some New York air quality measurements.
+
+```{r}
+airquality <- read.csv("airquality.csv",header=TRUE, sep=",")
+```
+
+Extract the first 2 rows of the data frame and print them to the console. What does the output look like?
+
+```{r}
+head(airquality, 2)
+```
+
+How many observations (i.e. rows) are in this data frame?
+```{r}
+nrow(airquality)
+```
+
+What is the value of Ozone in the 40th row?
+```{r}
+airquality[40,1]
+```
+
+How many missing values are in the Ozone column of this data frame?
+
+```{r}
+sum(is.na(airquality$Ozone))
+```
+
+What is the mean of the Ozone column in this dataset? Exclude missing values (coded as NA) from this calculation.
+
+```{r}
+airquality_tmp <- airquality[complete.cases(airquality$Ozone), ]
+sum(is.na(airquality_tmp$Ozone))
+nrow(airquality_tmp)
+mean(airquality_tmp$Ozone)
+```
+
+Extract the subset of rows of the data frame where Ozone values are above 31 and Temp values are above 90. What is the mean of Solar.R in this subset?
+
+```{r}
+solarSubset <- subset(airquality_tmp , airquality_tmp$Ozone > 31 | airquality_tmp$Temp > 90)
+solarSubset_tmp <- solarSubset[complete.cases(solarSubset$Solar.R), ]
+mean(solarSubset_tmp$Solar.R)
+```
+
+## Exercise 5: Data transformation (2).
