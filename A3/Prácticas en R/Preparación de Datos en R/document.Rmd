@@ -158,15 +158,32 @@ Day=1.
 7.1 Calculate a correlation matrix for the air dataset. Do you see a pair of attributes that are redundant?
 
 ```{r}
-
+cor(airquality)
 ```
 
 7.2 Calculate a correlation matrix for the cars dataset. Do you see a pair of attributes that are redundant?
 
 ```{r}
-
+cor(cars)
 ```
 
-7.3 Using the data frame ‘air’, perform a simple random sampling of 50 examples.
+7.3 Using the data frame airquality, perform a simple random sampling of 50 examples.
+```{r include=FALSE}
+library(dplyr)
+library(tidyr)
+options(tibble.print_max = Inf)
+```
 
-7.4 Using the data frame ‘air’, perform a stratified random sampling of 5 examples of each month.
+```{r}
+sample_n(airquality, 50)
+```
+
+7.4 Using the data frame airquality, perform a stratified random sampling of 5 examples of each month.
+
+```{r}
+set.seed(1)
+airquality %>%
+    group_by (Month) %>%
+    sample_n(., 5)
+```
+

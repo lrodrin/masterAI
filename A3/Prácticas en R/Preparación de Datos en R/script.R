@@ -41,6 +41,15 @@ mean(solarSubset_tmp$Solar.R)
 # Exercise 7
 cor(airquality)
 cor(cars)
+library(dplyr)
+library(tidyr)
+options(tibble.print_max = Inf)
+sample_n(airquality, 50)
+set.seed(1)
+airquality %>%
+    group_by (Month) %>%
+    sample_n(., 5)
+
 
 
 
