@@ -1,8 +1,10 @@
 ---
-title: "Practical: Data Preparation"
+title: 'Practical: Data Preparation'
 author: "Laura Rodriguez Navas"
 date: "February 2020"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
