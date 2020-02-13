@@ -36,4 +36,11 @@ mean(solarSubset_tmp$Solar.R)
 
 # Exercise 5
 
+# Exercise 6
+
+# Exercise 7
+cor(airquality)
+cor(cars)
+
+
 

@@ -145,3 +145,28 @@ mean(solarSubset_tmp$Solar.R)
 ```
 
 ## Exercise 5: Data transformation (2).
+
+5.1 Discretise the Ozone column into five bins (‘bin1’, ‘bin2’, ...) of equal width and a sixth bin (‘binNA’) for NA.
+5.2 Discretise the Solar column into four bins of equal size and a fifth bin for NA.
+5.3 Create a new column AbsDay from the columns Month and Day such that counts the number of days passed from Month=5 and
+Day=1.
+
+## Exercise 6: Data transformation (3).
+
+## Exercise 7: Data selection.
+
+7.1 Calculate a correlation matrix for the air dataset. Do you see a pair of attributes that are redundant?
+
+```{r}
+
+```
+
+7.2 Calculate a correlation matrix for the cars dataset. Do you see a pair of attributes that are redundant?
+
+```{r}
+
+```
+
+7.3 Using the data frame ‘air’, perform a simple random sampling of 50 examples.
+
+7.4 Using the data frame ‘air’, perform a stratified random sampling of 5 examples of each month.
