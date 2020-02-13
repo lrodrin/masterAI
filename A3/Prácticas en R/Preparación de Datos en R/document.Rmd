@@ -49,37 +49,39 @@ cars <- subset(cars, select=-X)
 cars
 ```
 
-Make a plot of the distance field in terms of the speed field (use the $ syntax).
+2.1 Make a plot of the distance field in terms of the speed field (use the $ syntax).
 
 ```{r}
 plot(cars$dist, cars$speed, main="CARS", col.main = "blue", xlab="Distance", ylab="Speed")
 ```
 
-Make a histogram of the distance variable.
+2.2 Make a histogram of the distance variable.
 
 ```{r}
 hist(cars$dist, main="Histogram of CARS distance", col.main = "blue", xlab="Distance", col="red")
 ```
 
-Make a histogram of the speed variable.
+2.3 Make a histogram of the speed variable.
 
 ```{r}
 hist(cars$speed, main="Histogram of CARS speed", col.main = "blue", xlab="Speed", col="red")
 ```
+
+The modifications of section 2.4 have been made in the previous sections.
 
 ## Exercise 3: Transformations of variables and datasets.
 Now, assume that data from two more cars are made available:
 
 # TODO
 
-Construct a new data frame with the above data.
+3.1 Construct a new data frame with the above data.
 
 ```{r}
 new_cars <- data.frame(speed=c(21, 34), dist=c(47, 87))
 new_cars
 ```
 
-Add the constructed data frame to the cars data frame.
+3.2 Add the constructed data frame to the cars data frame.
 
 ```{r}
 tail(cars)
@@ -87,7 +89,7 @@ cars <- rbind(cars, new_cars)
 tail(cars)
 ```
 
-Sort the data in the resulting dataset by column speed (ascending).
+3.3 Sort the data in the resulting dataset by column speed (ascending).
 
 ```{r}
 cars <- cars[order(cars$speed), ]
@@ -101,29 +103,31 @@ Download the file “airquality.csv” from the platform. This dataset contains 
 airquality <- read.csv("airquality.csv",header=TRUE, sep=",")
 ```
 
-Extract the first 2 rows of the data frame and print them to the console. What does the output look like?
+4.1 Extract the first 2 rows of the data frame and print them to the console. What does the output look like?
 
 ```{r}
 head(airquality, 2)
 ```
 
-How many observations (i.e. rows) are in this data frame?
+4.2 How many observations (i.e. rows) are in this data frame?
+
 ```{r}
 nrow(airquality)
 ```
 
-What is the value of Ozone in the 40th row?
+4.3 What is the value of Ozone in the 40th row?
+
 ```{r}
 airquality[40,1]
 ```
 
-How many missing values are in the Ozone column of this data frame?
+4.4 How many missing values are in the Ozone column of this data frame?
 
 ```{r}
 sum(is.na(airquality$Ozone))
 ```
 
-What is the mean of the Ozone column in this dataset? Exclude missing values (coded as NA) from this calculation.
+4.5 What is the mean of the Ozone column in this dataset? Exclude missing values (coded as NA) from this calculation.
 
 ```{r}
 airquality_tmp <- airquality[complete.cases(airquality$Ozone), ]
@@ -132,7 +136,7 @@ nrow(airquality_tmp)
 mean(airquality_tmp$Ozone)
 ```
 
-Extract the subset of rows of the data frame where Ozone values are above 31 and Temp values are above 90. What is the mean of Solar.R in this subset?
+4.6 Extract the subset of rows of the data frame where Ozone values are above 31 and Temp values are above 90. What is the mean of Solar.R in this subset?
 
 ```{r}
 solarSubset <- subset(airquality_tmp , airquality_tmp$Ozone > 31 | airquality_tmp$Temp > 90)
