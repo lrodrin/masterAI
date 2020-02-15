@@ -3,7 +3,8 @@ title: 'Practical 4: Visualisation using qplot()'
 author: "Laura Rodriguez Navas"
 date: "February 2020"
 output:
-  pdf_document: default
+  pdf_document: 
+    keep_tex: yes
   html_document: default
 ---
 
