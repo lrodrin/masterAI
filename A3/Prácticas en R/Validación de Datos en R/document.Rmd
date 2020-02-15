@@ -1,0 +1,119 @@
+---
+title: 'Practical 4: Visualisation using qplot()'
+author: "Laura Rodriguez Navas"
+date: "February 2020"
+output:
+  pdf_document: 
+    keep_tex: yes
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(ggplot2)
+queratocono <- read.csv("Queratocono.csv", header=TRUE, sep=",")
+```
+
+Keratoconus is a disorder that affects the cornea through an abnormal growth of collagen fibres. This makes the cornea become conical with an important vision loss. There are many possible treatments, but one common solution is the insertion of intrastromal corneal ring segments, such that the cornea is flattened.
+
+## TODO insert img in LaTeX
+
+## Dataset
+
+The file “queratocono.csv” includes information about 394 patients with Keratoconus who were treated with ring placement. The variables that were recorded are:
+
+1. K1: keratometry or main corneal curvature.
+2. K2: perpendicular curvature to K1.
+3. Ch: corneal hysteresis.
+4. Na: number of rings (1 or 2).
+5. Incision: angle in which the cornea is cut.
+6. Prof: depth of the incision.
+7. Diam: diameter of the incision.
+8. Grosor: Incision thickness.
+9. Longitud1: Angle of placement of the first ring (surgical parameter).
+10. Longitud2: Angle of placement of the second ring (surgical parameter).
+11. grosor1: Thickness of the first ring.
+12. grosor2: Thickness of the second ring.
+13. long1: arc length of the first ring.
+14. long2: arc length of the second ring.
+15. K1.salida: keratometry or main corneal curvature after the placement of the ring(s).
+16. Astig: astigmatism curvature after the placement of the ring(s) (K1.salida – K2.salida).
+
+A continuation, is provided a sample of the content of each variable of dataset. It is also checked that there are no NA values and the dataset is ordered by the column na.
+
+```{r}
+str(queratocono)
+any(is.na(queratocono))
+queratocono <- queratocono[order(queratocono$na), ]
+str(queratocono)
+```
+
+## Analysis
+
+In order to analyse the information in a visual way:
+
+1. Study the relation between K1 and K2 with smoother (by default and using linear regression).
+
+```{r}
+qplot(K1, K2, data = queratocono) +
+  geom_point() + 
+  geom_smooth(method = "loess") +
+  xlab("K1") + ylab("K2")
+  
+qplot(K1, K2, data = queratocono) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  xlab("K1") + ylab("K2")
+```
+
+2. Study the relation between K1 and K2 distinguishing by factor na.
+
+```{r}
+qplot(K1, K2, data = queratocono, colour = factor(na)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  xlab("K1") + ylab("K2") +
+  ggtitle("Relation between K1 and K2") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+3. Study the relation between K1 and K1.salida.
+
+```{r}
+qplot(K1, K1.salida, data = queratocono) +
+  geom_point() + 
+  xlab("K1") + ylab("K1.salida")
+```
+
+
+4. Build a histogram in terms of grosor (note that grosor should be taken as a factor) of the inserted ring.
+
+```{r}
+ggplot(queratocono, aes(factor(grosor), geom = "bar" , fill = factor(na))) +
+  geom_bar()
+```
+
+
+5. Build a scatter plot of the relation between K1 and K2 with “faceting” in terms of the parameters diam and na, by assigning different colours to the points according to the thickness (grosor) of the ring. In order to visualise all points correctly use a transparency of value 1/3.
+
+```{r}
+qplot(K1, K2, data = queratocono, colour = factor(grosor), facets = diam ~ na, 
+      size = I(1/3)) +
+      geom_point() + 
+      scale_shape_manual(values = 0:7) +
+      xlab("K1") + ylab("K2")
+```
+
+
+6. Create two boxplots that show a summary of the distributions of K1 and K2 (separately) with respect to the thickness (grosor).
+
+```{r}
+qplot(factor(grosor), K1, data = queratocono, geom = "boxplot") +
+  xlab("factor(grosor)") + ylab("K1")
+
+qplot(factor(grosor), K2, data = queratocono, geom = "boxplot") +
+  xlab("factor(grosor)") + ylab("K2")
+```
+
