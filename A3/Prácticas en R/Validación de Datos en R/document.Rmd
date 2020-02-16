@@ -17,9 +17,7 @@ queratocono <- read.csv("Queratocono.csv", header=TRUE, sep=",")
 
 Keratoconus is a disorder that affects the cornea through an abnormal growth of collagen fibres. This makes the cornea become conical with an important vision loss. There are many possible treatments, but one common solution is the insertion of intrastromal corneal ring segments, such that the cornea is flattened.
 
-## TODO insert img in LaTeX
-
-## Dataset
+### TODO insert img in LaTeX
 
 The file “queratocono.csv” includes information about 394 patients with Keratoconus who were treated with ring placement. The variables that were recorded are:
 
@@ -40,16 +38,22 @@ The file “queratocono.csv” includes information about 394 patients with Kera
 15. K1.salida: keratometry or main corneal curvature after the placement of the ring(s).
 16. Astig: astigmatism curvature after the placement of the ring(s) (K1.salida – K2.salida).
 
-A continuation, is provided a sample of the content of each variable of dataset. It is also checked that there are no NA values and the dataset is ordered by the column na.
+## Data Preparation
+
+Check that there is no NA value.
 
 ```{r}
-str(queratocono)
 any(is.na(queratocono))
+```
+
+The data in the dataset is sorted by column na.
+
+```{r}
 queratocono <- queratocono[order(queratocono$na), ]
 str(queratocono)
 ```
 
-## Analysis
+## Data Visualisation
 
 In order to analyse the information in a visual way:
 
@@ -90,11 +94,17 @@ qplot(K1, K1.salida, data = queratocono) +
 
 4. Build a histogram in terms of grosor (note that grosor should be taken as a factor) of the inserted ring.
 
+The way qplot color codes the bars is opposite to how the colors are displayed in the legend. It can be resolve this two different ways; either reversing the legend or specify the direction of the levels when transforming the transmission (na) variable into a factor. Both align the legend color coding layout to the color coding of the stacked bars and also determine which color is top versus on the bottom.
+
 ```{r}
-ggplot(queratocono, aes(factor(grosor), geom = "bar" , fill = factor(na))) +
-  geom_bar()
+qplot(factor(grosor), data = queratocono, geom = "bar", fill = factor(na, levels = c(2, 1))) +
+  guides(fill = guide_legend(reverse = TRUE)) +
+  scale_fill_manual(values = c("#00BFC4", "#F8766D")) +
+  labs(fill = "factor(na)") +
+  ylab("count")
 ```
 
+Manually the name of ylab has been changed since the method of qplot stat = "count" is deprecated. It is used by default but does not show the name  in the graph, as the method of ggplot does.
 
 5. Build a scatter plot of the relation between K1 and K2 with “faceting” in terms of the parameters diam and na, by assigning different colours to the points according to the thickness (grosor) of the ring. In order to visualise all points correctly use a transparency of value 1/3.
 

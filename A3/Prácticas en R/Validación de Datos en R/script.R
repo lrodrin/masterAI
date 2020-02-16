@@ -1,9 +1,8 @@
 library(ggplot2)
 queratocono <- read.csv("Queratocono.csv", header=TRUE, sep=",")
 any(is.na(queratocono))
-head(queratocono)
 queratocono <- queratocono[order(queratocono$na), ]
-head(queratocono)
+plot(queratocono)
 
 # 1
 qplot(K1, K2, data = queratocono) +
@@ -31,9 +30,12 @@ qplot(K1, K1.salida, data = queratocono) +
   xlab("K1") + ylab("K1.salida")
 
 # 4
-ggplot(queratocono, aes(factor(grosor), geom = "bar" , fill = factor(na))) +
-  geom_bar()
-  
+qplot(factor(grosor), data = queratocono, geom = "bar", fill = factor(na, levels = c(2, 1))) +
+  guides(fill = guide_legend(reverse = TRUE)) +
+  scale_fill_manual(values = c("#00BFC4", "#F8766D")) +
+  labs(fill = "factor(na)") +
+  ylab("count")
+
 # 5
 qplot(K1, K2, data = queratocono, colour = factor(grosor), facets = diam ~ na, 
       size = I(1/3)) +

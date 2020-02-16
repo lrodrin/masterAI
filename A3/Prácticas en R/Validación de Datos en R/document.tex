@@ -1,39 +1,46 @@
-\PassOptionsToPackage{unicode=true}{hyperref} % options for packages loaded elsewhere
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
 %
-\documentclass[]{article}
+\documentclass[
+]{article}
 \usepackage{lmodern}
 \usepackage{amssymb,amsmath}
 \usepackage{ifxetex,ifluatex}
-\usepackage{fixltx2e} % provides \textsubscript
 \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
-  \usepackage{textcomp} % provides euro and other symbols
-\else % if luatex or xelatex
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
   \usepackage{unicode-math}
-  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
 \fi
-% use upquote if available, for straight quotes in verbatim environments
+% Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
-% use microtype if available
-\IfFileExists{microtype.sty}{%
-\usepackage[]{microtype}
-\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
 }{}
-\IfFileExists{parskip.sty}{%
-\usepackage{parskip}
-}{% else
-\setlength{\parindent}{0pt}
-\setlength{\parskip}{6pt plus 2pt minus 1pt}
-}
-\usepackage{hyperref}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
 \hypersetup{
-            pdftitle={Practical 4: Visualisation using qplot()},
-            pdfauthor={Laura Rodriguez Navas},
-            pdfborder={0 0 0},
-            breaklinks=true}
-\urlstyle{same}  % don't use monospace font for urls
+  pdftitle={Practical 4: Visualisation using qplot()},
+  pdfauthor={Laura Rodriguez Navas},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
 \usepackage[margin=1in]{geometry}
 \usepackage{color}
 \usepackage{fancyvrb}
@@ -84,25 +91,14 @@
 % margins by default, and it is still possible to overwrite the defaults
 % using explicit options in \includegraphics[width, height, ...]{}
 \setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
-\setlength{\emergencystretch}{3em}  % prevent overfull lines
-\providecommand{\tightlist}{%
-  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\setcounter{secnumdepth}{0}
-% Redefines (sub)paragraphs to behave more like sections
-\ifx\paragraph\undefined\else
-\let\oldparagraph\paragraph
-\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
-\fi
-\ifx\subparagraph\undefined\else
-\let\oldsubparagraph\subparagraph
-\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
-\fi
-
-% set default figure placement to htbp
+% Set default figure placement to htbp
 \makeatletter
 \def\fps@figure{htbp}
 \makeatother
-
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 
 \title{Practical 4: Visualisation using qplot()}
 \author{Laura Rodriguez Navas}
@@ -118,10 +114,8 @@ common solution is the insertion of intrastromal corneal ring segments,
 such that the cornea is flattened.
 
 \hypertarget{todo-insert-img-in-latex}{%
-\subsection{TODO insert img in LaTeX}\label{todo-insert-img-in-latex}}
-
-\hypertarget{dataset}{%
-\subsection{Dataset}\label{dataset}}
+\subsubsection{TODO insert img in
+LaTeX}\label{todo-insert-img-in-latex}}
 
 The file ``queratocono.csv'' includes information about 394 patients
 with Keratoconus who were treated with ring placement. The variables
@@ -166,35 +160,10 @@ that were recorded are:
   (K1.salida -- K2.salida).
 \end{enumerate}
 
-A continuation, is provided a sample of the content of each variable of
-dataset. It is also checked that there are no NA values and the dataset
-is ordered by the column na.
+\hypertarget{data-preparation}{%
+\subsection{Data Preparation}\label{data-preparation}}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{str}\NormalTok{(queratocono)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## 'data.frame':    394 obs. of  16 variables:
-##  $ K1       : num  38.1 39.4 43.3 45.7 44.6 44.2 44.2 53.1 45.1 40.7 ...
-##  $ K2       : num  48.6 53.6 50.4 50.1 50.4 44.8 45.8 53.8 52.5 44.5 ...
-##  $ ch       : num  6.9 5.7 8.8 11.1 11.1 8.9 11.1 7.5 7.7 9.4 ...
-##  $ na       : int  2 2 2 1 2 1 1 1 2 1 ...
-##  $ Incision : int  60 140 120 30 60 180 130 60 60 30 ...
-##  $ Prof     : int  390 400 381 370 440 327 380 400 380 477 ...
-##  $ diam     : int  5 5 5 5 5 6 6 5 6 5 ...
-##  $ grosor   : int  300 300 200 250 200 200 200 200 225 200 ...
-##  $ Longitud1: int  90 105 120 160 120 150 210 160 120 160 ...
-##  $ Longitud2: int  180 210 240 160 240 150 210 160 240 160 ...
-##  $ grosor1  : int  300 300 200 250 200 200 200 200 200 200 ...
-##  $ grosor2  : int  300 300 200 0 200 0 0 0 250 0 ...
-##  $ long1    : int  90 90 120 160 120 150 210 160 90 160 ...
-##  $ long2    : int  90 120 120 0 120 0 0 0 150 0 ...
-##  $ K1.salida: num  35.5 42 42.7 45.8 44.4 42.8 43.1 48.7 45.7 39.8 ...
-##  $ Astig    : num  10.1 8.9 3 1.9 2.9 2.3 3.9 2.8 3.2 3.8 ...
-\end{verbatim}
+Check that there is no NA value.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -205,6 +174,8 @@ is ordered by the column na.
 \begin{verbatim}
 ## [1] FALSE
 \end{verbatim}
+
+The data in the dataset is sorted by column na.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -233,8 +204,8 @@ is ordered by the column na.
 ##  $ Astig    : num  1.9 2.3 3.9 2.8 3.8 4 5.3 1.2 0.3 1.8 ...
 \end{verbatim}
 
-\hypertarget{analysis}{%
-\subsection{Analysis}\label{analysis}}
+\hypertarget{data-visualisation}{%
+\subsection{Data Visualisation}\label{data-visualisation}}
 
 In order to analyse the information in a visual way:
 
@@ -255,7 +226,7 @@ In order to analyse the information in a visual way:
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{document_files/figure-latex/unnamed-chunk-2-1.pdf}
+\includegraphics{document_files/figure-latex/unnamed-chunk-3-1.pdf}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -266,7 +237,7 @@ In order to analyse the information in a visual way:
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{document_files/figure-latex/unnamed-chunk-2-2.pdf}
+\includegraphics{document_files/figure-latex/unnamed-chunk-3-2.pdf}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -288,7 +259,7 @@ In order to analyse the information in a visual way:
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{document_files/figure-latex/unnamed-chunk-3-1.pdf}
+\includegraphics{document_files/figure-latex/unnamed-chunk-4-1.pdf}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -306,7 +277,7 @@ In order to analyse the information in a visual way:
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{document_files/figure-latex/unnamed-chunk-4-1.pdf}
+\includegraphics{document_files/figure-latex/unnamed-chunk-5-1.pdf}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -317,14 +288,28 @@ In order to analyse the information in a visual way:
   as a factor) of the inserted ring.
 \end{enumerate}
 
+The way qplot color codes the bars is opposite to how the colors are
+displayed in the legend. It can be resolve this two different ways;
+either reversing the legend or specify the direction of the levels when
+transforming the transmission (na) variable into a factor. Both align
+the legend color coding layout to the color coding of the stacked bars
+and also determine which color is top versus on the bottom.
+
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{ggplot}\NormalTok{(queratocono, }\KeywordTok{aes}\NormalTok{(}\KeywordTok{factor}\NormalTok{(grosor), }\DataTypeTok{geom =} \StringTok{"bar"}\NormalTok{ , }\DataTypeTok{fill =} \KeywordTok{factor}\NormalTok{(na))) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{geom_bar}\NormalTok{()}
+\KeywordTok{qplot}\NormalTok{(}\KeywordTok{factor}\NormalTok{(grosor), }\DataTypeTok{data =}\NormalTok{ queratocono, }\DataTypeTok{geom =} \StringTok{"bar"}\NormalTok{, }\DataTypeTok{fill =} \KeywordTok{factor}\NormalTok{(na, }\DataTypeTok{levels =} \KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{))) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{guides}\NormalTok{(}\DataTypeTok{fill =} \KeywordTok{guide_legend}\NormalTok{(}\DataTypeTok{reverse =} \OtherTok{TRUE}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_fill_manual}\NormalTok{(}\DataTypeTok{values =} \KeywordTok{c}\NormalTok{(}\StringTok{"#00BFC4"}\NormalTok{, }\StringTok{"#F8766D"}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"factor(na)"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{ylab}\NormalTok{(}\StringTok{"count"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{document_files/figure-latex/unnamed-chunk-5-1.pdf}
+\includegraphics{document_files/figure-latex/unnamed-chunk-6-1.pdf}
+
+Manually the name of ylab has been changed since the method of qplot
+stat = ``count'' is deprecated. It is used by default but does not show
+the name in the graph, as the method of ggplot does.
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -348,7 +333,7 @@ In order to analyse the information in a visual way:
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{document_files/figure-latex/unnamed-chunk-6-1.pdf}
+\includegraphics{document_files/figure-latex/unnamed-chunk-7-1.pdf}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -366,7 +351,7 @@ In order to analyse the information in a visual way:
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{document_files/figure-latex/unnamed-chunk-7-1.pdf}
+\includegraphics{document_files/figure-latex/unnamed-chunk-8-1.pdf}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -375,6 +360,6 @@ In order to analyse the information in a visual way:
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{document_files/figure-latex/unnamed-chunk-7-2.pdf}
+\includegraphics{document_files/figure-latex/unnamed-chunk-8-2.pdf}
 
 \end{document}
