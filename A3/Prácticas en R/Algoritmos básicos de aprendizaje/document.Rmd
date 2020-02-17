@@ -1,0 +1,13 @@
+---
+title: "Untitled"
+author: "Laura Rodriguez Navas"
+date: "February 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(lattice)
+library(ggplot2)
+library(caret)
+```

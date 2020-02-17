@@ -40,7 +40,7 @@ plot(titanic)
 
 Which variables are quantitative and which variables are categorical? How can we know it?
 
-## TODO
+The categorical variables are: class, sex, age and survived. Because each variable can be classified into different categories. The variable frequency is quantitative because is a numerical variable. 
 
 ## Exercise 2: Working with basic graphics.
 Download the file “cars.csv” from the platform. This file contains information about the speed and stopping distances of cars.
