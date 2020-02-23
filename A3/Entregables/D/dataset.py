@@ -21,3 +21,9 @@ with open("dataset.csv", "w") as fd:
     for n in range(len(contador)):
         for i in range(contador[n]):
             df.loc[[n]].to_csv(fd, index=False, header=False, mode="a")
+
+
+# remove Contador column from dataset.csv
+df = pd.read_csv('dataset.csv')
+df = df.drop(["Contador"], axis=1)
+df.to_csv('dataset.csv', index=False)
