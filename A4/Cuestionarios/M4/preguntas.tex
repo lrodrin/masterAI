@@ -74,7 +74,14 @@ Para un ser humano, es evidente que en la primera frase se utilice la palabra "v
 
 Se han investigado una gran variedad de técnicas, desde métodos basados en diccionarios que utilizan el conocimiento codificado en recursos léxicos, hasta métodos supervisados de aprendizaje automático en los que se capacita a un clasificador para cada palabra distinta en un corpus de ejemplos anotados manualmente por significado, hasta métodos no supervisados que agrupan las ocurrencias de las palabras. Pero de entre estos, los enfoques de aprendizaje supervisado han sido los algoritmos más exitosos hasta la fecha.
 
-Existe una organización internacional \href{http://www.senseval.org}{Senseval} dedicada a la evaluación de los sistemas de desambiguación mediante una competición que tiene como objetivo final comprobar la potencia y debilidad de los sistemas presentados. Esta serie de evaluaciones proporcionan un mecanismo para caracterizar en términos más precisos exactamente lo que es necesario para calcular el significado. También se centran en la efectividad, la eficiencia, el coste de producción (implementación y disponibilidad de recursos), etc.
+Existe una organización internacional \href{http://www.senseval.org}{Senseval} dedicada a la evaluación de los sistemas de desambiguación mediante una competición que tiene como objetivo final comprobar la potencia y debilidad de los sistemas presentados. Esta serie de evaluaciones proporcionan un mecanismo para caracterizar en términos más precisos exactamente lo que es necesario para calcular el significado. También se centran en la efectividad, la eficiencia, el coste de producción (implementación y disponibilidad de recursos), etc. 
+
+Además, usan las típicas de recuperación de información:
+
+\begin{itemize}
+	\item Precisión= (palabras desambiguadas correctamente) / (palabras desambiguadas)
+	\item Recall = (palabras desambiguadas) / (palabras ambiguas)
+\end{itemize}
 
 % Pregunta 5
 {\bf \question Explique el concepto de ventana contextual y relaciónelo con el concepto de representación continua de palabras (word embeddings) (2 puntos).}
