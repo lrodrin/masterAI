@@ -1,8 +1,10 @@
 ---
-title: "Untitled"
+title: 'Entregable: Algoritmos básicos de aprendizaje'
 author: "Laura Rodriguez Navas"
-date: "February 2020"
-output: html_document
+date: "Febrero 2020"
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -11,3 +13,28 @@ library(lattice)
 library(ggplot2)
 library(caret)
 ```
+
+## Exploración previa de los datos
+
+El conjunto de datos inicial:
+
+```{r}
+glass <- read.table("glass.data", header = FALSE, sep = ",")
+head(glass, 10)
+```
+
+
+
+## Experimentación con los distintos modelos
+
+### OneR
+
+### kNN
+
+#### kNN con k=1
+
+#### kNN con k=1
+
+### Multilayer Perceptrón
+
+## Comparación de los modelos de aprendizaje
