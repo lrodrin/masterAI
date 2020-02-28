@@ -2,6 +2,7 @@ library(caret)
 library(rJava)
 library(RWeka)
 library(ggplot2)
+library(ROCR)
 
 glass <- read.table("glass.data", header = FALSE, sep = ",")
 

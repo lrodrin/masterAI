@@ -3,8 +3,8 @@ title: 'Entregable D: Algoritmos básicos de aprendizaje'
 author: "Laura Rodriguez Navas"
 date: "Febrero 2020"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
