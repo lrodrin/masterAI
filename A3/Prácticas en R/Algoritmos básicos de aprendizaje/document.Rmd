@@ -1,5 +1,5 @@
 ---
-title: 'Entregable D: Algoritmos básicos de aprendizaje'
+title: 'Entregable: Algoritmos básicos de aprendizaje'
 author: "Laura Rodriguez Navas"
 date: "Febrero 2020"
 output:
@@ -9,6 +9,13 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+options(tinytex.verbose = TRUE)
+library(caret)
+library(gplots)
+library(ggplot2)
+library(rJava)
+library(RWeka)
+library(ROCR)
 ```
 
 ## Los Datos
@@ -36,23 +43,20 @@ Las variables que se guardaron son:
 - 6 tableware 
 - 7 headlamps
 
-Primero debemos cargar los datos como un data frame, nombrado glass, y le damos nombres a las columnas.
+Primero debemos cargar los datos como data frame, y le damos nombres a las columnas.
 
 ```{r}
-library(caret)
-library(rJava)
-library(RWeka)
-library(ggplot2)
-library(ROCR)
+
 
 glass <- read.table("glass.data", header = FALSE, sep = ",")
-names(glass) <- c("Id number", "RI", "Na", "Mg", "Al", "Si", "K", "Ca", "Ba", "Fe",
-                 "Type of glass")
+names(glass) <- c("Id number", "RI", "Na", "Mg", "Al", "Si", "K", "Ca", "Ba", "Fe", "Type of glass")
 colnames(glass) <- make.names(colnames(glass))
 str(glass)
 ```
 
-Observamos que la primera columna (cuyo nombre es "Id number") es redundante (denota el identidficador de cada instancia), por lo que se borrará. También le cambiaremos el nombre a la última columna (cuyo nombre es "Type of glass") para que se entienda mejor que respresenta a la variable clase. El resto son las variables predictoras.
+Vemos como el conjunto de datos está formado por nueve variables predictoras y la variable de classe Type.of.glass. Y todas las variables són numéricas.
+
+Además, podemos observar que la primera columna (cuyo nombre es "Id.number") es redundante (denota el identidficador de cada instancia), por lo que borraremos esta columna. También le cambiaremos el nombre a la última columna (cuyo nombre es "Type.of.glass") para que se entienda mejor que respresenta la variable clase. 
 
 ```{r}
 glass <- subset(glass, select = -Id.number)
@@ -60,14 +64,16 @@ colnames(glass)[10] <- "Class"
 head(glass, 10)
 ```
 
-Aunque a primera vista los datos parecen que estan ordenados por la columna Class, los ordenamos. Y miramos que no existan valores codificados como NA.
+Aunque a primera vista los datos parecen que estan ordenados por la variable clase Class, los ordenamos; y miramos que no existan valores codificados como NA.
 
 ```{r}
 glass <- glass[order(glass$Class), ]
 any(is.na(glass))
 ```
 
-Como se ha comentado anteriormente, la columna Class representa la variabla clase. Pero en este caso contamos con 6 variables explicativas. Para poder generar una representación binária seleccionaremos solo los elementos de la columna Class con los valores {1, 2}, les cambiaremos el nombre {1 = positive, 2 = negative} y factorizaremos la varible clase.
+Como se ha comentado anteriormente, la columna Class representa la variable clase. Concretamente en este estudio contamos con seis variables explicativas. 
+
+A continuación, vamos a generar una representación binária. Primero, nos quedaremos solo con los valores de la varible classe {1, 2}, los renombraremos com {1 = "positive", 2 = "negative"} y factorizaremos.
 
 ```{r}
 glass <- subset(glass , glass$Class < 3)
@@ -79,15 +85,17 @@ for (i in 1:146) {
     glass$Class[i] <- 'negative'
   }
 }
-glass[,10]=as.factor(glass[,10])
+glass[,10] <- as.factor(glass[,10])
 str(glass)
 ```
 
+La desición de quedarnos con los tipos de vidrio {1, 2} es porqué del tipo de vidrio {4} no tenemos valores en este conjunto de datos para clasificar, juntamente con el tipo de vidrio {3}; y los {5, 6, 7} no pueden generar una representación biária con los otros tipos de vidrio.
+
 ## División de los datos en muestra de entrenamiento y de test
 
-Tomaremos una muestra del 70% del conjunto de datos como entrenamiento, el 30% del mismo como un conjunto de prueba.
+Tomaremos una muestra del 70% del conjunto de datos como entrenamiento y el 30% del mismo como un conjunto de datos de prueba.
 
-La validación cruzada 5 veces con muestreo estratificado se utiliza para dividir el conjunto de datos en conjuntos de entrenamiento y prueba. 
+La validación cruzada usada cinco veces con muestreo estratificado se utilizá para dividir el conjunto de datos.
 
 ```{r}
 set.seed(123)
@@ -101,51 +109,37 @@ str(training)
 str(testing)
 ```
 
-## Entrenamiento de los modelos
+## Entrenamiento de los modelos y evaluación
 
-Se utilizarán 3 algoritmos de clasificación diferentes para predecir. Los modelos son: OneR, kNN y Multilayer Perceptrón.
+Se utilizarán tres algoritmos de clasificación diferentes para entrenar, OneR, kNN y Multilayer Perceptrón.
 
 1. OneR.
 
 ```{r}
-oner <- train(Class ~ ., data = training,
-              method = "OneR",
-              trControl = fitControl)
+oner <- train(Class ~ ., data = training, method = "OneR", trControl = fitControl)
 oner
+
 onerPredict <- predict(oner, newdata = testing)
 cm_oner <- confusionMatrix(onerPredict, testing$Class)
-
-onerPredictProb <- predict(oner, newdata = testing, type = "prob")
-onerPred <- prediction(onerPredictProb$positive, testing$Class)
-onerPerf <- performance(onerPred, "tpr", "fpr")
+cm_oner
 ```
 
 2. kNN con k=1, k=3 y con peso por distancia (tres configuraciones en total).
 
 ```{r}
 grid_knn <- expand.grid(k = seq(1, 3))
-
-knn <- train(Class ~ ., data = training,
-              method = "knn",
-              trControl = fitControl,
-              tuneGrid = grid_knn)
+knn <- train(Class ~ ., data = training, method = "knn", trControl = fitControl, tuneGrid = grid_knn)
 knn
 
 knnPredict <- predict(knn, newdata = testing)
 cm_knn <- confusionMatrix(knnPredict, testing$Class)
-
-knnPredictProb <- predict(knn, newdata = testing, type = "prob")
-knnPred <- prediction(knnPredictProb$positive, testing$Class)
-knnPerf <- performance(knnPred, "tpr", "fpr")
+cm_knn
 ```
 
 3. Multilayer Perceptrón con una sola capa oculta y 3, 5, y 7 unidades ocultas en la misma (tres configuraciones en total).
 
 ```{r}
-grid_mlp = expand.grid(layer1 = 3,
-                       layer2 = 5,
-                       layer3 = 7)
-
+grid_mlp = expand.grid(layer1 = 3, layer2 = 5, layer3 = 7)
 mlp <- train(Class ~., data = training,
              method = "mlpML",
              trControl = fitControl,
@@ -154,20 +148,57 @@ mlp
 
 mlpPredict <- predict(mlp, newdata = testing)
 cm_mlp <- confusionMatrix(mlpPredict,testing$Class)
+cm_mlp
+```
 
+Las métricas más adecuadas para la clasificación son Accuracy y F-measure (Sensitivity y Specificity)
+
+Kappa 0?
+
+Utilizando la información que nos dan las matrizes de confusion contruimos una tabla con estas métricas.
+
+TABLA
+
+Análisis de la tabla. el accuray mayor contienen menos errores, es mejor modelo.
+
+F measure.
+
+## Análisis ROC
+
+Para el análisis ROC volveremos a predecir, pero ahora con el conjunto de datos de prueba y construiremos el objecto de prediccion para cada modelo de classificación utilizando el vector de estimación de probabilidadas para la variable classe positiva.
+
+1. OneR.
+
+```{r}
+onerPredictProb <- predict(oner, newdata = testing, type = "prob")
+onerPred <- prediction(onerPredictProb$positive, testing$Class)
+onerPerf <- performance(onerPred, "tpr", "fpr")
+```
+
+2. kNN con k=1, k=3 y con peso por distancia (tres configuraciones en total).
+
+```{r}
+knnPredictProb <- predict(knn, newdata = testing, type = "prob")
+knnPred <- prediction(knnPredictProb$positive, testing$Class)
+knnPerf <- performance(knnPred, "tpr", "fpr")
+```
+
+3. Multilayer Perceptrón con una sola capa oculta y 3, 5, y 7 unidades ocultas en la misma (tres configuraciones en total).
+
+```{r}
 mlpPredictProb <- predict(mlp, newdata = testing, type = "prob")
 mlpPred <- prediction(mlpPredictProb$positive, testing$Class)
 mlpPerf <- performance(mlpPred, "tpr", "fpr")
 ```
 
-## Resultados
+Dibujamos las curvas ROC de los modelos.
 
 ```{r}
 plot(onerPerf, col = "orange", add = FALSE)
 plot(knnPerf, col = "blue", add = TRUE)
 plot(mlpPerf, col = "black", add = TRUE)
 title(main = "CURVAS ROC")
-legend("bottomright", legend = c("OnerR", "kNN", "MLP"),
-       col = c("orange", "blue", "black"),
-       lty = 1, lwd = 1)
+legend("bottomright", legend = c("OnerR", "kNN", "MLP"), col = c("orange", "blue", "black"), lty = 1, lwd = 1)
 ```
+
+Si nos fijamos en el gráfico de las curvas ROC que refleja el análisis ROC podemos observar que el modelo de classificación k-Nearest Neighbors para k=1 es el mejor para clasificar.

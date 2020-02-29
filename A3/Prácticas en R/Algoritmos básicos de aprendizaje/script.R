@@ -1,7 +1,8 @@
 library(caret)
+library(gplots)
+library(ggplot2)
 library(rJava)
 library(RWeka)
-library(ggplot2)
 library(ROCR)
 
 glass <- read.table("glass.data", header = FALSE, sep = ",")
@@ -22,7 +23,7 @@ colnames(glass)[10] <- "Class"
 # Order for column Class
 glass <- glass[order(glass$Class), ]
 
-# Check for NA values
+0# Check for NA values
 any(is.na(glass))
 
 # Remove Class elements < 3
@@ -38,7 +39,7 @@ for (i in 1:146) {
 }
 
 # Change the type of class variable Class to factor
-glass[,10]=as.factor(glass[,10])
+glass[,10] <- as.factor(glass[,10])
 
 # data splitting
 set.seed(123)
