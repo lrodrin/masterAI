@@ -112,13 +112,9 @@
 \maketitle
 
 \hypertarget{los-datos}{%
-\subsection{Los Datos}\label{los-datos}}
+\section{Los Datos}\label{los-datos}}
 
-El fichero glass.data incluye el estudio de la clasificación de los
-tipos de vidrio con 6 variables explicativas. El estudio fue motivado
-por una investigación criminológica. En la escena de un crimen, el
-vidrio que queda puede usarse como evidencia \ldots{} ¡si se identifica
-correctamente!
+El fichero glass.data incluye el estudio de la clasificación de los tipos de vidrio con 6 variables explicativas. El estudio fue motivado por una investigación criminológica. En la escena de un crimen, el vidrio que queda puede usarse como evidencia \ldots{} ¡si se identifica correctamente!
 
 Las variables que se guardaron son:
 
@@ -168,17 +164,19 @@ Las variables que se guardaron son:
   7 headlamps
 \end{itemize}
 
-Primero debemos cargar los datos como data frame, y le damos nombres a
-las columnas.
+Primero debemos cargar los datos como data frame, y le damos nombres a las columnas.
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{glass <-}\StringTok{ }\KeywordTok{read.table}\NormalTok{(}\StringTok{"glass.data"}\NormalTok{, }\DataTypeTok{header =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{sep =} \StringTok{","}\NormalTok{)}
-\KeywordTok{names}\NormalTok{(glass) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Id number"}\NormalTok{, }\StringTok{"RI"}\NormalTok{, }\StringTok{"Na"}\NormalTok{, }\StringTok{"Mg"}\NormalTok{, }\StringTok{"Al"}\NormalTok{, }\StringTok{"Si"}\NormalTok{, }\StringTok{"K"}\NormalTok{, }\StringTok{"Ca"}\NormalTok{, }\StringTok{"Ba"}\NormalTok{, }\StringTok{"Fe"}\NormalTok{, }\StringTok{"Type of glass"}\NormalTok{)}
+\KeywordTok{names}\NormalTok{(glass) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Id number"}\NormalTok{, }\StringTok{"RI"}\NormalTok{, }\StringTok{"Na"}\NormalTok{, }\StringTok{"Mg"}\NormalTok{, }\StringTok{"Al"}\NormalTok{, }\StringTok{"Si"}\NormalTok{, }\StringTok{"K"}\NormalTok{, }\StringTok{"Ca"}\NormalTok{, }\StringTok{"Ba"}\NormalTok{, }\StringTok{"Fe"}\NormalTok{, }
+		\StringTok{"Type of glass"}\NormalTok{)}
 \KeywordTok{colnames}\NormalTok{(glass) <-}\StringTok{ }\KeywordTok{make.names}\NormalTok{(}\KeywordTok{colnames}\NormalTok{(glass))}
 \KeywordTok{str}\NormalTok{(glass)}
 \end{Highlighting}
 \end{Shaded}
+
+\newpage
 
 \begin{verbatim}
 ## 'data.frame':    214 obs. of  11 variables:
@@ -195,15 +193,10 @@ las columnas.
 ##  $ Type.of.glass: int  1 1 1 1 1 1 1 1 1 1 ...
 \end{verbatim}
 
-Vemos como el conjunto de datos está formado por nueve variables
-predictoras y la variable de classe Type.of.glass. Y todas las variables
-són numéricas.
+Vemos como el conjunto de datos está formado por diez variables predictivas y la variable de clase Type.of.glass. Y todas estas variables son numéricas.
 
-Además, podemos observar que la primera columna (cuyo nombre es
-``Id.number'') es redundante (denota el identidficador de cada
-instancia), por lo que borraremos esta columna. También le cambiaremos
-el nombre a la última columna (cuyo nombre es ``Type.of.glass'') para
-que se entienda mejor que respresenta la variable clase.
+Además, podemos observar que la primera columna (cuyo nombre es "Id.number") es redundante (denota el identificador de cada
+instancia), por lo que borraremos esta columna. También le cambiaremos el nombre a la última columna (cuyo nombre es "Type.of.glass") para que se entienda mejor que representa la variable clase.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -227,9 +220,7 @@ que se entienda mejor que respresenta la variable clase.
 ## 10 1.51755 13.00 3.60 1.36 72.99 0.57 8.40  0 0.11     1
 \end{verbatim}
 
-Aunque a primera vista los datos parecen que estan ordenados por la
-variable clase Class, los ordenamos; y miramos que no existan valores
-codificados como NA.
+Aunque a primera vista los datos parecen que están ordenados por la variable clase Class, los ordenamos, y miramos que no existan valores codificados como NA.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -242,14 +233,11 @@ codificados como NA.
 ## [1] FALSE
 \end{verbatim}
 
-Como se ha comentado anteriormente, la columna Class representa la
-variable clase. Concretamente en este estudio contamos con seis
-variables explicativas.
+Como se ha comentado anteriormente, la columna Class representa la variable clase. Concretamente en este estudio contamos con seis variables explicativas.
 
-A continuación, vamos a generar una representación binária. Primero, nos
-quedaremos solo con los valores de la varible classe \{1, 2\}, los
-renombraremos com \{1 = ``positive'', 2 = ``negative''\} y
-factorizaremos.
+A continuación, vamos a generar una representación binaria. Primero, nos quedaremos solo con los valores de la variable clase \{1, 2\}, los renombraremos como \{1 = "positive", 2 = "negative"\} y factorizaremos la variable clase.
+
+\newpage
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -281,20 +269,15 @@ factorizaremos.
 ##  $ Class: Factor w/ 2 levels "negative","positive": 2 2 2 2 2 2 2 2 2 2 ...
 \end{verbatim}
 
-La desición de quedarnos con los tipos de vidrio \{1, 2\} es porqué del
-tipo de vidrio \{4\} no tenemos valores en este conjunto de datos para
-clasificar, juntamente con el tipo de vidrio \{3\}; y los \{5, 6, 7\} no
-pueden generar una representación biária con los otros tipos de vidrio.
+La decisión de quedarnos con los tipos de vidrio \{1, 2\} es porqué del tipo de vidrio \{4\} no tenemos valores en este conjunto de datos para clasificar, juntamente con el tipo de vidrio \{3\}; y los tipos de vidrio \{5, 6, 7\} no pueden generar una representación binaria con los otros tipos.
 
 \hypertarget{divisiuxf3n-de-los-datos-en-muestra-de-entrenamiento-y-de-test}{%
-\subsection{División de los datos en muestra de entrenamiento y de
+\section{División de los datos en muestra de entrenamiento y de
 test}\label{divisiuxf3n-de-los-datos-en-muestra-de-entrenamiento-y-de-test}}
 
-Tomaremos una muestra del 70\% del conjunto de datos como entrenamiento
-y el 30\% del mismo como un conjunto de datos de prueba.
+Tomaremos una muestra del 70\% del conjunto de datos como entrenamiento y el 30\% del mismo como un conjunto de datos de prueba.
 
-La validación cruzada usada cinco veces con muestreo estratificado se
-utilizá para dividir el conjunto de datos.
+La validación cruzada usada cinco veces con muestreo estratificado se utilizará para dividir el conjunto de datos.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -308,6 +291,8 @@ utilizá para dividir el conjunto de datos.
 \KeywordTok{str}\NormalTok{(training)}
 \end{Highlighting}
 \end{Shaded}
+
+\newpage
 
 \begin{verbatim}
 ## 'data.frame':    103 obs. of  10 variables:
@@ -344,11 +329,10 @@ utilizá para dividir el conjunto de datos.
 \end{verbatim}
 
 \hypertarget{entrenamiento-de-los-modelos-y-evaluaciuxf3n}{%
-\subsection{Entrenamiento de los modelos y
+\section{Entrenamiento de los modelos y
 evaluación}\label{entrenamiento-de-los-modelos-y-evaluaciuxf3n}}
 
-Se utilizarán tres algoritmos de clasificación diferentes para entrenar,
-OneR, kNN y Multilayer Perceptrón.
+Se utilizarán tres algoritmos de clasificación diferentes para entrenar, OneR, kNN y Multilayer Perceptrón.
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -388,6 +372,8 @@ OneR, kNN y Multilayer Perceptrón.
 \end{Highlighting}
 \end{Shaded}
 
+\newpage
+
 \begin{verbatim}
 ## Confusion Matrix and Statistics
 ## 
@@ -423,8 +409,7 @@ OneR, kNN y Multilayer Perceptrón.
 \setcounter{enumi}{1}
 \tightlist
 \item
-  kNN con k=1, k=3 y con peso por distancia (tres configuraciones en
-  total).
+  kNN con k=1, k=3 y con peso por distancia (tres configuraciones en total).
 \end{enumerate}
 
 \begin{Shaded}
@@ -499,8 +484,7 @@ OneR, kNN y Multilayer Perceptrón.
 \setcounter{enumi}{2}
 \tightlist
 \item
-  Multilayer Perceptrón con una sola capa oculta y 3, 5, y 7 unidades
-  ocultas en la misma (tres configuraciones en total).
+  Multilayer Perceptrón con una sola capa oculta y 3, 5, y 7 unidades ocultas en la misma (tres configuraciones en total).
 \end{enumerate}
 
 \begin{Shaded}
@@ -513,6 +497,8 @@ OneR, kNN y Multilayer Perceptrón.
 \NormalTok{mlp}
 \end{Highlighting}
 \end{Shaded}
+
+\newpage
 
 \begin{verbatim}
 ## Multi-Layer Perceptron, with multiple layers 
@@ -574,28 +560,65 @@ OneR, kNN y Multilayer Perceptrón.
 ## 
 \end{verbatim}
 
-Las métricas más adecuadas para la clasificación son Accuracy y
-F-measure (Sensitivity y Specificity)
+Las métricas más adecuadas para la clasificación son Accuracy (cantidad de predicciones positivas que fueron correctas) y F-measure, que combina Recall y Precision en una sola métrica. F-measure es de gran utilidad cuando la distribución de las clases es desigual.
 
-Kappa 0?
+\newpage
 
-Utilizando la información que nos dan las matrizes de confusion
-contruimos una tabla con estas métricas.
+Utilizando la información de estas métricas que nos dan las matrices de confusión para cada modelo, y los cálculos de F-measure, 
 
-TABLA
+Recall (OneR) = TP / (TP + FN) = 14 / (14 + 18) = 0.4375 \\
+Precision (OneR) = TP / (TP + FP) = 14 / (14 + 7) = 0.6666 \\
+F-measure = 2 x (Precision x Recall / Precision + Recall) = 2 (0.6666 x 0.4375 / 0.6666 + 0.4375) = 0.5282 \\
 
-Análisis de la tabla. el accuray mayor contienen menos errores, es mejor
-modelo.
+Recall (kNN) = 19 / (19 + 16) = 0.5428 \\
+Precision (kNN) = 19 / (19 + 2) = 0.9048 \\
+F-measure = 2 (0.9048 x 0.5428 / 0.9048 + 0.5428) = 0.6785 \\
 
-F measure.
+Recall (MLP) = 0 / (0 + 22) = 0 \\
+Precision (MLP) = 0 / (0 + 21) = 0 \\
+F-measure = 0
+
+construimos la siguiente  tabla:
+
+\begin{center}
+	\begin{tabular}{ |c|c|c|c|c|c| } 
+		\hline
+		& Accuracy & Recall & Precision & F-measure \\
+		\hline
+		OneR & 0.7442 & 0.4375 & 0.9048 & 0.5282 \\ 
+		\hline
+		k-Nearest Neighbors (k=1) & 0.814 & 0.5428 & 0.9048 & 0.6785 \\ 
+		\hline
+		Multi-Layer Perceptron & 0.5116 & 0 & 0 & 0 \\
+		\hline
+	\end{tabular}
+\end{center}
+
+
+A mayor valor de Accuracy, menos errores de clasificación, mejor será el clasificador. Así que si solo nos fijamos en esta métrica el mejor clasificador es k-Nearest Neighbors para k=1. 
+
+El peor clasificador es indiscutiblemente el modelo Multi-Layer Perceptron. El valor de Accuracy es muy bajo y causa una alta tasa de errores, concretamente 1 - 0.5116 x 100 = 48.84 \%, casi un 50 \%.
+
+Pero solo con la métrica Accuracy, no podemos tomar la decisión final y utilizaremos también la métrica F-measure. Conforme a estas métricas tenemos estos tres casos para cada modelo:
+
+\begin{itemize}
+	\item Modelo OneR - Alta precisión y bajo recall: el modelo no detecta la clase muy bien, pero cuando lo hace es altamente confiable.
+	\item Modelo k-Nearest Neighbors (k=1) - Alta precisión y bajo recall: el modelo no detecta la clase muy bien, pero cuando lo hace es altamente confiable.
+	\item Modelo Multi-Layer Perceptron - Baja precisión y bajo recall: El modelo no logra clasificar la clase correctamente.
+\end{itemize}   
+
+Finalmente, podemos confirmar que el mejor modelo de clasificación para este conjunto de datos es k-Nearest Neighbors para k=1, ya que el valor de F-measure e superior al resto.
+
+Un dato interesante en el modelo de clasificación Multi-Layer Perceptron, es que F-measure nos dé 0. Eso quiere decir que no ha clasificado bien, lo poco que ha podido clasificar lo ha hecho con un alto porcentaje de errores. Lo podemos confirmar por la métrica Kappa que también nos da un valor de 0. No existe concordancia y podemos suponer que el conjunto de datos que hemos intentado de clasificar, no están bien balanceados.
 
 \hypertarget{anuxe1lisis-roc}{%
-\subsection{Análisis ROC}\label{anuxe1lisis-roc}}
+\section{Análisis ROC}\label{anuxe1lisis-roc}}
 
-Para el análisis ROC volveremos a predecir, pero ahora con el conjunto
-de datos de prueba y construiremos el objecto de prediccion para cada
-modelo de classificación utilizando el vector de estimación de
-probabilidadas para la variable classe positiva.
+Añadimos el análisis ROC que facilita la interpretación de los datos utilizando la normalización en términos de la matriz de confusión, y lo compararemos con el análisis anterior. 
+
+Para el análisis ROC volveremos a predecir, pero ahora con el conjunto de datos de prueba y construiremos el objecto de predicción para cada modelo de clasificación utilizando el vector de estimación de probabilidades para la variable clase positiva ("positive").
+
+\newpage
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -617,8 +640,7 @@ probabilidadas para la variable classe positiva.
 \setcounter{enumi}{1}
 \tightlist
 \item
-  kNN con k=1, k=3 y con peso por distancia (tres configuraciones en
-  total).
+  kNN con k=1, k=3 y con peso por distancia (tres configuraciones en total).
 \end{enumerate}
 
 \begin{Shaded}
@@ -634,8 +656,7 @@ probabilidadas para la variable classe positiva.
 \setcounter{enumi}{2}
 \tightlist
 \item
-  Multilayer Perceptrón con una sola capa oculta y 3, 5, y 7 unidades
-  ocultas en la misma (tres configuraciones en total).
+  Multilayer Perceptrón con una sola capa oculta y 3, 5, y 7 unidades ocultas en la misma (tres configuraciones en total).
 \end{enumerate}
 
 \begin{Shaded}
@@ -646,7 +667,7 @@ probabilidadas para la variable classe positiva.
 \end{Highlighting}
 \end{Shaded}
 
-Dibujamos las curvas ROC de los modelos.
+Y finalmente, dibujamos las curvas ROC de los modelos.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -654,14 +675,18 @@ Dibujamos las curvas ROC de los modelos.
 \KeywordTok{plot}\NormalTok{(knnPerf, }\DataTypeTok{col =} \StringTok{"blue"}\NormalTok{, }\DataTypeTok{add =} \OtherTok{TRUE}\NormalTok{)}
 \KeywordTok{plot}\NormalTok{(mlpPerf, }\DataTypeTok{col =} \StringTok{"black"}\NormalTok{, }\DataTypeTok{add =} \OtherTok{TRUE}\NormalTok{)}
 \KeywordTok{title}\NormalTok{(}\DataTypeTok{main =} \StringTok{"CURVAS ROC"}\NormalTok{)}
-\KeywordTok{legend}\NormalTok{(}\StringTok{"bottomright"}\NormalTok{, }\DataTypeTok{legend =} \KeywordTok{c}\NormalTok{(}\StringTok{"OnerR"}\NormalTok{, }\StringTok{"kNN"}\NormalTok{, }\StringTok{"MLP"}\NormalTok{), }\DataTypeTok{col =} \KeywordTok{c}\NormalTok{(}\StringTok{"orange"}\NormalTok{, }\StringTok{"blue"}\NormalTok{, }\StringTok{"black"}\NormalTok{), }\DataTypeTok{lty =} \DecValTok{1}\NormalTok{, }\DataTypeTok{lwd =} \DecValTok{1}\NormalTok{)}
+\KeywordTok{legend}\NormalTok{(}\StringTok{"bottomright"}\NormalTok{, }\DataTypeTok{legend =} \KeywordTok{c}\NormalTok{(}\StringTok{"OnerR"}\NormalTok{, }\StringTok{"kNN"}\NormalTok{, }\StringTok{"MLP"}\NormalTok{), }
+	\DataTypeTok{col =} \KeywordTok{c}\NormalTok{(}\StringTok{"orange"}\NormalTok{, }\StringTok{"blue"}\NormalTok{, }\StringTok{"black"}\NormalTok{), }
+	\DataTypeTok{lty =} \DecValTok{1}\NormalTok{, }\DataTypeTok{lwd =} \DecValTok{1}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \includegraphics{document_files/figure-latex/unnamed-chunk-12-1.pdf}
 
-Si nos fijamos en el gráfico de las curvas ROC que refleja el análisis
-ROC podemos observar que el modelo de classificación k-Nearest Neighbors
-para k=1 es el mejor para clasificar.
+\newpage
+
+Si nos fijamos en el gráfico de las curvas ROC, que refleja el análisis ROC, podemos observar que el modelo de clasificación k-Nearest Neighbors para k=1 es el mejor para clasificar. Igual que hemos comentado anteriormente. 
+
+El modelo Multilayer Perceptrón sigue siendo el peor modelo. Realmente es un clasificador pésimo, se encuentra por debajo de la diagonal.
 
 \end{document}
