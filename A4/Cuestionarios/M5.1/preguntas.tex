@@ -1,0 +1,83 @@
+\documentclass[11pt]{exam}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+
+\title{Evaluación del Módulo 5.1}
+\author{Laura Rodríguez Navas \\ rodrigueznavas@posgrado.uimp.es}
+\date{Marzo 2020}
+
+\pagestyle{plain}
+
+\begin{document}
+	
+\maketitle
+
+\begin{questions}
+	
+% Pregunta 1
+{\bf \question Defina la tarea de Extracción de Información (2 puntos).}
+
+La Extracción de Información (EI) es un tipo de recuperación de la información cuyo objetivo es extraer automáticamente fragmentos de texto relevantes, los cuales pueden ser un nombre, un evento o una acción, en definitiva, una entidad preespecificada, y almacenar las entidades extraídas en una base de datos. En resumen, convertir información no estructurada en información estructurada. 
+
+Típicas tareas de la extracción de información:
+
+\begin{itemize}
+	\item Reconocimiento de nombres de entidades. Esta tarea se basa en buscar, localizar y clasificar elementos atómicos en texto (nombres) sobre categorías predefinidas (entidades). 
+	\item Resolución de la correferencia. Esta tarea está restringida a encontrar vínculos entre las entidades de nombres que se han extraído previamente.
+	\item Extracción de terminología. Esta tarea se basa identificar y extraer candidatos a términos de los textos explorados.
+	\item Extracción de relaciones. Esta tarea se basa en detectar y clasificar menciones a relaciones semánticas.
+\end{itemize}
+
+La mayor aplicación de la extracción de información es la construcción de sistemas que encuentren y relacionen información relevante mientras ignoran otras informaciones no relevantes. Estos sistemas deben trabajar desde el reconocimiento de palabras hasta el análisis de frases y desde el entendimiento a nivel de frase hasta el texto completo.
+
+% Pregunta 2
+{\bf \question Atendiendo a la lección ¿es cierto que la extracción de información no requiere de la definición de la información relevante a extraer? Razone su respuesta (2 puntos).}
+
+No es cierto. 
+
+Como se ha comentado anteriormente, la mayor aplicación de la extracción de información es la construcción de sistemas que encuentren y relacionen información relevante. Para determinar si esta información es relevante, se hace a partir de las guías predefinidas de dominio, las cuales deben especificar con la mayor exactitud posible el tipo de información a extraer. Así que, la extracción de información requiere de la definición de la información a extraer para especificar con la mayor exactitud las guías predefinidas de dominio necesarias para la construcción de los sistemas.
+
+% Pregunta 3
+{\bf \question Tras leer el artículo \href{https://www.aaai.org/Papers/IJCAI/2007/IJCAI07-429.pdf}{Open Information Extraction from the Web} , indique las diferencias existentes con la tarea de Extracción de Información. (4 puntos).}
+
+% Pregunta 4
+{\bf \question Atendiendo a la lección, ¿podría indicar cuáles han sido las principales conferencias relacionadas con la Extracción de Información? (2 puntos)}
+
+Se desarrollaron 7 conferencisa para la comprensión de mensajes financiadas por \href{https://es.qwe.wiki/wiki/DARPA}{DARPA} , la Agencia de Investigación Avanzada de la Defensa Proyectos, para fomentar el desarrollo de nuevos y mejores métodos de extracción de información. Estas conferencias tuvieron como objetivo el determinar un régimen de evaluación cuantitativo para los sistemas de extracción de información, estableciendo las tareas a llevar a cabo y el conjunto de textos sobre los que se deberían realizar dichas tareas.
+
+Concretamente las conferencias fueron:
+
+\begin{itemize}
+	\item MUC-1 (Mayo 1987) sobre operaciones navales. \\
+	Participaron 6 sistemas. \\
+	No hubo definición de tareas ni se establecieron medidas de evaluación.
+	\item MUC-2 (Mayo 1989) sobre operaciones navales. \\
+	Participaron 8 sistemas. \\
+	Se definió una plantilla y las reglas para el relleno de los diferentes atributos. \\
+	Se definieron unos criterios de evaluación que se desecharon al no ser óptimos.
+	\item MUC-3 (Mayo 1991) sobre atentados terroristas en América Latina. \\
+	Participaron 15 sistemas. \\
+	Se adaptaron los criterios de evaluación que se utilizaban en Recuperación de Información, las medidas Precison y Recall.
+	\item MUC-4 (Junio 1992) sobre atentados terroristas en América Latina. \\
+	Participaron 17 sistemas. \\
+	Se definieron criterios de evaluación independientes de los textos, la medida F-mesure (combinación de las medidas Precison y Recall).
+	\item MUC-5 (Agosto 1993) sobre fusiones de empresas y anuncios de productos microelectrónicos. \\
+	Participaron 17 sistemas. \\
+	Se definieron dos idiomas, el inglés y el japonés.
+	\item MUC-6 (Noviembre 1995) sobre fusiones de empresas y anuncios de productos microelectrónicos. \\
+	Participaron 17 sistemas. \\
+	El objetivo fue la modularidad y la portabilidad de los sistemas. \\
+	Se recuperaron las medidas de evaluación: Precision y Recall. \\
+	Se definieron las tareas:
+	\subitem - Reconocimiento de entidades (RE).
+	\subitem - Resolución de correferencias (CO).
+	\subitem - Plantillas de elementos (PE).
+	\subitem - Plantillas de escenarios (ES).
+	\item MUC-7 (Abril 1998) sobre accidentes de aviones y lanzamientos de misiles. \\
+	Participaron 17 sistemas. \\
+	Se definió una nueva tarea, la Relación de plantillas (RP).
+\end{itemize}
+	
+\end{questions}
+	
+\end{document}
