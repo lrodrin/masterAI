@@ -17,88 +17,43 @@
 % Pregunta 1
 {\bf \question Defina la tarea de Extracción de Información (2 puntos).}
 
-La Extracción de Información (EI) es un tipo de recuperación de la información cuyo objetivo es extraer automáticamente fragmentos de texto relevantes, los cuales pueden ser un nombre, un evento o una acción, en definitiva, una entidad preespecificada, y almacenar las entidades extraídas en una base de datos. En resumen, convertir información no estructurada en información estructurada. 
+La Extracción de Información (EI) es un tipo de recuperación de la información cuyo objetivo es extraer automáticamente fragmentos de texto relevantes, los cuales pueden ser un nombre, un evento o una acción, en definitiva, una entidad preespecificada, y almacenar las entidades extraídas en una base de datos. En resumen, podemos decir que la extracción de información convierte información no estructurada en información estructurada. 
 
 Típicas tareas de la extracción de información:
 
 \begin{itemize}
-	\item Reconocimiento de nombres de entidades. Esta tarea se basa en buscar, localizar y clasificar elementos atómicos en texto (nombres) sobre categorías predefinidas (entidades). 
-	\item Resolución de la correferencia. Esta tarea está restringida a encontrar vínculos entre las entidades de nombres que se han extraído previamente.
-	\item Extracción de terminología. Esta tarea se basa identificar y extraer candidatos a términos de los textos explorados.
+	\item Reconocimiento de nombres de entidades. Esta tarea se basa en buscar, localizar y clasificar elementos atómicos (nombres) en fragmentos de texto sobre categorías predefinidas (entidades). 
+	\item Resolución de la correferencia. Esta tarea está restringida a encontrar vínculos entre las entidades de los nombres que se han extraído previamente en la anterior tarea.
+	\item Extracción de terminología. Esta tarea se basa identificar y extraer candidatos a términos de los fragmentos de textos explorados.
 	\item Extracción de relaciones. Esta tarea se basa en detectar y clasificar menciones a relaciones semánticas.
 \end{itemize}
 
-La mayor aplicación de la extracción de información es la construcción de sistemas que encuentren y relacionen información relevante mientras ignoran otras informaciones no relevantes. Estos sistemas deben trabajar desde el reconocimiento de palabras hasta el análisis de frases y desde el entendimiento a nivel de frase hasta el texto completo.
+Finalmente comentar, que la mayor aplicación de la extracción de información es la construcción de sistemas IE que encuentren y relacionen información relevante mientras ignoran otras informaciones no relevantes. Estos sistemas IE deben trabajar desde el reconocimiento de palabras hasta el análisis de frases y desde el entendimiento a nivel de frase hasta los textos completos.
 
 % Pregunta 2
 {\bf \question Atendiendo a la lección ¿es cierto que la extracción de información no requiere de la definición de la información relevante a extraer? Razone su respuesta (2 puntos).}
 
 No es cierto. 
 
-Como se ha comentado anteriormente, la mayor aplicación de la extracción de información es la construcción de sistemas que encuentren y relacionen información relevante. Para determinar si esta información es relevante, se hace a partir de las guías predefinidas de dominio, las cuales deben especificar con la mayor exactitud posible el tipo de información a extraer. Así que, la extracción de información requiere de la definición de la información a extraer para especificar con la mayor exactitud las guías predefinidas de dominio necesarias para la construcción de los sistemas.
+Como se ha comentado anteriormente, la mayor aplicación de la extracción de información es la construcción de sistemas IE que encuentren y relacionen información relevante. Para determinar si esta información es relevante, se tiene que hacer a partir de las guías predefinidas de los dominios, las cuales deben especificar con la mayor exactitud posible el tipo de información a extraer. Así, la extracción de información requiere de la definición de la información a extraer para especificar con la mayor exactitud las guías predefinidas de dominio necesarias para la construcción de los sistemas IE.
 
 % Pregunta 3
-{\bf \question Tras leer el artículo \href{https://www.aaai.org/Papers/IJCAI/2007/IJCAI07-429.pdf}{Open Information Extraction from the Web} , indique las diferencias existentes con la tarea de Extracción de Información. (4 puntos).}
+{\bf \question Tras leer el artículo \href{https://www.aaai.org/Papers/IJCAI/2007/IJCAI07-429.pdf}{Open Information Extraction from the Web}, indique las diferencias existentes con la tarea de Extracción de Información. (4 puntos).}
 
-Tradicionalmente, la extracción de información (IE) se ha centrado en satisfacer la precisión, preespecificando pequeños corpus homogéneos. Cambiar a un nuevo dominio requiere que el usuario nombre las relaciones y manualmente cree nuevas tareas de extracción. Este artículo presenta un nuevo modelo de extracción donde el sistema solo hace un recorrido por los datos del corpus y extrae un gran conjunto de tuplas sin ninguna interacción humana. 
+Tradicionalmente, la extracción de información (IE) se ha basado en la participación humana, en forma de extracción manual de reglas o ejemplos de entrenamiento etiquetado, especificando previamente de forma explícita cada relación de interés. Porqué, aunque los sistemas IE se han vuelto cada vez más automatizados durante este tiempo, se sigue necesitando la interacción humana, en la enumeración de todas las posibles relaciones de interés para la extracción, con diferentes recorridos sobre el corpus, ya que es muy problemático para los corpus de gran tamaño y variados, como los de la Web. 
 
-\section*{TODO}
+Contrariamente, en este artículo se presenta un nuevo modelo de extracción, que se adapta fácilmente a la diversidad y el tamaño de un corpus de la Web (masivo y heterogéneo). Donde el sistema IE solo hace un recorrido de extracción sobre el corpus, durante el cual las relaciones de interés se descubren automáticamente y se almacenan eficientemente sin ninguna interacción humana. 
 
-Este documento presenta la extracción de información abierta (OIE) -
-Un nuevo paradigma de extracción que facilita el dominio independiente
-descubrimiento de relaciones extraídas de texto y
-se adapta fácilmente a la diversidad y el tamaño del corpus web.
-La única entrada a un sistema OIE es un corpus, y su salida
-Es un conjunto de relaciones extraídas. Un sistema de la OIE hace un solo
-pasar sobre su cuerpo garantizando la escalabilidad con el tamaño de
-el corpus
+En el pasado, los sistemas IE se han utilizado para corpus pequeños y homogéneos, como historias de noticias o anuncios de seminarios. Como resultado, los sistemas IE tradicionales pueden confiar en la lingüística "pesada" tecnológica, sintonizada con el dominio de interés, como analizadores de dependencia y reconocedores de entidades con nombre (NER). Pero cuando los corpus son masivos y heterogéneos, las relaciones de interés no se anticipan, y el número de relaciones suele ser grande. Esto provoca que repetidamente se incremente el coste del análisis del corpus, con el nombramiento de cada nueva relación extraída.
 
-La extracción de información (IE) se ha basado tradicionalmente en
-participación humana en forma de extracción artesanal
-reglas o ejemplos de entrenamiento etiquetados a mano. Además,
-el usuario debe especificar previamente de forma explícita cada relación de
-interesar. Mientras que IE se ha vuelto cada vez más automatizado
-tiempo, enumerando todas las posibles relaciones de interés para la extracción
-por un sistema IE es muy problemático para corpus como
-grande y variada como la web. Para que los usuarios puedan
-emitir consultas diversas sobre corpus heterogéneos, sistemas IE
-debe alejarse de las arquitecturas que requieren relaciones con
-ser especificado antes del tiempo de consulta a favor de aquellos que apuntan a
-Descubre todas las relaciones posibles en el texto.
-En el pasado, IE se ha utilizado en cuerpos pequeños y homogéneos.
-como historias de noticias o anuncios de seminarios. Como
-Como resultado, los sistemas IE tradicionales pueden confiar en la lingüística "pesada"
-tecnologías sintonizadas con el dominio de interés, como
-analizadores de dependencia y reconocedores de entidades con nombre (NER).
-Estos sistemas no fueron diseñados para escalar en relación con el tamaño
-del corpus o el número de relaciones extraídas, ya que ambas
-Los parámetros fueron fijos y pequeños.
-El problema de extraer información de la Web viola
-Todos estos supuestos. Los cuerpos son masivos y heterogéneos,
-las relaciones de interés no se anticipan, y
-Su número puede ser grande. A continuación, consideramos estos desafíos.
-con más detalle.
-
-Este documento presenta Open IE desde la Web, un sitio sin supervisión
-paradigma de extracción que evita la extracción específica de relación
-a favor de una sola pasada de extracción sobre el cuerpo
-durante el cual las relaciones de interés se descubren automáticamente
-y eficientemente almacenado. A diferencia de los sistemas IE tradicionales que
-incurrir repetidamente en el costo del análisis de corpus con el nombramiento
-de cada nueva relación, el descubrimiento de relación única de Open IE
-procedimiento permite a un usuario nombrar y explorar relaciones en
-Velocidades interactivas.
-El documento también presenta TEXTRUNNER, una aplicación totalmente implementada.
-Sistema IE abierto, y demuestra su capacidad para
-extraer cantidades masivas de información de alta calidad de
-un corpus de nueve millones de páginas web. Hemos demostrado que
-TEXTRUNNER puede igualar el retiro del KNOWITALL
-Sistema IE web de última generación, al tiempo que se logra una mayor precisión.
+A diferencia de los sistemas IE tradicionales, el nuevo sistema IE presentado en el artículo, permite nombrar y explorar relaciones a velocidades más adecuadas, al mismo tiempo que se logra una mayor precisión.
 
 % Pregunta 4
 {\bf \question Atendiendo a la lección, ¿podría indicar cuáles han sido las principales conferencias relacionadas con la Extracción de Información? (2 puntos).}
 
-Se desarrollaron 7 conferencisa para la comprensión de mensajes financiadas por \href{https://es.qwe.wiki/wiki/DARPA}{DARPA} , la Agencia de Investigación Avanzada de la Defensa Proyectos, para fomentar el desarrollo de nuevos y mejores métodos de extracción de información. Estas conferencias tuvieron como objetivo el determinar un régimen de evaluación cuantitativo para los sistemas de extracción de información, estableciendo las tareas a llevar a cabo y el conjunto de textos sobre los que se deberían realizar dichas tareas.
+La principales conferencias relacionadas con la extracción de información fueron siete. Se desarrollaron para la comprensión de mensajes y estuvieron financiadas por \href{https://es.qwe.wiki/wiki/DARPA}{DARPA}, la Agencia de Investigación Avanzada de la Defensa Proyectos, para fomentar el desarrollo de nuevos y mejores métodos de extracción de información. 
+
+Estas conferencias tuvieron como objetivo el determinar un régimen de evaluación cuantitativo para los sistemas IE, estableciendo las tareas a llevar a cabo y el conjunto de textos sobre los que se deberían realizar dichas tareas.
 
 Concretamente las conferencias fueron:
 
