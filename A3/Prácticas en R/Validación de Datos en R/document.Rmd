@@ -3,9 +3,9 @@ title: 'Practical 4: Visualisation using qplot()'
 author: "Laura Rodriguez Navas"
 date: "February 2020"
 output:
+  html_document: default
   pdf_document: 
     keep_tex: yes
-  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -61,12 +61,12 @@ In order to analyse the information in a visual way:
 
 ```{r}
 qplot(K1, K2, data = queratocono) +
-  geom_point() + 
+  geom_point(size = 0.1) + 
   geom_smooth(method = "loess") +
   xlab("K1") + ylab("K2")
   
 qplot(K1, K2, data = queratocono) +
-  geom_point() +
+  geom_point(size = 0.1) +
   geom_smooth(method = lm) +
   xlab("K1") + ylab("K2")
 ```

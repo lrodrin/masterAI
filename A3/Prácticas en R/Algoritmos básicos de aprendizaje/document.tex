@@ -235,7 +235,7 @@ Aunque a primera vista los datos parecen que están ordenados por la variable cl
 
 Como se ha comentado anteriormente, la columna Class representa la variable clase. Concretamente en este estudio contamos con seis variables explicativas.
 
-A continuación, vamos a generar una representación binaria. Primero, nos quedaremos solo con los valores de la variable clase \{1, 2\}, los renombraremos como \{1 = "positive", 2 = "negative"\} y factorizaremos la variable clase.
+A continuación, vamos a generar una representación binaria. Primero, nos quedaremos solo con los valores de la variable clase \{1, 2\}, los renombraremos como \{1 = "positive", 2 = "negative"\} y factorizaremos la variable clase. La razón por la que se han escogido los valores de la clase {1, 2} porqué representan la mayor parte del conjunto de datos.
 
 \newpage
 
@@ -609,7 +609,7 @@ Pero solo con la métrica Accuracy, no podemos tomar la decisión final y utiliz
 
 Finalmente, podemos confirmar que el mejor modelo de clasificación para este conjunto de datos es k-Nearest Neighbors para k=1, ya que el valor de F-measure e superior al resto.
 
-Un dato interesante en el modelo de clasificación Multi-Layer Perceptron, es que F-measure nos dé 0. Eso quiere decir que no ha clasificado bien, lo poco que ha podido clasificar lo ha hecho con un alto porcentaje de errores. Lo podemos confirmar por la métrica Kappa que también nos da un valor de 0. No existe concordancia y podemos suponer que el conjunto de datos que hemos intentado de clasificar, no están bien balanceados.
+Un dato interesante en el modelo de clasificación Multi-Layer Perceptron, es que F-measure nos dé 0. Eso quiere decir que no ha clasificado bien, lo poco que ha podido clasificar lo ha hecho con un alto porcentaje de errores. No existe concordancia y podemos suponer que el conjunto de datos que hemos intentado de clasificar, no están bien balanceados. Por otro lado, vemos la métrica Kappa que también nos da un valor de 0. Esto refleja que la concordancia observada es precisamente la que se espera por casualidad.
 
 \hypertarget{anuxe1lisis-roc}{%
 \section{Análisis ROC}\label{anuxe1lisis-roc}}
@@ -687,6 +687,6 @@ Y finalmente, dibujamos las curvas ROC de los modelos.
 
 Si nos fijamos en el gráfico de las curvas ROC, que refleja el análisis ROC, podemos observar que el modelo de clasificación k-Nearest Neighbors para k=1 es el mejor para clasificar. Igual que hemos comentado anteriormente. 
 
-El modelo Multilayer Perceptrón sigue siendo el peor modelo. Realmente es un clasificador pésimo, se encuentra por debajo de la diagonal.
+El modelo Multilayer Perceptrón sigue siendo el peor modelo. Realmente es un clasificador pésimo para este conjunto de datos, vemos como se encuentra por debajo de la diagonal.
 
 \end{document}
