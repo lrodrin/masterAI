@@ -196,7 +196,7 @@ Primero debemos cargar los datos como data frame, y le damos nombres a las colum
 Vemos como el conjunto de datos está formado por diez variables predictivas y la variable de clase Type.of.glass. Y todas estas variables son numéricas.
 
 Además, podemos observar que la primera columna (cuyo nombre es "Id.number") es redundante (denota el identificador de cada
-instancia), por lo que borraremos esta columna. También le cambiaremos el nombre a la última columna (cuyo nombre es "Type.of.glass") para que se entienda mejor que representa la variable clase.
+instancia), por lo que borraremos esa columna. También le cambiaremos el nombre a la última columna (cuyo nombre es "Type.of.glass") para que se entienda mejor que representa la variable clase.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -269,7 +269,7 @@ A continuación, vamos a generar una representación binaria. Primero, nos queda
 ##  $ Class: Factor w/ 2 levels "negative","positive": 2 2 2 2 2 2 2 2 2 2 ...
 \end{verbatim}
 
-La decisión de quedarnos con los tipos de vidrio \{1, 2\} es porqué del tipo de vidrio \{4\} no tenemos valores en este conjunto de datos para clasificar, juntamente con el tipo de vidrio \{3\}; y los tipos de vidrio \{5, 6, 7\} no pueden generar una representación binaria con los otros tipos.
+La decisión de quedarnos con los tipos de vidrio \{1, 2\} también es porqué del tipo de vidrio \{4\} no tenemos valores en este conjunto de datos para clasificar, juntamente con el tipo de vidrio \{3\}; y los tipos de vidrio \{5, 6, 7\} no pueden generar una representación binaria con los otros tipos.
 
 \hypertarget{divisiuxf3n-de-los-datos-en-muestra-de-entrenamiento-y-de-test}{%
 \section{División de los datos en muestra de entrenamiento y de
@@ -685,8 +685,8 @@ Y finalmente, dibujamos las curvas ROC de los modelos.
 
 \newpage
 
-Si nos fijamos en el gráfico de las curvas ROC, que refleja el análisis ROC, podemos observar que el modelo de clasificación k-Nearest Neighbors para k=1 es el mejor para clasificar. Igual que hemos comentado anteriormente. 
+Si nos fijamos en el gráfico de las curvas ROC, que refleja el análisis ROC, podemos observar que el modelo de clasificación k-Nearest Neighbors para k=1 es el mejor para clasificar. Igual que hemos analizado anteriormente. 
 
-El modelo Multilayer Perceptrón sigue siendo el peor modelo. Realmente es un clasificador pésimo para este conjunto de datos, vemos como se encuentra por debajo de la diagonal.
+El modelo Multilayer Perceptrón sigue siendo el peor modelo. Realmente es un clasificador pésimo para este conjunto de datos, vemos como casi siempre se encuentra por debajo de la diagonal.
 
 \end{document}

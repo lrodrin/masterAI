@@ -1,5 +1,6 @@
 \documentclass[11pt]{exam}
 \usepackage[utf8]{inputenc}
+\usepackage{natbib}
 \usepackage{hyperref}
 
 \title{Evaluación del Módulo 5.2}
@@ -17,23 +18,35 @@
 % Pregunta 1
 {\bf \question Defina la tarea de Recuperación de Información (2 puntos).}
 
-La Recuperación de Información es la tarea que trata de satisfacer las necesidades de información de los usuarios, es decir, ante una consulta de un usuario, un sistema de recuperación de información busca en una colección de documentos aquel documento o fragmento de texto que resuelve la consulta planteada por el usuario. Ejemplos de sistemas de recuperación de información son los buscadores que se encuentran disponibles en Internet, como es el caso de Google o Bing.
+La Recuperación de Información es la tarea que trata de satisfacer las necesidades de información de los usuarios, es decir, ante una consulta de un usuario, un sistema de recuperación de información busca en una colección de documentos aquel documento o fragmento de texto existente en una base de datos documental, que resuelve la consulta planteada por el usuario. 
 
-En esta lección aprenderás:
+Las necesidades de información de los usuarios, que se representan a través de consultas en lenguaje natural, se resuelven con los sistemas de RI, que seleccionan los documentos o textos que contienen estos términos de las consultas, para ayudar y permitir a los usuarios a acceder a gran cantidad de información textual disponible en Internet.
 
-Modelos de recuperación de información: Modelo Booleano y Modelo Espacio Vectorial.
-Medidas de evaluación de un sistema de recuperación de la información
-Herramientas para el desarrollo de sistemas de recuperación de información
+Ejemplos de sistemas de recuperación de información son los buscadores de Google o Bing.
+
+El objetivo de los sistemas de RI es determinar si los términos seleccionados que contienen los documentos o textos son relevantes, y deben incorporar el concepto de ranking u orden de relevancia. Y su funcionamiento es:
+
+\begin{itemize}
+	\item Se parte de una colección de documentos para representar otros documentos o fragmentos de texto y consultas (lenguaje de representación).
+	\item Un usuario tiene una necesidad de información y plantea una consulta al sistema de RI para procesar documentos (indexación) y consultas.
+	\item El sistema de RI devuelve los documentos relevantes, que satisfacen la necesidad de información del usuario, seguramente en forma de "ranking", para obtener una aproximación de la relevancia de los documentos de la consulta (calculo de relevancia o similitud).
+\end{itemize}
 
 
 % Pregunta 2
 {\bf \question Describa el modelo espacio vectorial en Recuperación de Información (2 puntos).}
 
+El Modelo Espacio Vectorial es un modelo de RI
+
 % Pregunta 3
 {\bf \question Defina las medidas de evaluación Precisión y Recall en el contexto de la Recuperación de Información (2 puntos).}
 
+Medidas de evaluación de un sistema de recuperación de la información.
+
 % Pregunta 4
 {\bf \question ¿Qué es Lucene? ¿Y Solr? (2 puntos).}
+
+Son herramientas para el desarrollo de sistemas de recuperación de información.
 
 % Pregunta 5
 {\bf \question Tras tres lecciones sobre Recuperación de Información, si le dijeran que tiene que diseñar un buscador de documentos ¿cuál sería la arquitectura de su sistema? No se limite al sistema de Recuperación de Información, piense que al menos necesita de una fuente de documentos, y que debe presentar los resultados de la búsqueda. (2 puntos).}
