@@ -24,29 +24,58 @@ Las necesidades de información de los usuarios, que se representan a través de
 
 Ejemplos de sistemas de recuperación de información son los buscadores de Google o Bing.
 
-El objetivo de los sistemas de RI es determinar si los términos seleccionados que contienen los documentos o textos son relevantes, y deben incorporar el concepto de ranking u orden de relevancia. Y su funcionamiento es:
+El objetivo de los sistemas de RI es determinar si los términos seleccionados que contienen los documentos o textos son relevantes, y deben incorporar el concepto de normalización u orden de relevancia. Y su funcionamiento es:
 
 \begin{itemize}
 	\item Se parte de una colección de documentos para representar otros documentos o fragmentos de texto y consultas (lenguaje de representación).
 	\item Un usuario tiene una necesidad de información y plantea una consulta al sistema de RI para procesar documentos (indexación) y consultas.
-	\item El sistema de RI devuelve los documentos relevantes, que satisfacen la necesidad de información del usuario, seguramente en forma de "ranking", para obtener una aproximación de la relevancia de los documentos de la consulta (calculo de relevancia o similitud).
+	\item El sistema de RI devuelve los documentos relevantes, que satisfacen la necesidad de información del usuario, seguramente normalizando los documentos para obtener una aproximación de la relevancia de los estos en la consulta (calculo de relevancia o similitud).
 \end{itemize}
-
 
 % Pregunta 2
 {\bf \question Describa el modelo espacio vectorial en Recuperación de Información (2 puntos).}
 
-El Modelo Espacio Vectorial es un modelo de RI
+El Modelo Espacio Vectorial es el modelo de RI más utilizado por su eficiencia y facilidad de implementación, con un enfoque fundamentado matemáticamente.
+
+Características del modelo:
+
+\begin{itemize}
+	\item Representa los documentos y las consultas de los usuarios como vectores ponderados n-dimensionales.
+	\item Utiliza técnicas de comparación de vectores: coseno.
+	\item Se basa en álgebra vectorial.
+	\item Permite el ajuste parcial y el ranking.
+	\item Representación de expresión en lenguaje natural como vector de pesos de términos.
+	\item Considera las frecuencias de aparición de la palabra local (tf) y global (idf)
+	\item Proporciona resultados ordenados.
+	\item Trabaja bastante bien en la práctica a pesar de debilidades obvias.
+	\item Permite la implementación eficiente para grandes colecciones de documentos.
+\end{itemize}
 
 % Pregunta 3
 {\bf \question Defina las medidas de evaluación Precisión y Recall en el contexto de la Recuperación de Información (2 puntos).}
 
+La medidas de evaluación
+
+Recall proporción entre documentos relevantes recuperados y documentos relevantes
+
+Precision proporción entre documentos relevantes recuperados y documentos recuperados
+
+La precisión es una medida para evaluar los sistemas de RI
+
+La tasa de recuperación o cobertura, también llamada Recall, es otra medida para evaluar los sistemas de RI
+
 Medidas de evaluación de un sistema de recuperación de la información.
+
+Generalmente, recall y precisión son inversamente proporcionales.
+
+Se suele buscar un equilibrio entre ellas o primar la preferida por el usuario tipo
 
 % Pregunta 4
 {\bf \question ¿Qué es Lucene? ¿Y Solr? (2 puntos).}
 
 Son herramientas para el desarrollo de sistemas de recuperación de información.
+
+Existen diversas librerías que facilitan el desarrollo de motores de búsqueda. Ejemplos de librerías son Lucence y Sorl
 
 % Pregunta 5
 {\bf \question Tras tres lecciones sobre Recuperación de Información, si le dijeran que tiene que diseñar un buscador de documentos ¿cuál sería la arquitectura de su sistema? No se limite al sistema de Recuperación de Información, piense que al menos necesita de una fuente de documentos, y que debe presentar los resultados de la búsqueda. (2 puntos).}
