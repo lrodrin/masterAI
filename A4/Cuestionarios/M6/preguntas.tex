@@ -1,0 +1,77 @@
+\documentclass[11pt]{exam}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+
+\title{Evaluación del Módulo 6}
+\author{Laura Rodríguez Navas \\ rodrigueznavas@posgrado.uimp.es}
+\date{Marzo 2020}
+
+\pagestyle{plain}
+
+\begin{document}
+	
+\maketitle
+
+\begin{questions}
+	
+% Pregunta 1
+{\bf \question ¿Qué es la Categorización de Textos? (1 puntos).}
+
+La categorización de textos es un sistema que consiste en la asignación de una o más categorías preexistentes a cada uno de los documentos de una colección. El objetivo de un sistema de CT es decidir si un documento concreto pertenece o no a una categoría particular.
+
+Métodos utilizados:
+
+\begin{itemize}
+	\item Sistemas con Categorización de Textos Manual.
+	\begin{itemize}
+		\item Muy precisos cuando el trabajo es realizado por expertos.
+		\item Viables cuando la colección es pequeña.
+		\item Difícilmente escalables.
+	\end{itemize}
+	\item Sistemas con Categorización de Textos Automática.
+	\begin{itemize}
+		\item Sistemas basados en reglas codificadas manualmente.
+		Construir y mantener las reglas es muy costoso, pero se consigue una alta precisión si las reglas se refinan por un experto.
+		\item Sistemas basados en aprendizaje.
+		Requieren de una colección de entrenamiento y otra de evaluación para probar la eficiencia del sistema.
+		Es fácil de escalar y mantener usando los algoritmos: k-Nearest Neighbors, Naive Bayes, Support Vector Machines y Neural Networks.
+	\end{itemize}
+\end{itemize}
+
+% Pregunta 2
+{\bf \question Razone la diferencia entre clasificación multiclase y multietiqueta. Lectura recomendada: Sección \href{https://nlp.stanford.edu/IR-book/html/htmledition/classification-with-more-than-two-classes-1.html}{Classification with more than two classes} del libro Introduction to Information Retrieval (2 puntos).}
+
+La clasificación multiclase es una tarea de clasificación con más de dos clases; que parte del supuesto de que cada clase está asignada a una sola etiqueta. Y la clasificación multietiqueta también es una tarea de clasificación de más de dos clases pero con la diferencia de que asigna a cada clase un conjunto de etiquetas, es decir, una clase puede tener más de una etiqueta.
+
+% Pregunta 3
+{\bf \question Defina la tarea Análisis de Opiniones (1 puntos).}
+
+La tarea de Análisis de Opiniones se centra en el desarrollo de metodologías destinadas al estudio de la opinión, a la identificación de los distintos elementos que la componen, y al descubrimiento de su orientación.
+
+% Pregunta 4
+{\bf \question ¿Qué diferencia hay entre clasificación de la subjetividad y clasificación de la opinión? (2 puntos).}
+
+% Pregunta 5
+{\bf \question ¿Cuáles son los elementos de una opinión? (2 puntos).}
+
+Si una opinión es un punto de vista, apreciación o actitud sobre un objeto u entidad expresado por un usuario u organización (opinion holder), los elementos de una opinión son:
+
+\begin{itemize}
+	\item Objeto u entidad: sobre la que la opinión es expresada.
+	\item Opinion holder: usurario u organización que expresa una opinión sobre un objeto u entidad.
+\end{itemize}
+
+% Pregunta 6
+{\bf \question ¿Cuáles son los niveles de análisis que se pueden desarrollar en el Análisis de Opiniones? (2 puntos).}
+
+Existen tres tipos de niveles de análisis que se pueden desarrollar en el Análisis de Opiniones:
+
+\begin{itemize}
+	\item Análisis de opinión a nivel de aspectos y características.
+	\item Análisis de opinión a nivel de frase.
+	\item Análisis de opinión a nivel de documento.
+\end{itemize}
+
+\end{questions}
+	
+\end{document}
