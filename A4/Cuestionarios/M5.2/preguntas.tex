@@ -20,65 +20,84 @@
 
 La Recuperación de Información es la tarea que trata de satisfacer las necesidades de información de los usuarios, es decir, ante una consulta de un usuario, un sistema de recuperación de información busca en una colección de documentos aquel documento o fragmento de texto existente en una base de datos documental, que resuelve la consulta planteada por el usuario. 
 
-Las necesidades de información de los usuarios, que se representan a través de consultas en lenguaje natural, se resuelven con los sistemas de RI, que seleccionan los documentos o textos que contienen estos términos de las consultas, para ayudar y permitir a los usuarios a acceder a gran cantidad de información textual disponible en Internet.
+Las necesidades de información de los usuarios, que se representan a través de consultas en lenguaje natural, se resuelven con los sistemas de RI, que seleccionan los documentos o textos que contienen estos términos de las consultas, para ayudar y permitir a los usuarios a acceder a gran cantidad de información textual disponible en Internet. 
 
-Ejemplos de sistemas de recuperación de información son los buscadores de Google o Bing.
+El objetivo de los sistemas de RI es determinar si los términos seleccionados que contienen los documentos o textos son relevantes, y deben incorporar el concepto de normalización u orden de relevancia. 
 
-El objetivo de los sistemas de RI es determinar si los términos seleccionados que contienen los documentos o textos son relevantes, y deben incorporar el concepto de normalización u orden de relevancia. Y su funcionamiento es:
+Un sistema RI:
 
 \begin{itemize}
 	\item Se parte de una colección de documentos para representar otros documentos o fragmentos de texto y consultas (lenguaje de representación).
-	\item Un usuario tiene una necesidad de información y plantea una consulta al sistema de RI para procesar documentos (indexación) y consultas.
-	\item El sistema de RI devuelve los documentos relevantes, que satisfacen la necesidad de información del usuario, seguramente normalizando los documentos para obtener una aproximación de la relevancia de los estos en la consulta (calculo de relevancia o similitud).
+	\item Un usuario tiene una necesidad de información y plantea una consulta al sistema para procesar documentos (indexación) y consultas.
+	\item Devuelve los documentos relevantes, que satisfacen la necesidad de información del usuario, seguramente normalizando los documentos para obtener una aproximación de la relevancia de estos en una consulta (cálculo de relevancia o similitud).
 \end{itemize}
+
+Los sistemas RI normalmente son evaluados en términos de la capacidad de recuperar exclusivamente documentos relevantes (efectividad) y en la complejidad y los tiempos de respuesta (eficiencia).
 
 % Pregunta 2
 {\bf \question Describa el modelo espacio vectorial en Recuperación de Información (2 puntos).}
 
-El Modelo Espacio Vectorial es el modelo de RI más utilizado por su eficiencia y facilidad de implementación, con un enfoque fundamentado matemáticamente.
+El Modelo Espacio Vectorial es un modelo clásico de RI y es el modelo más utilizado por su eficiencia y facilidad de implementación, con un enfoque fundamentado matemáticamente.
 
 Características del modelo:
 
 \begin{itemize}
-	\item Representa los documentos y las consultas de los usuarios como vectores ponderados n-dimensionales.
-	\item Utiliza técnicas de comparación de vectores: coseno.
+	\item Representa los documentos como vectores de pesos de términos. \\
+	Un documento es un vector de pesos \\
+	\begin{center}
+		$d = [w_{d,1}, ..., w_{d,i}, ..., w_{d,T}]$
+	\end{center}
+	donde cada peso es el producto la frecuencia de los términos(tf) y la frecuencia inversa de los documentos(idf)
+		\begin{center}
+		$w_{d,i} = tf_{d,i} * idf_{i}$
+	\end{center}
+	\item Utiliza técnicas de comparación de vectores: la medida de similitud coseno. \\
+	Puede suceder que "vectores similares" tengan longitudes diferentes, así que los normalizamos, antes de compararlos para que tengan la misma longitud euclidiana.
 	\item Se basa en álgebra vectorial.
-	\item Permite el ajuste parcial y el ranking.
-	\item Representación de expresión en lenguaje natural como vector de pesos de términos.
-	\item Considera las frecuencias de aparición de la palabra local (tf) y global (idf)
+	\item Permite el ajuste parcial y el ranking (necesidad de normalizar).
 	\item Proporciona resultados ordenados.
-	\item Trabaja bastante bien en la práctica a pesar de debilidades obvias.
 	\item Permite la implementación eficiente para grandes colecciones de documentos.
-\end{itemize}
+\end{itemize}
 
 % Pregunta 3
 {\bf \question Defina las medidas de evaluación Precisión y Recall en el contexto de la Recuperación de Información (2 puntos).}
 
-La medidas de evaluación
+La precisión y recall son medidas de evaluación para evaluar los sistemas de RI.
 
-Recall proporción entre documentos relevantes recuperados y documentos relevantes
+La precisión es la ratio entre el número de documentos relevantes recuperados y el número de documentos recuperados. Es decir, la proporción entre documentos relevantes recuperados y documentos relevantes.
 
-Precision proporción entre documentos relevantes recuperados y documentos recuperados
+La recall se emplea en menor medida que la precisión y es la ratio de la proporción de documentos relevantes recuperados, comparado con el total de los documentos que son relevantes existentes en la base de datos, con total independencia de que éstos, se recuperen o no. Es decir, la proporción entre documentos relevantes recuperados y documentos recuperados.
 
-La precisión es una medida para evaluar los sistemas de RI
-
-La tasa de recuperación o cobertura, también llamada Recall, es otra medida para evaluar los sistemas de RI
-
-Medidas de evaluación de un sistema de recuperación de la información.
-
-Generalmente, recall y precisión son inversamente proporcionales.
-
-Se suele buscar un equilibrio entre ellas o primar la preferida por el usuario tipo
+Generalmente, la precisión y recall son medidas inversamente proporcionales y se suele buscar un equilibrio entre ellas o dar más importancia a la preferida por el usuario.
 
 % Pregunta 4
 {\bf \question ¿Qué es Lucene? ¿Y Solr? (2 puntos).}
 
-Son herramientas para el desarrollo de sistemas de recuperación de información.
+\href{https://lucene.apache.org/core/}{Lucene} es una API de código abierto para recuperación de información, originalmente implementada en Java, que permite añadir funcionalidades de búsqueda a cualquier aplicación. 
 
-Existen diversas librerías que facilitan el desarrollo de motores de búsqueda. Ejemplos de librerías son Lucence y Sorl
+Es una aplicación con mucha flexibilidad que le permite ser independiente del formato del fichero y trabajar con texto proveniente de una base de datos, de una página Web o de documentos en distintos formatos (.txt, .doc, .pdf, ...).
+
+Conceptos básicos:
+
+\begin{itemize}
+	\item Debe definirse la estructura de los documentos a buscar indicando los	campos que deben ser indexados o no.
+	\item Debe definirse el análisis lingüístico (tokenización, stopper, stemmer, ...) que se le aplica a los documentos y a las consultas.
+	\item Los documentos deben indexarse para hacer la búsqueda más eficiente.
+	\item Debe definirse un lenguaje propio de consultas para recuperar los documentos.
+	\item Debe realizarse la búsqueda sobre los índices y los documentos asociados a las consultas.
+\end{itemize}
+
+Lucene es útil para cualquier aplicación que requiera indexado y búsqueda a texto completo y se ha usado ampliamente por su utilidad en la implementación de motores de búsquedas.  
+
+\href{https://lucene.apache.org/solr/}{Solr} es un sistema basado en Lucene que facilita el desarrollo de servidores de búsqueda. Proporciona indexación distribuida, replicación y consultas con equilibrio de carga, recuperación y conmutación por error automatizadas, configuración centralizada y más. También potencia las funciones de búsqueda y navegación de muchos de los sitios de Internet más grandes del mundo.
+
+Lucene y Solr se han desarrollado por \href{http://www.apache.org/}{Apache Software Foundation}.
 
 % Pregunta 5
 {\bf \question Tras tres lecciones sobre Recuperación de Información, si le dijeran que tiene que diseñar un buscador de documentos ¿cuál sería la arquitectura de su sistema? No se limite al sistema de Recuperación de Información, piense que al menos necesita de una fuente de documentos, y que debe presentar los resultados de la búsqueda. (2 puntos).}
+
+resumir http://www.hipertexto.info/documentos/busq_rec.htm
+
 
 \end{questions}
 	
