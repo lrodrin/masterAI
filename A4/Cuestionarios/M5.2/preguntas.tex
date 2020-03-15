@@ -2,6 +2,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{natbib}
 \usepackage{hyperref}
+\usepackage{graphicx}
 
 \title{Evaluación del Módulo 5.2}
 \author{Laura Rodríguez Navas \\ rodrigueznavas@posgrado.uimp.es}
@@ -38,6 +39,8 @@ Los sistemas RI normalmente son evaluados en términos de la capacidad de recupe
 {\bf \question Describa el modelo espacio vectorial en Recuperación de Información (2 puntos).}
 
 El Modelo Espacio Vectorial es un modelo clásico de RI y es el modelo más utilizado por su eficiencia y facilidad de implementación, con un enfoque fundamentado matemáticamente.
+
+\newpage
 
 Características del modelo:
 
@@ -77,6 +80,8 @@ Generalmente, la precisión y recall son medidas inversamente proporcionales y s
 
 Es una aplicación con mucha flexibilidad que le permite ser independiente del formato del fichero y trabajar con texto proveniente de una base de datos, de una página Web o de documentos en distintos formatos (.txt, .doc, .pdf, ...).
 
+\newpage
+
 Conceptos básicos:
 
 \begin{itemize}
@@ -96,8 +101,26 @@ Lucene y Solr se han desarrollado por \href{http://www.apache.org/}{Apache Softw
 % Pregunta 5
 {\bf \question Tras tres lecciones sobre Recuperación de Información, si le dijeran que tiene que diseñar un buscador de documentos ¿cuál sería la arquitectura de su sistema? No se limite al sistema de Recuperación de Información, piense que al menos necesita de una fuente de documentos, y que debe presentar los resultados de la búsqueda. (2 puntos).}
 
-resumir http://www.hipertexto.info/documentos/busq_rec.htm
+\subsection*{Arquitectura de Recuperación de la Información}
 
+\begin{center}
+	\includegraphics[scale=0.45]{general.png}
+\end{center}
+
+\subsection*{Arquitectura de mi sistema de RI}
+
+\begin{center}
+	\includegraphics[scale=0.45]{sistema.png}
+\end{center}
+
+Componentes de la arquitectura de mi sistema RI:
+
+\begin{itemize}
+	\item La colección documentos de texto y corpus o base de datos textual. Para poder realizar operaciones sobre un corpus, es necesario primero una representación lógica de todos sus documentos, que puede consistir en un conjunto de términos, frases u otras unidades (sintácticas o semánticas) que permitan caracterizarlos.
+	\item A partir de la representación lógica de los documentos, existe un proceso de indexación, que lleva a cabo la construcción de estructuras de datos (normalmente denominadas índices) que las almacene. Estas estructuras darán luego soporte a las búsquedas eficientes.
+	\item El algoritmo de búsqueda acepta como entrada una expresión de consulta de un usuario y verifica en el índice cuales documentos pueden satisfacerlo. Luego, un algoritmo de ranking determina la relevancia de cada documento y retorna una lista con la respuesta. El primer ítem de dicha lista corresponde al documento más relevante y así sucesivamente en orden decreciente.
+	\item La interfaz de usuario permite que este especifique la consulta mediante una expresión escrita en un lenguaje preestablecido y sirve para mostrar las respuestas retornadas por el sistema.
+\end{itemize}
 
 \end{questions}
 	
