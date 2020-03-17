@@ -2,27 +2,29 @@
 \usepackage[utf8]{inputenc}
 \usepackage{natbib}
 \usepackage{graphicx}
+\usepackage{vmargin}
 \usepackage{hyperref}
+\setpapersize{A4}
+\setlength{\parskip}{\baselineskip}%
+\setlength{\parindent}{0pt}%
 
 \title{Entregable WEKA}
-\author{Laura Rodríguez Navas}
+\author{Laura Rodríguez Navas \\ rodrigueznavas@posgrado.uimp.es}
 \date{Marzo 2020}
 
 \begin{document}
 
 \maketitle
 
-\section*{Preparación de Datos}
+\section*{Preprocesamiento}
 
-Quitar valores missing
+Después de analizar la base de datos, observamos que en ella no existen valores desconocidos. Como consecuencia, no tendremos que aplicar ninguna técnica de preprocesamiento para los valores desconocidos en esta base de datos. También observamos que la base de datos esta ordenada en función de las variables de la clase \{Tumor, Normal\}. En este caso, sí que tendremos que aplicar una técnica de preprocesamiento y procederemos a aleatorizar la base de datos. Para desordenar la base de datos aplicaremos un filtro a nivel de registro, concretamente de tipo no supervisado y de tipo registro llamado Ramdomize. Utilizaremos la semilla que viene por defecto. 
 
-aleatorizar la base de datos
+A continuación, dividimos la base de datos en un conjunto de entrenamiento con dos tercios de los registros, y uno de test con un tercio de los registros. Lo que tenemos que utilizar para ello es un filtro de tipo no supervisado y de tipo registro llamado RemoveFolds. Los valores de este filtro que debemos modificar son: numFols = 3, fold = 1 y invertSelection = True. Hemos creado el conjunto de entrenamiento con 90 registros.
 
-crear conjunto de entrenamiento
+\section*{Clasificación}
 
-\section*{Uso de los clasificadores}
-
-cross-validation (5cv)
+\section*{Selección de atributos}
 
 \subsection*{NaiveBayes}
 
