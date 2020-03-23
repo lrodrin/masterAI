@@ -4,6 +4,9 @@
 \usepackage{graphicx}
 \usepackage{vmargin}
 \usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{siunitx}
 \setpapersize{A4}
 \setlength{\parskip}{\baselineskip}%
 \setlength{\parindent}{0pt}%
@@ -16,52 +19,69 @@
 
 \maketitle
 
-\section*{Preprocesamiento}
+El objetivo de esta práctica es analizar sobre la base de datos considerada, el efecto de incluir o no métodos de preprocesamiento, con los algoritmos de aprendizaje kNN y perceptrón multicapa, para mejorar las medidas iniciales de estos. Para ello se usa una validación cruzada de 5 carpetas (5cv) y la herramienta \href{https://www.cs.waikato.ac.nz/ml/weka/}{WEKA}.
 
-Después de analizar la base de datos, observamos que en ella no existen valores desconocidos. Como consecuencia, no tendremos que aplicar ninguna técnica de preprocesamiento para los valores desconocidos en esta base de datos. También observamos que la base de datos esta ordenada en función de las variables de la clase \{Tumor, Normal\}. En este caso, sí que tendremos que aplicar una técnica de preprocesamiento y procederemos a aleatorizar la base de datos. Para desordenar la base de datos aplicaremos un filtro a nivel de registro, concretamente de tipo no supervisado y de tipo registro llamado Ramdomize. Utilizaremos la semilla que viene por defecto. 
+\section*{Exploración de los datos}
 
-A continuación, dividimos la base de datos en un conjunto de entrenamiento con dos tercios de los registros, y uno de test, con un tercio de los registros. Además lo haremos sin remplazo. Así, lo que tenemos que utilizar para ello, es un filtro de tipo no supervisado y de tipo registro llamado RemoveFolds. Los valores de este filtro que debemos modificar son: numFols = 3, fold = 1 y invertSelection = True. Como resultado hemos creado un conjunto de entrenamiento con 90 registros.
+Consideramos la base de datos \href{https://github.com/renatopp/arff-datasets/blob/master/classification/vehicle.arff}{vehicle} definida sobre 18 variables predictivas (todas numéricas) y una variable clase multiclase \{opel, saab, bus, van\}. En ella no existen valores desconocidos, no está ordenada en función de la variable clase y está formada por 846 registros. 
 
-\section*{Clasificación}
+La distribución de la variable clase no es totalmente uniforme. Cuenta con:
 
-\section*{Selección de atributos}
+\begin{itemize}
+	\item 212 registros para la etiqueta de la variable clase opel.
+	\item 217 registros para la etiqueta de la variable clase saab.
+	\item 218 registros para la etiqueta de la variable clase bus.
+	\item 199 registros para la etiqueta de la variable clase van.
+\end{itemize}
 
-\subsection*{NaiveBayes}
+A continuación, se muestra la gráfica de la distribución de la variable clase.
+
+GRÁFICA
+
+Después usamos un filtro de tipo no supervisado y de registro, llamado RemoveFolds proporcionado por la herramienta WEKA, que elimina alguna de las carpetas en una validación cruzada, para crear un conjunto de entrenamiento que contendrá dos tercios de los registros de la base de datos. Una vez aplicado, el número de registros se reduce a 564.
+
+La distribución de la variable clase sigue siendo no uniforme y ahora cuenta con:
+
+\begin{itemize}
+	\item 149 registros para la etiqueta de la variable clase opel.
+	\item 153 registros para la etiqueta de la variable clase saab.
+	\item 139 registros para la etiqueta de la variable clase bus.
+	\item 123 registros para la etiqueta de la variable clase van.
+\end{itemize}
+
+A continuación, se muestra la gráfica de la distribución de la variable clase del conjunto de entrenamiento.
+
+GRÁFICA
+
+\section*{Algoritmos de preprocesamiento}
+
+Los algoritmos que se describen a continuación son:
+
+\begin{itemize}
+	\item
+	\item
+	\item
+\end{itemize}
+
+\section*{Resultados y análisis}
+
+Se han considerado dos parámetros de rendimiento para la evaluación de los resultados. Los siguientes parámetros son examinados tanto antes como después de la discretización: Accuracy y Error Rate. 
+
+La siguiente tabla proporciona la precisión y la tasa de error para cada clasificador antes y después de la discretización.
 
 \begin{center}
-	\begin{tabular}{ |c|c|c|c| } 
-		\hline
-		col & Accuracy & F-measure \\
-		\hline
-		NaiveBayes& cell5 & cell6 \\ 
-		C4.5 & cell8 & cell9 \\ 
-		\hline
+	\begin{tabular}{cSSSSS}
+		\toprule
+		\multirow{2}{*}{Clasificador} &
+		\multicolumn{2}{c}{Antes Disc.} &
+		\multicolumn{2}{c}{Después Disc.} \\
+		& {Acc in \%} & {ERR in \%} & {Acc in \%} & {ERR in \%} \\
+		\midrule
+		kNN (k=1) & 64.7163 & 35.2837 & 2.1 & 2.1 \\
+		kNN (k=3) & 66.844 & 33.156 & 2.1 & 2.1 \\
+		Multilayer Perceptron & 79.4326 & 20.5674 & 11.6 & 11.6 \\
+		\bottomrule
 	\end{tabular}
 \end{center}
-
-\subsection*{J48 (C4.5)}
-
-\section*{Técnicas de preprocesamiento}
-
-Selección de variables
-
-AttributeSelectedClassifier
-
-FilteredClassifier
-
-\section*{Visualitzation}
-
-Confusion matrix
-ROC
-
-
-
-
-1. inicialmente lanzaremos los clasificadores sobre la base de datos inicial, obteniendo así una medida inicial que intentaremos mejorar.
-
-2. mejorar con la selección de variables
-
-de variables es no lanzar una selección de tipo multivariada (filter o wrapper) sobre todas las variables, puesto que podría llevar mucho tiempo. Se recomienda primero hacer una selección univariada tipo ranker y quedarse con los mejores 200-500 atributos.
-
 
 \end{document}

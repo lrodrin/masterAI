@@ -4,6 +4,9 @@
 \usepackage{graphicx}
 \usepackage{vmargin}
 \usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{siunitx}
 \setpapersize{A4}
 \setlength{\parskip}{\baselineskip}%
 \setlength{\parindent}{0pt}%
@@ -16,52 +19,101 @@
 
 \maketitle
 
-\section*{Preprocesamiento}
+\section*{Preparación de datos}
 
-Después de analizar la base de datos, observamos que en ella no existen valores desconocidos. Como consecuencia, no tendremos que aplicar ninguna técnica de preprocesamiento para los valores desconocidos en esta base de datos. También observamos que la base de datos esta ordenada en función de las variables de la clase \{Tumor, Normal\}. En este caso, sí que tendremos que aplicar una técnica de preprocesamiento y procederemos a aleatorizar la base de datos. Para desordenar la base de datos aplicaremos un filtro a nivel de registro, concretamente de tipo no supervisado y de tipo registro llamado Ramdomize. Utilizaremos la semilla que viene por defecto. 
+Consideramos la base de datos Prostate definida sobre 12600 variables predictivas (todas numéricas) y una variable clase binaria \{tumor, normal\}. Está formada por 136 registros y en ella no existen valores desconocidos. Pero está ordenada en función de la variable clase \{Tumor, Normal\}. Como consecuencia, tenemos que aleatorizar la base de datos. Para ello se aplica un filtro a nivel de registro, concretamente de tipo no supervisado llamado Ramdomize. Usamos la semilla que viene por defecto (42).
 
-A continuación, dividimos la base de datos en un conjunto de entrenamiento con dos tercios de los registros, y uno de test, con un tercio de los registros. Además lo haremos sin remplazo. Así, lo que tenemos que utilizar para ello, es un filtro de tipo no supervisado y de tipo registro llamado RemoveFolds. Los valores de este filtro que debemos modificar son: numFols = 3, fold = 1 y invertSelection = True. Como resultado hemos creado un conjunto de entrenamiento con 90 registros.
+A continuación, dividimos la base de datos en un conjunto de entrenamiento, con dos tercios de los registros, y un conjunto de test con un tercio de los registros. Para ello se aplica un filtro a nivel de registro y no supervisado llamado RemoveFolds. Como resultado hemos creado un conjunto de entrenamiento con 90 registros.
+
+Observamos que la distribución de la variable clase en el conjunto de entrenamiento no es uniforme.
+
+\begin{center}
+	\includegraphics[scale=0.3]{distribucion_norm.png}
+\end{center}
 
 \section*{Clasificación}
 
-\section*{Selección de atributos}
+Se usan los clasificadores NaiveBayes y J48 (C4.5) en una validación cruzada de 5 carpetas (5cv) sobre el conjunto de entrenamiento de la base de datos.
 
-\subsection*{NaiveBayes}
+Se han considerado dos parámetros de rendimiento para la evaluación de los resultados. Los siguientes parámetros son examinados antes de la discretización y la selección de variables: Accuracy y Error Rate. 
 
 \begin{center}
-	\begin{tabular}{ |c|c|c|c| } 
+	\begin{tabular}{ |c|c|c| } 
 		\hline
-		col & Accuracy & F-measure \\
+		Clasificador & Acc. en \% & ERR en \% \\
 		\hline
-		NaiveBayes& cell5 & cell6 \\ 
-		C4.5 & cell8 & cell9 \\ 
+		NaiveBayes & 52.2222 & 47.7778 \\ 
+		J48 & 82.2222 & 17.7778 \\ 
 		\hline
 	\end{tabular}
 \end{center}
 
-\subsection*{J48 (C4.5)}
+Como podemos observar el clasificador J48 es mucho mejor que NaiveBayes.
 
-\section*{Técnicas de preprocesamiento}
+\section*{Mejoras}
+\subsection*{Discretización}
 
-Selección de variables
+Primero utilizamos un método supervisado a nivel de atributo. Como resultado, los parámetros Accuracy y Error Rate resultantes de la ejecución de los clasificadores después de la discretización son:
 
-AttributeSelectedClassifier
+\begin{center}
+	\begin{tabular}{cSSSSS}
+		\toprule
+		\multirow{2}{*}{Clasificador} &
+		\multicolumn{2}{c}{Antes Disc.} &
+		\multicolumn{2}{c}{Después Disc.} \\
+		& {Acc in \%} & {ERR in \%} & {Acc in \%} & {ERR in \%} \\
+		\midrule
+		NaivesBayes & 52.2222 & 47.7778 & 82.2222 & 17.7778 \\
+		J48 & 82.2222 & 17.7778 & 87.7778 & 12.2222 \\
+		\bottomrule
+	\end{tabular}
+\end{center}
 
-FilteredClassifier
+Después, utilizamos dos métodos no supervisados a nivel de atributo.
 
-\section*{Visualitzation}
+\begin{center}
+	\begin{itemize}
+		\item Intervalos de igual amplitud \\
+		\begin{tabular}{ |c|c|c| } 
+			\hline
+			\# of bins & Acc. en \% & ERR en \% \\
+			\hline
+			2 & 52.2222 & 47.7778 \\ 
+			4 & 82.2222 & 17.7778 \\ 
+			5 & 52.2222 & 47.7778 \\ 
+			10 & 82.2222 & 17.7778 \\ 
+			\hline
+		\end{tabular}
+		\item Intervalos de igual frecuencia \\
+		\begin{tabular}{ |c|c|c| } 
+			\hline
+			\# of bins & Acc. en \% & ERR en \% \\
+			\hline
+			2 & 52.2222 & 47.7778 \\ 
+			4 & 82.2222 & 17.7778 \\ 
+			5 & 52.2222 & 47.7778 \\ 
+			10 & 82.2222 & 17.7778 \\ 
+			\hline
+		\end{tabular}
+	\end{itemize}
+\end{center}
 
-Confusion matrix
-ROC
+Finalmente,
 
+\begin{center}
+	\begin{tabular}{cSSSSS}
+		\toprule
+		\multirow{2}{*}{Clasificador} &
+		\multicolumn{2}{c}{Antes Disc.} &
+		\multicolumn{2}{c}{Después Disc.} \\
+		& {Acc in \%} & {ERR in \%} & {Acc in \%} & {ERR in \%} \\
+		\midrule
+		NaivesBayes & 52.2222 & 47.7778 & 55.1471 & 44.8529 \\
+		J48 & 82.2222 & 17.7778 & 74.2647 & 25.7353 \\
+		\bottomrule
+	\end{tabular}
+\end{center}
 
-
-
-1. inicialmente lanzaremos los clasificadores sobre la base de datos inicial, obteniendo así una medida inicial que intentaremos mejorar.
-
-2. mejorar con la selección de variables
-
-de variables es no lanzar una selección de tipo multivariada (filter o wrapper) sobre todas las variables, puesto que podría llevar mucho tiempo. Se recomienda primero hacer una selección univariada tipo ranker y quedarse con los mejores 200-500 atributos.
-
+\subsection*{Selección de variables}
 
 \end{document}
