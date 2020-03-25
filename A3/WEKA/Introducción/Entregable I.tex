@@ -21,23 +21,17 @@
 
 \section*{Preparación de datos}
 
-Consideramos la base de datos Prostate definida sobre 12600 variables predictivas (todas numéricas) y una variable clase binaria \{tumor, normal\}. Está formada por 136 registros y en ella no existen valores desconocidos. Pero está ordenada en función de la variable clase \{Tumor, Normal\}. Como consecuencia, tenemos que aleatorizar la base de datos. Para ello se aplica un filtro a nivel de registro, concretamente de tipo no supervisado llamado Ramdomize. Usamos la semilla que viene por defecto (42).
+Consideramos la base de datos Prostate definida sobre 12600 variables predictivas (todas numéricas) y una variable clase binaria \{Tumor, Normal\}. Está formada por 136 registros y en ella no existen valores desconocidos. Pero está ordenada en función de la variable clase. Como consecuencia, tenemos que aleatorizar la base de datos. Para ello se aplica un filtro a nivel de registro, concretamente de tipo no supervisado llamado Ramdomize. Usamos la semilla que viene por defecto (42).
 
-A continuación, dividimos la base de datos en un conjunto de entrenamiento, con dos tercios de los registros, y un conjunto de test con un tercio de los registros. Para ello se aplica un filtro a nivel de registro y no supervisado llamado RemoveFolds. Como resultado hemos creado un conjunto de entrenamiento con 90 registros.
-
-Observamos que la distribución de la variable clase en el conjunto de entrenamiento no es uniforme.
-
-\begin{center}
-	\includegraphics[scale=0.3]{distribucion_norm.png}
-\end{center}
+Después, dividimos la base de datos en un conjunto de entrenamiento, con dos tercios de los registros, y en un conjunto de prueba, con un tercio de los registros. Para ello se aplica un filtro a nivel de registro y no supervisado llamado RemoveFolds. Como resultado hemos creado un conjunto de entrenamiento con 90 registros.
 
 \section*{Clasificación}
 
-Se usan los clasificadores Naive Bayes y J48 (C4.5) en una validación cruzada de 5 carpetas (5cv) sobre el conjunto de entrenamiento de la base de datos.
+Se usan los clasificadores Naive Bayes y J48 (C4.5) en una validación cruzada de 5 carpetas (5cv) sobre el conjunto de entrenamiento que acabamos de crear.
 
-Se han considerado dos parámetros de rendimiento para la evaluación de los resultados. Los parámetros examinados antes y después de la discretización y/o la selección de variables son Accuracy (registros clasificados correctamente) y Error Rate (registros no clasificados correctamente). 
+Se han considerado dos parámetros de rendimiento para la evaluación de los resultados de las clasificaciones. Los parámetros examinados antes y después de una discretización y/o de una selección de variables son registros clasificados correctamente (Accuracy) y los registros no clasificados correctamente (Error Rate). 
 
-\newpage
+Después de realizar una primera clasificación obtenemos los siguientes resultados:
 
 \begin{center}
 	\begin{tabular}{ |c|c|c| } 
@@ -50,12 +44,15 @@ Se han considerado dos parámetros de rendimiento para la evaluación de los res
 	\end{tabular}
 \end{center}
 
-Inicialmente y sin la aplicación de alguna mejora, podemos observar que el clasificador J48 (C4.5) clasifica correctamente mucho mejor los registros, en comparación con Naive Bayes. A partir de estos resultados, se puede pensar que se debe a la alta presencia de variables relevantes y redundantes en la base de datos, ya que sabemos que Naive Bayes es un algoritmo sensible en este caso.
+Inicialmente y sin la aplicación de algún tipo mejora, podemos observar que el algoritmo J48 (C4.5) clasifica mucho mejor, en comparación con el algoritmo Naive Bayes. Se puede pensar que se debe a la alta presencia de variables relevantes y redundantes en la base de datos, ya que sabemos que Naive Bayes es un algoritmo sensible a este caso.
 
 \section*{Mejoras}
+
+Las mejoras se basan en técnicas de discretización, de selección de variables y una combinación de ambas.
+
 \subsection*{Discretización}
 
-Primero se prueba un método supervisado a nivel de atributo basado en la entropía. Como resultado, los valores de Accuracy y Error Rate resultantes de la ejecución de los clasificadores después de esta discretización son:
+Primero probamos un método supervisado a nivel de atributo basado en la entropía, concretamente usamos MLDP. Como resultado, los valores de Accuracy y Error Rate después de esta discretización son:
 
 \begin{center}
 	\begin{tabular}{cSSSSS}
@@ -71,7 +68,7 @@ Primero se prueba un método supervisado a nivel de atributo basado en la entrop
 	\end{tabular}
 \end{center}
 
-A continuación, se prueban dos métodos no supervisados a nivel de atributo.
+Observamos una mejora después de la discretización en los dos algoritmos, y a continuación, probamos dos métodos no supervisados a nivel de atributo.
 
 \begin{center}
 	\begin{itemize}
@@ -89,9 +86,10 @@ A continuación, se prueban dos métodos no supervisados a nivel de atributo.
 				5 & 57.7778 & 42.2222 & 68.8889 & 31.1111 \\
 				10 & 71.1111 & 28.8889 & 73.3333 & 26.6667 \\
 				\bottomrule
-			\end{tabular}
+			\end{tabular}				
 		\end{center}
-		\item Intervalos de igual frecuencia. Es el método no supervisado que divide los valores ordenados en k intervalos para que cada intervalo contenga aproximadamente el mismo número de instancias de entrenamiento. Por lo tanto, cada intervalo contiene n/k (posiblemente duplicados) valores adyacentes. k es el parámetro predefinido por el usuario. Aquí k representa el número de bins. La tabla siguiente contiene los valores de precisión y tasa de error que dependen del número de bins utilizados (2, 4, 5 y 10). 
+		Observamos que el algoritmo J48 (C4.5) no mejora después de la discretización y el algoritmo Naive Bayes empieza a mejorar cuando el número de bins es superior a 2.
+		\item Intervalos de igual frecuencia. Es el método no supervisado que divide los valores ordenados en k intervalos para que cada intervalo contenga aproximadamente el mismo número de registros de entrenamiento. Por lo tanto, cada intervalo contiene n/k (posiblemente duplicados) valores adyacentes. Aquí k representa el número de bins. La tabla siguiente contiene los valores de precisión y tasa de error que dependen del número de bins utilizados (2, 4, 5 y 10). 
 		\begin{center}
 			\begin{tabular}{cSSSSS}
 				\toprule
@@ -106,13 +104,14 @@ A continuación, se prueban dos métodos no supervisados a nivel de atributo.
 				10 & 72.2222 & 27.7778 & 70 & 30 \\
 				\bottomrule
 			\end{tabular}
-		\end{center}	
+		\end{center}
+		Observamos que el algoritmo J48 (C4.5) tampoco mejora después de la discretización y el algoritmo Naive Bayes, en cambio, mejora bastante.	
 	\end{itemize}
 \end{center}
 
-Ninguno de los dos métodos no supervisados mejora los resultados del método supervisado, así que se escoge el método supervisado como mejor discretización, debido a la mejor selección de intervalos de forma supervisada y además sin la necesidad de hacer pruebas con distintos intervalos.
+Como conclusión, comentar que escogemos el método supervisado como mejor discretización, porqué es un método que realiza mejor la selección de intervalos al ser un método supervisado, y además sin la necesidad de hacer pruebas con distintos intervalos.
 
-El mejor resultado es,
+Así que utilizaremos la siguiente tabla para comparar, las técnicas de discretización utilizadas con las técnicas de selección de variables que analizaremos a continuación.
 
 \begin{center}
 	\begin{tabular}{cSSSSS}
@@ -130,9 +129,9 @@ El mejor resultado es,
 
 \subsection*{Selección de variables}
 
-Sabemos que la base de datos contiene muchos atributos, así que primero reduciremos el número de atributos para quedarnos con los 200 mejores y la variable clase, haciendo una selección invariada tipo ranker. Y si además discretizamos con el método supervisado utilizado anteriormente observamos que la clasificación con Naive Bayes mejora muchísimo. Contrariamente, el clasificador J48 (C4.5) empeora. Eso demuestra que al reducir el número de atributos, reducimos el número de variables relevantes y redundantes en la base de datos; que Naive Bayes es un algoritmo sensible en este caso y que J48 (C4.5) no lo es.
+Sabemos que la base de datos contiene muchos atributos, así que primero reduciremos el número de atributos para quedarnos con los 200 más representativos y la variable clase, haciendo una selección invariada tipo ranker. Después discretizamos con el método supervisado utilizado anteriormente. Hecho esto, es significativo como el algoritmo Naive Bayes mejora muchísimo después de la discretización. Contrariamente, el clasificador J48 (C4.5) empeora. Eso demuestra que al reducir el número de atributos, reducimos el número de variables relevantes y redundantes en la base de datos; y que Naive Bayes es un algoritmo sensible a este caso y que el algoritmo J48 (C4.5) no lo es.
 
-La siguiente tabla muestra el análisis anterior,
+La siguiente tabla corrobora el comentario anterior.
 
 \begin{center}
 	\begin{tabular}{cSSSSS}
@@ -148,7 +147,7 @@ La siguiente tabla muestra el análisis anterior,
 	\end{tabular}
 \end{center}
 
-Otra mejora que podemos hacer es una selección multivariada de tipo Filter, de método Cfs y voraz con el método de selección hacia delante (forward). En este caso la selección de atributos se ve ampliamente reducida a 18 atributos. También se prueba con discretización y sin discretización.
+Otra técnica de mejora que podemos utilizar es una selección multivariada de tipo Filter, caracterizada por una técnica de búsqueda CFS (Correlation Feature Subset), y una función de evaluación en selección hacia delante (forward). En este caso la selección de atributos se ve ampliamente reducida a 18 atributos. También se prueba con discretización y sin discretización.
 
 \begin{center}
 	\begin{tabular}{cSSSSS}
@@ -164,9 +163,9 @@ Otra mejora que podemos hacer es una selección multivariada de tipo Filter, de 
 	\end{tabular}
 \end{center}
 
-\newpage
+No mejora en ningún caso para el algoritmo J48 (C4.5), sí que lo hace para el algoritmo Naive Bayes.
 
-Finalmente, probamos una selección multivariada de tipo Wrapper para cada clasificador, con el método de selección hacia delante (forward). También se prueba con discretización y sin discretización.
+Finalmente, probamos una selección multivariada de tipo Wrapper para cada clasificador, con la función de evaluación en selección hacia delante (forward). También se prueba con discretización y sin discretización.
 
 \begin{center}
 	\begin{itemize}
@@ -198,5 +197,7 @@ Finalmente, probamos una selección multivariada de tipo Wrapper para cada clasi
 		\end{center}
 	\end{itemize} 
 \end{center}
+
+De las tres técnicas de selección de variables, nos quedamos con la última que és la mejor (con y sin discretización).
 
 \end{document}
