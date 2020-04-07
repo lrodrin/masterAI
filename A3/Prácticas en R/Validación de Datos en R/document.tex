@@ -106,7 +106,7 @@
 
 \title{Practical 4: Visualisation using qplot()}
 \author{Laura Rodriguez Navas}
-\date{February 2020}
+\date{April 2020}
 
 \begin{document}
 \maketitle
@@ -122,7 +122,7 @@ such that the cornea is flattened.
 	\includegraphics[width=0.9\textwidth]{img.png}
 \end{figure}
 
-The file ``queratocono.csv'' includes information about 394 patients
+The dataset ``queratocono.csv'' includes information about 394 patients
 with Keratoconus who were treated with ring placement. The variables
 that were recorded are:
 
@@ -165,10 +165,9 @@ that were recorded are:
   (K1.salida -- K2.salida).
 \end{enumerate}
 
-\hypertarget{data-preparation}{%
-\subsection{Data Preparation}\label{data-preparation}}
+\newpage
 
-Check that there is no NA value.
+Check that there is no NA value in the dataset.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -180,7 +179,7 @@ Check that there is no NA value.
 ## [1] FALSE
 \end{verbatim}
 
-The data in the dataset is sorted by column na.
+The data in the dataset is sorted by column na and all the variables are numerical.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -231,16 +230,16 @@ In order to analyse the information in a visual way:
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{document_files/figure-latex/unnamed-chunk-3-1.pdf}
-
 \begin{Shaded}
-\begin{Highlighting}[]
+	\begin{Highlighting}[]
 \KeywordTok{qplot}\NormalTok{(K1, K2, }\DataTypeTok{data =}\NormalTok{ queratocono) }\OperatorTok{+}
 \StringTok{  }\KeywordTok{geom_point}\NormalTok{() }\OperatorTok{+}
 \StringTok{  }\KeywordTok{geom_smooth}\NormalTok{(}\DataTypeTok{method =}\NormalTok{ lm) }\OperatorTok{+}
 \StringTok{  }\KeywordTok{xlab}\NormalTok{(}\StringTok{"K1"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{ylab}\NormalTok{(}\StringTok{"K2"}\NormalTok{)}
-\end{Highlighting}
+	\end{Highlighting}
 \end{Shaded}
+
+\includegraphics{document_files/figure-latex/unnamed-chunk-3-1.pdf}
 
 \includegraphics{document_files/figure-latex/unnamed-chunk-3-2.pdf}
 
@@ -264,7 +263,12 @@ In order to analyse the information in a visual way:
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{document_files/figure-latex/unnamed-chunk-4-1.pdf}
+\begin{figure}
+	\centering
+	\includegraphics{document_files/figure-latex/unnamed-chunk-4-1.pdf}
+\end{figure}
+
+\newpage
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -284,6 +288,8 @@ In order to analyse the information in a visual way:
 
 \includegraphics{document_files/figure-latex/unnamed-chunk-5-1.pdf}
 
+\newpage
+
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \setcounter{enumi}{3}
@@ -302,7 +308,8 @@ and also determine which color is top versus on the bottom.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{qplot}\NormalTok{(}\KeywordTok{factor}\NormalTok{(grosor), }\DataTypeTok{data =}\NormalTok{ queratocono, }\DataTypeTok{geom =} \StringTok{"bar"}\NormalTok{, }\DataTypeTok{fill =} \KeywordTok{factor}\NormalTok{(na, }\DataTypeTok{levels =} \KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{))) }\OperatorTok{+}
+\KeywordTok{qplot}\NormalTok{(}\KeywordTok{factor}\NormalTok{(grosor), }\DataTypeTok{data =}\NormalTok{ queratocono, }\DataTypeTok{geom =} \StringTok{"bar"}\NormalTok{, }
+  \DataTypeTok{fill =} \KeywordTok{factor}\NormalTok{(na, }\DataTypeTok{levels =} \KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{))) }\OperatorTok{+}
 \StringTok{  }\KeywordTok{guides}\NormalTok{(}\DataTypeTok{fill =} \KeywordTok{guide_legend}\NormalTok{(}\DataTypeTok{reverse =} \OtherTok{TRUE}\NormalTok{)) }\OperatorTok{+}
 \StringTok{  }\KeywordTok{scale_fill_manual}\NormalTok{(}\DataTypeTok{values =} \KeywordTok{c}\NormalTok{(}\StringTok{"#00BFC4"}\NormalTok{, }\StringTok{"#F8766D"}\NormalTok{)) }\OperatorTok{+}
 \StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"factor(na)"}\NormalTok{) }\OperatorTok{+}
@@ -310,11 +317,16 @@ and also determine which color is top versus on the bottom.
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{document_files/figure-latex/unnamed-chunk-6-1.pdf}
+\begin{figure}
+	\centering
+	\includegraphics{document_files/figure-latex/unnamed-chunk-6-1.pdf}
+\end{figure}
 
 Manually the name of ylab has been changed since the method of qplot
 stat = ``count'' is deprecated. It is used by default but does not show
 the name in the graph, as the method of ggplot does.
+
+\newpage
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -338,7 +350,12 @@ the name in the graph, as the method of ggplot does.
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{document_files/figure-latex/unnamed-chunk-7-1.pdf}
+\begin{figure}
+	\centering
+	\includegraphics{document_files/figure-latex/unnamed-chunk-7-1.pdf}
+\end{figure}
+
+\newpage
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -356,27 +373,51 @@ the name in the graph, as the method of ggplot does.
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{document_files/figure-latex/unnamed-chunk-8-1.pdf}
-
 \begin{Shaded}
-\begin{Highlighting}[]
+	\begin{Highlighting}[]
 \KeywordTok{qplot}\NormalTok{(}\KeywordTok{factor}\NormalTok{(grosor), K2, }\DataTypeTok{data =}\NormalTok{ queratocono, }\DataTypeTok{geom =} \StringTok{"boxplot"}\NormalTok{) }\OperatorTok{+}
 \StringTok{  }\KeywordTok{xlab}\NormalTok{(}\StringTok{"factor(grosor)"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{ylab}\NormalTok{(}\StringTok{"K2"}\NormalTok{)}
-\end{Highlighting}
+	\end{Highlighting}
 \end{Shaded}
 
-\includegraphics{document_files/figure-latex/unnamed-chunk-8-2.pdf}
+\begin{center}
+	\includegraphics[width=0.61\textheight]{document_files/figure-latex/unnamed-chunk-8-1.pdf}
+	\includegraphics[width=0.61\textheight]{document_files/figure-latex/unnamed-chunk-8-2.pdf}
+\end{center}
 
 \hypertarget{question-1}{%
 	\subsection{Question 1. ¿Están K1 y K2 correlacionados? ¿Positiva o negativamente?}\label{question-1}}
 
+K1 y K2 están correlacionados porqué los puntos no están distribuidos uniformemente por toda la gráfica, si no que los puntos se disponen bastante alineados tanto en la curva como en la recta de regresión, aunque vemos que hay algunos outliers.
+
+K1 y K2 están correlacionados positivamente porqué la pendiente de regresión es positiva, tanto en la curva como en la recta de regresión.
+
+En este tipo de gráficos podemos observar que existe un problema de solapamiento y no podemos conocer realmente la dispersión de los puntos.
+
 \hypertarget{question-2}{%
 	\subsection{Question 2. Mirando a la figura 2 ¿vemos una correlación más fuerte para na=1? ¿Se debe a que la pendiente es ligeramente mayor?}\label{question-2}}
+
+La correlación es más fuerte para na=1 pero no se debe a que la pendiente sea ligeramente mayor. Se debe a que la recta de regresión es más alargada. Que la nube de puntos sea más estrecha y alargada indica que la correlación es más fuerte.
+
+Mirando a la figura 2, también podemos observar que existe un problema de solapamiento y no podemos conocer realmente la dispersión de los puntos.
 
 \hypertarget{question-3}{%
 	\subsection{Question 3. Mirando el histograma, ¿es la distribución del grosor normal? Justifica la respuesta.}\label{question-3}}
 
+Mirando el histograma, la distribución del grosor no es normal. Ya que una distribución normal es un histograma idealizado, liso, en forma de campana, con toda la aleatoriedad eliminada, que representa un conjunto de datos ideal que tiene una gran cantidad de números concentrados en el medio del rango, con el resto de los números simétricamente en ambos lados. Por ejemplo,
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.5\textheight]{img_2.png}
+\end{figure}
+
+En cambio, en nuestro histograma las barras son alternativamente altas y cortas, siguiendo una Comb Distribution. Este tipo de distribución a menudo resulta de datos redondeados y/o de un histograma construido incorrectamente.
+
 \hypertarget{question-4}{%
 	\subsection{Question 4. Mirando a los diagramas de bigotes, ¿qué ocurre con la caja para el grosor 275?}\label{question-4}}
+
+Observamos que la caja para el grosor 275 no existe. No se ha representado el rango intercuartílico (RIC), la diferencia entre el valor del tercer cuartil y el primer cuartil. 
+
+Investigando un poco la base de datos, vemos que solo existe un único valor para el grosor 275. La ausencia de datos podría ser la causa de que no exista caja para el grosor 275.
 
 \end{document}
