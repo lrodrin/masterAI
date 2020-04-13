@@ -1,2 +1,4 @@
-demanda <- read.csv("Demanda_2015.csv", header=FALSE, sep=";")
-summary(demanda)
+library(ggplot2)
+
+gas = scan("Demanda_2015.txt")
+plot(gas)
