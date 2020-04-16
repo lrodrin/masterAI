@@ -669,11 +669,37 @@ soporte</code></pre>
 <pre class="r"><code>numSobreviven &lt;- quality(rules)$count[3]
 numSobreviven</code></pre>
 <pre><code>## [1] 90</code></pre>
-<p><strong>Describa los resultados obtenidos, qué regla o reglas son más interesantes y por qué.</strong></p>
-<p><strong>Sumar el numero de mujeres de cada clase que no sobrevivieron al hundimiento del titanic. Comprobar que la suma es igual al numero de mujeres que no sobrevivieron al hundimiento del Titanic. Para ello, buscar las reglas de asociación específicas suponiendo que el consecuente incluye el item Survived=No.</strong></p>
+<p><strong>TODO Describa los resultados obtenidos, qué regla o reglas son más interesantes y por qué.</strong></p>
+<p><strong>Sumar el numero de mujeres de cada clase que no sobrevivieron al hundimiento del titanic. Comprobar que la suma es igual al numero de mujeres que no sobrevivieron al hundimiento del Titanic. Para ello, buscar las reglas de asociación específicas suponiendo que el consecuente incluye el item Survived=No. La variable sumaMujeresMuertas (obtenida de la suma de los resultados de las reglas específicas) tiene que ser igual a la variable numMujeresMuertas obtenida a partir de la regla de asociación específica.</strong></p>
 <pre class="r"><code>rules &lt;- apriori(titanic.raw, parameter=list(support=0, confidence=0, minlen=2), 
-                 appearance = list(lhs = c(&quot;Class=3rd&quot;, &quot;Sex=Female&quot;), 
-                                   rhs = c(&quot;Survived=No&quot;),default=&quot;none&quot;))</code></pre>
+                 appearance = list(lhs = c(&quot;Sex=Female&quot;), rhs = c(&quot;Survived=No&quot;),default=&quot;none&quot;))</code></pre>
+<pre><code>## Apriori
+## 
+## Parameter specification:
+##  confidence minval smax arem  aval originalSupport maxtime support minlen
+##           0    0.1    1 none FALSE            TRUE       5       0      2
+##  maxlen target   ext
+##      10  rules FALSE
+## 
+## Algorithmic control:
+##  filter tree heap memopt load sort verbose
+##     0.1 TRUE TRUE  FALSE TRUE    2    TRUE
+## 
+## Absolute minimum support count: 0 
+## 
+## set item appearances ...[2 item(s)] done [0.00s].
+## set transactions ...[2 item(s), 2201 transaction(s)] done [0.00s].
+## sorting and recoding items ... [2 item(s)] done [0.00s].
+## creating transaction tree ... done [0.00s].
+## checking subsets of size 1 2 done [0.00s].
+## writing ... [1 rule(s)] done [0.00s].
+## creating S4 object  ... done [0.00s].</code></pre>
+<pre class="r"><code>numMujeresMuertas &lt;- quality(rules)$count[1]
+numMujeresMuertas</code></pre>
+<pre><code>## [1] 126</code></pre>
+<pre class="r"><code>MujeresMuertas1st &lt;- apriori(titanic.raw, parameter=list(support=0, confidence=0, minlen=2), 
+                             appearance = list(lhs = c(&quot;Class=1st&quot;, &quot;Sex=Female&quot;), 
+                                               rhs = c(&quot;Survived=No&quot;),default=&quot;none&quot;))</code></pre>
 <pre><code>## Apriori
 ## 
 ## Parameter specification:
@@ -695,7 +721,73 @@ numSobreviven</code></pre>
 ## checking subsets of size 1 2 3 done [0.00s].
 ## writing ... [3 rule(s)] done [0.00s].
 ## creating S4 object  ... done [0.00s].</code></pre>
-<pre class="r"><code>inspect(rules)</code></pre>
+<pre class="r"><code>inspect(MujeresMuertas1st)</code></pre>
+<pre><code>##     lhs                       rhs           support     confidence lift      
+## [1] {Class=1st}            =&gt; {Survived=No} 0.055429350 0.37538462 0.55451110
+## [2] {Sex=Female}           =&gt; {Survived=No} 0.057246706 0.26808511 0.39601028
+## [3] {Class=1st,Sex=Female} =&gt; {Survived=No} 0.001817356 0.02758621 0.04074983
+##     count
+## [1] 122  
+## [2] 126  
+## [3]   4</code></pre>
+<pre class="r"><code>MujeresMuertas2nd &lt;- apriori(titanic.raw, parameter=list(support=0, confidence=0, minlen=2), 
+                             appearance = list(lhs = c(&quot;Class=2nd&quot;, &quot;Sex=Female&quot;), 
+                                               rhs = c(&quot;Survived=No&quot;),default=&quot;none&quot;))</code></pre>
+<pre><code>## Apriori
+## 
+## Parameter specification:
+##  confidence minval smax arem  aval originalSupport maxtime support minlen
+##           0    0.1    1 none FALSE            TRUE       5       0      2
+##  maxlen target   ext
+##      10  rules FALSE
+## 
+## Algorithmic control:
+##  filter tree heap memopt load sort verbose
+##     0.1 TRUE TRUE  FALSE TRUE    2    TRUE
+## 
+## Absolute minimum support count: 0 
+## 
+## set item appearances ...[3 item(s)] done [0.00s].
+## set transactions ...[3 item(s), 2201 transaction(s)] done [0.00s].
+## sorting and recoding items ... [3 item(s)] done [0.00s].
+## creating transaction tree ... done [0.00s].
+## checking subsets of size 1 2 3 done [0.00s].
+## writing ... [3 rule(s)] done [0.00s].
+## creating S4 object  ... done [0.00s].</code></pre>
+<pre class="r"><code>inspect(MujeresMuertas2nd)</code></pre>
+<pre><code>##     lhs                       rhs           support     confidence lift     
+## [1] {Class=2nd}            =&gt; {Survived=No} 0.075874602 0.5859649  0.8655764
+## [2] {Sex=Female}           =&gt; {Survived=No} 0.057246706 0.2680851  0.3960103
+## [3] {Class=2nd,Sex=Female} =&gt; {Survived=No} 0.005906406 0.1226415  0.1811637
+##     count
+## [1] 167  
+## [2] 126  
+## [3]  13</code></pre>
+<pre class="r"><code>MujeresMuertas3rd &lt;- apriori(titanic.raw, parameter=list(support=0, confidence=0, minlen=2), 
+                             appearance = list(lhs = c(&quot;Class=3rd&quot;, &quot;Sex=Female&quot;), 
+                                               rhs = c(&quot;Survived=No&quot;),default=&quot;none&quot;))</code></pre>
+<pre><code>## Apriori
+## 
+## Parameter specification:
+##  confidence minval smax arem  aval originalSupport maxtime support minlen
+##           0    0.1    1 none FALSE            TRUE       5       0      2
+##  maxlen target   ext
+##      10  rules FALSE
+## 
+## Algorithmic control:
+##  filter tree heap memopt load sort verbose
+##     0.1 TRUE TRUE  FALSE TRUE    2    TRUE
+## 
+## Absolute minimum support count: 0 
+## 
+## set item appearances ...[3 item(s)] done [0.00s].
+## set transactions ...[3 item(s), 2201 transaction(s)] done [0.00s].
+## sorting and recoding items ... [3 item(s)] done [0.00s].
+## creating transaction tree ... done [0.00s].
+## checking subsets of size 1 2 3 done [0.00s].
+## writing ... [3 rule(s)] done [0.00s].
+## creating S4 object  ... done [0.00s].</code></pre>
+<pre class="r"><code>inspect(MujeresMuertas3rd)</code></pre>
 <pre><code>##     lhs                       rhs           support    confidence lift     
 ## [1] {Sex=Female}           =&gt; {Survived=No} 0.05724671 0.2680851  0.3960103
 ## [2] {Class=3rd}            =&gt; {Survived=No} 0.23989096 0.7478754  1.1047474
@@ -704,8 +796,45 @@ numSobreviven</code></pre>
 ## [1] 126  
 ## [2] 528  
 ## [3] 106</code></pre>
-<pre class="r"><code>numMujeresMuertas &lt;- quality(rules)$count[1]
-numMujeresMuertas</code></pre>
+<pre class="r"><code>MujeresMuertasCrew &lt;- apriori(titanic.raw, parameter=list(support=0, confidence=0, minlen=2), 
+                              appearance = list(lhs = c(&quot;Class=Crew&quot;, &quot;Sex=Female&quot;), 
+                                                rhs = c(&quot;Survived=No&quot;),default=&quot;none&quot;))</code></pre>
+<pre><code>## Apriori
+## 
+## Parameter specification:
+##  confidence minval smax arem  aval originalSupport maxtime support minlen
+##           0    0.1    1 none FALSE            TRUE       5       0      2
+##  maxlen target   ext
+##      10  rules FALSE
+## 
+## Algorithmic control:
+##  filter tree heap memopt load sort verbose
+##     0.1 TRUE TRUE  FALSE TRUE    2    TRUE
+## 
+## Absolute minimum support count: 0 
+## 
+## set item appearances ...[3 item(s)] done [0.00s].
+## set transactions ...[3 item(s), 2201 transaction(s)] done [0.00s].
+## sorting and recoding items ... [3 item(s)] done [0.00s].
+## creating transaction tree ... done [0.00s].
+## checking subsets of size 1 2 3 done [0.00s].
+## writing ... [3 rule(s)] done [0.00s].
+## creating S4 object  ... done [0.00s].</code></pre>
+<pre class="r"><code>inspect(MujeresMuertasCrew)</code></pre>
+<pre><code>##     lhs                        rhs           support     confidence lift     
+## [1] {Sex=Female}            =&gt; {Survived=No} 0.057246706 0.2680851  0.3960103
+## [2] {Class=Crew}            =&gt; {Survived=No} 0.305770104 0.7604520  1.1233254
+## [3] {Class=Crew,Sex=Female} =&gt; {Survived=No} 0.001363017 0.1304348  0.1926758
+##     count
+## [1] 126  
+## [2] 673  
+## [3]   3</code></pre>
+<pre class="r"><code>MujeresMuertas1st &lt;- quality(MujeresMuertas1st)$count[3]
+MujeresMuertas2nd &lt;- quality(MujeresMuertas2nd)$count[3]
+MujeresMuertas3rd &lt;- quality(MujeresMuertas3rd)$count[3]
+MujeresMuertasCrew &lt;- quality(MujeresMuertasCrew)$count[3]
+sumaMujeresMuertas &lt;- MujeresMuertas1st + MujeresMuertas2nd + MujeresMuertas3rd + MujeresMuertasCrew
+sumaMujeresMuertas</code></pre>
 <pre><code>## [1] 126</code></pre>
 
 

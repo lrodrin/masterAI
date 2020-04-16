@@ -124,6 +124,7 @@ inspect(rules)
 **Es muy interesante observar que la proporción de los niños que sobrevivieron y los que no, está muy equilibrada. En cambio, en el caso de los adultos no fue así. La mayoría murió.**
 
 Buscamos la regla "Sex=Female" THEN "Survived=Yes" para ver cuantas mujeres sobrevivieron.
+
 ```{r}
 rules <- apriori(titanic.raw, parameter=list(support=0, confidence=0, minlen=2), 
                  appearance = list(lhs = c("Sex=Female"), rhs = c("Survived=Yes"),default="none"))
@@ -156,24 +157,44 @@ numSobreviven <- quality(rules)$count[3]
 numSobreviven
 ```
 
-**Describa los resultados obtenidos, qué regla o reglas son más interesantes y por qué.**
+**TODO Describa los resultados obtenidos, qué regla o reglas son más interesantes y por qué.**
 
-**Sumar el numero de mujeres de cada clase que no sobrevivieron al hundimiento del titanic. Comprobar que la suma es igual al numero de mujeres que no sobrevivieron al hundimiento del Titanic. Para ello, buscar las reglas de asociación específicas suponiendo que el consecuente incluye el item Survived=No.** 
+**Sumar el numero de mujeres de cada clase que no sobrevivieron al hundimiento del titanic. Comprobar que la suma es igual al numero de mujeres que no sobrevivieron al hundimiento del Titanic. Para ello, buscar las reglas de asociación específicas suponiendo que el consecuente incluye el item Survived=No. La variable sumaMujeresMuertas (obtenida de la suma de los resultados de las reglas específicas) tiene que ser igual a la variable numMujeresMuertas obtenida a partir de la regla de asociación específica.** 
 
 ```{r}
 rules <- apriori(titanic.raw, parameter=list(support=0, confidence=0, minlen=2), 
-                 appearance = list(lhs = c("Class=3rd", "Sex=Female"), 
-                                   rhs = c("Survived=No"),default="none"))
-inspect(rules)
-rules <- apriori(titanic.raw, parameter=list(support=0, confidence=0, minlen=2), 
-                 appearance = list(lhs = c("Class=1st", "Sex=Female"), 
-                                   rhs = c("Survived=No"),default="none"))
-inspect(rules)
-rules <- apriori(titanic.raw, parameter=list(support=0, confidence=0, minlen=2), 
-                 appearance = list(lhs = c("Class=2nd", "Sex=Female"), 
-                                   rhs = c("Survived=No"),default="none"))
-inspect(rules)
+                 appearance = list(lhs = c("Sex=Female"), rhs = c("Survived=No"),default="none"))
+
 numMujeresMuertas <- quality(rules)$count[1]
 numMujeresMuertas
 ```
 
+
+```{r}
+MujeresMuertas1st <- apriori(titanic.raw, parameter=list(support=0, confidence=0, minlen=2), 
+                             appearance = list(lhs = c("Class=1st", "Sex=Female"), 
+                                               rhs = c("Survived=No"),default="none"))
+inspect(MujeresMuertas1st)
+
+MujeresMuertas2nd <- apriori(titanic.raw, parameter=list(support=0, confidence=0, minlen=2), 
+                             appearance = list(lhs = c("Class=2nd", "Sex=Female"), 
+                                               rhs = c("Survived=No"),default="none"))
+inspect(MujeresMuertas2nd)
+
+MujeresMuertas3rd <- apriori(titanic.raw, parameter=list(support=0, confidence=0, minlen=2), 
+                             appearance = list(lhs = c("Class=3rd", "Sex=Female"), 
+                                               rhs = c("Survived=No"),default="none"))
+inspect(MujeresMuertas3rd)
+
+MujeresMuertasCrew <- apriori(titanic.raw, parameter=list(support=0, confidence=0, minlen=2), 
+                              appearance = list(lhs = c("Class=Crew", "Sex=Female"), 
+                                                rhs = c("Survived=No"),default="none"))
+inspect(MujeresMuertasCrew)
+
+MujeresMuertas1st <- quality(MujeresMuertas1st)$count[3]
+MujeresMuertas2nd <- quality(MujeresMuertas2nd)$count[3]
+MujeresMuertas3rd <- quality(MujeresMuertas3rd)$count[3]
+MujeresMuertasCrew <- quality(MujeresMuertasCrew)$count[3]
+sumaMujeresMuertas <- MujeresMuertas1st + MujeresMuertas2nd + MujeresMuertas3rd + MujeresMuertasCrew
+sumaMujeresMuertas
+```

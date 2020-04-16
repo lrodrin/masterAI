@@ -141,25 +141,38 @@ numSobreviven
 ###Alumno: Describa claramente el procedimiento seguido y explique con claridad los resultados alcanzados
 #####INSERTAR EL CÓDIGO AQUÍ######
 rules <- apriori(titanic.raw, parameter=list(support=0, confidence=0, minlen=2), 
-                 appearance = list(lhs = c("Class=3rd", "Sex=Female"), 
-                                   rhs = c("Survived=No"),default="none"))
-inspect(rules)
+                 appearance = list(lhs = c("Sex=Female"), rhs = c("Survived=No"),default="none"))
 
-rules <- apriori(titanic.raw, parameter=list(support=0, confidence=0, minlen=2), 
-                 appearance = list(lhs = c("Class=1st", "Sex=Female"), 
-                                   rhs = c("Survived=No"),default="none"))
-inspect(rules)
-
-rules <- apriori(titanic.raw, parameter=list(support=0, confidence=0, minlen=2), 
-                 appearance = list(lhs = c("Class=2nd", "Sex=Female"), 
-                                   rhs = c("Survived=No"),default="none"))
-inspect(rules)
 numMujeresMuertas <- quality(rules)$count[1]
 numMujeresMuertas
+
+MujeresMuertas1st <- apriori(titanic.raw, parameter=list(support=0, confidence=0, minlen=2), 
+                             appearance = list(lhs = c("Class=1st", "Sex=Female"), 
+                                               rhs = c("Survived=No"),default="none"))
+inspect(MujeresMuertas1st)
+
+MujeresMuertas2nd <- apriori(titanic.raw, parameter=list(support=0, confidence=0, minlen=2), 
+                             appearance = list(lhs = c("Class=2nd", "Sex=Female"), 
+                                               rhs = c("Survived=No"),default="none"))
+inspect(MujeresMuertas2nd)
+
+MujeresMuertas3rd <- apriori(titanic.raw, parameter=list(support=0, confidence=0, minlen=2), 
+                             appearance = list(lhs = c("Class=3rd", "Sex=Female"), 
+                                               rhs = c("Survived=No"),default="none"))
+inspect(MujeresMuertas3rd)
+
+MujeresMuertasCrew <- apriori(titanic.raw, parameter=list(support=0, confidence=0, minlen=2), 
+                              appearance = list(lhs = c("Class=Crew", "Sex=Female"), 
+                                                rhs = c("Survived=No"),default="none"))
+inspect(MujeresMuertasCrew)
+
+MujeresMuertas1st <- quality(MujeresMuertas1st)$count[3]
+MujeresMuertas2nd <- quality(MujeresMuertas2nd)$count[3]
+MujeresMuertas3rd <- quality(MujeresMuertas3rd)$count[3]
+MujeresMuertasCrew <- quality(MujeresMuertasCrew)$count[3]
+sumaMujeresMuertas <- MujeresMuertas1st + MujeresMuertas2nd + MujeresMuertas3rd + MujeresMuertasCrew
+sumaMujeresMuertas
 ##################################
-
-
-
 
 
 ###Alumno: Para dar respuesta a las siguientes cuestiones que se plantean, es necesario buscar reglas específicas para el conocimiento que estamos buscando.
