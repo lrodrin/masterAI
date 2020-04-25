@@ -8,9 +8,11 @@
 \BOOKMARK [1][-]{section.3}{Medidas de c\341lculo de relevancia}{}% 8
 \BOOKMARK [1][-]{section.4}{C\341lculo de similitud entre vectores de un MEV}{}% 9
 \BOOKMARK [2][-]{subsection.4.1}{Mediante el producto escalar}{section.4}% 10
-\BOOKMARK [2][-]{subsection.4.2}{Mediante la f\363rmula del coseno}{section.4}% 11
-\BOOKMARK [2][-]{subsection.4.3}{Mediante el coeficiente de Dice}{section.4}% 12
-\BOOKMARK [2][-]{subsection.4.4}{Mediante el coeficiente de Jaccard \(Tanimoto\)}{section.4}% 13
-\BOOKMARK [1][-]{section.5}{Espacios vectoriales basados en word embeddings}{}% 14
-\BOOKMARK [1][-]{section.6}{Aplicaciones de word embeddings}{}% 15
-\BOOKMARK [1][-]{section.7}{Reflexi\363n personal sobre la utilidad y futuro de los MEV}{}% 16
+\BOOKMARK [3][-]{subsubsection.4.1.1}{Modalidad de pesos binarios}{subsection.4.1}% 11
+\BOOKMARK [3][-]{subsubsection.4.1.2}{Modalidad de pesos TF-IDF}{subsection.4.1}% 12
+\BOOKMARK [2][-]{subsection.4.2}{Mediante la f\363rmula del coseno}{section.4}% 13
+\BOOKMARK [2][-]{subsection.4.3}{Mediante el coeficiente de Dice}{section.4}% 14
+\BOOKMARK [2][-]{subsection.4.4}{Mediante el coeficiente de Jaccard}{section.4}% 15
+\BOOKMARK [1][-]{section.5}{Espacios vectoriales basados en word embeddings}{}% 16
+\BOOKMARK [1][-]{section.6}{Aplicaciones de word embeddings}{}% 17
+\BOOKMARK [1][-]{section.7}{Reflexi\363n personal sobre la utilidad y futuro de los MEV}{}% 18
