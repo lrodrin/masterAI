@@ -14,5 +14,9 @@
 \BOOKMARK [2][-]{subsection.4.3}{Mediante el coeficiente de Dice}{section.4}% 14
 \BOOKMARK [2][-]{subsection.4.4}{Mediante el coeficiente de Jaccard}{section.4}% 15
 \BOOKMARK [1][-]{section.5}{Espacios vectoriales basados en word embeddings}{}% 16
-\BOOKMARK [1][-]{section.6}{Aplicaciones de word embeddings}{}% 17
-\BOOKMARK [1][-]{section.7}{Reflexi\363n personal sobre la utilidad y futuro de los MEV}{}% 18
+\BOOKMARK [1][-]{section.6}{Algunas de las aplicaciones de los word embeddings}{}% 17
+\BOOKMARK [2][-]{subsection.6.1}{Word2vec}{section.6}% 18
+\BOOKMARK [2][-]{subsection.6.2}{Doc2vec}{section.6}% 19
+\BOOKMARK [2][-]{subsection.6.3}{FastText}{section.6}% 20
+\BOOKMARK [2][-]{subsection.6.4}{GloVe}{section.6}% 21
+\BOOKMARK [1][-]{section.7}{Reflexi\363n personal sobre la utilidad y futuro de los MEV}{}% 22

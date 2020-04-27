@@ -14,5 +14,9 @@
 \contentsline {subsection}{\numberline {4.3}Mediante el coeficiente de Dice}{12}{subsection.4.3}%
 \contentsline {subsection}{\numberline {4.4}Mediante el coeficiente de Jaccard}{12}{subsection.4.4}%
 \contentsline {section}{\numberline {5}Espacios vectoriales basados en \textit {word embeddings}}{13}{section.5}%
-\contentsline {section}{\numberline {6}Aplicaciones de \textit {word embeddings}}{14}{section.6}%
+\contentsline {section}{\numberline {6}Algunas de las aplicaciones de los \textit {word embeddings}}{14}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Word2vec}{14}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Doc2vec}{14}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}FastText}{14}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.4}GloVe}{15}{subsection.6.4}%
 \contentsline {section}{\numberline {7}Reflexión personal sobre la utilidad y futuro de los MEV}{15}{section.7}%
