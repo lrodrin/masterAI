@@ -1,12 +1,10 @@
+import networkx as nx
+
 from collections import defaultdict
 from itertools import accumulate, islice
 from operator import itemgetter
-
-import networkx as nx
 from networkx.algorithms.community.community_utils import is_partition
 from networkx.utils import not_implemented_for, py_random_state
-
-from draw_graphs import draw_graph, draw_graph_partitioned
 
 
 def compute_delta(graph, A, B, weight):
@@ -160,20 +158,3 @@ def kernighan_lin_bisection(graph, partition=None, max_iter=10, weight='weight',
         B -= bnodes
 
     return A, B
-
-
-if __name__ == '__main__':
-    # G = nx.read_edgelist("../dataset/data_weighted_edges.csv", delimiter=",", data=[("weight", int)], nodetype=int)
-    G2 = nx.read_edgelist("../dataset/data_no_weighted_edges.csv", delimiter=",", nodetype=int)
-
-    # A, B = kernighan_lin_bisection(G)
-    # print("weighted edges\n\tPartition A: {}".format(A))
-    # print("\tPartition B: {}".format(B))
-
-    A, B = kernighan_lin_bisection(G2)
-    print("no weighted edges\n\tPartition A: {}".format(A))
-    print("\tPartition B: {}".format(B))
-
-    # drawing results
-    draw_graph(G2, False)
-    draw_graph_partitioned(G2, A, B)
