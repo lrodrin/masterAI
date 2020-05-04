@@ -26,17 +26,17 @@ strict graph  {
 3 -- 8  [weight=8];
 7 -- 9  [weight=10];
 subgraph cluster_A {
-0 -- 3;
-3 -- 4;
-4 -- 5;
-5 -- 8;
-}
-
-subgraph cluster_B {
 1 -- 2;
 2 -- 6;
 6 -- 7;
 7 -- 9;
+}
+
+subgraph cluster_B {
+0 -- 3;
+3 -- 4;
+4 -- 5;
+5 -- 8;
 }
 
 }

@@ -17,12 +17,13 @@ def create_cluster(name, Graph, partition):
 
 # create graph
 Graph = nx.Graph()
-reader = csv.reader(open('../dataset/data_no_edges.csv'))
+reader = csv.reader(open('../dataset/numbers.csv'))
 for row in reader:
-    Graph.add_edge(row[0], row[1])
+    Graph.add_edge(row[0], row[1], weight=int(row[2]))
 
 # multilevel bisection algorithm
-nnodes, partition = (nxmetis.partition(Graph, 2))
+Graph.graph['edge_weight_attr'] = 'weight'  # otherwise metis will not recognize a weighted graph
+nnodes, partition = nxmetis.partition(Graph, 2, recursive=True)
 partition_A = list(map(int, partition[0]))
 partition_B = list(map(int, partition[1]))
 

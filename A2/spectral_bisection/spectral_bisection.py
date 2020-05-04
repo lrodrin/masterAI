@@ -67,7 +67,7 @@ def spectral_bisection(filename):
     degrees = degree_nodes(adjacency_matrix, nnodes)
 
     laplacian_matrix = np.diag(degrees) - adjacency_matrix
-    print("Laplacian matrix:\n", laplacian_matrix)
+    # print("Laplacian matrix:\n", laplacian_matrix)
 
     eigenvalues, eigenvectors = np.linalg.eigh(laplacian_matrix)
 
@@ -88,7 +88,7 @@ def spectral_bisection(filename):
                 or node1 in partition_B and node2 in partition_A:
             edges_in_between.append(edge)
 
-    return set(partition_A), set(partition_B), adjacency_matrix
+    return set(partition_A), set(partition_B), adjacency_matrix.astype(int)
 
 
 def create_cluster(name, Graph, partition):
@@ -125,5 +125,5 @@ def main(filename):
 
 
 if __name__ == '__main__':
-    datafile = "../dataset/data_edges.csv"
+    datafile = "../dataset/numbers.csv"
     main(datafile)
