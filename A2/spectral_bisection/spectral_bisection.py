@@ -100,7 +100,7 @@ if __name__ == '__main__':
                                                  "Algorithm.")
 
     parser.add_argument('--nodes-file', '-f', help="the file containing the data",
-                        default="../dataset/data_no_weighted_edges.csv")
+                        default="../dataset/data_no_edges.csv")
     # parser.add_argument('--output-file', '-o', help='the filename of the communities PNG graph to be written')
 
     args = parser.parse_args()
@@ -111,6 +111,6 @@ if __name__ == '__main__':
     print("Partition B: {}".format(B))
 
     # drawing results
-    G = nx.read_edgelist("../dataset/data_no_weighted_edges.csv", delimiter=",")
-    draw_graph(G, False)
-    draw_graph_partitioned(G, A, B)
+    # G = nx.read_edgelist("../dataset/data_no_edges.csv", delimiter=",")
+    # draw_graph(G, False)
+    # draw_graph_partitioned(G, A, B)
