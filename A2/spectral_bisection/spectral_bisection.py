@@ -1,116 +1,130 @@
-import argparse
+import subprocess
 
 import networkx as nx
 import numpy as np
-
-from draw_graphs import draw_graph, draw_graph_partitioned
+import pydot
 
 
 def import_nodes(filename):
     """
-    Import the nodes from the datafile specified by filename
+    Import the Graph from the datafile specified by filename and create the adjacency matrix.
+
+    :param filename: filename that contains the Graph
+    :type filename: str
+    :return: number of nodes, edges and adjacency_matrix
     """
     edges = list()
     nnodes = 0
 
-    # Open the file
-    with open(filename, "r") as datafile:
-        for line in datafile:
-            node1, node2 = line.split(',')
+    with open(filename, "r") as graph:
+        for line in graph:
+            node1, node2, weight = line.split(',')
             node1 = int(node1)
             node2 = int(node2)
-            edges.append({node1, node2})
+            weight = int(weight)
+            edges.append([node1, node2, weight])
             nnodes = max(nnodes, node1, node2)
 
     nnodes += 1  # We only had the maximum index of the nodes
-    # print("Imported {} nodes with {} edges from {}".format(nnodes, len(edges), filename))
-
     adjacency_matrix = np.zeros((nnodes, nnodes))  # Initiate empty matrix
 
     # Fill the matrix
-    for node1, node2 in edges:
+    for edge in edges:
         # The adjancency matrix is symmetric
-        adjacency_matrix[node1][node2] = 1
-        adjacency_matrix[node2][node1] = 1
+        adjacency_matrix[edge[0]][edge[1]] = edge[2]
+        adjacency_matrix[edge[1]][edge[0]] = edge[2]
 
     return nnodes, edges, adjacency_matrix
 
 
 def degree_nodes(adjacency_matrix, nnodes):
     """
-    Compute the degree of each node and returns the list of degrees
+    Compute the degree of each node and returns the list of degrees.
+
+    :param adjacency_matrix: adjacency matrix
+    :type adjacency_matrix: ndarray
+    :param nnodes: number of nodes
+    :type nnodes: int
+    :return: list of degrees
     """
-    d = []
+    degrees = []
     for i in range(nnodes):
-        d.append(sum([adjacency_matrix[i][j] for j in range(nnodes)]))
+        degrees.append(sum([adjacency_matrix[i][j] for j in range(nnodes)]))
 
-    return d
+    return degrees
 
 
-def spectral_bisection():
+def spectral_bisection(filename):
     """
-    The Spectral Bisection Algorithm
+    The Spectral Bisection Algorithm.
+
+    :param filename: filename that contains the Graph
+    :type filename: str
     """
-    nnodes, edges, adjacency_matrix = import_nodes(args.nodes_file)
+    nnodes, edges, adjacency_matrix = import_nodes(filename)
     # print("Adjacency matrix:\n", adjacency_matrix)
 
-    # print("Computing the degree of each node...")
     degrees = degree_nodes(adjacency_matrix, nnodes)
-    # print("Degrees: ", degrees)
 
     laplacian_matrix = np.diag(degrees) - adjacency_matrix
     print("Laplacian matrix:\n", laplacian_matrix)
 
-    # print("Computing the eigenvectors and eigenvalues...")
     eigenvalues, eigenvectors = np.linalg.eigh(laplacian_matrix)
-    # print("Found eigenvalues: ", eigenvalues)
 
     # Index of the second eigenvalue
     index_fnzev = np.argsort(eigenvalues)[1]
-    # print("Eigenvector for #{} eigenvalue ({}): ".format(index_fnzev, eigenvalues[index_fnzev]),
-    #       eigenvectors[:, index_fnzev])
 
     # Partition on the sign of the eigenvector's coordinates
     partition = [val >= 0 for val in eigenvectors[:, index_fnzev]]
 
     # Compute the edges in between
-    nodes_in_A = [nodeA for (nodeA, nodeCommunity) in enumerate(partition) if nodeCommunity]
-    nodes_in_B = [nodeB for (nodeB, nodeCommunity) in enumerate(partition) if not nodeCommunity]
+    partition_A = [nodeA for (nodeA, nodeCommunity) in enumerate(partition) if nodeCommunity]
+    partition_B = [nodeB for (nodeB, nodeCommunity) in enumerate(partition) if not nodeCommunity]
 
     edges_in_between = []
     for edge in edges:
-        node1, node2 = edge
-        if node1 in nodes_in_A and node2 in nodes_in_B \
-                or node1 in nodes_in_B and node2 in nodes_in_A:
+        node1, node2, weight = edge
+        if node1 in partition_A and node2 in partition_B \
+                or node1 in partition_B and node2 in partition_A:
             edges_in_between.append(edge)
 
-    # Display the results
-    # print("Partition computed: nnodesA={} nnodesB={} (total {}), {} edges in between".format(
-    #     len(nodes_in_A),
-    #     len(nodes_in_B),
-    #     nnodes,
-    #     len(edges_in_between),
-    # ))
+    return set(partition_A), set(partition_B), adjacency_matrix
 
-    return set(nodes_in_A), set(nodes_in_B)
+
+def create_cluster(name, Graph, partition):
+    c = pydot.Cluster(name)  # cluster name
+    for i in range(len(partition) - 1):
+        e = pydot.Edge(pydot.Node(partition[i]), pydot.Node(partition[i + 1]))  # new edge
+        c.add_edge(e)
+
+    Graph.add_subgraph(c)
+
+
+def main(filename):
+    """
+    The Main run function.
+
+    :param filename: filename that contains the Graph
+    :type filename: strph without the partition
+    """
+
+    # Spectral Bisection algorithm
+    partition_A, partition_B, adjacency_matrix = spectral_bisection(filename)
+
+    # print graph partition
+    print("Partition A: {}".format(partition_A))
+    print("Partition B: {}".format(partition_B))
+
+    # draw graph partition
+    Graph = nx.from_numpy_matrix(adjacency_matrix)  # create nx.Graph from adjacency matrix
+    newGraph = nx.drawing.nx_pydot.to_pydot(Graph)  # convert nx.Graph to dot format
+    create_cluster('A', newGraph, list(partition_A))
+    create_cluster('B', newGraph, list(partition_B))
+    newGraph.write('sb.dot')
+    subprocess.call(["dot", "-Tpng", "sb.dot", "-o", "sb.png"])
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="Compute the partition of a graph using the Spectral Partition "
-                                                 "Algorithm.")
-
-    parser.add_argument('--nodes-file', '-f', help="the file containing the data",
-                        default="../dataset/data_no_edges.csv")
-    # parser.add_argument('--output-file', '-o', help='the filename of the communities PNG graph to be written')
-
-    args = parser.parse_args()
-
-    # Run the algorithm
-    A, B = spectral_bisection()
-    print("Partition A: {}".format(A))
-    print("Partition B: {}".format(B))
-
-    # drawing results
-    # G = nx.read_edgelist("../dataset/data_no_edges.csv", delimiter=",")
-    # draw_graph(G, False)
-    # draw_graph_partitioned(G, A, B)
+    datafile = "../dataset/data_edges.csv"
+    # datafile = "../dataset/data_no_edges.csv"
+    main(datafile)
