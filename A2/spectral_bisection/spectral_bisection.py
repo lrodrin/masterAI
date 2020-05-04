@@ -126,5 +126,4 @@ def main(filename):
 
 if __name__ == '__main__':
     datafile = "../dataset/data_edges.csv"
-    # datafile = "../dataset/data_no_edges.csv"
     main(datafile)

@@ -198,6 +198,3 @@ def main(Graph):
 if __name__ == '__main__':
     G = nx.read_edgelist("../dataset/data_edges.csv", delimiter=",", data=[("weight", int)], nodetype=int)
     main(G)
-
-    # G2 = nx.read_edgelist("../dataset/data_no_edges.csv", delimiter=",", nodetype=int)
-    # main(G2)
