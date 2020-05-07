@@ -2,15 +2,15 @@
 
 \usepackage{Packages}
 
-\addto\captionsbritish{\renewcommand{\contentsname}{Table of Contents}}
+\addto\captionsbritish{\renewcommand{\contentsname}{Tabla de Contenidos}}
 
 %\linenumbers
 
 \newcommand{\shortdoctitle}{Doc title}
-\newcommand{\doctitle}{The Graph Partitioning Problem}
+\newcommand{\doctitle}{Formalización del problema de la partición del grafo}
 
-\newcommand{\authorone}{Laura Rodríguez Navas}
-\newcommand{\monthYear}{March 2019}
+\newcommand{\authorone}{Laura Rodríguez Navas \\ rodrigueznavas@posgrado.uimp.es}
+\newcommand{\monthYear}{Mayo 2020}
 
 \author{\me}
 
@@ -27,38 +27,37 @@
 
 \normalsize
 
-\chapter*{Abstract}\label{chapter:Abstract}
+\chapter*{Resumen}\label{chapter:Resumen}
 \setcounter{page}{0}
-\pagenumbering{roman}
-\addcontentsline{toc}{chapter}{Abstract}
+\pagenumbering{arabic}
+\addcontentsline{toc}{chapter}{Resumen}
 \input{Chapters/Chapter0_Abstract.tex}
 
 \tableofcontents
 
-\chapter{The problem}\label{chapter:Introduction}
-\setcounter{page}{0}
-\pagenumbering{arabic}
+\chapter{Introducción a la Partición de Grafos}\label{chapter:Introducción}
 \input{Chapters/Chapter1_Introduction.tex}
 
-\chapter{Algorithms}\label{chapter:Algorithms}
+\chapter{Algoritmos basados en metaheurísticas}\label{chapter:Algoritmos}
 \input{Chapters/Chapter2_Algorithms.tex}
 
-\chapter{Experimental set-up}\label{chapter:Experimental set-up}
-\input{Chapters/Chapter3_Experimental_set-up.tex}
+%\chapter{Experimental set-up}\label{chapter:Experimental set-up}
+%\input{Chapters/Chapter3_Experimental_set-up.tex}
 
-\chapter{Results and discussion}\label{chapter:Results and discussion}
-\input{Chapters/Chapter4_Results_and_discussion.tex}
+%\chapter{Results and discussion}\label{chapter:Results and discussion}
+%\input{Chapters/Chapter4_Results_and_discussion.tex}
 
-\chapter{Conclusion}\label{chapter:Conclusion}
+\chapter{Conclusiones}\label{chapter:Conclusiones}
 \input{Chapters/Chapter5_Conclusion.tex}
 
 \bibliographystyle{unsrt}
 \bibliography{References}
-\newpage
 
-\appendix
-\addcontentsline{toc}{chapter}{Appendix}
-\chapter{Appendix}\label{chapter:Appendix A}
-\input{Appendices/Appendix_A.tex}
+%\newpage
+
+%\appendix
+%\addcontentsline{toc}{chapter}{Appendix}
+%\chapter{Appendix}\label{chapter:Appendix A}
+%\input{Appendices/Appendix_A.tex}
 
 \end{document}

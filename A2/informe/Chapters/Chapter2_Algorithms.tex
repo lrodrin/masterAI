@@ -7,64 +7,49 @@
 %
 %Comienza con alguna partición que satisfaga el requisito de tamaño que intercambie repetidamente nodos entre las particiones.
 
-The Kernigan-Lin algorithm\cite{KernighanLin}, often abbreviated as K/L, is one of the earliest graph partitioning algorithm and was originally developed to optimize the placement of electronic circuits onto printed circuit cards so as to minimize the number of connections between cards.
+%1
+Kernighan-Lin es un método para dividir un grafo que contiene nodos y vértices en subconjuntos separados que están conectados de manera óptima. Dado que se puede usar un grafo para representar una red eléctrica que contiene bloques, el algoritmo Kernighan-Lin se puede extender a la división de circuitos en subcircuitos.
 
-The K/L algorithm does not create partitions but rather improves them iteratively (there is no need for the partitions to be of equal size). The original idea was to take a random partition and apply Kernigan-Lin to it. This would be repeated several times and the best result chosen. While small graphs this delivers reasonable results, it is quite inefficient for problem sizes.
+Una aplicación importante del algoritmo es en los circuitos VLSI\cite{KernighanLin}\cite{Ravikumar}. Concretamente se usa para encontrar un número mínimo de conexiones entre particiones para mejorar la velocidad o disminuir el consumo de energía.
 
-\begin{lstlisting}[language=Python]
+Kernighan-Lin es un algoritmo:
 
-from graph import Graph
+\begin{itemize}
+	\setlength{\parskip}{0pt}
+	\setlength{\itemsep}{0pt plus 1pt}
+	\item \textbf{Iterativo}. Esto significa que el grafo/circuito inicialmente ya está particionado, pero la aplicación de Kernighan-Lin intentará mejorar u optimizar la partición inicial. Kernighan-Lin es iterativo en lugar de constructivo.
+	\item \textbf{Voraz}. Esto significa que el algoritmo hará cambios si hay un beneficio inmediato sin considerar otras formas posibles de obtener una solución óptima.
+	\item \textbf{Determinista} porque se obtendrá el mismo resultado cada vez que se aplique el algoritmo. El mismo resultado será el mismo número de redes que cruzan la bisección, pero no necesariamente las mismas redes.
+\end{itemize}
 
-def switch(graph, A, B):
-	D = computeD(graph, A, B)
-	costs = []
-	X = []
-	Y = []
-	
-	for i in range(int(graph.getSize() / 2)):
-		x, y, cost = maxSwitchCostNodes(graph, A, B, D)
-		A.remove(x)
-		B.remove(y)
-		
-		costs.append(cost)
-		X.append(x)
-		Y.append(y)
-		
-		D = updateD(graph, A, B, D, x, y)
-	
-	maxCost, k = getMaxCostAndIndex(costs)
-	
-	if maxCost > 0:
-		A = Y[:k + 1] + X[k + 1:]
-		B = X[:k + 1] + Y[k + 1:]
-		return A, B, False
-	else:
-		A = [i for i in X]
-		B = [i for i in Y]
-		return A, B, True
 
-def k_lin():
-	graph = createGraph()
-	A = [i for i in range(int(graph.getSize() / 2))]
-	B = [i for i in range(int(graph.getSize() / 2), graph.getSize())]
-	done = False
-	
-	while not done:
-		A, B, done = switch(graph, A, B)
-	
-	print("Partition A: ", end=' ')
-		for i in A:
-		print(graph.getNodeLabel(i), end=' ')
-	print("\nPartition B: ", end=' ')
-		for i in B:
-		print(graph.getNodeLabel(i), end=' ')
+%2
+El algoritmo Kernigan-Lin\cite{KernighanLin}, a menudo abreviado como K-L, es uno de los primeros algoritmos de partición de grafos y fue desarrollado originalmente para optimizar la colocación de circuitos electrónicos en tarjetas de circuito impreso para minimizar el número de conexiones entre las tarjetas.
 
-\end{lstlisting}
+El algoritmo K-L no crea particiones, sino que las mejora iterativamente. La idea original era tomar una partición aleatoria y aplicarle Kernigan-Lin. Esto se repetiría varias veces y se elegiría el mejor resultado. Mientras que para grafos pequeños esto ofrece resultados razonables, es bastante ineficiente para tamaños de problemas más grandes.
 
-\subsection{Example}
+Hoy en día, el algoritmo se usa para mejorar las particiones encontradas por otros algoritmos. Como veremos, K-L tiene una visión algo \textit{"local"} del problema, tratando de mejorar las particiones mediante el intercambio de nodos vecinos. Por lo tanto, complementa muy bien los algoritmos que tienen una visión más \textit{"global"} del problema, pero tienden a ignorar las características locales. Un ejemplo de este tipo de algoritmos seria la partición espectral (ver sección \ref{spectral_bisection}).
 
-\section{Fiduccia-Mattheyses}
+C. Fiduccia y R. Mattheyses realizaron importantes avances prácticos en \cite{FiducciaMattheyses} quienes mejoraron el algoritmo de tal manera que una iteración se ejecuta en $O(n)$ en lugar de $O({n}^2 \, log \, n)$. A continuación, primero se describe el algoritmo original y después se discuten estas y otras mejoras.
 
-\section{Spectral Bisection}
+\subsection{Descripción}
 
+\subsection{Mejoras}
+
+\subsection{Ejemplo}
+
+
+\section{Spectral Bisection}\label{spectral_bisection}
+
+\subsection{Descripción}
+
+\subsection{Ejemplo}
+
+\section{Multilevel Spectral Bisection}
+
+\subsection{Descripción}
+
+\subsection{Ejemplo}
+
+\section{Comparativa entre los diferentes algoritmos}
 

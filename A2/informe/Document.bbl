@@ -3,12 +3,17 @@
 \bibitem{KernighanLin}
 B.~W. Kernighan and S.~Lin.
 \newblock An efficient heuristic procedure for partitioning graphs.
-\newblock {\em Bell System Technical Journal}, 49:291--307, 1970.
+\newblock {\em Bell System Technical Journal}, 49(2):291--307, 1970.
 
 \bibitem{FiducciaMattheyses}
 C.M. Fiduccia and R.M. Mattheyses.
 \newblock A linear-time heuristic for improving network partitions.
 \newblock In {\em 19th Design Automation Conference, Las Vegas, NV, USA, 14-16
   June, 1982}. {IEEE}, 1982.
+
+\bibitem{Ravikumar}
+C.~P. Ravikumar and George~W. Zobrist.
+\newblock {\em Parallel Methods for VLSI Layout Design}.
+\newblock Greenwood Publishing Group Inc., USA, 1995.
 
 \end{thebibliography}
