@@ -11,6 +11,12 @@ C.M. Fiduccia and R.M. Mattheyses.
 \newblock In {\em 19th Design Automation Conference, Las Vegas, NV, USA, 14-16
   June, 1982}. {IEEE}, 1982.
 
+\bibitem{Karypis}
+George Karypis and Vipin Kumar.
+\newblock Multilevelk-way partitioning scheme for irregular graphs.
+\newblock {\em Journal of Parallel and Distributed Computing}, 48(1):96--129,
+  1998.
+
 \bibitem{Ravikumar}
 C.~P. Ravikumar and George~W. Zobrist.
 \newblock {\em Parallel Methods for VLSI Layout Design}.

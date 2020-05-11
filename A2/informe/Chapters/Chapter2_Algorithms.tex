@@ -1,55 +1,66 @@
-%Dado que el problema de la partición de un grafo es un problema NP-completo, las soluciones prácticas se basan en la heurística y existen dos categorías: local y global. Los métodos locales más conocidos son el algoritmo Kernighan-Lin\cite{KernighanLin} y el algoritmo Fiduccia-Mattheyses\cite{FiducciaMattheyses}. Su principal inconveniente es la partición inicial arbitraria del conjunto de vértices, que puede afectar la calidad de la solución óptima final. En cambio, los métodos globales se basan en las propiedades de todo el grafo y no se basan en una partición inicial arbitraria. El ejemplo más común es la partición espectral, donde una partición se deriva de los vectores propios aproximados de la matriz de adyacencia, o la agrupación espectral que agrupa los vértices del grafo usando la descomposición propia de la matriz Laplaciana del grafo.
+Debido a la \textit{"intratabilidad"} del problema de la partición de un grafo, no existe un algoritmo concreto que permita obtener en tiempo polinómico la solución optima a la partición de cualquier grafo. Es por ello que, los algoritmos codificados para este trabajo se basan en la heurística, con el objetivo de obtener soluciones de buena calidad en tiempos computacionales aceptables, a pesar de que los algoritmos heurísticos no garantizan que se vaya a obtener una solución óptima al problema, incluso podría suceder que no se obtenga ninguna solución. 
 
-\section{Kernighan-Lin}
-%El algoritmo de Kernighan-Lin\cite{KernighanLin} es un algoritmo heurístico para resolver el problema de la partición de un grafo con complejidad computacional $O({n}^2logn)$. Este algoritmo, propuesto en 1970 por Shen Lin y Brian Kernighan, tiene aplicaciones importantes para el diseño de circuitos digitales y VLSI. 
-%
-%Es un ejemplo de Algoritmo Voraz.
-%
-%Comienza con alguna partición que satisfaga el requisito de tamaño que intercambie repetidamente nodos entre las particiones.
+En el siguiente apartado se analizan los algoritmos heurísticos Kernighan-Lin\cite{KernighanLin} (ver apartado \ref{Kernighan-Lin}), Specrtal Bisection (ver apartado \ref{Spectral-Bisection}) y Multilevel Spectral Bisection (ver apartado \ref{Multilevel-Spectral-Bisection}), tres algoritmos diseñados específicamente para la resolución del problema de la partición de grafos. Cualquiera de estos algoritmos proporciona una solución factible al problema, pudiendo ser esta óptima o no. Además de describir cada uno de los algoritmos detalladamente, las principales propiedades de cada uno de ellos, también se describirán algunos ejemplos.
+
+\section{Kernighan-Lin}\label{Kernighan-Lin}
 
 %1
-Kernighan-Lin es un método para dividir un grafo que contiene nodos y vértices en subconjuntos separados que están conectados de manera óptima. Dado que se puede usar un grafo para representar una red eléctrica que contiene bloques, el algoritmo Kernighan-Lin se puede extender a la división de circuitos en subcircuitos.
+%Kernighan-Lin\cite{KernighanLin} es un método para dividir un grafo que contiene nodos y vértices en subconjuntos separados que están conectados de manera óptima. Dado que se puede usar un grafo para representar una red eléctrica que contiene bloques, el algoritmo Kernighan-Lin se puede extender a la división de circuitos en subcircuitos.
 
-Una aplicación importante del algoritmo es en los circuitos VLSI\cite{KernighanLin}\cite{Ravikumar}. Concretamente se usa para encontrar un número mínimo de conexiones entre particiones para mejorar la velocidad o disminuir el consumo de energía.
+El algoritmo Kernighan-Lin\cite{KernighanLin}, a menudo abreviado como K-L, es uno de los primeros algoritmos de partición de grafos y fue desarrollado originalmente para optimizar la colocación de circuitos electrónicos en tarjetas de circuito impreso para minimizar el número de conexiones entre las tarjetas.
 
-Kernighan-Lin es un algoritmo:
+El algoritmo K-L no crea particiones, sino que las mejora iterativamente. La idea original era tomar una partición aleatoria y aplicarle Kernighan-Lin\cite{KernighanLin}. Esto se repetiría varias veces y se elegiría el mejor resultado. Mientras que para grafos pequeños esto ofrece resultados razonables, es bastante ineficiente para tamaños de problemas más grandes.
+
+Decimos que es un algoritmo:
 
 \begin{itemize}
 	\setlength{\parskip}{0pt}
 	\setlength{\itemsep}{0pt plus 1pt}
-	\item \textbf{Iterativo}. Esto significa que el grafo/circuito inicialmente ya está particionado, pero la aplicación de Kernighan-Lin intentará mejorar u optimizar la partición inicial. Kernighan-Lin es iterativo en lugar de constructivo.
+	\item \textbf{Iterativo}. Esto significa que el grafo inicialmente ya está particionado, pero la aplicación del algoritmo intentará mejorar u optimizar la partición inicial. 
 	\item \textbf{Voraz}. Esto significa que el algoritmo hará cambios si hay un beneficio inmediato sin considerar otras formas posibles de obtener una solución óptima.
-	\item \textbf{Determinista} porque se obtendrá el mismo resultado cada vez que se aplique el algoritmo. El mismo resultado será el mismo número de redes que cruzan la bisección, pero no necesariamente las mismas redes.
+	\item \textbf{Determinista} porque se obtendrá el mismo resultado cada vez que se aplique el algoritmo. %El mismo resultado será el mismo número de redes que cruzan la bisección, pero no necesariamente las mismas redes.
 \end{itemize}
 
+%Una aplicación importante del algoritmo es en los circuitos VLSI\cite{KernighanLin}\cite{Ravikumar}. Concretamente se usa para encontrar un número mínimo de conexiones entre particiones para mejorar la velocidad o disminuir el consumo de energía.
 
-%2
-El algoritmo Kernigan-Lin\cite{KernighanLin}, a menudo abreviado como K-L, es uno de los primeros algoritmos de partición de grafos y fue desarrollado originalmente para optimizar la colocación de circuitos electrónicos en tarjetas de circuito impreso para minimizar el número de conexiones entre las tarjetas.
+Hoy en día, el algoritmo se usa para mejorar las particiones encontradas por otros algoritmos. Como veremos, K-L tiene una visión algo \textit{"local"} del problema, tratando de mejorar las particiones mediante el intercambio de nodos vecinos. Por lo tanto, complementa muy bien los algoritmos que tienen una visión más \textit{"global"} del problema, pero tienden a ignorar las características locales. Un ejemplo de este tipo de algoritmos seria la partición espectral (ver sección \ref{Spectral-Bisection}).
 
-El algoritmo K-L no crea particiones, sino que las mejora iterativamente. La idea original era tomar una partición aleatoria y aplicarle Kernigan-Lin. Esto se repetiría varias veces y se elegiría el mejor resultado. Mientras que para grafos pequeños esto ofrece resultados razonables, es bastante ineficiente para tamaños de problemas más grandes.
-
-Hoy en día, el algoritmo se usa para mejorar las particiones encontradas por otros algoritmos. Como veremos, K-L tiene una visión algo \textit{"local"} del problema, tratando de mejorar las particiones mediante el intercambio de nodos vecinos. Por lo tanto, complementa muy bien los algoritmos que tienen una visión más \textit{"global"} del problema, pero tienden a ignorar las características locales. Un ejemplo de este tipo de algoritmos seria la partición espectral (ver sección \ref{spectral_bisection}).
-
-C. Fiduccia y R. Mattheyses realizaron importantes avances prácticos en \cite{FiducciaMattheyses} quienes mejoraron el algoritmo de tal manera que una iteración se ejecuta en $O(n)$ en lugar de $O({n}^2 \, log \, n)$. A continuación, primero se describe el algoritmo original y después se discuten estas y otras mejoras.
+C. Fiduccia y R. Mattheyses realizaron importantes avances prácticos en \cite{FiducciaMattheyses} quienes mejoraron el algoritmo de tal manera que una iteración se ejecuta en $O({n}^2)$ en lugar de $O({n}^2 \, log \, n)$.
 
 \subsection{Descripción}
 
-\subsection{Mejoras}
+Ventajas:
+
+\begin{itemize}
+	\item El algoritmo es robusto.
+\end{itemize}
+
+Desventajas:
+
+\begin{itemize}
+	\item Los resultados son aleatorios porque el algoritmo comienza con una partición aleatoria.
+	\item Computacionalmente es un algoritmo lento.
+	\item Solo se crean dos particiones del mismo tamaño.
+	\item Las particiones tienen que tener el mismo tamaño para que el algoritmo no intente encontrar tamaños de partición óptimos que ya existan.
+	\item No resuelve muy bien los problemas con aristas ponderadas.
+	\item La solución dependerá en gran medida del primer intercambio.
+\end{itemize}
 
 \subsection{Ejemplo}
 
-
-\section{Spectral Bisection}\label{spectral_bisection}
+\section{Spectral Bisection}\label{Spectral-Bisection}
 
 \subsection{Descripción}
 
 \subsection{Ejemplo}
 
-\section{Multilevel Spectral Bisection}
+\section{Multilevel Spectral Bisection}\label{Multilevel-Spectral-Bisection}
+
+El particionamiento de grafos por multilevel es un método moderno que reduce el tamaño de las particiones del grafo con la combinación de los vértices y las aristas sobre varios niveles, creando particiones del grafo cada vez más pequeñas y extensas con muchas variaciones y combinaciones de diferentes métodos.
+
+METIS es un algoritmo de partición que se enfoca en minimizar el número de bordes de partición cruzados y distribuir la carga de trabajo de manera uniforme entre las particiones. Con METIS, los gráficos se dividen en tres fases. La primera fase es la fase de engrosamiento, la segunda la fase de partición y la tercera y última fase la fase de no engrosamiento (Figura X). La fase de particionamiento contiene particiones bi-particionadas y K-way. A diferencia de la partición K-way, la bi-partición se realiza de forma recursiva. Las subseccion a continuación contienen una explicación más extensa de estas diversas fases.
 
 \subsection{Descripción}
 
 \subsection{Ejemplo}
-
-\section{Comparativa entre los diferentes algoritmos}
 

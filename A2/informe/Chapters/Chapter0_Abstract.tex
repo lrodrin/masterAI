@@ -1,5 +1,9 @@
-In mathematics, a graph partition is the reduction of a graph to a smaller graph by partitioning its nodes into mutually exclusive groups. It is commonly used in scientific computing, VLSI circuit design, and task scheduling in multiprocessor computers, among others. Actually, finding partitions that simplifies graph analysis is a hard problem and the graph partitioning problem has gained importance due to its application for clustering and detection of cliques in social, pathological and biological networks. 
+Dentro del amplio campo de la Teoría de Grafos, en este trabajo se considera el problema de la partición del grafo: dado un grafo no dirigido cuyo número de vértices es par y cuyas aristas tienen asociado un peso, se trata de encontrar la partición del conjunto de vértices en dos subconjuntos de tamaño similar de manera que se minimice la suma de los pesos de aquellas aristas que unen vértices que están en diferentes conjuntos
 
-Since graph partitioning is a hard problem, the practical solutions are based on heuristics, because typically graph partition problem fall under the category of NP-hard problems. For tackling this problem, I propose three algorithms based on heuristics, including local and global strategies. The two first algorithms presented are Kernighan–Lin and Fiduccia-Mattheyses, effective 2-way cuts by local search strategies. The third is the Spectral Bisection algorithm. Finally, I demonstrate with some examples my approach in an evaluation of these algorithms using a dataset.
+En el capítulo inicial se presenta una breve introducción al problema. En el segundo capítulo, se proponen tres codificaciones para este problema, señalando sus aspectos más relevantes (positivos y negativos), además de ejemplos. Concretamente, las codificaciones son implementaciones en Python 3 de los algoritmos basados en técnicas metaheurísticas: Kernighan-Lin, Spectral Bisection y Multilevel Spectral Bisection. Y en el tercer capítulo, se concluye con una comparativa entre las diferentes codificaciones.
 
+Las codificaciones se encuentran en el repositorio:
 
+\begin{center}
+	\url{https://github.com/lrodrin/masterAI/tree/master/A2}
+\end{center}
