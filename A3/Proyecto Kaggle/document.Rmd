@@ -1,0 +1,29 @@
+---
+title: "**Kobe Bryant Shot Selection**"
+author: "Laura Rodríguez Navas"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# **Introducción**
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(gridExtra)
+
+data <- read.csv("data.csv")
+```
+
+# **Preprocesado de datos**
+
+# **Modelado**
+
+# **Evaluación**
+
+# **Conclusiones**
+
+# **Resultado de Kaggle**
