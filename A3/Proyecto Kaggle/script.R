@@ -9,10 +9,9 @@ data <- read_csv("data.csv")
 data
 
 # eliminiación de columnas redundantes
-# shot_id denota el identificador de cada instancia por lo que puede borrarse (25)
 # team_id y team_name mismo valor en todas las filas (20, 21)
 # opponent y matchup dan la misma información y solo necesitamos el oponente (23) eliminamos matchup
-data <- data[, -c(20, 21, 23, 25)]
+data <- data[, -c(20, 21, 23)]
 data
 summary(data)
 head(data)
