@@ -9,7 +9,7 @@ train <- subset(data, !is.na(data$shot_made_flag))
 test <- subset(data, is.na(data$shot_made_flag))
 
 ##shot_distance
-train$shot_distance[train$shot_distance > 45] <- 45
+train$shot_distance[train$shot_distance > 40] <- 40
 
 ##minutes_remaining and seconds_remaining
 train$time_remaining <- train$minutes_remaining * 60 + train$seconds_remaining;
@@ -38,8 +38,4 @@ drops <- c("game_event_id", "game_id", "loc_x", "loc_y", "lat", "lon",
            "team_id", "team_name", "game_date", "matchup", "shot_id")
 
 train <- train[ , !(names(train) %in% drops)]
-
 train <- train[order(train$shot_made_flag), ] # order by shot_made_flag 
-
-ctrl <- trainControl(method="cv",number=5, classProbs = FALSE)
-lda <- train(shot_made_flag ~ ., data=train, method="rf", trControl=ctrl)

@@ -1,19 +1,15 @@
-library(ggplot2)
 library(tidyverse)
+library(ggplot2)
 
-#loading data
+##load data
 data <- read_csv("data.csv")
 
+##remove NA
 data <- na.omit(data)
 any(is.na(data))
 
-outlier_values <- boxplot.stats(data$shot_distance)$out  # outlier values.
-
-
-# Shot type
+##shot_type
 ggplot() + 
-  
-  # We use a different alpha value for jump shots to improve the visualization
   geom_point(data=data %>% filter(combined_shot_type=="Jump Shot"),
              aes(x=lon, y=lat), colour="grey", alpha=0.3) +
   geom_point(data=data %>% filter(combined_shot_type!="Jump Shot"),
@@ -24,8 +20,7 @@ ggplot() +
   theme(legend.title=element_blank(),
         plot.title=element_text(hjust=0.5)) 
 
-
-# Accuracy by season
+##accuracy by season
 data %>%
   group_by(season) %>%
   summarise(Accuracy=mean(shot_made_flag)) %>%
@@ -38,8 +33,7 @@ data %>%
         plot.title=element_text(hjust=0.5),
         axis.text.x=element_text(angle=45, hjust=1)) 
 
-
-# Accuracy by opponent
+##accuracy by opponent
 data %>%
   group_by(opponent) %>%
   summarise(Accuracy=mean(shot_made_flag)) %>%
