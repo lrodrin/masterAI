@@ -13,8 +13,11 @@ cat("splitting data to train and test......\n")
 train <- data[!is.na(data$shot_made_flag),]
 test <- data[is.na(data$shot_made_flag),]
 
+
 cat("precessing the train data......\n")
 train$shot_made_flag <- as.factor(train$shot_made_flag)
+outliers <- boxplot(train$shot_distance, plot=FALSE)$out
+min(outliers)
 
 #handle with the train features
 train$shot_distance[train$shot_distance > 40] <- 40
@@ -42,6 +45,28 @@ colnames(test_dat) <- c("shot_distance", "time_remaining", "shot_made_flag")
 
 #build model by train data
 model <- glm(shot_made_flag~., data=train_dat, family = binomial(link = "logit"))
+
+library(e1071)
+wts=c(1,1)
+names(wts)=c(1,0)
+model <- svm(shot_made_flag~., data=train_dat, kernel="radial",  gamma=1, cost=1, class.weights=wts)
+
+#anova(model)
+
+# show accuracy by train data
+# predict generates a vector of probabilities that we threshold at 0.5
+newdata <- data.frame(train_dat[,-3])
+pred <- predict(model, newdata, type = 'response')
+
+confusionMatrix(pred, train_dat$shot_made_flag)
+
+newdf <- data.frame(shot_id=train$shot_id, shot_made_flag=pred)
+newdf$shot_made_flag <- myNormalize(newdf$shot_made_flag)
+preds_th <- ifelse(as.numeric(pred) > 0.5,1,0)
+
+# make the Confusion Matrix
+cm <- table(newdf$shot_made_flag, preds_th)
+accuracy <- (cm[1,1] + cm[2,2]) / (cm[1,1] + cm[2,2] + cm[1,2] + cm[2,1])
 
 #model predict the test data
 newdata <- data.frame(test_dat[,-3])

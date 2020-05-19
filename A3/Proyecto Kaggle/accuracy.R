@@ -43,72 +43,64 @@ colnames(test_dat) <- make.names(colnames(test_dat))
 #prediction
 fitControl <- trainControl(method = "cv",
                            number = 5,
-                           classProbs = FALSE)
+                           verboseIter = TRUE)
 
 #build model by train data
-set.seed(123)
-model <- train(shot_made_flag ~ .,
+lda <- train(shot_made_flag ~ .,
                data=train_dat,
                method="lda",
                trControl=fitControl)
 
-set.seed(123)
-model <- train(shot_made_flag ~ .,
+naive_bayes <- train(shot_made_flag ~ .,
             data=train_dat,
             method="naive_bayes",
             trControl=fitControl)
-set.seed(123)
-model <- train(shot_made_flag ~ .,
+
+rpart2 <- train(shot_made_flag ~ .,
                data=train_dat,
                method="rpart2",
                trControl=fitControl)
-set.seed(123)
-model <- train(shot_made_flag ~ .,
+
+nnet <- train(shot_made_flag ~ .,
                data=train_dat,
                method="nnet",
                trControl=fitControl)
 
-set.seed(123)
 grid_knn <- expand.grid(k = seq(1, 3))
-model <- train(shot_made_flag ~ .,
+knn <- train(shot_made_flag ~ .,
                data=train_dat,
                method="knn",
                trControl=fitControl, tuneGrid = grid_knn)
-set.seed(123)
-model <- train(shot_made_flag ~ .,
+
+svmLinear <- train(shot_made_flag ~ .,
                data=train_dat,
                method="svmLinear",
                trControl=fitControl)
 
-set.seed(123)
-model <- train(shot_made_flag ~ .,
+OneR <- train(shot_made_flag ~ .,
                data=train_dat,
                method="OneR",
                trControl=fitControl)
 
 
-set.seed(123)
 grid_mlp = expand.grid(layer1 = 3, layer2 = 5, layer3 = 7)
-model <- train(shot_made_flag ~ .,
+mlpML <- train(shot_made_flag ~ .,
                data=train_dat,
                method="mlpML",
                trControl=fitControl, tuneGrid = grid_mlp)
 
-set.seed(123)
-model <- train(shot_made_flag ~ .,
+rf <- train(shot_made_flag ~ .,
                data=train_dat,
                method="rf",
                trControl=fitControl)
 
 #show accuracy by train data
-nb_trainPred <- predict(model, train_dat)
-accuracy <- (postResample(nb_trainPred, train_dat$shot_made_flag))[1]
-trainig_error <- 100 - (accuracy*100)
-paste("Accuracy =", accuracy, "Trainig_error =", trainig_error, "%")
+pred <- predict(lda, train_dat)
+trainig_error <- mean(train_dat$shot_made_flag != pred) * 100
+paste("Trainig_error =", trainig_error, "%")
+confusionMatrix(pred, train_dat$shot_made_flag)
 
-#model predict the test data
-newdata <- data.frame(test_dat[,-3])
-nb_testPred <- predict(model, newdata)
-submission <- data.frame(shot_id=test$shot_id, shot_made_flag=nb_testPred)
-cat("Saving the submission file\n");
-write.csv(submission, "rf.csv", row.names = FALSE)
+pred <- predict(rf, train_dat)
+trainig_error <- mean(train_dat$shot_made_flag != pred) * 100
+paste("Trainig_error =", trainig_error, "%")
+confusionMatrix(pred, train_dat$shot_made_flag)
