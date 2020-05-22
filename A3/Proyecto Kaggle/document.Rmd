@@ -1,8 +1,10 @@
 ---
-title: "**Kobe Bryant Shot Selection**"
+title: '**Kobe Bryant Shot Selection**'
 author: "Laura Rodríguez Navas"
 date: "`r Sys.Date()`"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -11,19 +13,148 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # **Introducción**
 
-```{r message=FALSE, warning=FALSE}
-library(tidyverse)
-library(gridExtra)
+Este proyecto lleva a cabo un proyecto completo de Ciencia de Datos donde vamos a analizar, transformar, modelar y evaluar un conjunto de datos de Kaggle (https://www.kaggle.com/). Concretamente, para este proyecto se ha usado un conjunto de datos que describe los aciertos y fallos de lanzamientos a canasta del jugador de baloncesto Kobe Bryant durante 20 años de su carrera en la NBA (https://www.kaggle.com/c/kobe-bryant-shot-selection/data). 
 
-data <- read.csv("data.csv")
+La tarea del proyecto es predecir si los lanzamientos a canastas de Kobe Bryant entraron o no en el aro (“shot_made_flag”), es decir, los lanzamientos acertados. Del conjunto de datos se han eliminado 5000 valores de este atributo (representados como valores faltantes en el conjunto de datos). Estos datos serán el conjunto de prueba sobre el cual se realizará la predicción.
+
+El conjunto de datos contiene 30697 (25697 + 5000) instancias y un gran número de variables explicativas (11 discretas y 14 numéricas). Estas 25 variables (incluyendo la clase a predecir shot_made_flag) se centran en la descripción cualitativa y cuantitativa de multitud de aspectos de cada uno de los lanzamientos de Kobe Bryant.
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(data.table)
 ```
 
-# **Preprocesado de datos**
+
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+data <- as.data.frame(fread("data.csv", header = TRUE, stringsAsFactors = TRUE))
+str(data)
+```
+
+# **Exploración de datos**
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+tmp_data <- read_csv("data.csv")
+tmp_data <- na.omit(tmp_data)
+```
+
+Al principio podemos ver que la variable clase a predecir (atributo *"shot_made_flag"*) se distribuye de manera bastante equitativa. No realizaremos ninguna acción para tratar con el conjunto de datos desequilibrado.
+
+```{r message=FALSE, warning=FALSE, echo=FALSE, fig.align='center'}
+qplot(factor(shot_made_flag), data = tmp_data, geom = "bar",
+  fill = factor(shot_made_flag, levels = c(0, 1))) +
+  scale_fill_manual(values = c("orangered", "chartreuse3")) +
+  labs(fill = "levels") + xlab("shot_made_flag") +
+  ylab("count") + ggtitle("Distribución de la clase") +
+  theme_bw() + theme(plot.title = element_text(hjust = 0.5))
+```
+
+Precisión de los lanzamientos por temporada (atributo *"season"*).
+
+```{r message=FALSE, warning=FALSE, echo=FALSE, fig.align='center'}
+tmp_data %>%
+  group_by(season) %>%
+  summarise(Accuracy=mean(shot_made_flag)) %>%
+  ggplot(aes(x=season, y=Accuracy, group=1)) +
+  geom_line(aes(colour=Accuracy)) +
+  geom_point(aes(colour=Accuracy), size=3) +
+  scale_colour_gradient(low="orangered", high="chartreuse3") +
+  labs(title="Accuracy por temporada", x="Season") +
+  theme(legend.position="none",
+        plot.title=element_text(hjust=0.5),
+        axis.text.x=element_text(angle=45, hjust=1)) 
+```
+
+Precisión de los lanzamientos por temporada (atributo *"shot_distance"*). Pueden ser valores inusuales. En el apartado de selección concretaremos cuales son y en el de limpieza de datos seran eliminados.
+
+```{r message=FALSE, warning=FALSE, echo=FALSE, fig.align='center'}
+tmp_data %>%
+  group_by(shot_distance) %>%
+  summarise(Accuracy=mean(shot_made_flag)) %>%
+  ggplot(aes(x=shot_distance, y=Accuracy)) + 
+  geom_line(aes(colour=Accuracy)) +
+  geom_point(aes(colour=Accuracy), size=2) +
+  scale_colour_gradient(low="orangered", high="chartreuse3") +
+  labs(title="Accuracy por distancia de lanzamiento", x="Shot distance (ft.)") +
+  xlim(c(0,45)) +
+  theme_bw() +
+  theme(legend.position="none",
+        plot.title=element_text(hjust=0.5)) 
+```
+
+## **Selección de variables**
+
+Reduzimos la cantidad de variables para un análisis más fácil dividiendo el conjunto de datos en un conjunto de datos de entrenamiento y un conjunto de datos de evaluación (test).
+
+```{r message=FALSE, warning=FALSE}
+train <- data[!is.na(data$shot_made_flag), ]
+any(is.na(train))
+test <- data[is.na(data$shot_made_flag), ]
+any(is.na(test))
+```
+
+Encontramos valores inusuales en el conjunto de entrenamiento y también en el de test. Y los podemos correlacionar con la falta de acierto en los lanzamientos superiores a 46 (ft.) y 49 (ft.). 
+
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+outliers_train <- boxplot(train$shot_distance, plot=FALSE)$out
+outliers_test <- boxplot(test$shot_distance, plot=FALSE)$out
+min(outliers_train)
+min(outliers_test)
+```
+
+En el apartado de limpieza de datos seran eliminados.
+
+## **Transformación de datos**
+
+```{r}
+train$shot_made_flag <- as.factor(train$shot_made_flag)
+test$shot_made_flag <- as.factor(test$shot_made_flag)
+```
+
+## **Limpieza de datos**
+
+Asumimos la independencia de cada lanzamiento, por lo tanto, las siguientes columnas pueden descartarse.
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+drops <- c("game_event_id", "game_id", "loc_x", "loc_y", "lat", "lon",
+           "shot_zone_area", "shot_zone_basic", "shot_zone_range",
+           "team_id", "team_name", "game_date", "matchup",
+           "minutes_remaining", "seconds_remaining")
+```
+
+- **game_event_id**. Indepeniente al análisis.
+- **game_id**. Indepeniente al análisis.
+- **loc_x**.
+- **loc_y**.
+- **lat**. Correlacionada con loc_x.
+- **lon**. Correlacionada con loc_y.
+- **shot_zone_area**.
+- **shot_zone_basic**.
+- **shot_zone_range**.
+- **team_id**. Siempre es el mismo número.
+- **team_name**. Siempre es el mismo valor: *LA Lakers*.
+- **game_date**.
+- **matchup**.
+- **minutes_remaining**.
+- **seconds_remaining**.
+
+Los valores inusuales observados anteriormente también pueden descartarse de los conjuntos de entrenamiento y test, además obserando esos valores, una buena opción es descartar los lanzamientos por distancia superiores a 40 (ft.).
+
+```{r}
+train$shot_distance[train$shot_distance > 40] <- 40
+test$shot_distance[test$shot_distance > 40] <- 40
+```
 
 # **Modelado**
+
+Una vez se ha realizado el análisis sobre los datos, incluyendo la limpieza, transformación y generación de nuevas variables interesantes para el estudio, pasamos a la fase del modelado.
 
 # **Evaluación**
 
 # **Conclusiones**
 
 # **Resultado de Kaggle**
+
+![](submission.png)
+
+## **Bibliografía**

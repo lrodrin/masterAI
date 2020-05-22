@@ -2,10 +2,10 @@ library(tidyverse)
 library(ggplot2)
 
 ##load data
-data <- read_csv("data.csv")
+tmp_data <- read_csv("data.csv")
 
 ##remove NA
-data <- na.omit(data)
+tmp_data <- na.omit(tmp_data)
 any(is.na(data))
 
 ##shot_type
@@ -21,7 +21,7 @@ ggplot() +
         plot.title=element_text(hjust=0.5)) 
 
 ##accuracy by season
-data %>%
+tmp_data %>%
   group_by(season) %>%
   summarise(Accuracy=mean(shot_made_flag)) %>%
   ggplot(aes(x=season, y=Accuracy, group=1)) +
@@ -34,7 +34,7 @@ data %>%
         axis.text.x=element_text(angle=45, hjust=1)) 
 
 ##accuracy by opponent
-data %>%
+tmp_data %>%
   group_by(opponent) %>%
   summarise(Accuracy=mean(shot_made_flag)) %>%
   mutate(Conference=c("Eastern", "Eastern", "Eastern", "Eastern", "Eastern",
@@ -49,3 +49,39 @@ data %>%
   labs(title="Accuracy by opponent", x="Opponent") +
   theme(plot.title=element_text(hjust=0.5),
         axis.text.x=element_text(angle=45, hjust=1))
+
+# Accuracy by shot distance
+tmp_data %>%
+  group_by(shot_distance) %>%
+  summarise(Accuracy=mean(shot_made_flag)) %>%
+  ggplot(aes(x=shot_distance, y=Accuracy)) + 
+  geom_line(aes(colour=Accuracy)) +
+  geom_point(aes(colour=Accuracy), size=2) +
+  scale_colour_gradient(low="orangered", high="chartreuse3") +
+  labs(title="Accuracy by shot distance", x="Shot distance (ft.)") +
+  xlim(c(0,45)) +
+  theme_bw() +
+  theme(legend.position="none",
+        plot.title=element_text(hjust=0.5)) 
+
+# Target class distribution
+qplot(factor(shot_made_flag), data = tmp_data, geom = "bar",
+      fill = factor(shot_made_flag, levels = c(0, 1))) +
+  scale_fill_manual(values = c("darkblue", "darkgreen")) +
+  labs(fill = "levels") + xlab("shot_made_flag") +
+  ylab("count") + ggtitle("Distribución de la clase") +
+  theme_bw() + theme(plot.title = element_text(hjust = 0.5))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
