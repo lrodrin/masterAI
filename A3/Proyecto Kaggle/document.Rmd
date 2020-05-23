@@ -1,5 +1,6 @@
 ---
 title: '**Kobe Bryant Shot Selection**'
+subtitle: 'Proyecto Kaggle'
 author: "Laura Rodríguez Navas"
 date: "`r Sys.Date()`"
 output:
@@ -15,9 +16,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Este proyecto lleva a cabo un proyecto completo de Ciencia de Datos donde vamos a analizar, transformar, modelar y evaluar un conjunto de datos de Kaggle (https://www.kaggle.com/). Concretamente, para este proyecto se ha usado un conjunto de datos que describe los aciertos y fallos de lanzamientos a canasta del jugador de baloncesto Kobe Bryant durante 20 años de su carrera en la NBA (https://www.kaggle.com/c/kobe-bryant-shot-selection/data). 
 
-La tarea del proyecto es predecir si los lanzamientos a canastas de Kobe Bryant entraron o no en el aro (“shot_made_flag”), es decir, los lanzamientos acertados. Del conjunto de datos se han eliminado 5000 valores de este atributo (representados como valores faltantes en el conjunto de datos). Estos datos serán el conjunto de prueba sobre el cual se realizará la predicción.
+La tarea del proyecto es predecir si los lanzamientos a canastas de Kobe Bryant entraron o no en el aro (atributo *“shot_made_flag”*), es decir, los lanzamientos acertados. Del conjunto de datos se han eliminado 5000 valores de este atributo (representados como valores faltantes en el conjunto de datos). Estos datos serán el conjunto de prueba sobre el cual se realizará la predicción.
 
-El conjunto de datos contiene 30697 (25697 + 5000) instancias y un gran número de variables explicativas (11 discretas y 14 numéricas). Estas 25 variables (incluyendo la clase a predecir shot_made_flag) se centran en la descripción cualitativa y cuantitativa de multitud de aspectos de cada uno de los lanzamientos de Kobe Bryant.
+El conjunto de datos contiene 30697 (25697 + 5000) instancias y un gran número de variables explicativas (11 discretas y 14 numéricas). Estas 25 variables (incluyendo clase a predecir *“shot_made_flag”*) se centran en la descripción cualitativa y cuantitativa de multitud de aspectos de cada uno de los lanzamientos de Kobe Bryant.
 
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 library(tidyverse)
@@ -26,7 +27,7 @@ library(data.table)
 ```
 
 
-```{r message=FALSE, warning=FALSE, echo=FALSE}
+```{r message=FALSE, warning=FALSE, echo=FALSE, out.width='70%'}
 data <- as.data.frame(fread("data.csv", header = TRUE, stringsAsFactors = TRUE))
 str(data)
 ```
@@ -38,20 +39,20 @@ tmp_data <- read_csv("data.csv")
 tmp_data <- na.omit(tmp_data)
 ```
 
-Al principio podemos ver que la variable clase a predecir (atributo *"shot_made_flag"*) se distribuye de manera bastante equitativa. No realizaremos ninguna acción para tratar con el conjunto de datos desequilibrado.
+Empezamos analizando visualmente la variable de clase a predecir (atributo *"shot_made_flag"*). Podemos ver que la variable de clase se distribuye de manera bastante equitativa. No se realizará ninguna acción para tratar con el conjunto de datos desequilibrado.
 
-```{r message=FALSE, warning=FALSE, echo=FALSE, fig.align='center'}
+```{r message=FALSE, warning=FALSE, echo=FALSE, fig.align='center', out.width='50%'}
 qplot(factor(shot_made_flag), data = tmp_data, geom = "bar",
   fill = factor(shot_made_flag, levels = c(0, 1))) +
-  scale_fill_manual(values = c("orangered", "chartreuse3")) +
+  scale_fill_manual(values = c("darkblue", "darkgreen")) +
   labs(fill = "levels") + xlab("shot_made_flag") +
   ylab("count") + ggtitle("Distribución de la clase") +
   theme_bw() + theme(plot.title = element_text(hjust = 0.5))
 ```
 
-Precisión de los lanzamientos por temporada (atributo *"season"*).
+A continuación, analizamos visualmente la precisión de los lanzamientos por temporada (atributo *"season"*). Observamos que a partir de la temporada 2013-2014 la precisión de los lanzamientos baja drásticamente. Así que, exploraremos las correlaciones de este período de tiempo con los atributos del conjunto de datos y la variable de clase a predecir.
 
-```{r message=FALSE, warning=FALSE, echo=FALSE, fig.align='center'}
+```{r message=FALSE, warning=FALSE, echo=FALSE, fig.align='center', out.width='70%'}
 tmp_data %>%
   group_by(season) %>%
   summarise(Accuracy=mean(shot_made_flag)) %>%
@@ -65,9 +66,9 @@ tmp_data %>%
         axis.text.x=element_text(angle=45, hjust=1)) 
 ```
 
-Precisión de los lanzamientos por temporada (atributo *"shot_distance"*). Pueden ser valores inusuales. En el apartado de selección concretaremos cuales son y en el de limpieza de datos seran eliminados.
+En el siguiente gráfico vemos visualmente que la precisión de los lanzamientos por distancia (atributo *"shot_distance"*) se correlaciona con la precisión de los lanzamientos por temporada. Es más, los lanzamientos realizados a más de 30 (ft.) los podríamos considerar como valores inusuales. En el apartado de selección de variables concretaremos que valores son con más exactitud y en el apartado de limpieza de datos serán eliminados.
 
-```{r message=FALSE, warning=FALSE, echo=FALSE, fig.align='center'}
+```{r message=FALSE, warning=FALSE, echo=FALSE, fig.align='center', out.width='70%'}
 tmp_data %>%
   group_by(shot_distance) %>%
   summarise(Accuracy=mean(shot_made_flag)) %>%
@@ -84,7 +85,9 @@ tmp_data %>%
 
 ## **Selección de variables**
 
-Reduzimos la cantidad de variables para un análisis más fácil dividiendo el conjunto de datos en un conjunto de datos de entrenamiento y un conjunto de datos de evaluación (test).
+Dividiremos el conjunto de datos en un conjunto de datos de entrenamiento y un conjunto de datos de evaluación (test). Para ello primero tenemos que analizar si existen valores faltantes y observamos que sí que existen valores faltantes dentro de la variable de clase a predecir (*"shot_made_flag"*). Concretamente, esos valores son los que tendremos que predecir en la evaluación. 
+
+En este proyecto consideramos que para dividir el conjunto de datos en un conjunto de datos de entrenamiento y un conjunto de datos de test para realizar una mejor predicción, tenemos que crear un conjunto de datos de entrenamiento sin valores faltantes y un conjunto de datos de test con los valores faltantes que tenemos que queremos predecir.
 
 ```{r message=FALSE, warning=FALSE}
 train <- data[!is.na(data$shot_made_flag), ]
@@ -93,11 +96,18 @@ test <- data[is.na(data$shot_made_flag), ]
 any(is.na(test))
 ```
 
-Encontramos valores inusuales en el conjunto de entrenamiento y también en el de test. Y los podemos correlacionar con la falta de acierto en los lanzamientos superiores a 46 (ft.) y 49 (ft.). 
+Anteriormente, hemos analizado visualmente la precisión de los lanzamientos por temporada con los lanzamientos por distancia y hemos encontrado valores inusuales en el conjunto de datos que tendremos que eliminar si queremos realizar una buena predicción de la variable de clase *"shot_made_flag"*. Ahora, veremos que valores inusuales se encuentran primero en el conjunto de datos de entrenamiento y después en el conjunto de datos de test.
 
 ```{r message=FALSE, warning=FALSE, echo=FALSE}
 outliers_train <- boxplot(train$shot_distance, plot=FALSE)$out
+outliers_train
 outliers_test <- boxplot(test$shot_distance, plot=FALSE)$out
+outliers_test
+```
+
+Los valores inusuales los podemos directamente correlacionar con la falta de acierto de los lanzamientos superiores a 46 (ft.) y 49 (ft.).
+
+```{r message=FALSE, warning=FALSE, echo=FALSE}
 min(outliers_train)
 min(outliers_test)
 ```
@@ -106,9 +116,28 @@ En el apartado de limpieza de datos seran eliminados.
 
 ## **Transformación de datos**
 
-```{r}
+La primera transformación que realizamos es la binarización de la varaible clase *"shot_made_flag"*.
+
+También juntamos la columnas minutes y seconds en una tercera columna time. Y después eliminamos las columnas antiguas. minutes_remaining y seconds_remaining parecen ser un par, así que combinémoslos.
+
+```{r message=FALSE, warning=FALSE}
 train$shot_made_flag <- as.factor(train$shot_made_flag)
 test$shot_made_flag <- as.factor(test$shot_made_flag)
+
+train$time_remaining <- train$minutes_remaining * 60 + train$seconds_remaining
+test$time_remaining <- test$minutes_remaining * 60 + test$seconds_remaining
+```
+
+Normalizamos, las columns que utilizaremos para la predicción.
+
+```{r message=FALSE, warning=FALSE}
+normalize <- function (target) {
+  (target - min(target))/(max(target) - min(target))
+}
+train$shot_distance <- normalize(train$shot_distance)
+train$time_remaining <- normalize(train$time_remaining)
+test$shot_distance <- normalize(test$shot_distance)
+test$time_remaining <- normalize(test$time_remaining)
 ```
 
 ## **Limpieza de datos**
@@ -134,22 +163,99 @@ drops <- c("game_event_id", "game_id", "loc_x", "loc_y", "lat", "lon",
 - **team_id**. Siempre es el mismo número.
 - **team_name**. Siempre es el mismo valor: *LA Lakers*.
 - **game_date**.
-- **matchup**.
+- **matchup**. oponent y matchup son básicamente la misma información. Solo se necesita oponente.
 - **minutes_remaining**.
 - **seconds_remaining**.
 
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+train <- train[ , !(names(train) %in% drops)]
+test <- test[ , !(names(test) %in% drops)]
+str(train)
+str(test)
+```
+
 Los valores inusuales observados anteriormente también pueden descartarse de los conjuntos de entrenamiento y test, además obserando esos valores, una buena opción es descartar los lanzamientos por distancia superiores a 40 (ft.).
 
-```{r}
+```{r message=FALSE, warning=FALSE, echo=FALSE}
 train$shot_distance[train$shot_distance > 40] <- 40
 test$shot_distance[test$shot_distance > 40] <- 40
+max(train$shot_distance)
+max(test$shot_distance)
 ```
 
 # **Modelado**
 
 Una vez se ha realizado el análisis sobre los datos, incluyendo la limpieza, transformación y generación de nuevas variables interesantes para el estudio, pasamos a la fase del modelado.
 
+Solo nos quedamos con shot_distance, time_remaining y shot_made_flag. separar los datos para el entrenamiento y la sumisión
+
+Ahora separemos los datos.
+
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+train_dat <- data.frame(train$shot_distance, train$time_remaining, train$shot_made_flag)
+colnames(train_dat) <- c("shot_distance", "time_remaining", "shot_made_flag")
+
+test_dat <- data.frame(test$shot_distance, test$time_remaining, test$shot_made_flag)
+colnames(test_dat) <- c("shot_distance", "time_remaining", "shot_made_flag")
+head(train_dat)
+head(test_dat)
+```
+
+Provamos diferentes modelos vistos en la asignatura, però ninguno de ellos nos dio tan buen resultado como GLM. Una tabla de el valor de accuracy de los modelos que he probado.
+
+```{r message=FALSE, warning=FALSE}
+table <- matrix(c(0.5972292, 0.6083590, 0.6099156, 0.6085924, 0.7203565, 0.5879675, 0.6076585, 0.8043351),
+                ncol=1,byrow=TRUE)
+colnames(table) <- c("Accuracy")
+rownames(table) <- c("LDA", "Naive Bayes","Decision Tree", "Neural Network", "Nearest Neighbour",
+                     "SVM (linear kernel)", "Multilayer Perceptron", "Random Forest")
+table <- as.table(table)
+table
+```
+
+
+GLM es bla bla,
+
+```{r}
+model <- glm(shot_made_flag~., data=train_dat, family = binomial(link = "logit"))
+
+anova(model)
+
+# show accuracy by train data
+newdata <- data.frame(train_dat[,-3])
+pred <- predict(model, newdata, type = 'response')
+
+newdf <- data.frame(shot_id=train$shot_id, shot_made_flag=pred)
+# predict generates a vector of probabilities that we threshold at 0.5
+newdf$shot_made_flag <- normalize(newdf$shot_made_flag)
+preds_th <- ifelse(as.numeric(pred) > 0.5,1,0)
+
+# matriz de confusion y accuracy
+cm <- table(newdf$shot_made_flag, preds_th)
+accuracy <- (cm[1,1] + cm[2,2]) / (cm[1,1] + cm[2,2] + cm[1,2] + cm[2,1])
+```
+
+Matriz de confusión y accuracy
+
 # **Evaluación**
+
+Hacer datos de envío
+
+Shot_made_flag predicho se escribe en un archivo csv.
+
+Construyendo un modelo final
+
+Usemos los parámetros que acabamos de obtener para el modelo final y la predicción.
+
+```{r}
+#model predict the test data
+newdata <- data.frame(test_dat[,-3])
+pred <- predict(model, newdata)
+submission <- data.frame(shot_id=test$shot_id, shot_made_flag=pred)
+submission$shot_made_flag <- normalize(submission$shot_made_flag)
+
+write.csv(submission, "glm.csv", row.names = FALSE)
+```
 
 # **Conclusiones**
 

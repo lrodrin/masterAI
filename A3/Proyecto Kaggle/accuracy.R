@@ -94,13 +94,32 @@ rf <- train(shot_made_flag ~ .,
                method="rf",
                trControl=fitControl)
 
-#show accuracy by train data
-pred <- predict(lda, train_dat)
-trainig_error <- mean(train_dat$shot_made_flag != pred) * 100
-paste("Trainig_error =", trainig_error, "%")
-confusionMatrix(pred, train_dat$shot_made_flag)
 
-pred <- predict(rf, train_dat)
-trainig_error <- mean(train_dat$shot_made_flag != pred) * 100
-paste("Trainig_error =", trainig_error, "%")
-confusionMatrix(pred, train_dat$shot_made_flag)
+#show accuracy by train data
+pred_lda <- predict(lda, train_dat)
+pred_nn <- predict(naive_bayes, train_dat)
+pred_dt <- predict(rpart2, train_dat)
+pred_nnet <- predict(nnet, train_dat)
+pred_knn <- predict(knn, train_dat)
+pred_svm <- predict(svmLinear, train_dat)
+pred_mlpML <- predict(mlpML, train_dat)
+pred_rf <- predict(rf, train_dat)
+cm_lda <- confusionMatrix(pred_lda, train_dat$shot_made_flag)
+cm_nn <- confusionMatrix(pred_nn, train_dat$shot_made_flag)
+cm_dt <- confusionMatrix(pred_dt, train_dat$shot_made_flag)
+cm_nnet <- confusionMatrix(pred_nnet, train_dat$shot_made_flag)
+cm_knn <- confusionMatrix(pred_knn, train_dat$shot_made_flag)
+cm_svm <- confusionMatrix(pred_svm, train_dat$shot_made_flag)
+cm_mlpML <- confusionMatrix(pred_mlpML, train_dat$shot_made_flag)
+cm_rf <- confusionMatrix(pred_rf, train_dat$shot_made_flag)
+
+table <- matrix(c(cm_lda[["overall"]][["Accuracy"]], cm_nn[["overall"]][["Accuracy"]],
+                  cm_dt[["overall"]][["Accuracy"]], cm_nnet[["overall"]][["Accuracy"]],
+                  cm_knn[["overall"]][["Accuracy"]], cm_svm[["overall"]][["Accuracy"]],
+                  cm_mlpML[["overall"]][["Accuracy"]], cm_rf[["overall"]][["Accuracy"]]),
+                ncol=1,byrow=TRUE)
+colnames(table) <- c("Accuracy")
+rownames(table) <- c("LDA", "Naive Bayes","Decision Tree", "Neural Network", "Nearest Neighbour",
+                     "SVM (linear kernel)", "Multilayer Perceptron", "Random Forest")
+table <- as.table(table)
+table
