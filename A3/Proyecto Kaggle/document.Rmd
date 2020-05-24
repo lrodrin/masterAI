@@ -2,8 +2,8 @@
 title: '**Kobe Bryant Shot Selection**'
 author: "Laura Rodríguez Navas"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -81,8 +81,6 @@ tmp_data %>%
         plot.title=element_text(hjust=0.5)) 
 ```
 
-## **Selección de variables**
-
 Dividiremos el conjunto de datos en un conjunto de datos de entrenamiento y un conjunto de datos de evaluación (test). Para ello primero tenemos que analizar si existen valores faltantes y observamos que sí que existen valores faltantes dentro de la variable de clase a predecir (*"shot_made_flag"*). Concretamente, esos valores son los que tendremos que predecir en la evaluación. 
 
 En este proyecto consideramos que para dividir el conjunto de datos en un conjunto de datos de entrenamiento y un conjunto de datos de test para realizar una mejor predicción, tenemos que crear un conjunto de datos de entrenamiento sin valores faltantes y un conjunto de datos de test con los valores faltantes que tenemos que queremos predecir.
@@ -112,35 +110,40 @@ min(outliers_test)
 
 En el apartado de limpieza de datos seran eliminados.
 
-## **Transformación de datos**
+# **Transformación de datos**
 
-La primera transformación que realizamos es la binarización de la varaible clase *"shot_made_flag"*.
+La primera transformación que realizamos es la binarización de la variable clase *"shot_made_flag"*. Factorizamos el atributo *"shot_made_flag"*, que inicialmente es de tipo entero.
 
-También juntamos la columnas minutes y seconds en una tercera columna time. Y después eliminamos las columnas antiguas. minutes_remaining y seconds_remaining parecen ser un par, así que combinémoslos.
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+str(train$shot_made_flag)
+train$shot_made_flag <- as.factor(train$shot_made_flag)
+str(train$shot_made_flag)
+```
+
+Si nos fijamos en las columnas *"minutes_remaining"* y *"seconds_remaining"*, vemos que la información que contienen la podríamos combinar, los minutos del atributo *"minutes_remaining"* los podríamos convertir a segundos y sumar-los con los segundos del atributo*"seconds_remaining"*. La nueva información combinada la guardamos en una nueva columna denominada *"time_remaining"*. 
 
 ```{r message=FALSE, warning=FALSE}
-train$shot_made_flag <- as.factor(train$shot_made_flag)
-test$shot_made_flag <- as.factor(test$shot_made_flag)
-
 train$time_remaining <- train$minutes_remaining * 60 + train$seconds_remaining
 test$time_remaining <- test$minutes_remaining * 60 + test$seconds_remaining
 ```
 
-Normalizamos, las columns que utilizaremos para la predicción.
+A continuación, normalizaremos los atributos (*"time_remaining"* y *"shot_distance"*) que seleccionaremos para la predicción para que permitan la comparación en el conjunto de datos.
 
 ```{r message=FALSE, warning=FALSE}
 normalize <- function (target) {
   (target - min(target))/(max(target) - min(target))
 }
 train$shot_distance <- normalize(train$shot_distance)
-train$time_remaining <- normalize(train$time_remaining)
 test$shot_distance <- normalize(test$shot_distance)
+train$time_remaining <- normalize(train$time_remaining)
 test$time_remaining <- normalize(test$time_remaining)
 ```
 
-## **Limpieza de datos**
+Todas las operaciones de transformación realizadas se han aplicado sobre el conjunto de datos de entrenamiento y el conjunto de datos de test.
 
-Asumimos la independencia de cada lanzamiento, por lo tanto, las siguientes columnas pueden descartarse.
+# **Limpieza de datos**
+
+Con la independencia de cada lanzamiento, las siguientes columnas pueden descartarse.
 
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 drops <- c("game_event_id", "game_id", "loc_x", "loc_y", "lat", "lon",
@@ -149,21 +152,23 @@ drops <- c("game_event_id", "game_id", "loc_x", "loc_y", "lat", "lon",
            "minutes_remaining", "seconds_remaining")
 ```
 
-- **game_event_id**. Indepeniente al análisis.
-- **game_id**. Indepeniente al análisis.
-- **loc_x**.
-- **loc_y**.
+- **game_event_id**. Independiente al análisis.
+- **game_id**. Independiente al análisis.
+- **loc_x**. Correlacionada con lat. 
+- **loc_y**. Correlacionada con lon. 
 - **lat**. Correlacionada con loc_x.
 - **lon**. Correlacionada con loc_y.
-- **shot_zone_area**.
-- **shot_zone_basic**.
-- **shot_zone_range**.
+- **shot_zone_area**. Independiente al análisis.
+- **shot_zone_basic**. Independiente al análisis.
+- **shot_zone_range**. Independiente al análisis.
 - **team_id**. Siempre es el mismo número.
 - **team_name**. Siempre es el mismo valor: *LA Lakers*.
-- **game_date**.
-- **matchup**. oponent y matchup son básicamente la misma información. Solo se necesita oponente.
-- **minutes_remaining**.
-- **seconds_remaining**.
+- **game_date**. Independiente al análisis.
+- **matchup**. Los atributos oponent y matchup contienen básicamente la misma información. Solo se necesita oponente.
+- **minutes_remaining**. Hemos combinado los valores en una nueva columna (*"time_remaining"*) que contiene la misma información. 
+- **seconds_remaining**. Hemos combinado los valores en una nueva columna (*"time_remaining"*) que contiene la misma información. 
+
+Después de la eliminación de estas columnas los conjuntos de datos de entrenamiento y test quedaron:
 
 ```{r message=FALSE, warning=FALSE, echo=FALSE}
 train <- train[ , !(names(train) %in% drops)]
@@ -172,22 +177,20 @@ str(train)
 str(test)
 ```
 
-Los valores inusuales observados anteriormente también pueden descartarse de los conjuntos de entrenamiento y test, además obserando esos valores, una buena opción es descartar los lanzamientos por distancia superiores a 40 (ft.).
+Durante la limpieza de datos también eliminaremos los valores inusuales observados anteriormente en la exploración de datos. Observando esos valores, una buena opción es descartar los lanzamientos por distancia superiores a 40 (ft.).
 
-```{r message=FALSE, warning=FALSE, echo=FALSE}
+```{r message=FALSE, warning=FALSE}
 train$shot_distance[train$shot_distance > 40] <- 40
 test$shot_distance[test$shot_distance > 40] <- 40
-max(train$shot_distance)
-max(test$shot_distance)
 ```
+
+Todas las operaciones de limpieza realizadas se han aplicado sobre el conjunto de datos de entrenamiento y el conjunto de datos de test.
 
 # **Modelado**
 
-Una vez se ha realizado el análisis sobre los datos, incluyendo la limpieza, transformación y generación de nuevas variables interesantes para el estudio, pasamos a la fase del modelado.
+Una vez se ha realizado la exploración de los datos, incluyendo la transformación, la limpieza y la generación de nuevas variables interesantes, pasamos a la fase del modelado.
 
-Solo nos quedamos con shot_distance, time_remaining y shot_made_flag. separar los datos para el entrenamiento y la sumisión
-
-Ahora separemos los datos.
+Volveremos a dividir el conjunto de datos en un nuevo conjunto de datos de entrenamiento y un nuevo conjunto de datos de evaluación con los atributos (*"time_remaining"* y *"shot_distance"*) y la variable de clase a predecir (*"shot_made_flag"*). Concretamente, esos valores son los que queremos predecir en la evaluación. Usaremos los conjuntos de datos que acabamos de obtener para el modelo final y la predicción.
 
 ```{r message=FALSE, warning=FALSE, echo=FALSE}
 train_dat <- data.frame(train$shot_distance, train$time_remaining, train$shot_made_flag)
@@ -199,59 +202,35 @@ head(train_dat)
 head(test_dat)
 ```
 
-Provamos diferentes modelos vistos en la asignatura, però ninguno de ellos nos dio tan buen resultado como GLM. Una tabla de el valor de accuracy de los modelos que he probado.
+Inicialmente al decidirnos por un modelo en concreto probamos diferentes modelos que hemos ido viendo durante la asignatura. A continuación, podemos observar una tabla con el valor de *Accuracy* de los modelos que se han probado. 
 
-```{r message=FALSE, warning=FALSE}
-table <- matrix(c(0.5972292, 0.6083590, 0.6099156, 0.6085924, 0.7203565, 0.5879675, 0.6076585, 0.8043351),
-                ncol=1,byrow=TRUE)
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+table <- matrix(c(0.5972292, 0.6083590, 0.6099156, 0.6085924, 0.7203565, 0.5879675, 0.6076585, 0.8043351,
+                  0.9294118), ncol=1,byrow=TRUE)
 colnames(table) <- c("Accuracy")
 rownames(table) <- c("LDA", "Naive Bayes","Decision Tree", "Neural Network", "Nearest Neighbour",
-                     "SVM (linear kernel)", "Multilayer Perceptron", "Random Forest")
+                     "SVM (linear kernel)", "Multilayer Perceptron", "Random Forest",  "GLM")
 table <- as.table(table)
 table
 ```
 
-
-GLM es bla bla,
+Como se observa en la tabla anterior, el mejor modelo es un modelo lineal generalizado con un valor de *Accuracy* de 0.9294118, el valor más alto. Concretamente, se trata del modelo binominal (distribución binomial).
 
 ```{r}
 model <- glm(shot_made_flag~., data=train_dat, family = binomial(link = "logit"))
-
 anova(model)
-
-# show accuracy by train data
-newdata <- data.frame(train_dat[,-3])
-pred <- predict(model, newdata, type = 'response')
-
-newdf <- data.frame(shot_id=train$shot_id, shot_made_flag=pred)
-# predict generates a vector of probabilities that we threshold at 0.5
-newdf$shot_made_flag <- normalize(newdf$shot_made_flag)
-preds_th <- ifelse(as.numeric(pred) > 0.5,1,0)
-
-# matriz de confusion y accuracy
-cm <- table(newdf$shot_made_flag, preds_th)
-accuracy <- (cm[1,1] + cm[2,2]) / (cm[1,1] + cm[2,2] + cm[1,2] + cm[2,1])
 ```
-
-Matriz de confusión y accuracy
 
 # **Evaluación**
 
-Hacer datos de envío
+Finalmente, predecimos sobre el el conjunto de datos de test y guardamos el resultado en un fichero *".CSV"* para la presentación de los resultados en Kaggle.
 
-Shot_made_flag predicho se escribe en un archivo csv.
-
-Construyendo un modelo final
-
-Usemos los parámetros que acabamos de obtener para el modelo final y la predicción.
-
-```{r}
-#model predict the test data
+```{r message=FALSE, warning=FALSE, echo=FALSE}
 newdata <- data.frame(test_dat[,-3])
 pred <- predict(model, newdata)
 submission <- data.frame(shot_id=test$shot_id, shot_made_flag=pred)
 submission$shot_made_flag <- normalize(submission$shot_made_flag)
-
+head(submission)
 write.csv(submission, "glm.csv", row.names = FALSE)
 ```
 
@@ -261,4 +240,8 @@ write.csv(submission, "glm.csv", row.names = FALSE)
 
 ![](submission.png)
 
-## **Bibliografía**
+## **Citas para fuentes usadas**
+
+- Notebook en Kaggle de xvivancos https://www.kaggle.com/xvivancos/kobe-bryant-shot-selection/data#header.
+- Notebook en Kaggle de khozzy https://www.kaggle.com/khozzy/kobe-shots-show-me-your-best-model.
+- Notebook en Kaggle de dixhom https://www.kaggle.com/dixhom/data-analysis-for-beginners.
