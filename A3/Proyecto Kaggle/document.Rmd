@@ -2,8 +2,8 @@
 title: '**Kobe Bryant Shot Selection**'
 author: "Laura Rodríguez Navas"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # **Introducción**
 
-Este proyecto lleva a cabo un proyecto completo de Ciencia de Datos donde vamos a analizar, transformar, modelar y evaluar un conjunto de datos de Kaggle (https://www.kaggle.com/). Concretamente, para este proyecto se ha usado un conjunto de datos que describe los aciertos y fallos de lanzamientos a canasta del jugador de baloncesto Kobe Bryant durante 20 años de su carrera en la NBA (https://www.kaggle.com/c/kobe-bryant-shot-selection/data). 
+Este proyecto lleva a cabo un proyecto completo de Ciencia de Datos donde vamos a analizar, transformar, modelar y evaluar un conjunto de datos de Kaggle (https://www.kaggle.com/). Concretamente, para este proyecto se ha usado un conjunto de datos que describe los aciertos y fallos de lanzamientos a canasta del jugador de baloncesto Kobe Bryant durante 20 años de su carrera en la NBA (https://www.kaggle.com/c/kobe-bryant-shot-selection/data/). 
 
 El conjunto de datos contiene 30697 (25697 + 5000) instancias y un gran número de variables explicativas (11 discretas y 14 numéricas). Estas 25 variables (incluyendo clase a predecir *“shot_made_flag”*) se centran en la descripción cualitativa y cuantitativa de multitud de aspectos de cada uno de los lanzamientos de Kobe Bryant.
 
@@ -173,8 +173,8 @@ Después de la eliminación de estas columnas los conjuntos de datos de entrenam
 ```{r message=FALSE, warning=FALSE, echo=FALSE}
 train <- train[ , !(names(train) %in% drops)]
 test <- test[ , !(names(test) %in% drops)]
-str(train)
-str(test)
+str(train, width = 85, strict.width = "cut")
+str(test, width = 85, strict.width = "cut")
 ```
 
 Durante la limpieza de datos también eliminaremos los valores inusuales observados anteriormente en la exploración de datos. Observando esos valores, una buena opción es descartar los lanzamientos por distancia superiores a 40 (ft.).
@@ -242,6 +242,6 @@ write.csv(submission, "glm.csv", row.names = FALSE)
 
 ## **Citas para fuentes usadas**
 
-- Notebook en Kaggle de xvivancos https://www.kaggle.com/xvivancos/kobe-bryant-shot-selection/data#header.
-- Notebook en Kaggle de khozzy https://www.kaggle.com/khozzy/kobe-shots-show-me-your-best-model.
-- Notebook en Kaggle de dixhom https://www.kaggle.com/dixhom/data-analysis-for-beginners.
+- Notebook en Kaggle de xvivancos (https://www.kaggle.com/xvivancos/kobe-bryant-shot-selection/).
+- Notebook en Kaggle de khozzy (https://www.kaggle.com/khozzy/kobe-shots-show-me-your-best-model/).
+- Notebook en Kaggle de dixhom (https://www.kaggle.com/dixhom/data-analysis-for-beginners/).
