@@ -2,8 +2,8 @@
 title: '**Kobe Bryant Shot Selection**'
 author: "Laura Rodríguez Navas"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -202,11 +202,10 @@ head(train_dat)
 head(test_dat)
 ```
 
-Inicialmente al decidirnos por un modelo en concreto probamos diferentes modelos que hemos ido viendo durante la asignatura. A continuación, podemos observar una tabla con el valor de *Accuracy* de los modelos que se han probado. 
+Para decidir que modelo vamos a utilizar, primero probamos diferentes modelos que hemos ido viendo durante la asignatura, usando una de las técnicas vistas en las diferentes actividades. Así que, se utilizó una validación cruzada de 5 carpetas (5cv) sobre el conjunto de datos de entrenamiento. Para quedarnos con el mejor modelo se usaron las matrizes de confusión de cada predicción realizada por los modelos y se tubo en cuenta los valores de la métrica *Accuracy*. A continuación, podemos observar una tabla con los valores de *Accuracy* de los modelos que se han probado. 
 
 ```{r message=FALSE, warning=FALSE, echo=FALSE}
-table <- matrix(c(0.5972292, 0.6083590, 0.6099156, 0.6085924, 0.7203565, 0.5879675, 0.6076585, 0.8043351,
-                  0.9294118), ncol=1,byrow=TRUE)
+table <- matrix(c(0.5972292, 0.6083590, 0.6099156, 0.6085924, 0.7203565, 0.5879675, 0.6076585, 0.8043351, 0.9294118), ncol=1,byrow=TRUE)
 colnames(table) <- c("Accuracy")
 rownames(table) <- c("LDA", "Naive Bayes","Decision Tree", "Neural Network", "Nearest Neighbour",
                      "SVM (linear kernel)", "Multilayer Perceptron", "Random Forest",  "GLM")
@@ -214,7 +213,9 @@ table <- as.table(table)
 table
 ```
 
-Como se observa en la tabla anterior, el mejor modelo es un modelo lineal generalizado con un valor de *Accuracy* de 0.9294118, el valor más alto. Concretamente, se trata del modelo binominal (distribución binomial).
+Como se observa en la tabla anterior, el mejor modelo es un modelo lineal generalizado con un valor de *Accuracy* de 0.9294118. Concretamente, se trata del modelo binominal de regressión. Este tipo de modelo ha funcionado tant bien porqué el problema que se nos ha planteado presenta unos inputs con sus outputs deseados, y el objetivo es aprender una regla general que asigne las entradas a las salidas. Además en un modelo de regressión los outputs son numéricos, no categoricos como en clasificación. También contamos con que sea un aprendizaje supervisado ya que la variable clase nos da información.
+
+Hemos escogido el modelo binominal ya que la variable a predecir es binaria.
 
 ```{r}
 model <- glm(shot_made_flag~., data=train_dat, family = binomial(link = "logit"))
