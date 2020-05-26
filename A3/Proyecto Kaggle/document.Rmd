@@ -1,9 +1,10 @@
 ---
 title: '**Kobe Bryant Shot Selection**'
+subtitle: 'Proyecto Kaggle'
 author: "Laura Rodríguez Navas"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -20,7 +21,6 @@ El conjunto de datos contiene 30697 instancias y un gran número de variables ex
 library(tidyverse)
 library(ggplot2)
 library(data.table)
-library(pscl)
 ```
 
 
@@ -29,9 +29,10 @@ data <- as.data.frame(fread("data.csv", header = TRUE, stringsAsFactors = TRUE))
 str(data, width = 85, strict.width = "cut")
 ```
 
-La tarea de este trabajo será predecir si los lanzamientos a canastas de Kobe Bryant entraron o no en el aro, es decir, los lanzamientos acertados (atributo *"shot_made_flag"*). Del conjunto de datos se han eliminado 5000 valores de este atributo (representados como valores faltantes). Estos datos estarán en el conjunto de evaluación (test) sobre el cual se realizará la predicción.
+La tarea de este trabajo es predecir si los lanzamientos a canastas de Kobe Bryant entraron o no en el aro, es decir, los lanzamientos acertados (atributo *"shot_made_flag"*). Del conjunto de datos se han eliminado 5000 valores de este atributo (representados como valores faltantes). Estos datos estarán en el conjunto de evaluación (test) sobre el cual se realizará la predicción.
 
-Una vez descargados los datos, es necesario dividir el conjunto de datos en un conjunto de datos de entrenamiento y un conjunto de datos de evaluación (test). Para ello, primero analizamos la existencia de esos valores faltantes nombrados anteriormente del atributo *"shot_made_flag"*, que como hemos comentado serán los valores que tendremos que predecir y que estarán en el conjunto de datos de test pero no en el conjunto de datos de entrenamiento.
+\newpage
+Una vez descargados los datos, es necesario dividir el conjunto de datos en un conjunto de datos de entrenamiento y un conjunto de datos de evaluación (test). Para ello, primero analizamos la existencia de esos valores faltantes nombrados anteriormente (atributo *"shot_made_flag"*), que como hemos comentado serán los valores que tendremos que predecir y que estarán en el conjunto de datos de test pero no en el conjunto de datos de entrenamiento.
 
 A continuación, podemos observar este proceso.
 
@@ -57,7 +58,7 @@ any(is.na(test))
 str(test$shot_made_flag)
 ```
 
-Una vez dividido el conjunto de los datos, es necesario realizar un análisis del conjunto de datos de entrenamiento, así como un proceso de exploración, transformación y limpieza de esos datos con el objetivo de resaltar información útil para la fase de modelado. Este análisis nos permitirá controlar la presencia de valores fuera de rango, una idea inicial de la forma que tienen los datos, etc. así como las relaciones entre los distintos atributos. Aunque para sintetizar solo se comentará aquello que se ha considerado más interesante durante el análisis.
+Una vez dividido el conjunto de los datos, es necesario realizar un análisis del conjunto de datos, así como un proceso de exploración, transformación y limpieza de estos datos con el objetivo de resaltar información útil para la fase de modelado. Este análisis nos permitirá controlar la presencia de valores fuera de rango, una idea inicial de la forma que tienen los datos, etc. así como las relaciones entre los distintos atributos. Aunque para sintetizar el análisis realizado solo se comentará aquello que se ha considerado más interesante durante éste.
 
 # **Exploración de datos**
 
@@ -66,9 +67,9 @@ tmp_data <- read_csv("data.csv")
 tmp_data <- na.omit(tmp_data)
 ```
 
-Empezamos analizando visualmente la variable de clase a predecir (atributo *"shot_made_flag"*) que es binaria y que se distribuye de manera bastante equitativa, vemos que el número de canastas que no entraron en el aro es superior al número de canastas que sí que entraron en el aro. Así que, intentaremos ver si esto puede estar relacionado con la gran lesión que tuvo durante la temporada 2013-14.
+Empezamos analizando visualmente la variable de clase a predecir (atributo *"shot_made_flag"*), que es binaria y que se distribuye de manera bastante equitativa. Vemos que el número de canastas que no entraron en el aro es superior al número de canastas que sí que entraron. Así que, intentaremos averiguar si esto puede estar relacionado con la gran lesión que tuvo Kobe Bryant durante la temporada 2013-14.
 
-```{r message=FALSE, warning=FALSE, echo=FALSE, fig.align='center', out.width='50%'}
+```{r message=FALSE, warning=FALSE, echo=FALSE, fig.align='center', out.width='60%'}
 qplot(factor(shot_made_flag), data = tmp_data, geom = "bar",
   fill = factor(shot_made_flag, levels = c(0, 1))) +
   scale_fill_manual(values = c("darkblue", "darkgreen")) +
@@ -77,7 +78,7 @@ qplot(factor(shot_made_flag), data = tmp_data, geom = "bar",
   theme_bw() + theme(plot.title = element_text(hjust = 0.5))
 ```
 
-A continuación, analizamos visualmente la precisión de los lanzamientos realizados por la temporada (atributo *"season"*), y vemos que a partir de la temporada 2013-14 la precisión de los lanzamientos baja drásticamente. Así que, una gran cantidad de los lanzamientos que no entraron en el aro están correlacionados a la gran lesión que tuvo en la temporada 2013-14.
+A continuación, analizamos visualmente la precisión de los lanzamientos realizados por temporada (atributo *"season"*), y vemos que a partir de la temporada 2013-14 la precisión de los lanzamientos baja drásticamente. ¿Así que, una gran cantidad de los lanzamientos que no entraron en el aro están correlacionados a la gran lesión que tuvo en la temporada 2013-14? Podría ser.
 
 ```{r message=FALSE, warning=FALSE, echo=FALSE, fig.align='center', out.width='70%'}
 tmp_data %>%
@@ -93,7 +94,7 @@ tmp_data %>%
         axis.text.x=element_text(angle=45, hjust=1)) 
 ```
 
-En el siguiente gráfico analizamos visualmente la precisión de los lanzamientos por la distancia (atributo *"shot_distance"*), porqué en diferentes exploraciones de datos que han realizado otros usuarios en *Kaggle*, se ha podido observar que el atributo *"shot_distance"* contiene valores fuera de rango que podríamos eliminar en el apartado de limpieza de datos y que nos sería muy beneficioso para reducir los fallos durante la predicción en base a la distancia de los lanzamientos. Los valores fuera de rango podrían encontrarse a partir de los lanzamientos realizados a más de 30 (ft.) ya que la precisión de estos baja drásticamente.
+En el siguiente gráfico analizamos visualmente la precisión de los lanzamientos respecto a la distancia de tiro (atributo *"shot_distance"*), porqué en diferentes exploraciones de datos que han realizado otros usuarios en *Kaggle*, se ha podido observar que el atributo *"shot_distance"* contiene valores fuera de rango que podríamos eliminar en el apartado de limpieza de datos y que nos sería muy beneficioso para reducir los fallos durante la predicción en base a la distancia de los lanzamientos. Los valores fuera de rango podrían encontrarse a partir de los lanzamientos realizados a más de 30 (ft.) ya que la precisión de estos baja drásticamente a partir de este punto.
 
 ```{r message=FALSE, warning=FALSE, echo=FALSE, fig.align='center', out.width='70%'}
 tmp_data %>%
@@ -110,14 +111,14 @@ tmp_data %>%
         plot.title=element_text(hjust=0.5)) 
 ```
 
-Y en siguiente grafico podemos observar de su existencia en el conjunto de datos de entrenamiento. Y que valores exactamente se encuentran fuera de rango (a partir de 40 (ft.)). Así que, en el apartado de limpieza de datos serán eliminados los atributos con *shot_distance* superiores a 40 (ft.).
+Y en siguiente grafico podemos observar la existencia de esos valores fuera de rango que estábamos buscando, en el conjunto de datos de entrenamiento. Y que valores exactamente se encuentran fuera de rango son a partir de 40 (ft.). Así que, en el apartado de limpieza de datos serán eliminados los valores del atributo *shot_distance* superiores a 40 (ft.).
 
 ```{r message=FALSE, warning=FALSE, echo=FALSE, fig.align='center', out.width='70%'}
 qplot(factor(shot_made_flag), shot_distance,  data = tmp_data, geom = "boxplot") +
   xlab("shot_made_flag") + ylab("shot_distance")
 ```
 
-Anteriormente, hemos analizado visualmente la precisión de los lanzamientos por temporada, los lanzamientos por distancia y hemos encontrado valores fuera de rango en el conjunto de datos que tendremos que eliminar si queremos realizar una buena predicción de la variable clase *"shot_made_flag"*.
+Anteriormente, hemos analizado visualmente la precisión de los lanzamientos por temporada, los lanzamientos respecto a la distancia y hemos encontrado valores fuera de rango en el conjunto de datos que tendremos que eliminar si queremos realizar una buena predicción de la variable clase *"shot_made_flag"*.
 
 Al trabajar con un conjunto de datos real, debemos tener en cuenta el hecho de que algunos datos pueden faltar o estar dañados, por lo tanto, es crucial realizar los procesos de transformación y limpieza del conjunto de datos para obtener un buen ajuste del modelo y una mejor capacidad predictiva.
 
@@ -131,14 +132,14 @@ train$shot_made_flag <- as.factor(train$shot_made_flag)
 str(train$shot_made_flag)
 ```
 
-Si nos fijamos en los atributos *"minutes_remaining"* y *"seconds_remaining"* podríamos realizar la segunda transformación sobre el conjunto de datos ya que la información que contienen la podríamos combinar, los minutos del atributo *"minutes_remaining"* los podríamos convertir a segundos y sumar-los con los segundos del atributo*"seconds_remaining"*. La nueva información combinada la guardaríamos en un nuevo atributo *"time_remaining"*. El proceso se muestra a continuación.
+Si nos fijamos en los atributos *"minutes_remaining"* y *"seconds_remaining"* podríamos realizar la segunda transformación sobre el conjunto de datos ya que la información que contienen la podríamos combinar, los minutos del atributo *"minutes_remaining"* los podríamos convertir a segundos y sumar-los con los segundos del atributo *"seconds_remaining"*. La nueva información combinada la guardaríamos en un nuevo atributo *"time_remaining"*. El proceso se muestra a continuación.
 
 ```{r message=FALSE, warning=FALSE}
 train$time_remaining <- train$minutes_remaining * 60 + train$seconds_remaining
 test$time_remaining <- test$minutes_remaining * 60 + test$seconds_remaining
 ```
 
-Es importante hacer esta transformación porqué después de realizar el análisis del conjunto de datos, probar diferentes modelos y explorar algunas soluciones encontradas en Kaggle se ha considerado que la predicción se realizará sobre un conjunto de datos aún más reducido que va a tener como atributos (*"time_remaining"* y *"shot_distance"*) y la variable clase *"shot_made_flag"*. Para predecir durante el tiempo que duraron los lanzamientos acertados según la distancia del lanzamiento. Para ello también será necesaria la normalización de los atributos (*"time_remaining"* y *"shot_distance"*).
+Es importante hacer esta última transformación porqué después de realizar la exploración del conjunto de datos, probar diferentes modelos y explorar algunas soluciones encontradas en Kaggle se ha considerado que la predicción se realizará sobre un conjunto de datos aún más reducido que va a tener como atributos *"time_remaining"* y *"shot_distance"*, además de la variable clase *"shot_made_flag"*. Para predecir sobre los lanzamientos acertados según la distancia del lanzamiento durante períodos de tiempo. Para ello también será necesaria la normalización de los atributos (*"time_remaining"* y *"shot_distance"*) como podemos ver a continuación.
 
 ```{r message=FALSE, warning=FALSE}
 normalize <- function (target) {
@@ -188,7 +189,7 @@ drops <- c("game_event_id", "game_id", "loc_x", "loc_y", "lat", "lon",
 - **minutes_remaining**. Hemos combinado sus valores en una nueva columna (*"time_remaining"*) que contiene la misma información. 
 - **seconds_remaining**. Hemos combinado sus valores en una nueva columna (*"time_remaining"*) que contiene la misma información. 
 
-Después de la limpieza los conjuntos de datos de entrenamiento y de test son:
+Después de la limpieza los conjuntos de datos de entrenamiento y de test quedaron:
 
 ```{r message=FALSE, warning=FALSE, echo=FALSE}
 train <- train[ , !(names(train) %in% drops)]
@@ -201,7 +202,7 @@ Todas las operaciones de limpieza realizadas se han aplicado sobre el conjunto d
 
 # **Modelado**
 
-Una vez se ha realizado la exploración, la transformación y la limpieza de los datos, pasamos a la fase del modelado. Crearemos dos nuevos conjuntos de datos sobre los conjuntos de datos de entrenamiento y el conjunto de datos de test con los atributos (*"time_remaining"* y *"shot_distance"*) y la variable de clase a predecir (*"shot_made_flag"*), que usaremos para obtener el modelo final y la predicción.
+Una vez se ha realizado la exploración, la transformación y la limpieza de los datos, pasamos a la fase del modelado. Crearemos dos nuevos conjuntos de datos sobre los conjuntos de datos de entrenamiento y el conjunto de datos de test con los atributos (*"time_remaining"* y *"shot_distance"*) y la variable de clase a predecir (*"shot_made_flag"*), que usaremos para obtener el modelo final y hacer la predicción.
 
 Los nuevos conjuntos de datos de entrenamiento y de test son:
 
@@ -217,8 +218,9 @@ str(test_dat, width = 85, strict.width = "cut")
 head(test_dat, 5)
 ```
 
-Para decidir el modelo final probamos diferentes modelos que hemos ido viendo durante la asignatura sobre el conjunto de datos de entrenamiento. Para quedarnos con el mejor modelo usamos las matrices de confusión de cada modelo resultantes de las predicciones sobre el conjunto de datos de entrenamiento realizadas para comparar los valores de la métrica *Accuracy* entre ellos. A continuación, podemos observar una tabla con los valores de *Accuracy* de los modelos que se han probado. 
+Para decidir el modelo final probamos diferentes modelos que hemos ido viendo durante la asignatura y que se recomendaban en Kaggle, sobre el conjunto de datos de entrenamiento. Para quedarnos con el mejor modelo usamos las matrices de confusión de cada modelo resultantes de las predicciones sobre el conjunto de datos de entrenamiento para comparar los valores de la métrica *Accuracy* entre ellos. A continuación, podemos observar una tabla con los valores de *Accuracy* de los modelos que se han probado. 
 
+\newpage
 ```{r message=FALSE, warning=FALSE, echo=FALSE}
 table <- matrix(c(0.5972292, 0.6083590, 0.6099156, 0.6085924, 0.7203565, 0.5879675, 0.6076585, 0.8043351, 0.9294118), ncol=1,byrow=TRUE)
 colnames(table) <- c("Accuracy")
@@ -243,20 +245,26 @@ En la tabla coeficientes, tanto *shot_distance* como *time_remaining* son atribu
 
 # **Resultado**
 
-Finalmente, predecimos sobre el conjunto de datos de test y guardamos el resultado en un fichero *.CSV" para la presentación del resultado en Kaggle. A continuación, vemos los primeros valores del resultado obtenido para tener una idea de como es el fichero que se ha subido.
+Finalmente, realizamos la predicción sobre el conjunto de datos de test y guardamos el resultado en un fichero *.CSV" para la presentación del resultado en Kaggle. A continuación, vemos los primeros valores del resultado obtenido para tener una idea de como es el fichero que se ha subido.
 
 ```{r}
 submission <- read.csv("glm.csv")
 head(submission, 10)
 ```
 
-# **Resultado de Kaggle**
+# **Resultado en Kaggle**
 
 ![](submission.png)
 
 # **Conclusiones**
 
-El hecho de que un modelo con el que aún no habia trabajado durante la asignatura fuera el que me dió el mejor resultado me dió la posibilidad de aprender más cosas. Sobretodo al hacer una evaluación del modelo. Que he encontrado difícil de realizar. Creo que aún no lo he entendido al 100%. Después me costó mucho correlacionar y ver que atributos seleccionar para la predicción. 
+El resultado en Kaggle parece que es bueno. Realizar una técnica de regresión lineal ha dado buenos resultados, aunque hay resultados mucho mejores en Kaggle con la aplicación de otros modelos Un dato curioso es que muchos de los usuarios de Kaggle utilizaron el modelo XGBoost. Me pareció más entendedor utilizar un modelo binominal de regresión lineal ya que se ha hablado de alguno durante la asignatura.
+
+Además de los buenos resultados en Kaggle y del análisis del conjunto de datos que me ayudó con la elección del modelo, la decisión de escoger el modelo binominal de regresión lineal también se basó en el hecho de que aún no había trabajado mucho usando una técnica de regresión lineal durante la asignatura, así que me dio la posibilidad de aprender mucho más. Sobretodo al hacer una evaluación del modelo, es muy difícil evaluar. El trabajo se podría mejorar en este punto. 
+
+Otra de las cosas que consideré complicado y que me costó mucho fue la selección de variables para la predicción. Había muchas opciones, al final seleccioné la que me pareció más simple y que reducía mas el conjunto de datos con una buena selección de variables. Ya que como hemos visto en la asignatura la selección de variables es un proceso que también es crucial para una buena predicción.
+
+Que el trabajo se haya desarrollado en Kaggle le ha dado una motivación extra.
 
 ## **Citas para fuentes usadas**
 
