@@ -72,8 +72,9 @@ qplot(factor(shot_made_flag), data = tmp_data, geom = "bar",
   ylab("count") + ggtitle("Distribución de la clase") +
   theme_bw() + theme(plot.title = element_text(hjust = 0.5))
 
-
-
+# Outliers shot distance
+qplot(factor(shot_made_flag), shot_distance,  data = data, geom = "boxplot") +
+  xlab("shot_made_flag") + ylab("shot_distance")
 
 
 

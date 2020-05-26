@@ -46,19 +46,12 @@ colnames(test_dat) <- c("shot_distance", "time_remaining", "shot_made_flag")
 #build model by train data
 model <- glm(shot_made_flag~., data=train_dat, family = binomial(link = "logit"))
 
-library(e1071)
-wts=c(1,1)
-names(wts)=c(1,0)
-model <- svm(shot_made_flag~., data=train_dat, kernel="radial",  gamma=1, cost=1, class.weights=wts)
-
 #anova(model)
 
 # show accuracy by train data
 # predict generates a vector of probabilities that we threshold at 0.5
 newdata <- data.frame(train_dat[,-3])
 pred <- predict(model, newdata, type = 'response')
-
-confusionMatrix(pred, train_dat$shot_made_flag)
 
 newdf <- data.frame(shot_id=train$shot_id, shot_made_flag=pred)
 newdf$shot_made_flag <- myNormalize(newdf$shot_made_flag)
