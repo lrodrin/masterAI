@@ -3,8 +3,8 @@ title: '**Kobe Bryant Shot Selection**'
 subtitle: 'Proyecto Kaggle'
 author: "Laura Rodríguez Navas"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -161,7 +161,7 @@ test$time_remaining <- normalize(test$time_remaining)
 
 Solo normalizamos los atributos *"time_remaining"* y *"shot_distance"* porqué queremos investigar la relación entre los aciertos y los fallos con la distancia de los lanzamientos, durante el tiempo. Como lo sugiere el gráfico siquiente: cuando la distancia se hace mayor, la frequencia de lanzamiento disminuye.
 
-```{r message=FALSE, warning=FALSE, echo=FALSE, fig.align='center', out.width='60%'}
+```{r message=FALSE, warning=FALSE, echo=FALSE, fig.align='center', out.width='70%'}
 p1 <- ggplot(tmp_data, aes(x=lon, y=lat)) +
   geom_point(aes(color=shot_zone_range)) +
   labs(title="Shot zone range") +
@@ -218,9 +218,9 @@ drops <- c("game_event_id", "game_id", "loc_x", "loc_y", "lat", "lon",
 - **minutes_remaining**. Hemos combinado sus valores en una nueva columna (*"time_remaining"*) que contiene la misma información. 
 - **seconds_remaining**. Hemos combinado sus valores en una nueva columna (*"time_remaining"*) que contiene la misma información. 
 
-Después de la limpieza los conjuntos de datos de entrenamiento y de test quedaron:
+#Después de la limpieza los conjuntos de datos de entrenamiento y de test quedaron:
 
-```{r message=FALSE, warning=FALSE, echo=FALSE}
+```{r message=FALSE, warning=FALSE, echo=FALSE, include=FALSE}
 train <- train[ , !(names(train) %in% drops)]
 test <- test[ , !(names(test) %in% drops)]
 str(train, width = 85, strict.width = "cut")
