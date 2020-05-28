@@ -63,9 +63,32 @@ accuracy <- (cm[1,1] + cm[2,2]) / (cm[1,1] + cm[2,2] + cm[1,2] + cm[2,1])
 
 #model predict the test data
 newdata <- data.frame(test_dat[,-3])
-pred <- predict(model, newdata)
+pred <- predict(model, newdata, type = "response")
 submission <- data.frame(shot_id=test$shot_id, shot_made_flag=pred)
 submission$shot_made_flag <- myNormalize(submission$shot_made_flag)
 
 cat("saving the submission file\n");
 write.csv(submission, "glm.csv", row.names = FALSE)
+
+layout(matrix(1:4, 2, 2))
+plot(model)
+
+
+train$opponent <- as.numeric(train$opponent)
+train$action_type <- as.numeric(train$action_type)
+train$combined_shot_type <- as.numeric(train$combined_shot_type)
+train$season <- as.numeric(train$season)
+train$shot_type <- as.numeric(train$shot_type)
+train$shot_id <- as.numeric(train$shot_id)
+
+model <- glm(shot_made_flag~shot_distance+period+playoffs+time_remaining+
+             opponent+action_type+combined_shot_type+season+shot_type+shot_id
+             , data=train, family = binomial(link = "logit"))
+summary(model)
+
+exp(cbind(OR = coef(model), confint(model)))
+
+confint(object = model, level = 0.95 )
+
+
+

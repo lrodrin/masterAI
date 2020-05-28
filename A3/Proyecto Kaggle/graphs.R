@@ -76,6 +76,26 @@ qplot(factor(shot_made_flag), data = tmp_data, geom = "bar",
 qplot(factor(shot_made_flag), shot_distance,  data = data, geom = "boxplot") +
   xlab("shot_made_flag") + ylab("shot_distance")
 
+# Shot zone range
+p1 <- ggplot(tmp_data, aes(x=lon, y=lat)) +
+  geom_point(aes(color=shot_zone_range)) +
+  labs(title="Shot zone range") +
+  ylim(c(33.7, 34.0883)) +
+  theme_void() +
+  theme(legend.position="none",
+        plot.title=element_text(hjust=0.5)) 
+
+# Frequency for each shot zone range
+p2 <- ggplot(tmp_data, aes(x=fct_infreq(shot_zone_range))) + 
+  geom_bar(aes(fill=shot_zone_range)) +
+  labs(y="Frequency") +
+  theme_bw() +
+  theme(axis.title.x=element_blank(), 
+        legend.position="none")
+
+# Subplot
+library("gridExtra")
+grid.arrange(p1, p2, layout_matrix=cbind(c(1,2)))
 
 
 

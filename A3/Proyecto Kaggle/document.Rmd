@@ -3,8 +3,8 @@ title: '**Kobe Bryant Shot Selection**'
 subtitle: 'Proyecto Kaggle'
 author: "Laura Rodríguez Navas"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -21,11 +21,13 @@ El conjunto de datos contiene 30697 instancias y un gran número de variables ex
 library(tidyverse)
 library(ggplot2)
 library(data.table)
+library(gridExtra)
 ```
 
 
 ```{r message=FALSE, warning=FALSE, echo=FALSE}
 data <- as.data.frame(fread("data.csv", header = TRUE, stringsAsFactors = TRUE))
+example <-as.data.frame(fread("sample_submission.csv", header = TRUE, stringsAsFactors = TRUE))
 str(data, width = 85, strict.width = "cut")
 ```
 
@@ -139,7 +141,13 @@ train$time_remaining <- train$minutes_remaining * 60 + train$seconds_remaining
 test$time_remaining <- test$minutes_remaining * 60 + test$seconds_remaining
 ```
 
-Es importante hacer esta última transformación porqué después de realizar la exploración del conjunto de datos, probar diferentes modelos y explorar algunas soluciones encontradas en Kaggle se ha considerado que la predicción se realizará sobre un conjunto de datos aún más reducido que va a tener como atributos *"time_remaining"* y *"shot_distance"*, además de la variable clase *"shot_made_flag"*. Para predecir sobre los lanzamientos acertados según la distancia del lanzamiento durante períodos de tiempo. Para ello también será necesaria la normalización de los atributos (*"time_remaining"* y *"shot_distance"*) como podemos ver a continuación.
+El siguiente paso es normalizar los atributos *"time_remaining"* y *"shot_distance"*. También se hace al final con los valores de la variable clase *"shot_made_flag"*, ya que vamos a predecir probabilidades y se tiene que hacer la normalización antes del modelado.
+
+Sabemos que vamos a predecir probabilidades por el fichero de ejemplo que nos facilita Kaggle.
+
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+head(example, 5)
+```
 
 ```{r message=FALSE, warning=FALSE}
 normalize <- function (target) {
@@ -149,6 +157,27 @@ train$shot_distance <- normalize(train$shot_distance)
 test$shot_distance <- normalize(test$shot_distance)
 train$time_remaining <- normalize(train$time_remaining)
 test$time_remaining <- normalize(test$time_remaining)
+```
+
+Solo normalizamos los atributos *"time_remaining"* y *"shot_distance"* porqué queremos investigar la relación entre los aciertos y los fallos con la distancia de los lanzamientos, durante el tiempo. Como lo sugiere el gráfico siquiente: cuando la distancia se hace mayor, la frequencia de lanzamiento disminuye.
+
+```{r message=FALSE, warning=FALSE, echo=FALSE, fig.align='center', out.width='60%'}
+p1 <- ggplot(tmp_data, aes(x=lon, y=lat)) +
+  geom_point(aes(color=shot_zone_range)) +
+  labs(title="Shot zone range") +
+  ylim(c(33.7, 34.0883)) +
+  theme_void() +
+  theme(legend.position="none",
+        plot.title=element_text(hjust=0.5)) 
+
+p2 <- ggplot(tmp_data, aes(x=fct_infreq(shot_zone_range))) + 
+  geom_bar(aes(fill=shot_zone_range)) +
+  labs(y="Frequency") +
+  theme_bw() +
+  theme(axis.title.x=element_blank(), 
+        legend.position="none")
+
+grid.arrange(p1, p2, layout_matrix=cbind(c(1,2)))
 ```
 
 Todas las operaciones de transformación realizadas se han aplicado sobre el conjunto de datos de entrenamiento y el conjunto de datos de test.
@@ -164,7 +193,7 @@ train$shot_distance[train$shot_distance > 40] <- 40
 test$shot_distance[test$shot_distance > 40] <- 40
 ```
 
-Y creemos que las siguientes columnas pueden descartarse.
+Y creemos que las siguientes columnas pueden descartarse, con independencia de la variable clase.
 
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 drops <- c("game_event_id", "game_id", "loc_x", "loc_y", "lat", "lon",
@@ -202,7 +231,7 @@ Todas las operaciones de limpieza realizadas se han aplicado sobre el conjunto d
 
 # **Modelado**
 
-Una vez se ha realizado la exploración, la transformación y la limpieza de los datos, pasamos a la fase del modelado. Crearemos dos nuevos conjuntos de datos sobre los conjuntos de datos de entrenamiento y el conjunto de datos de test con los atributos (*"time_remaining"* y *"shot_distance"*) y la variable de clase a predecir (*"shot_made_flag"*), que usaremos para obtener el modelo final y hacer la predicción.
+Una vez se ha realizado la exploración, la transformación y la limpieza de los datos, pasamos a la fase del modelado. Crearemos dos nuevos conjuntos de datos sobre los conjuntos de datos de entrenamiento y el conjunto de datos de test con los atributos (*"time_remaining"* y *"shot_distance"*) y la variable de clase a predecir (*"shot_made_flag"*), que usaremos para hacer la predicción.
 
 Los nuevos conjuntos de datos de entrenamiento y de test son:
 
@@ -218,21 +247,7 @@ str(test_dat, width = 85, strict.width = "cut")
 head(test_dat, 5)
 ```
 
-Para decidir el modelo final probamos diferentes modelos que hemos ido viendo durante la asignatura y que se recomendaban en Kaggle, sobre el conjunto de datos de entrenamiento. Para quedarnos con el mejor modelo usamos las matrices de confusión de cada modelo resultantes de las predicciones sobre el conjunto de datos de entrenamiento para comparar los valores de la métrica *Accuracy* entre ellos. A continuación, podemos observar una tabla con los valores de *Accuracy* de los modelos que se han probado. 
-
-\newpage
-```{r message=FALSE, warning=FALSE, echo=FALSE}
-table <- matrix(c(0.5972292, 0.6083590, 0.6099156, 0.6085924, 0.7203565, 0.5879675, 0.6076585, 0.8043351, 0.9294118), ncol=1,byrow=TRUE)
-colnames(table) <- c("Accuracy")
-rownames(table) <- c("LDA", "Naive Bayes","Decision Tree", "Neural Network", "Nearest Neighbour",
-                     "SVM (linear kernel)", "Multilayer Perceptron", "Random Forest",  "GLM")
-table <- as.table(table)
-table
-```
-
-Como se observa en la tabla anterior, el mejor modelo es el modelo lineal generalizado con un valor de *Accuracy* de 0.9294118. Concretamente, es el modelo binominal de regresión. Dentro de los diferentes tipos de modelos lineales se escogió el modelo binominal porqué la variable a predecir es binaria.
-
-Este tipo de modelo ha funcionado tan bien porqué el problema que se nos ha planteado tiene como objetivo aprender qué valores de las entradas del conjunto de datos de entrenamiento asignamos a los valores de salida del conjunto de datos de test. Además, esperamos como salida valores numéricos, esperados en un modelo de regresión, y no valores categóricos como los esperados en una clasificación.
+Se ha escogido un modelo de regresión logística ya que el resultado de la predicción será numérico y porqué la variable a predecir es binaria. La regresión logística generalizada, es un método de regresión que permite estimar la probabilidad de una variable cualitativa binaria, como la variable a predecir *"shot_made_flag"*, en función de alguna variable cuantitativa. Es importante tener en cuenta que, aunque la regresión logística permite clasificar, se trata de un modelo de regresión. Que además nos permite calcular la probabilidad de las variables dependientes para a cada una de las dos categorías en función del valor que adquiera la variable independiente.
 
 Ejecutamos el modelado y obtenemos su resultado.
 
@@ -241,7 +256,7 @@ model <- glm(shot_made_flag~., data=train_dat, family = binomial(link = "logit")
 summary(model)
 ```
 
-En la tabla coeficientes, tanto *shot_distance* como *time_remaining* son atributos altamente significativos, con p-valores bajísimos, lo que demuestra que ambos atributos son importantes para predecir la variable dependiente (*shot_made_flag*).
+En la tabla coeficientes, *shot_distance* es un atributo altamente significativo, con un p-valor bajísimo, lo que demuestra que será un atributo muy útil para predecir la variable (*shot_made_flag*).
 
 # **Resultado**
 
@@ -256,13 +271,15 @@ head(submission, 10)
 
 ![](submission.png)
 
+La implementación que se ha utilizado se encuentra en el repositoria de *GitHub*: https://github.com/lrodrin/masterAI/tree/master/A3/Proyecto%20Kaggle
+
 # **Conclusiones**
 
-El resultado en Kaggle parece que es bueno. Realizar una técnica de regresión lineal ha dado buenos resultados, aunque hay resultados mucho mejores en Kaggle con la aplicación de otros modelos Un dato curioso es que muchos de los usuarios de Kaggle utilizaron el modelo XGBoost. Me pareció más entendedor utilizar un modelo binominal de regresión lineal ya que se ha hablado de alguno durante la asignatura.
+El resultado en Kaggle parece que es bueno. Realizar una técnica de regresión logística ha dado buenos resultados, aunque hay resultados mucho mejores en Kaggle con la aplicación de otros modelos. Un dato curioso es que muchos de los usuarios de Kaggle utilizaron el modelo XGBoost. Me pareció más entendedor y interesante utilizar un modelo de regresión logística.
 
-Además de los buenos resultados en Kaggle y del análisis del conjunto de datos que me ayudó con la elección del modelo, la decisión de escoger el modelo binominal de regresión lineal también se basó en el hecho de que aún no había trabajado mucho usando una técnica de regresión lineal durante la asignatura, así que me dio la posibilidad de aprender mucho más. Sobretodo al hacer una evaluación del modelo, es muy difícil evaluar. El trabajo se podría mejorar en este punto. 
+Además de los buenos resultados en Kaggle y del análisis del conjunto de datos que me ayudó con la elección del modelo, la decisión de escoger el modelo de regresión logística también se basó en el hecho de que aún no había trabajado con una técnica de regresión durante la asignatura, así que me dio la posibilidad de investigar y aprender. Sobre todo, al hacer la evaluación del modelo. Es un modelo muy difícil evaluar. El trabajo se podría mejorar en este punto. 
 
-Otra de las cosas que consideré complicado y que me costó mucho fue la selección de variables para la predicción. Había muchas opciones, al final seleccioné la que me pareció más simple y que reducía mas el conjunto de datos con una buena selección de variables. Ya que como hemos visto en la asignatura la selección de variables es un proceso que también es crucial para una buena predicción.
+Otra de las cosas que consideré complicada y que me costó mucho fue la selección de variables para la predicción. Había muchas opciones, al final seleccioné la que me pareció más simple y que reducía más el conjunto de datos con la selección de variables. Ya que como hemos visto en la asignatura la selección de variables es un proceso que también es crucial para una buena predicción.
 
 Que el trabajo se haya desarrollado en Kaggle le ha dado una motivación extra.
 
