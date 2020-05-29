@@ -73,6 +73,8 @@ write.csv(submission, "glm.csv", row.names = FALSE)
 layout(matrix(1:4, 2, 2))
 plot(model)
 
+plot(vs~hp, data=mtcars, col="red4")
+lines(vs ~ hp, newdat, col="green4", lwd=2)
 
 train$opponent <- as.numeric(train$opponent)
 train$action_type <- as.numeric(train$action_type)
@@ -89,6 +91,3 @@ summary(model)
 exp(cbind(OR = coef(model), confint(model)))
 
 confint(object = model, level = 0.95 )
-
-
-
