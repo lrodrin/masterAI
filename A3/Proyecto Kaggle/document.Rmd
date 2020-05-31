@@ -22,6 +22,7 @@ library(tidyverse)
 library(ggplot2)
 library(data.table)
 library(gridExtra)
+library(ModelMetrics)
 ```
 
 
@@ -62,7 +63,7 @@ str(test$shot_made_flag)
 
 Una vez dividido el conjunto de los datos, es necesario realizar un análisis del conjunto de datos, así como un proceso de exploración, transformación y limpieza de estos datos con el objetivo de resaltar información útil para la fase de modelado. Este análisis nos permitirá controlar la presencia de valores fuera de rango, una idea inicial de la forma que tienen los datos, etc. así como las relaciones entre los distintos atributos. Aunque para sintetizar el análisis realizado solo se comentará aquello que se ha considerado más interesante durante éste.
 
-# **Exploración, Transformación, Limpieza**
+# **Exploración, Transformación y Limpieza**
 
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 tmp_data <- read_csv("data.csv")
@@ -228,7 +229,7 @@ str(test, width = 85, strict.width = "cut")
 
 Todas las operaciones de limpieza realizadas se han aplicado sobre el conjunto de datos de entrenamiento y el conjunto de datos de test.
 
-# **Modelado**
+# **Modelado y Evaluación**
 
 Una vez se ha realizado la exploración, la transformación y la limpieza de los datos, pasamos a la fase del modelado. Crearemos dos nuevos conjuntos de datos sobre los conjuntos de datos de entrenamiento y el conjunto de datos de test con los atributos (*"time_remaining"* y *"shot_distance"*) y la variable de clase a predecir (*"shot_made_flag"*), que usaremos para hacer la predicción. Que se ha comentado anteriormente.
 
@@ -237,44 +238,94 @@ Los nuevos conjuntos de datos de entrenamiento y de test después de hacer esta 
 ```{r message=FALSE, warning=FALSE, echo=FALSE}
 train_dat <- data.frame(train$shot_distance, train$time_remaining, train$shot_made_flag)
 colnames(train_dat) <- c("shot_distance", "time_remaining", "shot_made_flag")
-
+train_dat <- train_dat[order(-train_dat$time_remaining),] 
 test_dat <- data.frame(test$shot_distance, test$time_remaining, test$shot_made_flag)
 colnames(test_dat) <- c("shot_distance", "time_remaining", "shot_made_flag")
-str(train_dat, width = 85, strict.width = "cut")
+test_dat <- test_dat[order(-test_dat$time_remaining),] 
+#str(train_dat, width = 85, strict.width = "cut")
 head(train_dat, 5)
-str(test_dat, width = 85, strict.width = "cut")
+#str(test_dat, width = 85, strict.width = "cut")
 head(test_dat, 5)
+```
+
+Para comprobar que ha sido una buena decisión, se han realizado las observaciones de todos los atributos del conjunto de datos de entrenamiento con la variable clase *"shot_made_flag"*. Y hemos observado que parece existir diferencias entre los lanzamientos acertados y los no acertados con la distancia de estos. Así que, la variable escogida *"shot_distance"* puede ser un buen predictor.
+
+```{r message=FALSE, warning=FALSE, echo=FALSE, fig.align='center', out.width='70%'}
+ggplot(data = train_dat, aes(x = shot_made_flag, y = shot_distance, color = shot_made_flag)) +
+  geom_boxplot() +
+  geom_jitter(width = 0.1) +
+  theme_bw() +
+  theme(legend.position = "null")
 ```
 
 El modelo final que se ha escogido es un modelo de regresión binominal (clasificación) ya que la respuesta de la predicción debe que ser numérica y sabemos que la variable a predecir es categórica 2 de niveles binaria. La regresión logística, es un método de regresión que permite estimar la probabilidad de una variable cualitativa binaria, como la variable a predecir *"shot_made_flag"*, en función de alguna variable cuantitativa. Es importante tener en cuenta que, aunque la regresión logística permite clasificar, se trata de un modelo de regresión. Que además nos permite calcular la probabilidad de la variable dependiente para a cada una de las dos categorías en función del valor que adquiera la variable independiente.
 
-Ejecutamos el modelo y obtenemos su resultado.
+Generamos el modelo de regresión logística.
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 model <- glm(shot_made_flag~., data=train_dat, family = binomial(link = "logit"))
 summary(model)
 ```
 
-En la tabla coeficientes, *shot_distance* es un atributo altamente significativo, con un p-valor bajísimo, lo que demuestra que será un atributo muy útil para predecir la variable (*shot_made_flag*).
+A la hora de evaluar la validez y la calidad del modelo se utiliza la métrica *Accuracy* y *LogLoss* (score utilizado en Kaggle como evaluación). Para calcular *Accuracy* se va a utilizar un intervalo de 0.5. Es decir, si la probabilidad de que la variable *"shot_made_flag"* adquiera el valor 1 (acierto) es superior a 0.5, se asigna a este nivel, si es menor se asigna al 0 (no acierto).
 
-** EVALUACION DEL MODELO**
+```{r message=FALSE, warning=FALSE}
+newdata <- data.frame(train_dat[,-3])
+pred <- predict(model, newdata, type = 'response')
+
+newdf <- data.frame(shot_id=train$shot_id, shot_made_flag=pred)
+normalize <- function (target) {
+  (target - min(target))/(max(target) - min(target))
+}
+newdf$shot_made_flag <- normalize(newdf$shot_made_flag)
+preds_th <- ifelse(as.numeric(pred) > 0.5,1,0)
+
+# confusion matrix
+cm <- table(newdf$shot_made_flag, preds_th)
+accuracy <- (cm[1,1] + cm[2,2]) / (cm[1,1] + cm[2,2] + cm[1,2] + cm[2,1])
+accuracy
+loglogg <- logLoss(train_dat$shot_made_flag, pred)
+loglogg
+```
+
+
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+print(0.9294118)
+print(0.8921015)
+```
+
+Con este modelo obtenemos un Accuracy de 0.9294118 y un valor de LogLoss de 0.8921015, lo cuan parece bastante bueno para realizar la predicción con este modelo.
 
 # **Resultado**
 
-Finalmente, realizamos la predicción sobre el conjunto de datos de test y guardamos el resultado en un fichero *.CSV* para la presentación del resultado en *Kaggle*. A continuación, vemos los primeros valores del resultado obtenido para tener una idea de como es el fichero que se ha subido.
+Una vez generado y evaluado el modelo se emplea la predicción para estimar los datos restantes no empleados como entrenamiento, y guardamos el resultado en un fichero *.CSV* para la presentación final del resultado en *Kaggle*. 
+```{r message=FALSE, warning=FALSE}
+newdata <- data.frame(test_dat[,-3])
+pred <- predict(model, newdata, type = "response")
+submission <- data.frame(shot_id=test$shot_id, shot_made_flag=pred)
+normalize <- function (target) {
+  (target - min(target))/(max(target) - min(target))
+}
+submission$shot_made_flag <- normalize(submission$shot_made_flag)
+```
 
-```{r}
+A continuación, vemos los primeros valores del resultado obtenido para tener una idea de como es el fichero que se ha subido.
+
+```{r message=FALSE, warning=FALSE}
 submission <- read.csv("glm.csv")
 head(submission, 10)
 ```
+
 
 # **Resultado en Kaggle**
 
 ![](submission.png)
 
-La implementación que se ha utilizado se encuentra en el repositoria de *GitHub*: https://github.com/lrodrin/masterAI/tree/master/A3/Proyecto%20Kaggle
+Diferentes implementaciones personales que se ha utilizado para el trabajo se encuentran en el repositorio de *GitHub*: https://github.com/lrodrin/masterAI/tree/master/A3/Proyecto%20Kaggle
 
 # **Conclusiones**
+
+El modelo logístico creado para predecir la probabilidad de que un alumno obtenga matrícula de honor a partir de la nota de matemáticas es en conjunto significativo acorde al Likelihood ratio (p-value = 8.717591e-14). El p-value del predictor matematicas es significativo (p-value = 1.03e-09).
 
 El resultado en *Kaggle* parece que es bueno. Realizar una técnica de regresión logística ha dado buenos resultados, aunque hay resultados mucho mejores en *Kaggle* con la aplicación de otros modelos. Un dato curioso es que muchos de los usuarios de *Kaggle* utilizaron el modelo XGBoost. Me pareció más entendedor y interesante utilizar un modelo de regresión logística.
 

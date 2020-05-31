@@ -1,6 +1,8 @@
-#predict
+#main
 
 library(data.table)
+library(ModelMetrics)
+
 data <- as.data.frame(fread("data.csv", header = TRUE, stringsAsFactors = TRUE))
 
 ##dropping unneeded variables
@@ -46,9 +48,7 @@ colnames(test_dat) <- c("shot_distance", "time_remaining", "shot_made_flag")
 #build model by train data
 model <- glm(shot_made_flag~., data=train_dat, family = binomial(link = "logit"))
 
-#anova(model)
-
-# show accuracy by train data
+# show accuracy and logloss by train data
 # predict generates a vector of probabilities that we threshold at 0.5
 newdata <- data.frame(train_dat[,-3])
 pred <- predict(model, newdata, type = 'response')
@@ -60,6 +60,8 @@ preds_th <- ifelse(as.numeric(pred) > 0.5,1,0)
 # make the Confusion Matrix
 cm <- table(newdf$shot_made_flag, preds_th)
 accuracy <- (cm[1,1] + cm[2,2]) / (cm[1,1] + cm[2,2] + cm[1,2] + cm[2,1])
+accuracy
+logLoss(train_dat$shot_made_flag, pred)
 
 #model predict the test data
 newdata <- data.frame(test_dat[,-3])
@@ -67,27 +69,10 @@ pred <- predict(model, newdata, type = "response")
 submission <- data.frame(shot_id=test$shot_id, shot_made_flag=pred)
 submission$shot_made_flag <- myNormalize(submission$shot_made_flag)
 
+# make the Confusion Matrix
+cm <- table(newdf$shot_made_flag, preds_th)
+accuracy <- (cm[1,1] + cm[2,2]) / (cm[1,1] + cm[2,2] + cm[1,2] + cm[2,1])
+error <- (1-accuracy) * 100
+
 cat("saving the submission file\n");
 write.csv(submission, "glm.csv", row.names = FALSE)
-
-layout(matrix(1:4, 2, 2))
-plot(model)
-
-plot(vs~hp, data=mtcars, col="red4")
-lines(vs ~ hp, newdat, col="green4", lwd=2)
-
-train$opponent <- as.numeric(train$opponent)
-train$action_type <- as.numeric(train$action_type)
-train$combined_shot_type <- as.numeric(train$combined_shot_type)
-train$season <- as.numeric(train$season)
-train$shot_type <- as.numeric(train$shot_type)
-train$shot_id <- as.numeric(train$shot_id)
-
-model <- glm(shot_made_flag~shot_distance+period+playoffs+time_remaining+
-             opponent+action_type+combined_shot_type+season+shot_type+shot_id
-             , data=train, family = binomial(link = "logit"))
-summary(model)
-
-exp(cbind(OR = coef(model), confint(model)))
-
-confint(object = model, level = 0.95 )
