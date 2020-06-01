@@ -31,10 +31,10 @@ example <-as.data.frame(fread("sample_submission.csv", header = TRUE, stringsAsF
 str(data, width = 85, strict.width = "cut")
 ```
 
-La tarea de este trabajo es predecir si los lanzamientos a canastas de Kobe Bryant entraron o no en el aro, es decir, los lanzamientos acertados (atributo *"shot_made_flag"*). Del conjunto de datos se han eliminado 5000 valores de este atributo (representados como valores faltantes). Estos datos estarán en el conjunto de evaluación (test) sobre el cual se realizará la predicción.
+La tarea de este trabajo es predecir si los lanzamientos a canastas de Kobe Bryant entraron o no en el aro, es decir, los lanzamientos acertados (atributo *"shot_made_flag"*). Del conjunto de datos se han eliminado 5000 valores de este atributo (representados como valores faltantes). Estos datos estarán en el conjunto de evaluación (test) sobre el cual se realizará la predicción, pero no en el conjunto de datos de entrenamiento.
 
 \newpage
-Una vez descargados los datos, es necesario dividir el conjunto de datos en un conjunto de datos de entrenamiento y un conjunto de datos de evaluación (test). Para ello, primero analizamos la existencia de esos valores faltantes nombrados anteriormente (atributo *"shot_made_flag"*), que serán los valores que tendremos que predecir y que estarán en el conjunto de datos de test pero no en el conjunto de datos de entrenamiento.
+Una vez descargados los datos de *Kaggle*, es necesario dividir el conjunto de datos en un conjunto de datos de entrenamiento y un conjunto de datos de evaluación (test). Para ello, y como hemos comentado anteriormente, el conjunto de datos de entrenamiento no tendrá los valores faltantes del atributo *"shot_made_flag"*, pero sí que los tendrá el conjunto de datos de test, que son los valores que tendremos que predecir.
 
 ```{r message=FALSE, warning=FALSE}
 train <- data[!is.na(data$shot_made_flag), ]
@@ -55,7 +55,7 @@ any(is.na(test))
 str(test$shot_made_flag)
 ```
 
-Una vez dividido el conjunto de los datos, es necesario realizar un análisis del conjunto de datos, así como un proceso de exploración, transformación y limpieza de estos datos con el objetivo de resaltar información útil para la fase de modelado. Este análisis nos permitirá controlar la presencia de valores fuera de rango, una idea inicial de la forma que tienen los datos, etc. así como las relaciones entre los distintos atributos. Aunque para sintetizar el análisis realizado solo se comentará aquello que se ha considerado más interesante durante éste.
+Una vez dividido el conjunto de los datos, es necesario realizar un análisis de los datos, así como un proceso de exploración, transformación y limpieza de estos datos, con el objetivo de resaltar información útil para la fase de modelado. Este análisis nos permitirá controlar la presencia de valores fuera de rango, una idea inicial de la forma que tienen los datos, etc. así como las relaciones entre los distintos atributos. Aunque para sintetizar el análisis realizado, solo se comentará aquello que se ha considerado más interesante durante su realización.
 
 # **Exploración, Limpieza y Transformación**
 
@@ -64,7 +64,7 @@ tmp_data <- read_csv("data.csv")
 tmp_data <- na.omit(tmp_data)
 ```
 
-Empezamos analizando visualmente la variable de clase a predecir (atributo *"shot_made_flag"*), que es binaria y que se distribuye de manera bastante equitativa. Vemos que el número de canastas que no entraron en el aro es superior al número de canastas que sí que entraron. Así que, intentaremos averiguar si esto puede estar relacionado con la gran lesión que tuvo Kobe Bryant durante la temporada 2013-14.
+Primero, empezamos con la exploración de algunos datos, analizando visualmente la variable de clase a predecir (atributo *"shot_made_flag"*), que observamos que es binaria y que se distribuye de manera bastante equitativa. Con un poco más de profundidad vemos que el número de canastas falladas es superior al número de canastas con aciertos. Así que, intentaremos averiguar si esto puede estar relacionado con la gran lesión que tuvo Kobe Bryant durante la temporada 2013-14.
 
 ```{r message=FALSE, warning=FALSE, echo=FALSE, fig.align='center', out.width='60%'}
 qplot(factor(shot_made_flag), data = tmp_data, geom = "bar",
@@ -75,7 +75,7 @@ qplot(factor(shot_made_flag), data = tmp_data, geom = "bar",
   theme_bw() + theme(plot.title = element_text(hjust = 0.5))
 ```
 
-A continuación, analizamos visualmente la precisión de los lanzamientos realizados por temporada (atributo *"season"*), y vemos que a partir de la temporada 2013-14 la precisión de los lanzamientos baja drásticamente. ¿Así que, una gran cantidad de los lanzamientos que no entraron en el aro podrían estar relacionados con la gran lesión que tuvo Kobe Bryant en la temporada 2013-14? Seguramente que sí.
+Después, analizamos visualmente la precisión de los lanzamientos realizados por temporada (atributo *"season"*) y vemos que a partir de la temporada 2013-14 la precisión de los lanzamientos empieza a bajar drásticamente. ¿Así que, una gran cantidad de los lanzamientos fallados podrían estar relacionados con la gran lesión que tuvo Kobe Bryant a principios de la temporada 2013-14 y que le afectó en su rendimiento durante las siguientes temporadas? Parece que sí.
 
 ```{r message=FALSE, warning=FALSE, echo=FALSE, fig.align='center', out.width='70%'}
 tmp_data %>%
@@ -91,7 +91,9 @@ tmp_data %>%
         axis.text.x=element_text(angle=45, hjust=1)) 
 ```
 
-En el siguiente gráfico analizamos visualmente la precisión de los lanzamientos respecto a la distancia del tiro (atributo *"shot_distance"*), porqué nos hemos fijado que diferentes exploraciones de datos que han realizado otros usuarios en *Kaggle*, se ha podido observar que el atributo *"shot_distance"* contiene valores fuera de rango que podríamos eliminar y que nos sería muy beneficioso para reducir los fallos durante la predicción. Los valores fuera de rango podrían encontrarse a partir de los lanzamientos realizados a más de 30 (ft.) ya que la precisión de baja drásticamente a partir de este punto.
+A continuación, en el siguiente gráfico, analizamos visualmente la precisión de los lanzamientos respecto a la distancia del tiro de estos (atributo *"shot_distance"*), porqué nos fijamos que en diferentes exploraciones de datos que han realizado otros usuarios de *Kaggle*, se puede observar que el atributo *"shot_distance"* parece ser una buena variable con la que realizar la predicción juntamente con la variable de clase *“shot_made_flag”*, y que además contiene valores fuera de rango que podríamos eliminar, cosa que sería muy beneficioso para reducir los fallos durante la predicción. 
+
+Concretamente, si nos fijamos en el gráfico los valores fuera de rango podrían encontrarse a partir de los lanzamientos realizados a más de 30 (ft.) ya que la precisión baja drásticamente a partir de ese punto. En el siguiente gráfico se analiza con más profundidad.
 
 ```{r message=FALSE, warning=FALSE, echo=FALSE, fig.align='center', out.width='70%'}
 tmp_data %>%
@@ -108,20 +110,22 @@ tmp_data %>%
         plot.title=element_text(hjust=0.5)) 
 ```
 
-Y en el siguiente grafico podemos observar la existencia de esos valores fuera de rango que estábamos buscando. Los valores que exactamente se encuentran fuera de rango se producen cuando el lanzamiento se realiza a una distancia superior a 40 (ft.). Así que, más adelante serán eliminados los valores del atributo *shot_distance* superiores a 40 (ft.).
+En el siguiente grafico comprobamos la existencia de esos valores fuera de rango que estábamos buscando. Los lanzamientos fallados que se realizan a una distancia superior a 40 (ft.) se considerarán valores fuera de rango y serán eliminados más adelante.
 
 ```{r message=FALSE, warning=FALSE, echo=FALSE, fig.align='center', out.width='70%'}
 qplot(factor(shot_made_flag), shot_distance,  data = tmp_data, geom = "boxplot") +
   xlab("shot_made_flag") + ylab("shot_distance")
 ```
 
-Hemos realizado una pequeña exploración de los datos donde hemos analizado visualmente la precisión de los lanzamientos por temporada, los lanzamientos respecto a la distancia y hemos encontrado valores fuera de rango en el conjunto de datos que tendremos que eliminar si queremos realizar una buena predicción de la variable clase *"shot_made_flag"*.
+Hasta aquí, hemos realizado una pequeña exploración de los datos donde hemos analizado visualmente la precisión de los lanzamientos por temporada, los lanzamientos respecto a la distancia de estos y hemos encontrado valores fuera de rango en el conjunto de datos, que tendremos que eliminar si queremos realizar una buena predicción con la variable clase *"shot_made_flag"*.
 
-Al trabajar con un conjunto de datos real y con muchos atributos, debemos tener en cuenta el hecho de que algunos datos pueden faltar o estar dañados, por lo tanto, es crucial realizar los procesos de transformación y limpieza del conjunto de datos para obtener un buen ajuste del modelo y una mejor capacidad predictiva.
+Al trabajar con un conjunto de datos real y con muchos atributos, debemos tener en cuenta el hecho de que algunos datos pueden faltar o estar dañados, por lo tanto, es crucial realizar los procesos de transformación y limpieza sobre el conjunto de datos para obtener un buen ajuste del modelo y una mejor capacidad predictiva.
 
 ## **Limpieza**
 
-En la limpieza de datos primero eliminamos los atributos que hemos creído independendientes al modelado. Los atributos que pueden descartarse son:
+Durante el proceso de limpieza sobre el conjunto de datos, primero eliminaremos los atributos que consideramos independendientes al modelado y después eliminaremos los valores fuera de rango detectados durante el proceso de exploración.
+
+Los atributos que pueden descartarse del conjunto de datos son:
 
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 drops <- c("game_event_id", "game_id", "loc_x", "loc_y", "lat", "lon",
@@ -139,11 +143,11 @@ drops <- c("game_event_id", "game_id", "loc_x", "loc_y", "lat", "lon",
 - **shot_zone_basic**. Independiente al modelado.
 - **shot_zone_range**. Independiente al modelado.
 - **team_id**. Siempre es el mismo número.
-- **team_name**. Siempre es el mismo valor: *LA Lakers*.
+- **team_name**. Siempre es el mismo valor: *"LA Lakers"*.
 - **game_date**. Independiente al modelado.
-- **matchup**. Los atributos *oponent* y *matchup* contienen básicamente la misma información. Nos quedamos solo con el atributo *oponente*.
+- **matchup**. Los atributos *oponent* y *matchup* contienen básicamente la misma información. Solo nos quedaremos con el atributo *oponente*.
 
-También eliminamos los valores fuera de rango, que como hemos visto anteriormente una buena opción seria descartar los lanzamientos realizados a una distancia superior a 40 (ft.). El proceso se muestra a continuación.
+Los valores fuera de rango que pueden descartarse, que ya hemos visto que es una buena opción, son los lanzamientos realizados a una distancia superior a 40 (ft.). El proceso se muestra a continuación.
 
 ```{r message=FALSE, warning=FALSE}
 train$shot_distance[train$shot_distance > 40] <- 40
@@ -151,7 +155,7 @@ test$shot_distance[test$shot_distance > 40] <- 40
 ```
 
 \newpage
-El conjunto de datos de entrenamiento y de test después de la limpieza quedan:
+El conjunto de datos de entrenamiento y de test después de la limpieza de datos:
 
 ```{r message=FALSE, warning=FALSE, echo=FALSE}
 train <- train[ , !(names(train) %in% drops)]
@@ -164,7 +168,7 @@ Todas las operaciones de limpieza realizadas se han aplicado sobre el conjunto d
 
 ## **Transformación**
 
-La primera transformación que tenemos que realizar es la categorización del atributo *"shot_made_flag"*, porqué es la variable clase a predecir e inicialmente es de tipo entero.
+La primera de las transformaciones que tenemos que realizar es la categorización del atributo *"shot_made_flag"*, porqué es la variable clase a predecir e inicialmente es de tipo entero.
 
 ```{r message=FALSE, warning=FALSE, echo=FALSE}
 str(train$shot_made_flag)
@@ -172,9 +176,9 @@ train$shot_made_flag <- as.factor(train$shot_made_flag)
 str(train$shot_made_flag)
 ```
 
-Si nos fijamos en los atributos *"minutes_remaining"* y *"seconds_remaining"* podríamos realizar la segunda transformación sobre el conjunto de datos ya que la información que contienen la podríamos combinar, los minutos del atributo *"minutes_remaining"* los podríamos convertir a segundos y sumar-los con los segundos del atributo *"seconds_remaining"*. La nueva información combinada la guardaríamos en un nuevo atributo *"time_remaining"*. 
+Ahora vamos a crear un nuevo atributo (*"time_remaining") a partir de los atributos *"minutes_remaining"* y *"seconds_remaining"*. Porqué si nos fijamos, la información que contienen estos dos atributos, la podríamos combinar. Los minutos del atributo *"minutes_remaining"* los podríamos pasar a segundos y sumar-los a los segundos del atributo *"seconds_remaining"*. Y la nueva información combinada la guardamos como nuevo atributo *"time_remaining"*. 
 
-El proceso se muestra a continuación y al final los atributos *"minutes_remaining"* y *"seconds_remaining"* se eliminaran porqué contendrán información irrelevante al combinar los valores en *"time_remaining"*.
+Este proceso se muestra a continuación y al final los atributos *"minutes_remaining"* y *"seconds_remaining"* se eliminarán ya que contendrán información repetida en *"time_remaining"*.
 
 ```{r message=FALSE, warning=FALSE}
 train$time_remaining <- train$minutes_remaining * 60 + train$seconds_remaining
@@ -184,13 +188,14 @@ test <- subset(test, select = -c(minutes_remaining, seconds_remaining))
 ```
 
 \newpage
-El siguiente paso es normalizar los atributos *"time_remaining"* y *"shot_distance"*. También se hace al final con los valores de la variable clase *"shot_made_flag"*, ya que vamos a predecir probabilidades. Sabemos que tenemos que predecir probabilidades por el fichero de ejemplo que nos facilita *Kaggle*.
+
+La siguiente transformación es normalizar los atributos *"time_remaining"* y *"shot_distance"* que se utilizarán para la predicción. También se hará al final con los valores de la variable clase *"shot_made_flag"*, ya que vamos a predecir probabilidades. Sabemos que tenemos que predecir probabilidades por el fichero de ejemplo que nos facilita *Kaggle*, que mostramos a continuación.
 
 ```{r message=FALSE, warning=FALSE, echo=FALSE}
 head(example, 5)
 ```
 
-Procedemos con la normalización.
+Se procede con la normalización de los atributos *"time_remaining"* y *"shot_distance"*.
 
 ```{r message=FALSE, warning=FALSE}
 normalize <- function (target) {
@@ -202,7 +207,7 @@ train$time_remaining <- normalize(train$time_remaining)
 test$time_remaining <- normalize(test$time_remaining)
 ```
 
-Solo normalizamos los atributos *"time_remaining"* y *"shot_distance"* porqué queremos investigar la relación entre los aciertos y los fallos con la distancia de los lanzamientos, durante más tiempo. Como lo sugiere el gráfico siguiente: cuando la distancia se hace mayor, la frequencia de lanzamiento disminuye.
+Solo normalizamos los atributos *"time_remaining"* y *"shot_distance"* porqué se ha decidido investigar para la predicción la relación entre los lanzamientos acertados o no con la distancia de estos que se realizaron durante más tiempo. Para tomar la decisión nos ayudamos del gráfico siguiente que nos sugiere que cuando la distancia del lanzamiento es mayor, la frecuencia de lanzamientos disminuye.
 
 ```{r message=FALSE, warning=FALSE, echo=FALSE, fig.align='center', out.width='70%'}
 p1 <- ggplot(tmp_data, aes(x=lon, y=lat)) +
@@ -227,10 +232,9 @@ Todas las operaciones de transformación realizadas se han aplicado sobre el con
 
 # **Modelado y Evaluación**
 
-Una vez se ha realizado la exploración, la transformación y la limpieza de los datos, pasamos a la fase del modelado. Crearemos dos nuevos conjuntos de datos sobre los conjuntos de datos de entrenamiento y el conjunto de datos de test con los atributos (*"time_remaining"* y *"shot_distance"*) y la variable de clase a predecir (*"shot_made_flag"*), que usaremos para hacer la predicción. Que como se ha comentado anteriormente, porqué queremos investigar la relación entre los aciertos y los fallos con la distancia de los lanzamientos, durante más tiempo.
+Una vez se ha realizado la exploración, la transformación y la limpieza sobre el conjunto de datos, pasamos a la fase del modelado y evaluación del modelo. Para ello, primero crearemos dos nuevos conjuntos de datos sobre los conjuntos de datos de entrenamiento y de test, solo con los atributos (*"time_remaining"* y *"shot_distance"*) y la variable de clase a predecir (*"shot_made_flag"*). 
 
-\newpage
-Los nuevos conjuntos de datos de entrenamiento y de test después de hacer esta selección de variables son:
+Que como se ha comentado anteriormente, solo seleccionamos estos atributos porqué queremos investigar la relación entre los lanzamientos acertados o no con la distancia de estos que se realizaron durante más tiempo. Los nuevos conjuntos de datos de entrenamiento y de test después de hacer la selección de variables son:
 
 ```{r message=FALSE, warning=FALSE, echo=FALSE}
 train_dat <- data.frame(train$shot_distance, train$time_remaining, train$shot_made_flag)
@@ -245,7 +249,9 @@ head(train_dat, 5)
 head(test_dat, 5)
 ```
 
-Para comprobar que ha sido una buena decisión, se han realizado todas las observaciones posibles de todos los atributos del conjunto de datos de entrenamiento con la variable clase *"shot_made_flag"*. Y hemos observado que parece existir diferencias entre los lanzamientos acertados y los no acertados con la distancia de estos. Así que, la variable escogida *"shot_distance"* puede ser un buen predictor. Lo podemos observar en el siguiente gráfico.
+Para comprobar que ha sido una buena decisión, se han realizado todas las observaciones posibles de todos los atributos del nuevo conjunto de datos de entrenamiento con la variable clase *"shot_made_flag"* para encontrar diferencias entre las observaciones. Y hemos observado que parecen existir diferencias en las observaciones entre *"shot_distance"* y *"shot_made_flag"*.  Así que, la variable *"shot_distance"* seguramente será un buen predictor. 
+
+En el siguiente gráfico observamos las diferencias encontradas entre las observaciones de *"shot_distance"* y *"shot_made_flag"*.
 
 ```{r message=FALSE, warning=FALSE, echo=FALSE, fig.align='center', out.width='70%'}
 ggplot(data = train_dat, aes(x = shot_made_flag, y = shot_distance, color = shot_made_flag)) +
@@ -255,19 +261,22 @@ ggplot(data = train_dat, aes(x = shot_made_flag, y = shot_distance, color = shot
   theme(legend.position = "null")
 ```
 
-El modelo final que se ha escogido es un modelo de regresión binominal (clasificación binaria) ya que la respuesta de la predicción debe que ser numérica y sabemos que la variable a predecir es categórica de 2 niveles binaria. 
+Por lo que respecta al modelo utilizado, el modelo que se ha escogido es un modelo de regresión logística (binominal) ya que la respuesta esperada en la predicción debe ser numérica, y además sabemos que la variable a predecir es categórica de 2 niveles y binaria.
 
-La regresión logística, es un método de regresión que permite estimar la probabilidad de una variable cualitativa binaria, como la variable a predecir *"shot_made_flag"*, en función de alguna variable cuantitativa. Es importante tener en cuenta que, aunque la regresión logística permite clasificar, se trata de un modelo de regresión. Que además nos permite calcular la probabilidad de la variable dependiente para a cada una de las dos categorías en función del valor que adquiera la variable independiente.
+La regresión logística (binominal), es un método de regresión que permite estimar la probabilidad de una variable cualitativa binaria, como la variable a predecir *"shot_made_flag"*, en función de alguna variable cuantitativa. Es importante tener en cuenta que, aunque la regresión logística nos permite clasificar, se trata de un modelo de regresión. Que además puede calcular la probabilidad de la variable dependiente para a cada una de las dos categorías en función del valor que adquieran la variables independientes.
 
 \newpage
-Generamos el modelo de regresión logística.
+
+Generamos el modelo de regresión logística (binominal).
 
 ```{r message=FALSE, warning=FALSE}
 model <- glm(shot_made_flag~., data=train_dat, family = binomial(link = "logit"))
 summary(model)
 ```
 
-A la hora de evaluar la validez y la calidad del modelo se utiliza la métrica *Accuracy* y *LogLoss* (score utilizado en Kaggle como evaluación). Para calcular *Accuracy* se va a utilizar un intervalo de 0.5. Es decir, si la probabilidad de que la variable *"shot_made_flag"* adquiera el valor 1 (acierto) es superior a 0.5, se asigna a este nivel, si es menor a 0.5 se asigna al nivel 0 (no acierto).
+A la hora de evaluar la validez y la calidad del modelo se usan las métricas *Accuracy* y *LogLoss* (score utilizado en *Kaggle* como evaluación). Aunque existe una evaluación propia para este tipo de modelos, que no se ha desarrollado en este trabajo ya que nos interesa la métrica *LogLoss* porqué el modelo se evaluará en *Kaggle*. Además, para una buena clasificación y comparación de los diferentes modelos que se han probado antes de escoger el modelo final, la métrica Accuracy* es adecuada para este caso.
+
+Para calcular los valores de *Accuracy* se va a utilizar un intervalo de 0.5. Es decir, si la probabilidad de que la variable *"shot_made_flag"* adquiera el valor 1 (acierto) es superior a 0.5, se le asigna a este nivel, si es menor a 0.5 se le asigna al nivel 0 (no acierto).
 
 ```{r message=FALSE, warning=FALSE}
 newdata <- data.frame(train_dat[,-3])
@@ -288,11 +297,11 @@ loglogg <- logLoss(train_dat$shot_made_flag, pred)
 loglogg
 ```
 
-Con este modelo obtenemos un Accuracy de 0.9294118 y un valor de LogLoss de 0.8921015, lo cuan parece bastante bueno para realizar la predicción con él.
+Con este modelo obtenemos un Accuracy de 0.9294118 y un valor de *LogLoss* de 0.8921015, lo cual parece muy bueno para realizar la predicción con él.
 
 # **Resultado**
 
-Una vez generado y evaluado el modelo se realiza la predicción para estimar los datos restantes no empleados como entrenamiento, y guardamos el resultado en un fichero *.CSV* para la presentación final del resultado en *Kaggle*. También se normaliza la variable a predecir final.
+Una vez generado y evaluado el modelo se realiza la predicción para estimar los datos restantes no empleados como datos de entrenamiento, y se normaliza la variable a predecir.
 
 ```{r message=FALSE, warning=FALSE}
 newdata <- data.frame(test_dat[,-3])
@@ -304,32 +313,33 @@ normalize <- function (target) {
 submission$shot_made_flag <- normalize(submission$shot_made_flag)
 ```
 
-A continuación, vemos los primeros valores del resultado obtenido para tener una idea de como es el fichero que se ha subido.
+Finalmente se guarda el resultado de la predicción en un fichero *.CSV* para la presentación en *Kaggle*. Vemos los primeros valores de la predicción obtenida para tener una idea de como es el fichero que se ha subido.
 
 ```{r message=FALSE, warning=FALSE}
+write.csv(submission, "glm.csv", row.names = FALSE)
 submission <- read.csv("glm.csv")
-head(submission, 10)
+head(submission, 5)
 ```
-
 
 # **Resultado en Kaggle**
 
-![](submission.png){width=70%}
-
-Diferentes implementaciones personales que se ha utilizado para el trabajo se encuentran en el repositorio de *GitHub*: https://github.com/lrodrin/masterAI/tree/master/A3/Proyecto%20Kaggle
+![](submission.png){width=80%}
 
 # **Conclusiones**
 
-El modelo creado para predecir la probabilidad de los lanzamientos acertados a partir de la distancia de estos durante más tiempo ha dado un LogLoss de 0.86488 en *Kaggle*, un valor mejor que el predicho sobre el conjunto de datos de entrenamiento, por tanto, mejor, pero muy parecido al calculado sobre el conjunto de datos de entrenamiento.
+El modelo creado para predecir la probabilidad de los lanzamientos acertados que nos planteaba este trabajo ha dado un valor de *LogLoss* (score) de 0.86488 en *Kaggle*. Este valor de *LogLoss* es un poco inferior al valor de *LogLoss* calculado sobre el conjunto de datos de entrenamiento. Así que la predicción ha ido mejor de lo esperado.
 
-Realizar una técnica de regresión logística ha dado buenos resultados, aunque hay resultados mucho mejores en *Kaggle* con la aplicación de otros modelos. Un dato curioso es que muchos de los usuarios de *Kaggle* utilizan el modelo *XGBoost*. Es de mi opinión que el modelo de regresión logística es más entendedor y interesante ya que da muy buenos resultados pero que pocos usuarios lo han utilizado, y teóricamente es un buen candidato para este problema en concreto por sus características.
+Realizar una técnica de regresión logística (binominal) ha dado un buen resultado, aunque hay resultados mucho mejores en *Kaggle*, con la aplicación de otros modelos. Un dato curioso es que muchos de los usuarios de *Kaggle* utilizan el modelo *XGBoost*. En mi opinión el modelo de regresión logística (binominal) me pareció más interesante, ya que, a parte de dar muy buenos resultados, pocos usuarios de *Kaggle* lo han utilizado para realizar sus predicciones, y teóricamente es un buen candidato para este problema en concreto por sus características.
 
-Además de los buenos resultados que el modelo da en *Kaggle* y del análisis del conjunto de datos, la decisión final de escoger el modelo de regresión logística también se basó en el hecho de que personalmente aún no había trabajado con una técnica de regresión logística durante la asignatura, así dio la posibilidad de investigar y aprender. 
+Además de los buenos resultados que da el modelo de regresión logística (binominal) en *Kaggle*, la decisión de escoger este tipo de modelo también se basó en el hecho de que personalmente aún no había trabajado con una técnica de regresión logística durante la asignatura, así que me pareció muy interesante la posibilidad que me brindaba para investigar y aprender un poco más allá de los conocimientos adquiridos durante la asignatura y complementarlos.
 
-Del resultado de la investigación del modelo de regresión logística se comprobó la gran dificultad de la evaluación de este tipo de modelos. Se evalúan de diferente manera a lo que se ha podido practicar en la asignatura, partir de desviaciones, coeficientes, diferentes métricas como p-value, etc. un proceso de evaluación mucho más complicado que en este trabajo no ha sido necesario desarrollar, ya que las realizamos una clasificación binaria.
+Del resultado de la investigación del modelo de regresión logística he podido observar la gran dificultad de la evaluación de este tipo de modelos. Se evalúan de diferente manera a lo que se ha practicado durante la asignatura (a partir de desviaciones, coeficientes, diferentes métricas como *p-value*, etc.), un proceso de evaluación mucho más complicado, que en este trabajo no ha sido necesario desarrollar.
+
+Finalmente he de comentar que durante este trabajo también ha sido muy importante el proceso de normalización estadística. Sin este proceso las distribuciones de probabilidad finales no se pueden conseguir.
 
 ## **Citas para fuentes usadas**
 
-- Notebook en *Kaggle* de xvivancos (https://www.kaggle.com/xvivancos/kobe-bryant-shot-selection/).
-- Notebook en *Kaggle* de khozzy (https://www.kaggle.com/khozzy/kobe-shots-show-me-your-best-model/).
-- Notebook en *Kaggle* de dixhom (https://www.kaggle.com/dixhom/data-analysis-for-beginners/).
+- Notebook en *Kaggle* de xvivancos https://www.kaggle.com/xvivancos/kobe-bryant-shot-selection/.
+- Notebook en *Kaggle* de khozzy https://www.kaggle.com/khozzy/kobe-shots-show-me-your-best-model/.
+- Notebook en *Kaggle* de dixhom https://www.kaggle.com/dixhom/data-analysis-for-beginners/.
+- Mi repositorio personal en *GitHub* (lrodrin) https://github.com/lrodrin/masterAI/tree/master/A3/Proyecto%20Kaggle
