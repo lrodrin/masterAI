@@ -1,11 +1,8 @@
-Debido a la \textit{"intratabilidad"} del problema de la partición de un grafo, no existe un algoritmo concreto que permita obtener en tiempo polinómico la solución optima a la partición de cualquier grafo. Es por ello que, los algoritmos codificados para este trabajo se basan en la heurística, con el objetivo de obtener soluciones de buena calidad en tiempos computacionales aceptables, a pesar de que los algoritmos heurísticos no garantizan que se vaya a obtener una solución óptima al problema, incluso podría suceder que no se obtenga ninguna solución. 
+Debido a la \textit{"intratabilidad"} del problema de la partición de un grafo, no existe un algoritmo concreto que permita obtener en tiempo polinómico una solución óptima a la partición de cualquier grafo. Es por ello que, los algoritmos codificados para este trabajo se basan en la metaheurística, con el objetivo de obtener soluciones de buena calidad en tiempos computacionales aceptables, a pesar de que los algoritmos metaheurísticos no garantizan que se vaya a obtener una solución óptima al problema, incluso podría suceder que no se obtenga ninguna solución. 
 
-En el siguiente apartado se analizan los algoritmos heurísticos Kernighan-Lin\cite{KernighanLin} (ver apartado \ref{Kernighan-Lin}), Specrtal Bisection (ver apartado \ref{Spectral-Bisection}) y Multilevel Spectral Bisection (ver apartado \ref{Multilevel-Spectral-Bisection}), tres algoritmos diseñados específicamente para la resolución del problema de la partición de grafos. Cualquiera de estos algoritmos proporciona una solución factible al problema, pudiendo ser esta óptima o no. Además de describir cada uno de los algoritmos detalladamente, las principales propiedades de cada uno de ellos, también se describirán algunos ejemplos.
+En el siguiente apartado se analizan los algoritmos Kernighan-Lin\cite{KernighanLin} (ver apartado \ref{Kernighan-Lin}), Specrtal Bisection (ver apartado \ref{Spectral-Bisection}) y Multilevel Spectral Bisection (ver apartado \ref{Multilevel-Spectral-Bisection}), tres algoritmos diseñados específicamente para la resolución del problema de la partición de grafos. Cualquiera de estos algoritmos proporciona una solución factible al problema, pudiendo ser esta óptima o no. Además de describir cada uno de los algoritmos detalladamente, las principales propiedades de cada uno de ellos, también se describirán algunos ejemplos.
 
 \section{Kernighan-Lin}\label{Kernighan-Lin}
-
-%1
-%Kernighan-Lin\cite{KernighanLin} es un método para dividir un grafo que contiene nodos y vértices en subconjuntos separados que están conectados de manera óptima. Dado que se puede usar un grafo para representar una red eléctrica que contiene bloques, el algoritmo Kernighan-Lin se puede extender a la división de circuitos en subcircuitos.
 
 El algoritmo Kernighan-Lin\cite{KernighanLin}, a menudo abreviado como K-L, es uno de los primeros algoritmos de partición de grafos y fue desarrollado originalmente para optimizar la colocación de circuitos electrónicos en tarjetas de circuito impreso para minimizar el número de conexiones entre las tarjetas.
 
@@ -18,7 +15,7 @@ Decimos que es un algoritmo:
 	\setlength{\itemsep}{0pt plus 1pt}
 	\item \textbf{Iterativo}. Esto significa que el grafo inicialmente ya está particionado, pero la aplicación del algoritmo intentará mejorar u optimizar la partición inicial. 
 	\item \textbf{Voraz}. Esto significa que el algoritmo hará cambios si hay un beneficio inmediato sin considerar otras formas posibles de obtener una solución óptima.
-	\item \textbf{Determinista} porque se obtendrá el mismo resultado cada vez que se aplique el algoritmo. %El mismo resultado será el mismo número de redes que cruzan la bisección, pero no necesariamente las mismas redes.
+	\item \textbf{Determinista} porque se obtendrá el mismo resultado cada vez que se aplique el algoritmo. 
 \end{itemize}
 
 %Una aplicación importante del algoritmo es en los circuitos VLSI\cite{KernighanLin}\cite{Ravikumar}. Concretamente se usa para encontrar un número mínimo de conexiones entre particiones para mejorar la velocidad o disminuir el consumo de energía.
