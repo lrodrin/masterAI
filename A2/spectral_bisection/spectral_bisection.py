@@ -125,5 +125,5 @@ def main(filename):
 
 
 if __name__ == '__main__':
-    datafile = "../dataset/numbers.csv"
+    datafile = "../dataset/dataset.csv"
     main(datafile)

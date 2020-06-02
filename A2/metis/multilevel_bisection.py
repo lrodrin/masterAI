@@ -17,7 +17,7 @@ def create_cluster(name, Graph, partition):
 
 # create graph
 Graph = nx.Graph()
-reader = csv.reader(open('../dataset/numbers.csv'))
+reader = csv.reader(open('../dataset/dataset.csv'))
 for row in reader:
     Graph.add_edge(row[0], row[1], weight=int(row[2]))
 
