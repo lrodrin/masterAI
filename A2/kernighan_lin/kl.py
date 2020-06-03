@@ -1,3 +1,4 @@
+import random
 import subprocess
 import time
 
@@ -197,8 +198,14 @@ def main(Graph):
 
 
 if __name__ == '__main__':
-    G = nx.read_edgelist("../dataset/dataset.csv", delimiter=",", data=[("weight", int)], nodetype=int)
+    n = 10
+    G = nx.erdos_renyi_graph(n, 0.7)
+
+    for u, v in G.edges():
+        if u != v:
+            G[u][v]['label'] = random.randrange(1, 20)
+
     start = time.time()
     main(G)
     end = time.time()
-    print("Elapsed time: %.10f seconds." % (end - start))
+    print("Elapsed time: %.4f seconds." % (end - start))
