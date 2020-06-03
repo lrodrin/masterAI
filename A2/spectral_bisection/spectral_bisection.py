@@ -1,5 +1,5 @@
 import subprocess
-
+import time
 import networkx as nx
 import numpy as np
 import pydot
@@ -126,4 +126,7 @@ def main(filename):
 
 if __name__ == '__main__':
     datafile = "../dataset/dataset.csv"
+    start = time.time()
     main(datafile)
+    end = time.time()
+    print("Elapsed time: %.10f seconds." % (end - start))

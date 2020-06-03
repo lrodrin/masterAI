@@ -1,5 +1,5 @@
 import subprocess
-
+import time
 import networkx as nx
 import csv
 import nxmetis
@@ -14,6 +14,8 @@ def create_cluster(name, Graph, partition):
 
     Graph.add_subgraph(c)
 
+
+start = time.time()
 
 # create graph
 Graph = nx.Graph()
@@ -37,3 +39,6 @@ create_cluster('A', newGraph, partition_A)
 create_cluster('B', newGraph, partition_B)
 newGraph.write('mb.dot')
 subprocess.call(["dot", "-Tpng", "mb.dot", "-o", "mb.png"])
+
+end = time.time()
+print("Elapsed time: %.10f seconds." % (end - start))

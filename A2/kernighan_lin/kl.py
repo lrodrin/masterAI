@@ -1,4 +1,5 @@
 import subprocess
+import time
 
 import networkx as nx
 
@@ -196,5 +197,8 @@ def main(Graph):
 
 
 if __name__ == '__main__':
-    G = nx.read_edgelist("../dataset/dataset.csv", delimiter=",", data=[("label", int)], nodetype=int)
+    G = nx.read_edgelist("../dataset/dataset.csv", delimiter=",", data=[("weight", int)], nodetype=int)
+    start = time.time()
     main(G)
+    end = time.time()
+    print("Elapsed time: %.10f seconds." % (end - start))
