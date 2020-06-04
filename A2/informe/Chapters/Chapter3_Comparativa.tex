@@ -1,4 +1,21 @@
-METIS es el algoritmo más eficiente en la partición de grafos que se han codificado.
+Para finalizar, veremos una comparativa entre los algoritmos que hemos analizado en las secciones previas, tras ser aplicados sobre grafos aleatorios. Pero, en primer lugar definimos el concepto de grafo aleatorio.
 
-Para finalizar este capítulo, veamos una comparativa entre los algoritmos que hemos analizado en
-las secciones previas, tras ser aplicados sobre el conjunto de datos.
+En el tabla siguiente, se presenta una comparación entre los algoritmos codificados de este trabajo en términos de tiempo computacional. Se muestra el tiempo (en segundos) en completar ejecuciones sobre un conjunto de grafos aleatorios para distintos números de vértices, n. Para ello se ha utilizando un MacBook Pro, con un procesador de cuatro núcleos de 2.8 GHz y con 16 GB de memoria RAM. El conjunto de datos que se ha utilizado durante la evaluación de los algoritmos se puede encontrar en el repositorio de GitHub\ref{GitHub}, dentro de la carpeta \textit{dataset}.
+
+\begin{center}
+	\begin{tabular}{|c|c|c|c|}
+		\hline
+		n & 307 & 552 & 861 \\
+		\hline
+		Kernighan-Lin & 0.0117 & 0.0214 & 0.0451\\
+		\hline
+		Spectral Bisection & 0.0021 & 0.0031 & 0.0060 \\
+		\hline
+		Multilevel Spectral Bisection & 0.0025 & 0.0031 & 0.0037 \\ 
+		\hline
+	\end{tabular}
+\end{center}
+
+Podemos ver como los algoritmos Kernighan-Lin, Spectral Bisection y Multilevel Spectral Bisection tienen unos tiempos de ejecución similares. Aunque se puede observar que el algoritmo Multilevel Spectral Bisection es el más eficiente que se ha codificado.
+
+Es de esperar que a mayor número de vértices los algoritmos tengan mayor tiempo de ejecución.

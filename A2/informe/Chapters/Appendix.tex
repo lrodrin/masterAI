@@ -1,33 +1,36 @@
-Para la realización de este trabajo se ha utilizado un conjunto de datos que se ha creado aleatoriamente. 
+Para la realización de este trabajo se ha utilizado tres conjuntos de datos. Cada conjunto de datos se ha creado aleatoriamente utilizando la herramienta \href{https://www.generatedata.com/}{generatedata.com} y se ha guardado en un fichero \textit{CSV}. Los ficheros \textit{CSV} contienen información que representan parejas de nodos (vértices), con pesos en las aristas que forman un grafo no dirigido.
 
-El conjunto de datos lo conforma un grafo no dirigido con pesos en sus aristas. El número de nodos es 10.
+El primer conjunto de datos lo forma el grafo de la figura \ref{grafo_1}. Se ha utilizado para describir sobre los ejemplos de los diferentes algoritmos. 
 
-El grafo se crea a partir de un fichero \textit{CSV} que contiene los datos siguientes:
+\renewcommand{\figurename}{Figura}
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.4]{../dataset/dataset}
+	\vspace{1mm}
+	\caption{Grafo no dirigido de 10 nodos}
+	\label{grafo_1}
+\end{figure}
 
-\begin{center}
-	\begin{tabular}{ |c|c| } 
-		(u, v) & w \\ 
-		\hline
-		(0,1) & 3 \\
-		(0,4) & 10 \\
-		(0,5) & 2 \\
-		(1,2) & 5 \\
-		(1,6) & 2 \\
-		(2,3) & 8 \\
-		(2,7) & 8 \\
-		(3,8) & 8 \\
-		(3,4) & 7 \\
-		(4,5) & 4 \\
-		(4,8) & 2 \\
-		(4,9) & 8 \\
-		(5,7) & 1 \\
-		(6,8) & 7 \\
-		(6,9) & 7 \\
-		(7,9) & 10 \\
-		\hline
-	\end{tabular}
-\end{center}
 
-\begin{center}
-	\includegraphics[scale=0.5]{../dataset/dataset}
-\end{center}
+El segundo conjunto de datos lo forma el grafo de la figura \ref{grafo_2}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.3]{../dataset/90_10_dataset}
+	\vspace{1mm}
+	\caption{Grafo no dirigido de 10 nodos}
+	\label{grafo_2}
+\end{figure}
+
+El tercer conjunto de datos lo forma el grafo de la figura \ref{grafo_3}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.2]{../dataset/95_20_dataset}
+	\vspace{1mm}
+	\caption{Grafo no dirigido de 20 nodos}
+	\label{grafo_3}
+\end{figure}
+
+El segundo y tercer conjunto de datos se han utilizado para la comparativa entre los diferentes algoritmos.
+
