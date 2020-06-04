@@ -1,0 +1,28 @@
+strict graph  {
+0;
+1;
+4;
+5;
+2;
+6;
+3;
+7;
+8;
+9;
+0 -- 1  [label=3];
+0 -- 4  [label=10];
+0 -- 5  [label=2];
+1 -- 2  [label=5];
+1 -- 6  [label=2];
+4 -- 3  [label=7];
+4 -- 5  [label=4];
+4 -- 8  [label=2];
+4 -- 9  [label=8];
+5 -- 7  [label=1];
+2 -- 3  [label=8];
+2 -- 7  [label=8];
+6 -- 8  [label=7];
+6 -- 9  [label=7];
+3 -- 8  [label=8];
+7 -- 9  [label=10];
+}

@@ -1,3 +1,4 @@
+import random
 import subprocess
 import time
 import networkx as nx
@@ -5,36 +6,22 @@ import numpy as np
 import pydot
 
 
-def import_nodes(filename):
+def import_nodes(G, n):
     """
     Import the Graph from the datafile specified by filename and create the adjacency matrix.
 
-    :param filename: filename that contains the Graph
-    :type filename: str
     :return: number of nodes, edges and adjacency_matrix
     """
     edges = list()
-    nnodes = 0
-
-    with open(filename, "r") as graph:
-        for line in graph:
-            node1, node2, weight = line.split(',')
-            node1 = int(node1)
-            node2 = int(node2)
-            weight = int(weight)
-            edges.append([node1, node2, weight])
-            nnodes = max(nnodes, node1, node2)
-
-    nnodes += 1  # We only had the maximum index of the nodes
-    adjacency_matrix = np.zeros((nnodes, nnodes))  # Initiate empty matrix
+    adjacency_matrix = np.zeros((n, n))  # Initiate empty matrix
 
     # Fill the matrix
-    for edge in edges:
-        # The adjancency matrix is symmetric
-        adjacency_matrix[edge[0]][edge[1]] = edge[2]
-        adjacency_matrix[edge[1]][edge[0]] = edge[2]
+    for u, v in G.edges:
+        edges.append([u, v, G[u][v]['label']])
+        adjacency_matrix[u][v] = G[u][v]['label']
+        adjacency_matrix[v][u] = G[u][v]['label']
 
-    return nnodes, edges, adjacency_matrix
+    return n, edges, adjacency_matrix
 
 
 def degree_nodes(adjacency_matrix, nnodes):
@@ -54,14 +41,11 @@ def degree_nodes(adjacency_matrix, nnodes):
     return degrees
 
 
-def spectral_bisection(filename):
+def spectral_bisection(G, n):
     """
     The Spectral Bisection Algorithm.
-
-    :param filename: filename that contains the Graph
-    :type filename: str
     """
-    nnodes, edges, adjacency_matrix = import_nodes(filename)
+    nnodes, edges, adjacency_matrix = import_nodes(G, n)
     # print("Adjacency matrix:\n", adjacency_matrix)
 
     degrees = degree_nodes(adjacency_matrix, nnodes)
@@ -100,16 +84,13 @@ def create_cluster(name, Graph, partition):
     Graph.add_subgraph(c)
 
 
-def main(filename):
+def main(G, n):
     """
     The Main run function.
-
-    :param filename: filename that contains the Graph
-    :type filename: strph without the partition
     """
 
     # Spectral Bisection algorithm
-    partition_A, partition_B, adjacency_matrix = spectral_bisection(filename)
+    partition_A, partition_B, adjacency_matrix = spectral_bisection(G, n)
 
     # print graph partition
     print("Partition A: {}".format(partition_A))
@@ -125,8 +106,14 @@ def main(filename):
 
 
 if __name__ == '__main__':
-    datafile = "../dataset/dataset.csv"
+    n = 10
+    G = nx.erdos_renyi_graph(n, 0.7)
+
+    for u, v in G.edges():
+        if u != v:
+            G[u][v]['label'] = random.randrange(1, 20)
+
     start = time.time()
-    main(datafile)
+    main(G, n)
     end = time.time()
-    print("Elapsed time: %.10f seconds." % (end - start))
+    print("Elapsed time: %.4f seconds." % (end - start))
