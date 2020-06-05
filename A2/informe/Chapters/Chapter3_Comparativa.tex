@@ -1,11 +1,32 @@
-Para finalizar, veremos una comparativa entre los algoritmos que hemos analizado en las secciones previas, tras ser aplicados sobre grafos aleatorios. Pero, en primer lugar definimos el concepto de grafo aleatorio.
+Para finalizar, veremos una comparativa entre los algoritmos que hemos analizado en las secciones previas, tras ser aplicados sobre grafos aleatorios, también conocidos como grafos de Erdös y Renyi o grafos binomiales. Pero, en primer lugar, definimos el concepto de grafo aleatorio.
 
-En el tabla siguiente, se presenta una comparación entre los algoritmos codificados de este trabajo en términos de tiempo computacional. Se muestra el tiempo (en segundos) en completar ejecuciones sobre un conjunto de grafos aleatorios para distintos números de vértices, n. Para ello se ha utilizando un MacBook Pro, con un procesador de cuatro núcleos de 2.8 GHz y con 16 GB de memoria RAM. El conjunto de datos que se ha utilizado durante la evaluación de los algoritmos se puede encontrar en el repositorio de GitHub\ref{GitHub}, dentro de la carpeta \textit{dataset}.
+Se dice que un grafo es aleatorio si la presencia y colocación de sus aristas siguen una distribución aleatoria. Por tanto, un grafo aleatorio no puede diseñarse con ningún criterio concreto. La noción del modelo de un grafo aleatorio incluye el límite entre cada par de nodos con igual probabilidad, independientemente de los extremos. Concretamente del modelo se denomina: modelo de Erdös y Renyi. El nombre del modelo proviene de los matemáticos Paul Erdős y Alfréd Rényi\cite{ErdosRenyi}, quienes lo presentaron por primera en 1959.
+
+El modelo Erdös y Renyi (a veces nombrado en la literatura abreviado como modelo ER), es el método que se ha empleado en la generación de los grafos aleatorios. Para ello, un grafo se construye mediante la conexión de los nodos al azar. Cada arista se incluye en el grafo con una probabilidad de \textit{p} independiente de las otras aristas del grafo. De manera equivalente, todos los grafos con \textit{n} nodos y \textit{m} aristas tienen la misma probabilidad de:
+
+\begin{center}
+	$p^m(1 - p)^{{n \choose 2} - m}$
+\end{center}
+
+Para la implementación de los grafos aleatorios se ha utilizado la librería de Python:  \href{https://networkx.github.io/documentation/latest/reference/generated/networkx.generators.random\_graphs.erdos\_renyi\_graph.html?highlight=erdos\%20renyi#networkx.generators.random\_graphs.erdos\_renyi\_graph}{NetworkX}. Concretamente el método que se ha utilizado nos devuelve un grafo no dirigido, donde se elige cada una de las aristas posibles con probabilidad \textit{p} = 0.7, según el número de nodos de entrada \textit{n}. En particular, el caso p = 0.7 se corresponde con el caso en el que todos los grafos en \textit{n} vértices se eligen con mayor probabilidad. Los pesos de las aristas también se han generado aleatoriamente dentro de un intervalo de pesos de 1 a 20.
+
+Podemos observar la codificación utilizada a continuación, que se ejecuta en tiempo $O$($n^2$).
+
+\lstset{language=Python}    
+\begin{lstlisting}[frame=single]  
+G = nx.erdos_renyi_graph(n, 0.7)
+
+for u, v in G.edges():
+if u != v:
+G[u][v]['label'] = random.randrange(1, 20)
+\end{lstlisting}
+
+Finalmente, en la tabla siguiente, se presenta una comparación entre los algoritmos codificados sobre los grafos aleatorios de este trabajo en términos de tiempo computacional. Se muestra el tiempo (en segundos) en completar ejecuciones sobre conjuntos de grafos aleatorios para distintos números de vértices, \textit{n}. Para ello se ha utilizado un MacBook Pro, con un procesador de cuatro núcleos de 2.8 GHz y con 16 GB de memoria RAM. Es de esperar que, a mayor número de vértices, los algoritmos tengan mayor tiempo de ejecución.
 
 \begin{center}
 	\begin{tabular}{|c|c|c|c|}
 		\hline
-		n & 307 & 552 & 861 \\
+		\textit{n} & 307 & 552 & 861 \\
 		\hline
 		Kernighan-Lin & 0.0117 & 0.0214 & 0.0451\\
 		\hline
@@ -16,6 +37,10 @@ En el tabla siguiente, se presenta una comparación entre los algoritmos codific
 	\end{tabular}
 \end{center}
 
-Podemos ver como los algoritmos Kernighan-Lin, Spectral Bisection y Multilevel Spectral Bisection tienen unos tiempos de ejecución similares. Aunque se puede observar que el algoritmo Multilevel Spectral Bisection es el más eficiente que se ha codificado.
+Podemos ver como los algoritmos Kernighan-Lin, Spectral Bisection y Multilevel Spectral Bisection tienen unos tiempos de ejecución similares cuando el número de vértices \textit{n} es más pequeño. Fenómeno que cambia cuando casi se duplican el número de vértices.
 
-Es de esperar que a mayor número de vértices los algoritmos tengan mayor tiempo de ejecución.
+Si nos fijamos con el algoritmo Kernighan-Lin, cuando el número de vértices inicialmente casi se dobla, el tiempo de ejecución también lo hace. Parece que el algoritmo va aumentando el tiempo de ejecución a medida que aumenta el número de vértices de manera proporcionada.
+
+En cambio, el algoritmo Spectral Bisection obtiene unos resultados muy parecidos con Multilevel Spectral Bisection, pero cuando el número de vértices empieza a ser muy elevado, la eficiencia baja drásticamente. Que no es el caso del algoritmo Multilevel Spectral Bisection.
+
+Como conclusión global a la comparación entre los algoritmos podemos decir que el algoritmo Multilevel Spectral Bisection es el más eficiente que se ha codificado, y el algoritmo Kernighan-Lin es el menos eficiente.

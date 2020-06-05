@@ -17,4 +17,9 @@ C.M. Fiduccia and R.M. Mattheyses.
 \newblock In {\em 19th Design Automation Conference, Las Vegas, NV, USA, 14-16
   June, 1982}. {IEEE}, 1982.
 
+\bibitem{ErdosRenyi}
+P.~Erdős and A.~Rényi.
+\newblock On random graphs.
+\newblock {\em Publicationes Mathematicae}, 6:290–297, 1959.
+
 \end{thebibliography}
