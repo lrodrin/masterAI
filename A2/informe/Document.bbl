@@ -5,11 +5,16 @@ B.~W. Kernighan and S.~Lin.
 \newblock An efficient heuristic procedure for partitioning graphs.
 \newblock {\em Bell System Technical Journal}, 49(2):291--307, 1970.
 
-\bibitem{Karypis}
-George Karypis and Vipin Kumar.
-\newblock Multilevelk-way partitioning scheme for irregular graphs.
-\newblock {\em Journal of Parallel and Distributed Computing}, 48(1):96--129,
-  1998.
+\bibitem{NPCompleteness}
+Michael~R. Garey and David~S. Johnson.
+\newblock {\em Computers and Intractability; A Guide to the Theory of
+  NP-Completeness}.
+\newblock W. H. Freeman \& Co., USA, 1990.
+
+\bibitem{Ravikumar}
+C.~P. Ravikumar and George~W. Zobrist.
+\newblock {\em Parallel Methods for VLSI Layout Design}.
+\newblock Greenwood Publishing Group Inc., USA, 1995.
 
 \bibitem{FiducciaMattheyses}
 C.M. Fiduccia and R.M. Mattheyses.

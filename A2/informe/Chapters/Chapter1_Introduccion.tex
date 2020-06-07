@@ -7,9 +7,13 @@ La aplicación descrita fue presentada en \cite{KernighanLin}, en la cual se def
 
 \section{Descripción el problema}
 
-El problema de partición de grafos puede formularse como un problema de programación entera. 
+El problema de partición de grafos puede formularse como un problema de programación lineal entera (ver Definición \ref{lineal_entera}). 
 
-Los problemas de programación entera generalmente están relacionados directamente a problemas combinatorios, esto genera que al momento de resolver los problemas de programación entera se encuentren restricciones dado el coste computacional de resolverlos; por ese motivo se han desarrollado algoritmos que buscan soluciones de una forma más directa, la restricción de los mismos es que no se puede garantizar que la solución encontrada sea la óptima. 
+\begin{mydef}\label{lineal_entera}
+	La programación lineal entera sirve para resolver los problemas de programación lineal en la que las variables tienen que tomar valores enteros.
+\end{mydef}
 
-El problema de partición de grafos ha sido denominado como un problema NP-Hard\cite{Karypis}, lo que implica que las soluciones para él no pueden ser encontradas en tiempos razonables.
+Los problemas de programación lineal entera generalmente están relacionados directamente a problemas combinatorios, esto genera que al momento de resolver los problemas de programación lineal entera se encuentren restricciones dado el coste computacional de resolverlos; por ese motivo se han desarrollado algoritmos que buscan soluciones de una forma más directa, la restricción de los mismos es que no se puede garantizar que la solución encontrada sea la óptima. 
+
+El problema de partición de grafos ha sido denominado como un problema NP-complete\cite{NPCompleteness}, lo que implica que las soluciones para él no pueden ser encontradas en tiempos razonables. Entonces, en lugar de encontrar la solución óptima para el problema, recurriremos a algoritmos que pueden no ofrecer la solución óptima pero que dan una buena solución al menos la mayor parte del tiempo.
 
