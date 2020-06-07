@@ -1,8 +1,6 @@
 networkx~=2.4
-matplotlib~=3.2.1
 numpy~=1.18.4
 cython
 wheel
 graphviz
-cgraph
 pydot
