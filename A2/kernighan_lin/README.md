@@ -7,6 +7,6 @@ Based on the NetworkX implementation: [Kernighan–Lin algorithm](https://networ
 ## Usage
 ```
 python kl.py
->
->
+> Partition A: {1, 3, 5, 6, 9}
+> Partition B: {0, 2, 4, 7, 8}
 ```

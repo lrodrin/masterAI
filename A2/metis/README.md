@@ -8,6 +8,6 @@ Based on the NetworkX-METIS implementation: [METIS Wrapper algorithm]
 ## Usage
 ```
 python multilevel_bisection.py
->
->
+> Partition A: {0, 2, 4, 6, 7}
+> Partition B: {1, 3, 5, 8, 9}
 ```
