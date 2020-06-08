@@ -2,3 +2,10 @@ This is BibTeX, Version 0.99dThe top-level auxiliary file: Document.aux
 A level-1 auxiliary file: Titlepage.aux
 The style file: unsrt.bst
 Database file #1: Bibliografia.bib
+Warning--entry type for "Chaco" isn't style-file defined
+--line 46 of file Bibliografia.bib
+Warning--entry type for "MeTis" isn't style-file defined
+--line 53 of file Bibliografia.bib
+Warning--entry type for "WGPP" isn't style-file defined
+--line 59 of file Bibliografia.bib
+(There were 3 warnings)

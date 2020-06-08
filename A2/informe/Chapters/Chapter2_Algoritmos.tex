@@ -91,13 +91,17 @@ return G(V, E)
 
 Entonces, en cada iteración, el algoritmo K-L intercambia pares de vértices para maximizar la ganancia. Continúa haciéndolo hasta que se intercambian todos los vértices de la partición más pequeña. Una gran ventaja del algoritmo es que no se detiene incluso aceptando ganancias negativas, sigue esperando que las ganancias posteriores sean grandes y que el tamaño de la suma de los pesos de las aristas se reduzca más tarde hasta que se intercambian todos los vértices de la partición más pequeña. Esta capacidad de salir de los mínimos locales es una característica crucial.
 
-C. Fiduccia y R. Mattheyses realizaron importantes avances prácticos en \cite{FiducciaMattheyses}, quienes mejoraron el algoritmo de  Kernighan-Lin\cite{KernighanLin} de tal manera que, cada partición se ejecuta en $O({n}^2)$, en lugar de $O({n}^2 \, log \, n)$.
+C. Fiduccia y R. Mattheyses realizaron importantes avances prácticos en \cite{FiducciaMattheyses}, quienes mejoraron el algoritmo de  Kernighan-Lin\cite{KernighanLin} de tal manera que, cada partición se ejecuta en $O({n}^2)$, en lugar de $O({n}^2 \, log \, n)$. La reducción se logra en parte eligiendo nodos individuales para intercambiar en lugar de parejas de vértices.
 
 \subsection{Ejemplo de codificación}
 
-Para la codificación del algoritmo se ha utilizado la libraría de Python: \href{https://networkx.github.io/documentation/stable/reference/algorithms/generated/networkx.algorithms.community.kernighan_lin.kernighan_lin_bisection.html}{NetworkX}. El algoritmo divide un grafo en dos bloques usando el algoritmo Kernighan-Lin\cite{KernighanLin}. Es decir, divide un grafo en dos conjuntos intercambiando iterativamente pares de nodos para reducir el peso de las aristas entre los dos conjuntos.
+Existen muchas variaciones del algoritmo K-L que a menudo intercambian el tiempo de ejecución con la calidad o generalizan el algoritmo a más de dos particiones. En este caso, para la codificación del algoritmo se ha utilizado la libraría de Python: \href{https://networkx.github.io/documentation/stable/reference/algorithms/generated/networkx.algorithms.community.kernighan_lin.kernighan_lin_bisection.html}{NetworkX}. El algoritmo divide un grafo en dos bloques usando el algoritmo Kernighan-Lin\cite{KernighanLin}. Es decir, divide un grafo en dos conjuntos intercambiando iterativamente pares de nodos para reducir el peso de las aristas entre los dos conjuntos.
 
-Por ejemplo en una ejecución de la codificación, la entrada es el grafo de la Figura \ref{grafo}. Y después de una partición inicial podemos obtener los conjuntos: A = \{3, 4, 6, 8, 9\} y B = \{0, 1, 2 , 5, 7\}. Estos conjuntos son del mismo tamaño y sus elementos están ordenados.
+\begin{mydef}\label{NetworkX}
+	NetworkX es un paquete de Python para la creación, manipulación y estudio de la estructura, dinámica y funciones de los grafos. 
+\end{mydef}
+
+Por ejemplo, en una ejecución de la codificación, la entrada es el grafo de la Figura \ref{grafo}. Y después de una partición inicial podemos obtener los conjuntos: A = \{3, 4, 6, 8, 9\} y B = \{0, 1, 2 , 5, 7\}. Estos conjuntos son del mismo tamaño y sus elementos están ordenados.
 
 Las principales desventajas de este algoritmo son:
 
@@ -105,11 +109,12 @@ Las principales desventajas de este algoritmo son:
 	\item Los resultados son aleatorios porque el algoritmo comienza con una partición aleatoria.
 	\item Computacionalmente es un algoritmo lento.
 	\item Solo se crean dos particiones del mismo tamaño.
-	\item Las particiones tienen que tener el mismo tamaño para que el algoritmo no intente encontrar tamaños de partición óptimos que ya existan.
+	\item Las particiones deben tener el mismo tamaño para que el algoritmo no intente encontrar tamaños de partición óptimos que ya existan.
 	\item No resuelve muy bien los problemas con aristas ponderadas.
 	\item La solución dependerá en gran medida del primer intercambio.
 \end{itemize}
 
+\newpage
 \section{Spectral Bisection}\label{Spectral-Bisection}
 
 \subsection{Descripción}
@@ -120,18 +125,50 @@ Después de la partición obtenemos los conjuntos: A = \{1, 2, 3, 4, 6, 9\} y B 
 
 Los conjuntos no son del mismo tamaño. No están ordenados.
 
+\newpage
 \section{Multilevel Spectral Bisection}\label{Multilevel-Spectral-Bisection}
 
 El particionamiento de grafos por multilevel es un método moderno que reduce el tamaño de las particiones del grafo con la combinación de los vértices y las aristas sobre varios niveles, creando particiones del grafo cada vez más pequeñas y extensas con muchas variaciones y combinaciones de diferentes métodos.
 
-\subsection{Descripción}
+\subsection{Descripción}\label{msb_description}
+
+Y esta es, en líneas generales, la descripción de uno de los algoritmos más exitosos para el problema de partición de grafos.
 
 \subsection{Ejemplo de codificación}
 
-METIS es un algoritmo de partición que se enfoca en minimizar el número de bordes de partición cruzados y distribuir la carga de trabajo de manera uniforme entre las particiones. Con METIS, los gráficos se dividen en tres fases. La primera fase es la fase de engrosamiento, la segunda la fase de partición y la tercera y última fase la fase de no engrosamiento (Figura X). La fase de particionamiento contiene particiones bi-particionadas y K-way. A diferencia de la partición K-way, la bi-partición se realiza de forma recursiva. Las subseccion a continuación contienen una explicación más extensa de estas diversas fases.
+El algoritmo Multilevel Spectral Bisection (MSB) descrito en la sección \ref{msb_description} ha resultado ser muy eficiente (ver sección \ref{chapter:Comparativa}). En MSB, se transfiere información aproximada sobre el segundo \textit{eigenvector} del grafo original entre niveles, mejorando esta información en cada nivel y finalmente, se usa otra vez el \textit{eigenvector} para dividir el grafo. 
 
-El grafo de ejemplo inicialmente, vemos que sigue siendo el mismo que en el primer ejemplo (ver Figura \ref{grafo_2}).
+Se muestra el pseudocódigo del algoritmo a continuación:
 
-Después de la partición obtenemos los conjuntos: A = \{0, 1, 3, 7, 8\} y B = \{2, 4, 5, 6, 9\}.
+\begin{lstlisting}[frame=single] 
+Function ML-Partition(G)
 
-Los conjuntos tienen el mismo tamaño. Están ordenados.
+  If G is small enough then
+    Find partition (V1, V2) of G in some way
+    
+  else
+
+    Construct a smaller approximation G'
+    (V1', V2') = ML-Partition(G')
+    (V1", V2") = Project-partition-up (V1', V2')
+    (V1, V2)   = Refine-partition (V1", V2")
+
+endif
+
+Return (V1, V2)
+\end{lstlisting}
+
+La misma idea se puede usar para dividir el grafo en \textit{p} partes a la vez. En realidad, hay toda una familia de algoritmos que puede dividir grafos en \textit{p} partes a la vez. Algunos de estos algoritmos se encuentran implementados en paquetes de software como Chaco\cite{Chaco}, METIS\cite{MeTis} o WGPP\cite{WGPP}.
+
+Para la codificación del algoritmo se escogió la librería escrita en C de \href{http://glaros.dtc.umn.edu/gkhome/metis/metis/overview}{METIS} junto con NetworkX (ver Definición\ref{NetworkX}). Concretamente, la librería que se ha utilizado de Python es: \href{https://networkx-metis.readthedocs.io/en/latest/reference/generated/nxmetis.partition.html#nxmetis.partition}{NetworkX-METIS}. \textit{NetworkX-METIS} es un complemento para el paquete Python de \textit{NetworkX} que usa METIS\cite{MeTis} para la partición de grafos. Los algoritmos implementados en METIS se basan en los esquemas de bisección multinivel.
+
+Las características clave de METIS son las siguientes:
+
+\begin{itemize}
+	\item Proporciona particiones de alta calidad. Los experimentos con una gran cantidad de nodos muestran que METIS produce particiones que son consistentemente mejores que las producidas por otros algoritmos ampliamente utilizados. Las particiones producidas por METIS son consistentemente 10\% a 50\% mejores que las producidas por algoritmos de partición espectral.
+	\item Es extremadamente rápido. Los experimentos en una amplia gama de grafos han demostrado que METIS es de uno a dos órdenes de magnitud más rápido que otros algoritmos de partición ampliamente utilizados.
+\end{itemize}
+
+METIS es un algoritmo de partición de grafos que se enfoca en minimizar el número de aristas cruzadas de cada partición y distribuir la carga de trabajo de manera uniforme entre las particiones. Con METIS, los gráficos se dividen en tres fases. La primera fase es la fase de engrosamiento, la segunda la fase de partición y la tercera y última fase la fase de no engrosamiento (Figura X). La fase de particionamiento contiene particiones bi-particionadas y K-way. A diferencia de la partición K-way, la bi-partición se realiza de forma recursiva. Las subseccion a continuación contienen una explicación más extensa de estas diversas fases.
+
+Por ejemplo, en una ejecución de la codificación, la entrada es el grafo de la Figura \ref{grafo}. El resultado de aplicar el algoritmo codificado son los conjuntos: A = \{0, 1, 3, 7, 8\} y B = \{2, 4, 5, 6, 9\}. Estos conjuntos tienen el mismo tamaño y sus elementos están ordenados.

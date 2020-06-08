@@ -22,6 +22,19 @@ C.M. Fiduccia and R.M. Mattheyses.
 \newblock In {\em 19th Design Automation Conference, Las Vegas, NV, USA, 14-16
   June, 1982}. {IEEE}, 1982.
 
+\bibitem{Chaco}
+B.~Hendrickson and R.~Leland.
+\newblock The chaco user's guide, version 2.
+
+\bibitem{MeTis}
+G.~Karypis and V.~Kumar.
+\newblock Metis: Unstrctured graph partitioning and sparse matrix ordering
+  system, version 2.0.
+
+\bibitem{WGPP}
+A.~Gupta.
+\newblock Wgpp: Watson graph partitioning (and sparse matrix ordering) package.
+
 \bibitem{ErdosRenyi}
 P.~Erdős and A.~Rényi.
 \newblock On random graphs.
