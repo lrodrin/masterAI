@@ -2,6 +2,10 @@ Debido a la \textit{"intratabilidad"} del problema de la partición de un grafo,
 
 En el siguiente apartado se analizan los algoritmos Kernighan-Lin\cite{KernighanLin} (ver apartado \ref{Kernighan-Lin}), Specrtal Bisection (ver apartado \ref{Spectral-Bisection}) y Multilevel Spectral Bisection (ver apartado \ref{Multilevel-Spectral-Bisection}), tres algoritmos diseñados específicamente para la resolución del problema de la partición de grafos. Cualquiera de estos algoritmos proporciona una solución factible al problema, pudiendo ser esta óptima o no. Además de describir cada uno de los algoritmos detalladamente, las principales propiedades de cada uno de ellos, también se describirán algunos detalles sobre su codificación.
 
+El enfoque en el presente trabajo radica en la división de grafos en dos particiones. Así podremos comparar los diferentes algoritmos más fácilmente. además la eficiencia cambia con el número de particiones.
+
+Los algoritmos de partición probablemente producirán resultados diferentes dependiendo de los atributos del gráfico de entrada.
+
 Para cada algoritmo analizado, contamos con un ejemplo de su codificación en el cual se ha utilizado un grafo inicial (ver Figura \ref{grafo}). El grafo inicial es un grafo no dirigido (ver Definición \ref{no_dirigido}) de diez nodos con pesos en sus aristas.
 
 \begin{mydef}\label{no_dirigido}

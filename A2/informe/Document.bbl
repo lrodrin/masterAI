@@ -5,6 +5,11 @@ B.~W. Kernighan and S.~Lin.
 \newblock An efficient heuristic procedure for partitioning graphs.
 \newblock {\em Bell System Technical Journal}, 49(2):291--307, 1970.
 
+\bibitem{Simplex}
+Howard Karloff.
+\newblock {\em The Simplex Algorithm, Linear Programming}.
+\newblock Birkh{\"a}user Boston, Boston, MA, 1991.
+
 \bibitem{NPCompleteness}
 Michael~R. Garey and David~S. Johnson.
 \newblock {\em Computers and Intractability; A Guide to the Theory of

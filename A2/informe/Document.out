@@ -1,18 +1,17 @@
 \BOOKMARK [0][-]{chapter*.1}{Resumen}{}% 1
-\BOOKMARK [0][-]{chapter.1}{Introducci\363n a la Partici\363n de Grafos}{}% 2
-\BOOKMARK [1][-]{section.1.1}{Introducci\363n}{chapter.1}% 3
-\BOOKMARK [1][-]{section.1.2}{Partici\363n de grafos}{chapter.1}% 4
-\BOOKMARK [1][-]{section.1.3}{Descripci\363n el problema}{chapter.1}% 5
-\BOOKMARK [0][-]{chapter.2}{Algoritmos basados en metaheur\355sticas}{}% 6
-\BOOKMARK [1][-]{section.2.1}{Kernighan-Lin}{chapter.2}% 7
-\BOOKMARK [2][-]{subsection.2.1.1}{Descripci\363n}{section.2.1}% 8
-\BOOKMARK [2][-]{subsection.2.1.2}{Ejemplo de codificaci\363n}{section.2.1}% 9
-\BOOKMARK [1][-]{section.2.2}{Spectral Bisection}{chapter.2}% 10
-\BOOKMARK [2][-]{subsection.2.2.1}{Descripci\363n}{section.2.2}% 11
-\BOOKMARK [2][-]{subsection.2.2.2}{Ejemplo de codificaci\363n}{section.2.2}% 12
-\BOOKMARK [1][-]{section.2.3}{Multilevel Spectral Bisection}{chapter.2}% 13
-\BOOKMARK [2][-]{subsection.2.3.1}{Descripci\363n}{section.2.3}% 14
-\BOOKMARK [2][-]{subsection.2.3.2}{Ejemplo de codificaci\363n}{section.2.3}% 15
-\BOOKMARK [0][-]{chapter.3}{Comparativa entre los diferentes algoritmos}{}% 16
-\BOOKMARK [0][-]{chapter.4}{Conclusiones}{}% 17
-\BOOKMARK [0][-]{chapter*.4}{Bibliografia}{}% 18
+\BOOKMARK [0][-]{chapter.1}{Introducci\363n}{}% 2
+\BOOKMARK [1][-]{section.1.1}{Partici\363n de Grafos}{chapter.1}% 3
+\BOOKMARK [1][-]{section.1.2}{Descripci\363n del problema de Partici\363n de Grafos}{chapter.1}% 4
+\BOOKMARK [0][-]{chapter.2}{Algoritmos basados en metaheur\355sticas}{}% 5
+\BOOKMARK [1][-]{section.2.1}{Kernighan-Lin}{chapter.2}% 6
+\BOOKMARK [2][-]{subsection.2.1.1}{Descripci\363n}{section.2.1}% 7
+\BOOKMARK [2][-]{subsection.2.1.2}{Ejemplo de codificaci\363n}{section.2.1}% 8
+\BOOKMARK [1][-]{section.2.2}{Spectral Bisection}{chapter.2}% 9
+\BOOKMARK [2][-]{subsection.2.2.1}{Descripci\363n}{section.2.2}% 10
+\BOOKMARK [2][-]{subsection.2.2.2}{Ejemplo de codificaci\363n}{section.2.2}% 11
+\BOOKMARK [1][-]{section.2.3}{Multilevel Spectral Bisection}{chapter.2}% 12
+\BOOKMARK [2][-]{subsection.2.3.1}{Descripci\363n}{section.2.3}% 13
+\BOOKMARK [2][-]{subsection.2.3.2}{Ejemplo de codificaci\363n}{section.2.3}% 14
+\BOOKMARK [0][-]{chapter.3}{Comparativa entre los diferentes algoritmos}{}% 15
+\BOOKMARK [0][-]{chapter.4}{Conclusiones}{}% 16
+\BOOKMARK [0][-]{chapter*.4}{Bibliografia}{}% 17

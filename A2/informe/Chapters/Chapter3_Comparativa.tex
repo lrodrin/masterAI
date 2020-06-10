@@ -43,4 +43,26 @@ Si nos fijamos con el algoritmo Kernighan-Lin, cuando el número de vértices in
 
 En cambio, el algoritmo Spectral Bisection obtiene unos resultados muy parecidos con Multilevel Spectral Bisection, pero cuando el número de vértices empieza a ser muy elevado, la eficiencia baja drásticamente. Que no es el caso del algoritmo Multilevel Spectral Bisection.
 
-Como conclusión global a la comparación entre los algoritmos podemos decir que el algoritmo Multilevel Spectral Bisection es el más eficiente que se ha codificado, y el algoritmo Kernighan-Lin es el menos eficiente.
+Como conclusión global a la comparación entre los algoritmos podemos decir que el algoritmo Multilevel Spectral Bisection es el más eficiente para grafos no dirigidos que se ha codificado, y el algoritmo Kernighan-Lin es el menos eficiente.
+
+En las secciones anteriores siempre hemos hablado de minimizar el tamaño de partición en ciertas condiciones. Pero para todos menos algunos gafos bien estructurados o pequeños, la minimización real no es factible porque tomaría mucho tiempo. Encontrar la solución óptima para el problema de partición de grafos es para todos los casos no triviales que se sabe que son NP-completos\cite{NPCompleteness}.
+
+En pocas palabras, esto significa que no hay un algoritmo conocido que sea mucho más rápido que probar todas las combinaciones posibles y hay pocas esperanzas de que se encuentre uno. Un poco más exacto (pero aún ignorando algunos fundamentos de la teoría NP) significa que la bisección del grafo cae en una gran clase de problemas, todos los cuales pueden transformarse entre sí y para los cuales no hay algoritmos conocidos que puedan resolver el problema en tiempo polinómico en el tamaño de la entrada.
+
+Entonces, en lugar de encontrar la solución óptima, recurrimos a la heurística. Es decir, tratamos de usar algoritmos que pueden no ofrecer la solución óptima cada vez, pero que darán una buena solución al menos la mayor parte del tiempo. Como veremos, a menudo hay una compensación entre el tiempo de ejecución y la calidad de la solución. Algunos algoritmos se ejecutan bastante rápido, pero solo encuentran una solución de calidad media, mientras que otros tardan mucho tiempo pero ofrecen soluciones excelentes e incluso otros se pueden ajustar entre ambos extremos.
+
+La elección del tiempo frente a la calidad depende de la aplicación prevista. Para el diseño VLSI o el diseño de la red, puede ser aceptable esperar mucho tiempo porque una solución aún mejor puede ahorrar dinero real.
+
+Por otro lado, en el contexto de la multiplicación escasa de matriz-vector, solo nos interesa el tiempo total. Por lo tanto, el tiempo de ejecución para la partición del gráfico debe ser menor que el tiempo ahorrado por la multiplicación de matriz-vector más rápida.
+Si solo utilizamos una determinada matriz una vez, un algoritmo rápido que entrega solo particiones de calidad media en general podría ser más rápido que un algoritmo más lento con particiones de mejor calidad. Pero si usamos la misma matriz (o diferentes matrices con el mismo gráfico) a menudo, el algoritmo más lento podría ser preferible.
+
+De hecho, hay incluso más factores a considerar. Hasta ahora queríamos que las diferentes particiones tuvieran el mismo peso. Como veremos en la sección 2.2, podría ser una ventaja aceptar particiones de un tamaño ligeramente diferente para lograr un mejor
+
+tamaño de corte
+Todo esto debería demostrar que no existe un mejor algoritmo único para todas las situaciones y que los diferentes algoritmos descritos en los siguientes capítulos tienen sus aplicaciones.
+
+
+Después de crear las particiones, se calcula la distribución de nodos y bordes dentro de las particiones y entre las particiones. Esto ofrece una idea de cómo las proporciones de partición se desvían entre sí. Estas particiones se utilizan en dos algoritmos de validación diferentes, Pagerank y Breadth First Search, para ver la diferencia en la comunicación entre las particiones.
+Este proyecto se centrará en particionar usando los valores de partición en los nodos del gráfico completo.
+Los algoritmos de partición y los algoritmos distributivos se realizarán inicialmente para gráficos más pequeños. Luego, se utilizarán tipos de gráficos más grandes y diferentes con diferentes atributos para probar si el código
+sigue produciendo resultados precisos.
