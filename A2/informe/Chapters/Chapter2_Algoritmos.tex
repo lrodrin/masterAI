@@ -1,15 +1,11 @@
-Debido a la \textit{"intratabilidad"} del problema de la partición de un grafo, no existe un algoritmo concreto que permita obtener en tiempo polinómico una solución óptima a la partición de cualquier grafo. Es por ello por lo que, los algoritmos codificados para este trabajo se basan en la metaheurística, con el objetivo de obtener soluciones de buena calidad en tiempos computacionales aceptables, a pesar de que los algoritmos metaheurísticos no garantizan que se vaya a obtener una solución óptima al problema.
+Debido a la \textit{"intratabilidad"} del problema de la partición de grafos, como hemos comentado, no existe un algoritmo concreto que permita obtener en tiempo polinómico una solución óptima a la partición de cualquier grafo. Es por ello por lo que, los algoritmos codificados para este informe se basan en la metaheurística, con el objetivo de obtener soluciones de buena calidad en tiempos computacionales aceptables, a pesar de que los algoritmos metaheurísticos no garantizan que se vaya a obtener una solución óptima al problema.
 
-En el siguiente apartado se analizan los algoritmos Kernighan-Lin\cite{KernighanLin} (ver apartado \ref{Kernighan-Lin}), Specrtal Bisection (ver apartado \ref{Spectral-Bisection}) y Multilevel Spectral Bisection (ver apartado \ref{Multilevel-Spectral-Bisection}), tres algoritmos diseñados específicamente para la resolución del problema de la partición de grafos. Cualquiera de estos algoritmos proporciona una solución factible al problema, pudiendo ser esta óptima o no. Además de describir cada uno de los algoritmos detalladamente, las principales propiedades de cada uno de ellos, también se describirán algunos detalles sobre su codificación.
+En el siguiente apartado se describen los algoritmos Kernighan-Lin\cite{KernighanLin} (ver apartado \ref{Kernighan-Lin}), Specrtal Bisection (ver apartado \ref{Spectral-Bisection}) y Multilevel Spectral Bisection (ver apartado \ref{Multilevel-Spectral-Bisection}). Tres algoritmos que se diseñaron específicamente para la resolución del problema de la partición de grafos. Cualquiera de estos algoritmos proporciona una solución factible al problema, pudiendo ser esta óptima o no. El enfoque del informe radica en la partición de diferentes grafos en dos particiones usando estos tres algoritmos. 
 
-El enfoque en el presente trabajo radica en la división de grafos en dos particiones. Así podremos comparar los diferentes algoritmos más fácilmente. además la eficiencia cambia con el número de particiones.
-
-Los algoritmos de partición probablemente producirán resultados diferentes dependiendo de los atributos del gráfico de entrada.
-
-Para cada algoritmo analizado, contamos con un ejemplo de su codificación en el cual se ha utilizado un grafo inicial (ver Figura \ref{grafo}). El grafo inicial es un grafo no dirigido (ver Definición \ref{no_dirigido}) de diez nodos con pesos en sus aristas.
+Además de describir cada uno de los algoritmos, también se describirán algunos detalles sobre su codificación.De ejemplo para describir cada codificación se ha utilizado un grafo inicial (ver Figura \ref{grafo}). Este grafo es un grafo no dirigido (ver Definición \ref{no_dirigido}) de diez nodos con pesos en sus aristas.
 
 \begin{mydef}\label{no_dirigido}
-	Un grafo no dirigido o grafo propiamente dicho es un grafo $G = (V , E)$ donde: $V\neq \emptyset$ y $E\subseteq \{x\in \mathcal P(V):|x|=2\}$ es un conjunto de pares no ordenados de elementos de $V$. Un par no ordenado es un conjunto de la forma \{a , b\}, de manera que \{a, b\} = \{b, a\}. Para los grafos, estos conjuntos pertenecen al conjunto potencia de $V$, denotado $\mathcal P(V)$, y son de cardinalidad 2. 
+	Un grafo no dirigido es un grafo (ver Definición \ref{def:grafo} ) donde: $V\neq \emptyset$ y $E\subseteq \{x\in \mathcal P(V):|x|=2\}$ es un conjunto de pares no ordenados de elementos de $V$. Un par no ordenado es un conjunto de la forma \{a , b\}, de manera que \{a, b\} = \{b, a\}. En los grafos, los conjuntos de pares no ordenados pertenecen al conjunto potencial de $V$, denotado $\mathcal P(V)$, y son de cardinalidad 2. 
 \end{mydef}
 
 \renewcommand{\figurename}{Figura}
@@ -26,23 +22,23 @@ Para cada algoritmo analizado, contamos con un ejemplo de su codificación en el
 
 El algoritmo Kernighan-Lin\cite{KernighanLin}, a menudo abreviado como K-L, es uno de los primeros algoritmos de partición de grafos y fue desarrollado originalmente para optimizar la colocación de circuitos electrónicos en tarjetas de circuito impreso para minimizar el número de conexiones entre las tarjetas (circuitos VLSI\cite{KernighanLin}\cite{Ravikumar}).
 
-Las características principales del algoritmo es que es:
+El algoritmo es:
 
 \begin{itemize}
 	\setlength{\parskip}{0pt}
 	\setlength{\itemsep}{0pt plus 1pt}
-	\item \textbf{Iterativo}. Esto significa que el grafo inicialmente ya está particionado, pero la aplicación del algoritmo intentará mejorar u optimizar la partición inicial. 
-	\item \textbf{Voraz}. Esto significa que el algoritmo hará cambios si hay un beneficio inmediato sin considerar otras formas posibles de obtener una solución óptima. Para ello, elige la opción óptima en cada paso local con la esperanza de llegar a una solución general óptima.
-	\item \textbf{Determinista} porque se obtendrá el mismo resultado cada vez que se aplique el algoritmo. 
+	\item \textbf{Iterativo}. Porque el grafo inicialmente ya está particionado, pero la aplicación del algoritmo intentará mejorar u optimizar la partición inicial. 
+	\item \textbf{Voraz}. Porque el algoritmo hará cambios si hay un beneficio inmediato sin considerar otras formas posibles de obtener una solución óptima. Para ello, elige la opción óptima en cada paso con la esperanza de llegar a una solución general óptima.
+	\item \textbf{Determinista}. Porque se obtendrá el mismo resultado cada vez que se aplique el algoritmo. 
 \end{itemize}
 
-El algoritmo K-L no crea particiones, sino que las mejora iterativamente. La idea original era tomar una partición aleatoria y aplicarle Kernighan-Lin\cite{KernighanLin}. Esto se repetiría varias veces y se elegiría el mejor resultado. Mientras que para grafos pequeños esto ofrece resultados razonables, es bastante ineficiente para tamaños de grafos más grandes.
+El algoritmo K-L, como acabamos de describir, no crea particiones, sino que las mejora iterativamente. La idea original era tomar una partición aleatoria y aplicarle Kernighan-Lin\cite{KernighanLin}. Esto se repetiría varias veces y se elegiría el mejor resultado. Mientras que para grafos pequeños esto ofrece resultados razonables, es bastante ineficiente para tamaños de grafos más grandes.
 
-Hoy en día, el algoritmo se usa para mejorar las particiones encontradas por otros algoritmos, tratando de mejorar las particiones mediante el intercambio de nodos vecinos. Por lo tanto, complementa muy bien otro tipo de algoritmos como por ejemplo que realizan una partición espectral (ver sección \ref{Spectral-Bisection}).
+Hoy en día, el algoritmo se usa para mejorar las particiones encontradas por otros algoritmos, tratando de mejorar las particiones mediante el intercambio de nodos vecinos. Por tanto, complementa muy bien otro tipo de algoritmos como por ejemplo los que realizan una partición espectral (ver sección \ref{Spectral-Bisection}).
 
 \subsection{Descripción}
 
-El objetivo del algoritmo es dividir el conjunto de vértices $V$ de un grafo no dirigido en dos subconjuntos disjuntos (ver Definición \ref{disjuntos}) $A$ y $B$ de igual tamaño, de una manera que minimice la suma $T$ de los pesos del subconjunto de aristas que cruzan de $A$ a $B$. El algoritmo mantiene y mejora una partición, en cada pasada usando un algoritmo voraz (ver Definición \ref{voraz}), empareja los vértices de $A$ con los vértices de $B$, de modo que al mover los vértices emparejados de una partición a la otra se maximiza la ganancia. Después de emparejar los vértices y maximizar la ganancia, realiza un subconjunto de los pares de los vértices elegidos para tener el mejor efecto sobre la calidad de la solución $T$. Dado un grafo con n vértices, cada paso del algoritmo se ejecuta en el tiempo $O({n}^2 \, log \, n)$.
+El objetivo del algoritmo es dividir el conjunto de vértices $V$ de un grafo no dirigido (ver Definición \ref{no_dirigido}) en dos subconjuntos disjuntos (ver Definición \ref{disjuntos}) $A$ y $B$ de igual tamaño, de una manera que minimice la suma $T$ de los pesos del subconjunto de aristas que cruzan de $A$ a $B$. El algoritmo mantiene y mejora una partición, en cada iteración usando un algoritmo voraz (ver Definición \ref{voraz}), empareja los vértices de $A$ con los vértices de $B$, de modo que al mover los vértices emparejados de una partición a la otra se maximiza la ganancia, que mide cuánta "información" nos brinda la función objetivo. Después de emparejar los vértices y maximizar la ganancia, crea un subconjunto de los pares de los vértices elegidos para tener el mejor efecto sobre la calidad de la solución $T$. Dado un grafo con n vértices, cada iteración del algoritmo se ejecuta en el tiempo $O({n}^2 \, log \, n)$.
 
 \begin{mydef}\label{disjuntos}
 	$A$ y $B$ son dos subconjuntos disjuntos si $A \cup B$ y $A \cap B \neq 0$.
@@ -52,25 +48,25 @@ El objetivo del algoritmo es dividir el conjunto de vértices $V$ de un grafo no
 	Dado un conjunto finito $C$, un algoritmo voraz devuelve un conjunto $S$ tal que $S\subseteq C$ y que además cumple con las restricciones del problema inicial. A cada conjunto $S$ que satisfaga las restricciones y que logra que la función objetivo se minimice o maximice (según corresponda) diremos que $S$ es una solución óptima. 
 \end{mydef}
 
-Más detalladamente, para cada $a \in A$, $I_{a}$ es el coste interno de a, es decir, la suma de los pesos de las aristas entre a y otros nodos en $A$, y $E_{a}$ es el coste externo de a, es decir, la suma de los pesos de las aristas entre a y los nodos en $B$. De manera similar, se define $I_{b}$ y $E_{b}$ para cada $b \in B$.
+Más detalladamente, sea $a$ un elemento del subconjunto $A$ y $b$ un elemento del subconjunto $B$, para cada $a \in A$, $I_{a}$ es el coste interno de a, es decir, la suma de los pesos de las aristas entre a y otros nodos en $A$. Y $E_{a}$ es el coste externo de a, es decir, la suma de los pesos de las aristas entre a y los nodos en $B$. De manera similar, se define $I_{b}$ y $E_{b}$ para cada $b \in B$.
 
-Por otra parte, la diferencia entre la suma de los costes externos e internos $s$ es:
+Así podemos decir que existe una diferencia $D$ entre la suma de los costes externos e internos $s$. Si formalizamos obtenemos:
 
 \begin{center}
 	$D_{s} = E_{s} - I_{s}$
 \end{center}
 
-Entonces si a y b se intercambian, la ganancia es:
+Y entonces si $a$ y $b$ se intercambian, la ganancia se calcula como:
 
-\begin{center}
-	$T_{antiguo} - T_{nuevo} = D_{a} + D_{b} - 2c_{a, b}$ 
+\begin{center}\label{ganancia}
+	$T_{antigua} - T_{nueva} = D_{a} + D_{b} - 2c_{a, b}$ 
 \end{center}
 
-donde $c_{a, b}$ es el coste de las aristas posibles entre a y b.
+donde $c_{a, b}$ es el coste de las aristas posibles entre $a$ y $b$.
 
-Así, el algoritmo intenta encontrar una solución óptima de operaciones de intercambio entre los elementos de $A$ y $B$ que maximice la ganancia ($T_{antiguo} - T_{nuevo}$) y luego ejecuta las operaciones, produciendo una partición del grafo en $A$ y $B$.
+El algoritmo intenta encontrar una solución óptima de operaciones de intercambio entre los elementos de $A$ y $B$ que maximice la ganancia ($T_{antigua} - T_{nueva}$) y luego ejecuta las operaciones, produciendo una partición del grafo en $A$ y $B$.
 
-Con esto dos conceptos, podemos describir la primera iteración del algoritmo usando el pseudocódigo en \cite{Ravikumar}.
+Con estos dos conceptos, podemos describir la primera iteración del algoritmo usando el pseudocódigo en \cite{Ravikumar}.
 
 \begin{lstlisting}[frame=single] 
 function Kernighan-Lin(G(V, E)) is
@@ -93,29 +89,42 @@ function Kernighan-Lin(G(V, E)) is
 return G(V, E) 
 \end{lstlisting}
 
-Entonces, en cada iteración, el algoritmo K-L intercambia pares de vértices para maximizar la ganancia. Continúa haciéndolo hasta que se intercambian todos los vértices de la partición más pequeña. Una gran ventaja del algoritmo es que no se detiene incluso aceptando ganancias negativas, sigue esperando que las ganancias posteriores sean grandes y que el tamaño de la suma de los pesos de las aristas se reduzca más tarde hasta que se intercambian todos los vértices de la partición más pequeña. Esta capacidad de salir de los mínimos locales es una característica crucial.
+Entonces, en cada iteración, el algoritmo K-L intercambia pares de vértices para maximizar la ganancia. Y continúa haciéndolo hasta que se intercambian todos los vértices de la partición más pequeña. 
 
-C. Fiduccia y R. Mattheyses realizaron importantes avances prácticos en \cite{FiducciaMattheyses}, quienes mejoraron el algoritmo de  Kernighan-Lin\cite{KernighanLin} de tal manera que, cada partición se ejecuta en $O({n}^2)$, en lugar de $O({n}^2 \, log \, n)$. La reducción se logra en parte eligiendo nodos individuales para intercambiar en lugar de parejas de vértices.
-
-\subsection{Ejemplo de codificación}
-
-Existen muchas variaciones del algoritmo K-L que a menudo intercambian el tiempo de ejecución con la calidad o generalizan el algoritmo a más de dos particiones. En este caso, para la codificación del algoritmo se ha utilizado la libraría de Python: \href{https://networkx.github.io/documentation/stable/reference/algorithms/generated/networkx.algorithms.community.kernighan_lin.kernighan_lin_bisection.html}{NetworkX}. El algoritmo divide un grafo en dos bloques usando el algoritmo Kernighan-Lin\cite{KernighanLin}. Es decir, divide un grafo en dos conjuntos intercambiando iterativamente pares de nodos para reducir el peso de las aristas entre los dos conjuntos.
-
-\begin{mydef}\label{NetworkX}
-	NetworkX es un paquete de Python para la creación, manipulación y estudio de la estructura, dinámica y funciones de los grafos. 
-\end{mydef}
-
-Por ejemplo, en una ejecución de la codificación, la entrada es el grafo de la Figura \ref{grafo}. Y después de una partición inicial podemos obtener los conjuntos: A = \{3, 4, 6, 8, 9\} y B = \{0, 1, 2 , 5, 7\}. Estos conjuntos son del mismo tamaño y sus elementos están ordenados.
-
-Las principales desventajas de este algoritmo son:
+Una gran ventaja del algoritmo es que no se detiene incluso aceptando ganancias negativas, sigue esperando que las ganancias posteriores sean más grandes y que el tamaño de la suma de los pesos de las aristas se reduzca hasta que se intercambian todos los vértices de la partición más pequeña. Esta capacidad es una característica crucial. Aunque esta capacidad sea crucial, el algoritmo tiene unas cuantas desventajas:
 
 \begin{itemize}
 	\item Los resultados son aleatorios porque el algoritmo comienza con una partición aleatoria.
 	\item Computacionalmente es un algoritmo lento.
 	\item Solo se crean dos particiones del mismo tamaño.
-	\item Las particiones deben tener el mismo tamaño para que el algoritmo no intente encontrar tamaños de partición óptimos que ya existan.
-	\item No resuelve muy bien los problemas con aristas ponderadas.
-	\item La solución dependerá en gran medida del primer intercambio.
+	\item Las particiones deben tener el mismo tamaño para que el algoritmo no intente encontrar soluciones óptimas que ya existan.
+	\item No resuelve muy bien los problemas con las aristas ponderadas.
+	\item La solución dependerá en gran medida de la primera partición.
+\end{itemize}
+
+C. Fiduccia y R. Mattheyses realizaron importantes avances prácticos en \cite{FiducciaMattheyses}, quienes mejoraron el algoritmo de  Kernighan-Lin\cite{KernighanLin} de tal manera que, cada partición se ejecuta en $O({n}^2)$, en lugar de $O({n}^2 \, log \, n)$. La reducción se logra en parte eligiendo nodos individuales para intercambiar en lugar de parejas de vértices.
+
+\subsection{Ejemplo de codificación}
+
+Existen muchas variaciones del algoritmo K-L que a menudo intercambian el tiempo de ejecución con la calidad, o generalizan el algoritmo a más de dos particiones. En este caso, para la codificación del algoritmo se ha utilizado la libraría de Python: \href{https://networkx.github.io/documentation/stable/reference/algorithms/generated/networkx.algorithms.community.kernighan_lin.kernighan_lin_bisection.html}{NetworkX}. El algoritmo divide un grafo en dos particiones usando el algoritmo Kernighan-Lin\cite{KernighanLin}. Es decir, divide un grafo en dos conjuntos intercambiando iterativamente pares de nodos para reducir el peso de las aristas entre los dos conjuntos.
+
+\begin{mydef}\label{NetworkX}
+	NetworkX es un paquete de Python para la creación, manipulación y estudio de la estructura, dinámica y funciones de los grafos. 
+\end{mydef}
+
+Por ejemplo, en una ejecución de la codificación, donde la entrada es el grafo de la Figura \ref{grafo}, y después de una partición inicial, podemos obtener los subconjuntos: A = \{3, 4, 6, 8, 9\} y B = \{0, 1, 2 , 5, 7\}. Estos subconjuntos son del mismo tamaño y sus elementos están ordenados.
+
+En esta ejecución, los pasos que sigue el algoritmo son los siguientes:
+
+\begin{itemize}
+	\item Dibuja una línea que separa el grafo en dos particiones con el mismo número de vértices en cada partición.
+	\item Cuenta la cantidad de aristas que cruzan la línea. Este número se llama \textit{"cut-size"} y el objetivo es disminuirlo, es decir, disminuir el número de conexiones entre los vértices del grafo.
+	\item Encuentra el coste de todos los vértices en el grafo, buscando el número de conexiones que cada vértice tiene dentro de su propia partición y restando eso del número de conexiones que cada vértice tiene con vértices en la otra partición.
+	\item Determina la ganancia máxima intercambiando dos nodos. La ecuación de ganancia es la que se muestra en \ref{ganancia}.
+	\item Intercambia los dos nodos con la ganancia máxima. Si se han calculado todas las ganancias de emparejamiento de todos los nodos y la ganancia máxima es igual a cero o negativa, los nodos con la ganancia más alta aún deberán intercambiarse.
+	\item Resta la ganancia del \textit{"cut-size"} original para obtener el nuevo \textit{"cut-size"}.
+	\item Cambia los nodos que se han intercambiado.
+	\item Repite estos pasos hasta que la ganancia máxima es cero o negativa.
 \end{itemize}
 
 \newpage
