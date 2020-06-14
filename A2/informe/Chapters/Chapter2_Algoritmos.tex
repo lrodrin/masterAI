@@ -69,30 +69,23 @@ El algoritmo intenta encontrar una solución óptima de operaciones de intercamb
 
 Con estos dos conceptos, podemos describir la primera iteración del algoritmo usando el pseudocódigo en \cite{Ravikumar}.
 
-\begin{lstlisting}[frame=single] 
-function Kernighan-Lin(G(V, E)) is
- determine a balanced initial partition of the nodes into sets A and B
-
- do
-  compute D values for all a in A and b in B
-  let gv, av, and bv be empty lists
-  for n := 1 to |V| / 2 do
-    find a from A and b from B, such that gain is maximal
-    remove a and b from further consideration in this pass
-	add g to gv, a to av, and b to bv
-	update D values for the elements of A = A \ a and B = B \ b
-  end for
-  find k which maximizes g_max, the sum of gv[1], ..., gv[k]
-  if g_max > 0 then
-    Exchange av[1], av[2], ..., av[k] with bv[1], bv[2], ..., bv[k]
-  until (g_max <= 0)  
-    
-return G(V, E) 
-\end{lstlisting}
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.8]{Figures/kl_pseudocode}
+	\vspace{1mm}
+	\caption{Kernighan-Lin.}
+	\label{kl_pseudocode}
+\end{figure}
 
 Entonces, en cada iteración, el algoritmo K-L intercambia pares de vértices para maximizar la ganancia. Y continúa haciéndolo hasta que se intercambian todos los vértices de la partición más pequeña. 
 
-Una gran ventaja del algoritmo es que no se detiene incluso aceptando ganancias negativas, sigue esperando que las ganancias posteriores sean más grandes y que el tamaño de la suma de los pesos de las aristas se reduzca hasta que se intercambian todos los vértices de la partición más pequeña. Esta capacidad es una característica crucial. Aunque esta capacidad sea crucial, el algoritmo tiene unas cuantas desventajas:
+C. Fiduccia y R. Mattheyses realizaron importantes avances prácticos en \cite{FiducciaMattheyses}, quienes mejoraron el algoritmo de  Kernighan-Lin\cite{KernighanLin} de tal manera que, cada partición se ejecuta en $O({n}^2)$, en lugar de $O({n}^2 \, log \, n)$. La reducción se logra en parte eligiendo nodos individuales para intercambiar en lugar de parejas de vértices.
+
+Una gran ventaja del algoritmo es que no se detiene incluso aceptando ganancias negativas, sigue esperando que las ganancias posteriores sean más grandes y que el tamaño de la suma de los pesos de las aristas se reduzca hasta que se intercambian todos los vértices de la partición más pequeña. 
+
+Esta capacidad es una característica crucial. Aunque esta capacidad sea crucial, el algoritmo tiene unas cuantas desventajas.
+
+Podemos decir que las principales desventajas son:
 
 \begin{itemize}
 	\item Los resultados son aleatorios porque el algoritmo comienza con una partición aleatoria.
@@ -102,10 +95,6 @@ Una gran ventaja del algoritmo es que no se detiene incluso aceptando ganancias 
 	\item No resuelve muy bien los problemas con las aristas ponderadas.
 	\item La solución dependerá en gran medida de la primera partición.
 \end{itemize}
-
-
-
-C. Fiduccia y R. Mattheyses realizaron importantes avances prácticos en \cite{FiducciaMattheyses}, quienes mejoraron el algoritmo de  Kernighan-Lin\cite{KernighanLin} de tal manera que, cada partición se ejecuta en $O({n}^2)$, en lugar de $O({n}^2 \, log \, n)$. La reducción se logra en parte eligiendo nodos individuales para intercambiar en lugar de parejas de vértices.
 
 \subsection{Ejemplo de codificación}\label{Kernighan-Lin-ejemplo}
 
@@ -141,18 +130,75 @@ Los pasos que sigue el algoritmo que acabamos de describir se pueden visualizar 
 	\label{KL_steps}
 \end{figure}
 
-
-\newpage
 \section{Spectral Bisection}\label{Spectral-Bisection}
+
+El algoritmo de bisección espectral que se describe en la siguiente sección es bastante diferente al algoritmo que acabamos de describir. Ya que no utiliza el grafo en sí, sino una representación matemática del mismo, una matriz.
 
 \subsection{Descripción}
 
+El método de bisección espectral aborda el problema de la partición de grafos con un estrategia desarrollada por Pothen, Simon y Liou\cite{PothenSimon}. El método se basa en el cálculo del \textit{eigenvector}, denominado vector de Fiedler\cite{Fiedler}, correspondiente al segundo \textit{eigenvalue} más pequeño de la matriz laplaciana $L(G = A_{i,j})$ del grafo $G$ que se define:
+
+\begin{center}
+	$$
+	A_{ij} = 
+	\begin{cases}
+	-1 & \text{if $i \neq j \, and \, e_{i, j} \in E$} \\
+	0 & \text{if $i \neq j \, and \, e_{i, j} \notin E$} \\
+	 deg(v_{i}) & \text{if i = j} 
+	\end{cases}
+	$$
+\end{center}
+
+Se ve fácilmente que la matriz laplaciana se define como $L(G) = D - A$, donde $A$ es la matriz de adyacencia (ver Definición \ref{matriz_adyacencia}) del grafo y D es la diagonal de la matriz que representa el \textit{eigenvector} para cada \textit{eigenvalue} del grafo. En el caso de que el grafo tenga pesos en las aristas, $W_{e}$, el grafo $G$ se definiría:
+
+\begin{center}
+	$$
+	A_{ij} = 
+	\begin{cases}
+	-W_{e}(e_{i, j}) & \text{if $i \neq j \, and \, e_{i, j} \in E$} \\
+	0 & \text{if $i \neq j \, and \, e_{i, j} \notin E$} \\
+	\sum_{k=1}^{n} W_{e}(e_{i, j}) & \text{if i = j} 
+	\end{cases}
+	$$
+\end{center}
+
+El principal objetivo del algoritmo de bisección espectral, como acabamos de comentar, es el cálculo del vector de Fiedler\cite{Fiedler}, además de minimizar el coste del número de aristas del grafo. En tal escenario, el \textit{eigenvalue} más pequeño ($\lambda_{2}$) de $L$ produce un coste óptimo (c) tal que $c \geqslant \frac{\lambda_{2}}{n}$, donde $n$ es le número de nodos del grafo. Así, el \textit{eigenvector} que corresponde a $\lambda_{2}$ es el vector que se denomina vector de Fiedler. 
+
+En general, esto produce una buena partición (pero no necesariamente la mejor). La partición obtenida por el segundo \textit{eigenvalue} puede ser potencialmente mejorada tratando de maximizar el \textit{eigenvalue} mínimo de la matriz $L$ al encontrar un cambio apropiado en los elementos de la diagonal $D$. Sin embargo, esta técnica requiere el cálculo de todos los \textit{eigenvalues} de la matriz laplaciana $L$. Esto no es muy factible computacionalmente para los grafos con muchos nodos.
+
+La implementación original de este algoritmo utiliza el algoritmo de Lanczos (ver Definición \ref{Lanczos}) modificado para calcular los vectores de Fiedler\cite{Fiedler}. 
+
+\begin{mydef}\label{Lanczos}
+	El algoritmo de Lanczos es un algoritmo iterativo creado por Cornelius Lanczos\cite{Lanczos}, que es una adaptación de los métodos iterativos para encontrar los \textit{eigenvalues} más útiles y el \textit{eigenvector} de una matriz de dimensión $N x N$ realizando un número de operaciones $M$, donde el valor de $M$ será más pequeño que $N$. 
+\end{mydef}
+
+Para dividir un grafo en un número de particiones de potencia de dos, el algoritmo de bisección espectral aplica los siguientes pasos:
+
+\begin{enumerate}
+	\item Calcula el vector de Fiedler utilizando el algoritmo Lanczos sin factorizar.
+	\item Ordena los vértices de acuerdo con los tamaños de los componentes del vector Fiedler.
+	\item Asigna la mitad de los vértices a cada subpartición.
+	\item Aplica los pasos 1-3 a cada subpartición hasta obtener el número deseado de particiones.
+\end{enumerate}
+
+La principal etapa de este algoritmo es el primer paso, el cálculo del vector de Fiedler. Y nos da una idea de cómo funciona el algoritmo. A contaminación, mostraremos su pseudocódigo y luego se intenta explicar cómo funciona en la siguiente sección.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.8]{Figures/bisection_pseudocode}
+	\vspace{1mm}
+	\caption{Spectral Bisection.}
+	\label{bisection_pseudocode}
+\end{figure}
+
 \subsection{Ejemplo de codificación}
 
-La partición de grafos usando un método de partición espectral se basa álgebra lineal. Sin embargo, los métodos espectrales para la partición de grafos son algoritmos computacionalmente caros. El algoritmo utilizado en la codificación calcula la matriz laplaciana $L$ del grafo de entrada inicial (ver Figura \ref{grafo}). Pero antes de describir la codificación introduciremos los conceptos de matriz de adyacencia (ver Definición \ref{adyacencia}) y matriz laplaciana (ver Definición \ref{laplaciana}).
+La partición de grafos usando un método de partición espectral se basa álgebra lineal. Sin embargo, los métodos espectrales para la partición de grafos son algoritmos computacionalmente caros. El algoritmo utilizado en la codificación calcula la matriz laplaciana $L$ del grafo de entrada inicial (ver Figura \ref{grafo}). Pero antes de describir la codificación introduciremos los conceptos de matriz de adyacencia (ver Definición \ref{adyacencia}) y matriz laplaciana (ver Definición \ref{laplaciana}), ya nombrados anteriormente en la sección anterior.
 
 \begin{mydef}\label{adyacencia}
-	Una propiedad importante de los nodos de un grafo es su grado. El grado de un nodo es el número de aristas que están conectadas a él. Si para dos nodos A y B hay una arista uniéndolos, decimos que A y B son adyacentes. Así, se puede describir un grafo en una matriz de adyacencia. Esta es una matriz en la que se describe la conectividad de todos los nodos en el grafo. Una matriz de adyacencia A de un grafo G con N nodos es una matriz con el tamaño de N x N. La posición dentro de la matriz $A_{ij}$ representa la conectividad del nodo j con el nodo i. Si hay una arista entre el nodo j y el nodo i, entonces el valor en la posición de matriz $A_{ij}$ será uno, en todos los demás casos será cero. Esto se puede describir como tal:
+	Una propiedad importante de los nodos de un grafo es su grado. El grado de un nodo es el número de aristas que están conectadas a él. Si para dos nodos A y B hay una arista uniéndolos, decimos que A y B son adyacentes. Así, se puede describir un grafo en una matriz de adyacencia. Esta es una matriz en la que se describe la conectividad de todos los nodos en el grafo. Una matriz de adyacencia A de un grafo G con N nodos es una matriz con el tamaño de N x N. La posición dentro de la matriz $A_{ij}$ representa la conectividad del nodo j con el nodo i. Si hay una arista entre el nodo j y el nodo i, entonces el valor en la posición de matriz $A_{ij}$ será uno, en todos los demás casos será cero. 
+	\newpage
+	Esto se puede describir como tal:
 	\begin{center}
 		$$
 		A_{ij} = 
@@ -175,7 +221,7 @@ La partición de grafos usando un método de partición espectral se basa álgeb
 		$$
 		A_{ij} = 
 		\begin{cases}
-		k(i), & \text{if i=j} \\
+		k(i), & \text{if i = j} \\
 		-1, & \text{if $\exists$ e(i,j)} \\
 		0, & \text{otros casos}
 		\end{cases}
@@ -194,7 +240,10 @@ A continuación, describimos como se obtienen los denominados \textit{eigenvalue
 	$\lambda_{1} = \frac{min}{\vec{v} \perp (1, ..., 1)} \left(\frac{v^{-T} \cdot L(G) \cdot \vec{v}}{v^{-T} \cdot \vec{v}} \right)$
 \end{center}
 
-Cuando se calcula el \textit{eigenvalue} correspondiente del vector de Fiedler de la matriz laplaciana, se puede ver si el grafo está conectado o no. Este número también se conoce como la conectividad algebraica [6]. Esto es útil ya que la partición espectral solo puede ser efectiva si el grafo está conectado. Esto se debe a que la partición espectral se centra en minimizar el peso de las aristas. En un gráfico desconectado, esto sería cero. Una vez que se encuentra el vector de Fiedler, se calcula el valor medio:
+Cuando se calcula el \textit{eigenvalue} correspondiente del vector de Fiedler de la matriz laplaciana, se puede ver si el grafo está conectado o no. Este número también se conoce como la conectividad algebraica [6]. Esto es útil ya que la partición espectral solo puede ser efectiva si el grafo está conectado. Esto se debe a que la partición espectral se centra en minimizar el peso de las aristas. En un gráfico desconectado, esto sería cero. 
+
+\newpage
+Una vez que se encuentra el vector de Fiedler, se calcula el valor medio:
 
 \begin{center}
 	$Pivote = \frac{\sum (\text{componentes de Fiedler})}{\text{Número de componentes}}$
@@ -210,42 +259,47 @@ Con este pivote, los nodos que se corresponden con los \textit{eigenvalues} se p
 	\label{matriz_adyacencia}
 \end{figure}
 
-\newpage
 \section{Multilevel Spectral Bisection}\label{Multilevel-Spectral-Bisection}
 
-El particionamiento de grafos por \textit{multilevel} es un método moderno, que reduce el tamaño de las particiones del grafo con la combinación de los vértices y las aristas sobre varios niveles, creando particiones del grafo cada vez más pequeñas y extensas, con muchas variaciones y combinaciones de diferentes métodos.
+El particionamiento de grafos por \textit{multilevel} es un método moderno, que reduce el tamaño de las particiones del grafo con la combinación de los vértices y las aristas sobre varios niveles, creando particiones del grafo cada vez más pequeñas y extensas, con muchas variaciones y combinaciones de diferentes métodos. Tampoco utiliza el grafo en sí, sino una representación matemática del mismo, una matriz. La técnica \textit{multilevel} calcula el vector de Fiedler\cite{Fiedler} mucho más eficientemente.
 
 \subsection{Descripción}\label{msb_description}
 
-El algoritmo Multilevel Spectral Bisection (MSB) descrito en la sección \ref{msb_description} ha resultado ser muy eficiente (ver sección \ref{chapter:Comparativa}). En MSB, se transfiere información aproximada sobre el segundo \textit{eigenvector} del grafo original entre niveles, mejorando esta información en cada nivel y finalmente, se usa otra vez el \textit{eigenvector} para dividir el grafo. 
+Al algoritmo de bisección espectral multinivel se basa en la construcción sucesiva de una serie de pequeñas matrices, cada una de las cuales se aproxima a su predecesora más grande. En algún momento, la matriz es tan pequeña que el algoritmo de Lanczos\cite{Lanczos} puede calcular el vector Fiedler\cite{Fiedler} de la matriz laplaciana en un período de tiempo insignificante. Este vector se interpola en el siguiente nivel superior, produciendo una aproximación de alto grado en el vector Fiedler para la matriz laplaciana correspondiente a este nivel. El vector interpolado es entonces mejorado usando el algoritmo de iteración del cociente de Rayleigh (ver Definición \ref{Rayleigh}). El proceso continúa hasta que se obtiene el vector de Fiedler para la matriz original.
 
-Se muestra el pseudocódigo del algoritmo a continuación:
+\begin{mydef}\label{Rayleigh}
+	En matemáticas, dado una matriz $M$ y un vector distinto de cero $x$, el cociente de Rayleigh , se define como $R(M, x)$, tal que:
+	\begin{center}
+		$R(M, x)$ = $\frac{x \cdot Mx}{x \cdot x}$
+	\end{center}
+\end{mydef}
 
-\begin{lstlisting}[frame=single] 
-Function ML-Partition(G)
 
-If G is small enough then
-Find partition (V1, V2) of G in some way
+Vemos que la idea básica es bastante simple. Dado un grafo inicial, intentamos reducirlo con un nuevo grafo que en cierto sentido es similar, pero con menos vértices, más pequeño. Ya que el nuevo grafo es más pequeño, es más barato calcular el vector de Fiedler del nuevo grafo.
 
-else
+El cálculo del vector de Fiedler propio para MSB sería así:
 
-Construct a smaller approximation G'
-(V1', V2') = ML-Partition(G')
-(V1", V2") = Project-partition-up (V1', V2')
-(V1, V2)   = Refine-partition (V1", V2")
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.8]{Figures/fiedler}
+	\vspace{1mm}
+	\caption{Cálculo del vector de Fiedler para MSB.}
+	\label{fiedler}
+\end{figure}
 
-endif
+Por supuesto, se han omitido tres detalles bastante importantes: cómo construir el grafo más pequeño (fase de contracción), cómo encontrar una función inicial $f^(0)$ para $f$ (fase de intercalación) y cómo calcular eficientemente $f$ usando $f^(0)$ (fase de refinamiento). El algoritmo requiere que se agreguen estos tres elementos al nivel único básico del algoritmo de bisección espectral.
 
-Return (V1, V2)
-\end{lstlisting}
-
-La misma idea se puede usar para dividir el grafo en \textit{p} partes a la vez. En realidad, hay toda una familia de algoritmos que puede dividir grafos en \textit{p} partes a la vez. Algunos de estos algoritmos se encuentran implementados en paquetes de software como Chaco\cite{Chaco}, METIS\cite{MeTis} o WGPP\cite{WGPP}.
+\begin{itemize}
+	\item \textbf{Contracción}. La construcción de una serie de grafos más pequeños, que conserven la estructura del grafo original.
+	\item \textbf{Intercalación}. Dado un vector de Fiedler de un grafo más pequeño que el original, intercalar este vector al siguiente grafo más grande de manera que proporcione una buena aproximación al siguiente vector de Fiedler.
+	\item \textbf{Refinamiento}. Dado un vector de Fiedler de un grafo aproximado, calcular un vector más preciso de manera eficiente.
+\end{itemize}
 
 \subsection{Ejemplo de codificación}
 
 Para la codificación del algoritmo MSB se ha usado uno de los algoritmos más exitosos para el problema de partición de grafos, el algoritmo METIS.
 
-METIS\cite{MeTis} es un algoritmo que se enfoca en minimizar el número de aristas cruzadas de cada partición y distribuir el número de nodos de manera uniforme entre las particiones. Con METIS, los grafos se dividen en tres fases. La primera fase es la fase de engrosamiento, la segunda la fase de partición y la tercera y última fase la fase de no engrosamiento (ver Figura \ref{metis}). A continuación, se muestra una breve explicación de estas fases.
+METIS\cite{MeTis} es un algoritmo que se enfoca en minimizar el número de aristas cruzadas de cada partición y distribuir el número de nodos de manera uniforme entre las particiones. Como algoritmo MSB, con METIS, los grafos se dividen en tres fases (ver sección \ref{msb_description}). La primera fase es la fase de engrosamiento, la segunda la fase de partición y la tercera y última fase la fase de no engrosamiento (ver Figura \ref{metis}). A continuación, se muestra una breve explicación de estas fases dentro del algoritmo METIS.
 
 \textbf{La fase de engrosamiento}. El objetivo principal de la fase de engrosamiento dentro del algoritmo METIS es reducir el grafo original a un grafo más pequeño, que aún contiene suficiente información para hacer una buena partición. Esto sucede con el uso de un algoritmo de coincidencia. Hay varios algoritmos de coincidencia, los más destacados son el algoritmo de coincidencia pesada y el algoritmo de coincidencia aleatoria. El algoritmo de coincidencia pesada inicialmente coincide con los pesos de las aristas más pesados. En cambio, el algoritmo de coincidencia aleatoria selecciona aleatoriamente los vértices más conectados (con más conexiones entre dos vértices). 
 
@@ -268,4 +322,4 @@ Las características clave del algoritmo son las siguientes:
 	\item Es extremadamente rápido. Los experimentos en una amplia gama de grafos han demostrado que el algoritmo METIS es de uno a dos órdenes de magnitud más rápido que otros algoritmos de partición ampliamente utilizados.
 \end{itemize}
 
-Para la codificación del algoritmo en este informe se escogió la librería de Python: \href{https://networkx-metis.readthedocs.io/en/latest/reference/generated/nxmetis.partition.html#nxmetis.partition}{NetworkX-METIS}. \textit{NetworkX-METIS} es un complemento para la libraría de \textit{NetworkX} que usa el algoritmo METIS para la partición de grafos. Por ejemplo, en una ejecución de la codificación, donde la entrada es el grafo de la Figura \ref{grafo}, se han creado los subconjuntos: A = \{0, 1, 3, 7, 8\} y B = \{2, 4, 5, 6, 9\}. Estos subconjuntos tienen el mismo tamaño y sus elementos están ordenados, igual que en la sección \ref{Kernighan-Lin-ejemplo}.
+Para la codificación del algoritmo en este informe se escogió la librería de Python: \href{https://networkx-metis.readthedocs.io/en/latest/reference/generated/nxmetis.partition.html#nxmetis.partition}{NetworkX-METIS}. \textit{NetworkX-METIS} es un complemento para la libraría de \textit{NetworkX} que usa el algoritmo METIS para la partición de grafos. Por ejemplo, en una ejecución de la codificación, donde la entrada es el grafo de la Figura \ref{grafo}, se han creado los subconjuntos: A = \{0, 1, 3, 7, 8\} y B = \{2, 4, 5, 6, 9\}. Estos subconjuntos tienen el mismo tamaño y sus elementos están ordenados, igual que en la sección \ref{Kernighan-Lin-ejemplo}. El algoritmo ha resultado ser muy eficiente (ver sección \ref{chapter:Comparativa}).
