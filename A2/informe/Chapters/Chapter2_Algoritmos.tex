@@ -2,10 +2,11 @@ Debido a la \textit{"intratabilidad"} del problema de la partición de grafos, c
 
 En el siguiente apartado se describen los algoritmos Kernighan-Lin\cite{KernighanLin} (ver apartado \ref{Kernighan-Lin}), Specrtal Bisection (ver apartado \ref{Spectral-Bisection}) y Multilevel Spectral Bisection (ver apartado \ref{Multilevel-Spectral-Bisection}). Tres algoritmos que se diseñaron específicamente para la resolución del problema de la partición de grafos. Cualquiera de estos algoritmos proporciona una solución factible al problema, pudiendo ser esta óptima o no. El enfoque del informe radica en la partición de diferentes grafos en dos particiones usando estos tres algoritmos. 
 
-Además de describir cada uno de los algoritmos, también se describirán algunos detalles sobre su codificación.De ejemplo para describir cada codificación se ha utilizado un grafo inicial (ver Figura \ref{grafo}). Este grafo es un grafo no dirigido (ver Definición \ref{no_dirigido}) de diez nodos con pesos en sus aristas.
+Además de describir cada uno de los algoritmos, también se describirán algunos detalles sobre su codificación.
+De ejemplo para describir cada codificación se ha utilizado un grafo inicial (ver Figura \ref{grafo}). Este grafo es un grafo no dirigido (ver Definición \ref{no_dirigido}) de diez nodos con pesos en sus aristas.
 
 \begin{mydef}\label{no_dirigido}
-	Un grafo no dirigido es un grafo (ver Definición \ref{def:grafo} ) donde: $V\neq \emptyset$ y $E\subseteq \{x\in \mathcal P(V):|x|=2\}$ es un conjunto de pares no ordenados de elementos de $V$. Un par no ordenado es un conjunto de la forma \{a , b\}, de manera que \{a, b\} = \{b, a\}. En los grafos, los conjuntos de pares no ordenados pertenecen al conjunto potencial de $V$, denotado $\mathcal P(V)$, y son de cardinalidad 2. 
+	Un grafo no dirigido es un grafo (ver Definición \ref{def:grafo} ) donde: $V\neq \emptyset$ y $E\subseteq \{x\in \mathcal P(V):|x|=2\}$ es un conjunto de pares no ordenados de elementos de $V$. Un par no ordenado es un conjunto de la forma \{a , b\}, de manera que \{a, b\} = \{b, a\}. En los grafos, los subconjuntos de pares no ordenados pertenecen al conjunto potencial de $V$, denotado $\mathcal P(V)$, y son de cardinalidad 2. 
 \end{mydef}
 
 \renewcommand{\figurename}{Figura}
@@ -102,11 +103,13 @@ Una gran ventaja del algoritmo es que no se detiene incluso aceptando ganancias 
 	\item La solución dependerá en gran medida de la primera partición.
 \end{itemize}
 
+
+
 C. Fiduccia y R. Mattheyses realizaron importantes avances prácticos en \cite{FiducciaMattheyses}, quienes mejoraron el algoritmo de  Kernighan-Lin\cite{KernighanLin} de tal manera que, cada partición se ejecuta en $O({n}^2)$, en lugar de $O({n}^2 \, log \, n)$. La reducción se logra en parte eligiendo nodos individuales para intercambiar en lugar de parejas de vértices.
 
-\subsection{Ejemplo de codificación}
+\subsection{Ejemplo de codificación}\label{Kernighan-Lin-ejemplo}
 
-Existen muchas variaciones del algoritmo K-L que a menudo intercambian el tiempo de ejecución con la calidad, o generalizan el algoritmo a más de dos particiones. En este caso, para la codificación del algoritmo se ha utilizado la libraría de Python: \href{https://networkx.github.io/documentation/stable/reference/algorithms/generated/networkx.algorithms.community.kernighan_lin.kernighan_lin_bisection.html}{NetworkX}. El algoritmo divide un grafo en dos particiones usando el algoritmo Kernighan-Lin\cite{KernighanLin}. Es decir, divide un grafo en dos conjuntos intercambiando iterativamente pares de nodos para reducir el peso de las aristas entre los dos conjuntos.
+Existen muchas variaciones del algoritmo K-L que a menudo intercambian el tiempo de ejecución con la calidad, o generalizan el algoritmo a más de dos particiones. En este caso, para la codificación del algoritmo se ha utilizado la libraría de Python: \href{https://networkx.github.io/documentation/stable/reference/algorithms/generated/networkx.algorithms.community.kernighan_lin.kernighan_lin_bisection.html}{NetworkX}. El algoritmo divide un grafo en dos particiones usando el algoritmo Kernighan-Lin\cite{KernighanLin}. Es decir, divide un grafo en dos subconjuntos intercambiando iterativamente pares de nodos para reducir el peso de las aristas entre los dos subconjuntos.
 
 \begin{mydef}\label{NetworkX}
 	NetworkX es un paquete de Python para la creación, manipulación y estudio de la estructura, dinámica y funciones de los grafos. 
@@ -128,26 +131,91 @@ En esta ejecución, los pasos que sigue el algoritmo son los siguientes:
 \end{itemize}
 
 \newpage
+Los pasos que sigue el algoritmo que acabamos de describir se pueden visualizar en la siguiente figura,
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.9]{Figures/KL_steps}
+	\vspace{1mm}
+	\caption{Kernighan-Lin.}
+	\label{KL_steps}
+\end{figure}
+
+
+\newpage
 \section{Spectral Bisection}\label{Spectral-Bisection}
 
 \subsection{Descripción}
 
 \subsection{Ejemplo de codificación}
 
-Después de la partición obtenemos los conjuntos: A = \{1, 2, 3, 4, 6, 9\} y B = \{0, 8, 5, 7\}.
+La partición de grafos usando un método de partición espectral se basa álgebra lineal. Sin embargo, los métodos espectrales para la partición de grafos son algoritmos computacionalmente caros. El algoritmo utilizado en la codificación calcula la matriz laplaciana $L$ del grafo de entrada inicial (ver Figura \ref{grafo}). Pero antes de describir la codificación introduciremos los conceptos de matriz de adyacencia (ver Definición \ref{adyacencia}) y matriz laplaciana (ver Definición \ref{laplaciana}).
 
-Los conjuntos no son del mismo tamaño. No están ordenados.
+\begin{mydef}\label{adyacencia}
+	Una propiedad importante de los nodos de un grafo es su grado. El grado de un nodo es el número de aristas que están conectadas a él. Si para dos nodos A y B hay una arista uniéndolos, decimos que A y B son adyacentes. Así, se puede describir un grafo en una matriz de adyacencia. Esta es una matriz en la que se describe la conectividad de todos los nodos en el grafo. Una matriz de adyacencia A de un grafo G con N nodos es una matriz con el tamaño de N x N. La posición dentro de la matriz $A_{ij}$ representa la conectividad del nodo j con el nodo i. Si hay una arista entre el nodo j y el nodo i, entonces el valor en la posición de matriz $A_{ij}$ será uno, en todos los demás casos será cero. Esto se puede describir como tal:
+	\begin{center}
+		$$
+		A_{ij} = 
+		\begin{cases}
+			\text{1 si hay una arista que va del nodo j el nodo i} \\
+			\text{0 otros casos}
+		\end{cases}
+		$$
+	\end{center}
+	En un grafo no dirigido (el caso estudiado en este informe), el valor en la posición en la matriz de adyacencia de $A_{ij}$ será el mismo que el valor en la posición $A_{ij}$. Ver ejemplo de una matriz de adyacencia en la Figura \ref{matriz_adyacencia}.
+\end{mydef}
+
+\begin{mydef}\label{laplaciana}
+	La matriz de grados es una matriz que se puede construir a partir de la matriz de adyacencia (ver Definición \ref{adyacencia}). Esto se puede hacer construyendo un vector de grado de 1 x N, como ejemplo podemos verlo en la Figura \ref{matriz_adyacencia}. Este vector contiene en el elemento i la suma de la fila del número de columna j de la matriz de adyacencia. La matriz de grados se construye multiplicando el vector de grados con la matriz de identidad de tamaño N x N. Con la matriz de grados D y la matriz de adyacencia A, se puede construir la matriz laplaciana L. Esto se puede hacer restando A de D.
+	\begin{center}
+		$L_{ij} = D_{ij} - A_{ij}$
+	\end{center}
+	La matriz laplaciana se puede definir mediante el siguiente conjunto de reglas:
+	\begin{center}
+		$$
+		A_{ij} = 
+		\begin{cases}
+		k(i), & \text{if i=j} \\
+		-1, & \text{if $\exists$ e(i,j)} \\
+		0, & \text{otros casos}
+		\end{cases}
+		$$
+	\end{center}
+	La matriz laplaciana tiene la entrada -1 donde la matriz de adyacencia tiene un valor distinto de cero. Los grados se representan en diagonal. Todos los demás valores son cero.
+\end{mydef}
+
+A continuación, describimos como se obtienen los denominados \textit{eigenvalues} y \textit{eigenvectors} de la matriz laplaciana. Se obtienen mediante álgebra lineal directa. Los \textit{eigenvalues} (y sus \textit{eigenvectors} correspondientes) se ordenan en función de la magnitud: $\lambda_{0} = 0 \leq \lambda_{1} \leq \lambda_{n-1}$. El eigenvector correspondiente al \textit{eigenvalue} más pequeño consiste exclusivamente de unos. Este vector no tiene ningún uso práctico ya que no se puede recuperar información útil de él. Sin embargo, el segundo eigenvector más pequeño contiene la información necesitaba para hacer la partición espectral. Este vector también se conoce como el vector de Fiedler\cite{Fiedler} y se define formalmente:
+
+\begin{center}
+	$v^{-T} \cdot L(G) \cdot \vec{v} = \sum_{i,j \in E}^{} (x_{i} - x_{j})^2$
+\end{center}
+
+\begin{center}
+	$\lambda_{1} = \frac{min}{\vec{v} \perp (1, ..., 1)} \left(\frac{v^{-T} \cdot L(G) \cdot \vec{v}}{v^{-T} \cdot \vec{v}} \right)$
+\end{center}
+
+Cuando se calcula el \textit{eigenvalue} correspondiente del vector de Fiedler de la matriz laplaciana, se puede ver si el grafo está conectado o no. Este número también se conoce como la conectividad algebraica [6]. Esto es útil ya que la partición espectral solo puede ser efectiva si el grafo está conectado. Esto se debe a que la partición espectral se centra en minimizar el peso de las aristas. En un gráfico desconectado, esto sería cero. Una vez que se encuentra el vector de Fiedler, se calcula el valor medio:
+
+\begin{center}
+	$Pivote = \frac{\sum (\text{componentes de Fiedler})}{\text{Número de componentes}}$
+\end{center}
+
+Con este pivote, los nodos que se corresponden con los \textit{eigenvalues} se pueden dividir en dos partes. Todos los nodos con los \textit{eigenvalues} correspondientes debajo del pivote se particionan en la partición A y todos los demás nodos se colocarán en la partición B. Este método se ha utilizado para la codificación del algoritmo de partición espectral. Que después de ejecutar un partición de ejemplo podemos obtener los subconjuntos: A = \{1, 2, 3, 4, 6, 9\} y B = \{0, 8, 5, 7\}. En este caso, los subconjuntos no son del mismo tamaño, y tampoco se encuentran ordenados. Es una de las diferencias más significativas entre las codificaciones de Kernighan-Lin y Multilevel Spectral Bisection con esta codificación (Spectral Bisection). El algoritmo de partición espectral se llama de forma recursiva para crear las dos particiones. Esto indica que el número de particiones se ha limitado expresamente a dos. Sin embargo, el algoritmo no es perfecto, como vemos, no crea particiones perfectamente equilibradas (con el mismo número de nodos).
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.45]{Figures/matriz}
+	\vspace{1mm}
+	\caption{Matriz de adyacencia.}
+	\label{matriz_adyacencia}
+\end{figure}
 
 \newpage
 \section{Multilevel Spectral Bisection}\label{Multilevel-Spectral-Bisection}
 
-El particionamiento de grafos por multilevel es un método moderno que reduce el tamaño de las particiones del grafo con la combinación de los vértices y las aristas sobre varios niveles, creando particiones del grafo cada vez más pequeñas y extensas con muchas variaciones y combinaciones de diferentes métodos.
+El particionamiento de grafos por \textit{multilevel} es un método moderno, que reduce el tamaño de las particiones del grafo con la combinación de los vértices y las aristas sobre varios niveles, creando particiones del grafo cada vez más pequeñas y extensas, con muchas variaciones y combinaciones de diferentes métodos.
 
 \subsection{Descripción}\label{msb_description}
-
-Y esta es, en líneas generales, la descripción de uno de los algoritmos más exitosos para el problema de partición de grafos.
-
-\subsection{Ejemplo de codificación}
 
 El algoritmo Multilevel Spectral Bisection (MSB) descrito en la sección \ref{msb_description} ha resultado ser muy eficiente (ver sección \ref{chapter:Comparativa}). En MSB, se transfiere información aproximada sobre el segundo \textit{eigenvector} del grafo original entre niveles, mejorando esta información en cada nivel y finalmente, se usa otra vez el \textit{eigenvector} para dividir el grafo. 
 
@@ -156,15 +224,15 @@ Se muestra el pseudocódigo del algoritmo a continuación:
 \begin{lstlisting}[frame=single] 
 Function ML-Partition(G)
 
-  If G is small enough then
-    Find partition (V1, V2) of G in some way
-    
-  else
+If G is small enough then
+Find partition (V1, V2) of G in some way
 
-    Construct a smaller approximation G'
-    (V1', V2') = ML-Partition(G')
-    (V1", V2") = Project-partition-up (V1', V2')
-    (V1, V2)   = Refine-partition (V1", V2")
+else
+
+Construct a smaller approximation G'
+(V1', V2') = ML-Partition(G')
+(V1", V2") = Project-partition-up (V1', V2')
+(V1, V2)   = Refine-partition (V1", V2")
 
 endif
 
@@ -173,15 +241,31 @@ Return (V1, V2)
 
 La misma idea se puede usar para dividir el grafo en \textit{p} partes a la vez. En realidad, hay toda una familia de algoritmos que puede dividir grafos en \textit{p} partes a la vez. Algunos de estos algoritmos se encuentran implementados en paquetes de software como Chaco\cite{Chaco}, METIS\cite{MeTis} o WGPP\cite{WGPP}.
 
-Para la codificación del algoritmo se escogió la librería escrita en C de \href{http://glaros.dtc.umn.edu/gkhome/metis/metis/overview}{METIS} junto con NetworkX (ver Definición\ref{NetworkX}). Concretamente, la librería que se ha utilizado de Python es: \href{https://networkx-metis.readthedocs.io/en/latest/reference/generated/nxmetis.partition.html#nxmetis.partition}{NetworkX-METIS}. \textit{NetworkX-METIS} es un complemento para el paquete Python de \textit{NetworkX} que usa METIS\cite{MeTis} para la partición de grafos. Los algoritmos implementados en METIS se basan en los esquemas de bisección multinivel.
+\subsection{Ejemplo de codificación}
 
-Las características clave de METIS son las siguientes:
+Para la codificación del algoritmo MSB se ha usado uno de los algoritmos más exitosos para el problema de partición de grafos, el algoritmo METIS.
+
+METIS\cite{MeTis} es un algoritmo que se enfoca en minimizar el número de aristas cruzadas de cada partición y distribuir el número de nodos de manera uniforme entre las particiones. Con METIS, los grafos se dividen en tres fases. La primera fase es la fase de engrosamiento, la segunda la fase de partición y la tercera y última fase la fase de no engrosamiento (ver Figura \ref{metis}). A continuación, se muestra una breve explicación de estas fases.
+
+\textbf{La fase de engrosamiento}. El objetivo principal de la fase de engrosamiento dentro del algoritmo METIS es reducir el grafo original a un grafo más pequeño, que aún contiene suficiente información para hacer una buena partición. Esto sucede con el uso de un algoritmo de coincidencia. Hay varios algoritmos de coincidencia, los más destacados son el algoritmo de coincidencia pesada y el algoritmo de coincidencia aleatoria. El algoritmo de coincidencia pesada inicialmente coincide con los pesos de las aristas más pesados. En cambio, el algoritmo de coincidencia aleatoria selecciona aleatoriamente los vértices más conectados (con más conexiones entre dos vértices). 
+
+\textbf{La fase de partición}. El objetivo principal de la fase de partición dentro del algoritmo METIS es dividir el grafo en dos partes balanceadas mientras se minimiza el número de conexiones entre los vértices. En esta fase se utilizan algoritmos de partición de grafos para una bisección inicial, como Spectral Bisection (ver sección \ref{Spectral-Bisection}), Kernighan-Lin (ver sección \ref{Kernighan-Lin}), etc.  
+
+\textbf{La fase de no engrosamiento}. El objetivo principal de la fase de no engrosamiento (descomposición) dentro del algoritmo METIS es el reajuste de las particiones creadas por el algoritmo de partición. Este proceso se realizará varias veces donde se aplicará un algoritmo de refinamiento para garantizar un buen equilibrio en cada partición.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.7]{Figures/metis}
+	\vspace{1mm}
+	\caption{Matriz de adyacencia.}
+	\label{metis}
+\end{figure}
+
+Las características clave del algoritmo son las siguientes:
 
 \begin{itemize}
-	\item Proporciona particiones de alta calidad. Los experimentos con una gran cantidad de nodos muestran que METIS produce particiones que son consistentemente mejores que las producidas por otros algoritmos ampliamente utilizados. Las particiones producidas por METIS son consistentemente 10\% a 50\% mejores que las producidas por algoritmos de partición espectral.
-	\item Es extremadamente rápido. Los experimentos en una amplia gama de grafos han demostrado que METIS es de uno a dos órdenes de magnitud más rápido que otros algoritmos de partición ampliamente utilizados.
+	\item Proporciona particiones de alta calidad. Los experimentos con una gran cantidad de nodos muestran que METIS produce particiones que son consistentemente mejores que las producidas por otros algoritmos ampliamente utilizados. Las particiones producidas por el algoritmo METIS son consistentemente de un 10\% a un 50\% mejores que las producidas por algoritmos de partición espectral.
+	\item Es extremadamente rápido. Los experimentos en una amplia gama de grafos han demostrado que el algoritmo METIS es de uno a dos órdenes de magnitud más rápido que otros algoritmos de partición ampliamente utilizados.
 \end{itemize}
 
-METIS es un algoritmo de partición de grafos que se enfoca en minimizar el número de aristas cruzadas de cada partición y distribuir la carga de trabajo de manera uniforme entre las particiones. Con METIS, los gráficos se dividen en tres fases. La primera fase es la fase de engrosamiento, la segunda la fase de partición y la tercera y última fase la fase de no engrosamiento (Figura X). La fase de particionamiento contiene particiones bi-particionadas y K-way. A diferencia de la partición K-way, la bi-partición se realiza de forma recursiva. Las subseccion a continuación contienen una explicación más extensa de estas diversas fases.
-
-Por ejemplo, en una ejecución de la codificación, la entrada es el grafo de la Figura \ref{grafo}. El resultado de aplicar el algoritmo codificado son los conjuntos: A = \{0, 1, 3, 7, 8\} y B = \{2, 4, 5, 6, 9\}. Estos conjuntos tienen el mismo tamaño y sus elementos están ordenados.
+Para la codificación del algoritmo en este informe se escogió la librería de Python: \href{https://networkx-metis.readthedocs.io/en/latest/reference/generated/nxmetis.partition.html#nxmetis.partition}{NetworkX-METIS}. \textit{NetworkX-METIS} es un complemento para la libraría de \textit{NetworkX} que usa el algoritmo METIS para la partición de grafos. Por ejemplo, en una ejecución de la codificación, donde la entrada es el grafo de la Figura \ref{grafo}, se han creado los subconjuntos: A = \{0, 1, 3, 7, 8\} y B = \{2, 4, 5, 6, 9\}. Estos subconjuntos tienen el mismo tamaño y sus elementos están ordenados, igual que en la sección \ref{Kernighan-Lin-ejemplo}.

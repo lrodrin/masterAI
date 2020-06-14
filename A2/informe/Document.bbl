@@ -5,11 +5,6 @@ B.~W. Kernighan and S.~Lin.
 \newblock An efficient heuristic procedure for partitioning graphs.
 \newblock {\em Bell System Technical Journal}, 49(2):291--307, 1970.
 
-\bibitem{Simplex}
-Howard Karloff.
-\newblock {\em The Simplex Algorithm, Linear Programming}.
-\newblock Birkh{\"a}user Boston, Boston, MA, 1991.
-
 \bibitem{NPCompleteness}
 Michael~R. Garey and David~S. Johnson.
 \newblock {\em Computers and Intractability; A Guide to the Theory of
@@ -26,6 +21,12 @@ C.M. Fiduccia and R.M. Mattheyses.
 \newblock A linear-time heuristic for improving network partitions.
 \newblock In {\em 19th Design Automation Conference, Las Vegas, NV, USA, 14-16
   June, 1982}. {IEEE}, 1982.
+
+\bibitem{Fiedler}
+Hongyuan Zha Ming~Gu Chris HQ~Ding, Xiaofeng~He and Horst~D Simon.
+\newblock A min-max cut algorithm for graph partitioning and data clustering.
+\newblock In {\em In Data Mining, 2001. ICDM 2001, Proceedings IEEE
+  International Conference}. {IEEE}, 2001.
 
 \bibitem{Chaco}
 B.~Hendrickson and R.~Leland.

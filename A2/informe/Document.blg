@@ -8,4 +8,8 @@ Warning--entry type for "MeTis" isn't style-file defined
 --line 53 of file Bibliografia.bib
 Warning--entry type for "WGPP" isn't style-file defined
 --line 59 of file Bibliografia.bib
-(There were 3 warnings)
+Name 1 in "Chris HQ Ding, Xiaofeng He, Hongyuan Zha, Ming Gu, and Horst D Simon" has a comma at the end for entry Fiedler
+while executing---line 944 of file unsrt.bst
+Too many commas in name 1 of "Chris HQ Ding, Xiaofeng He, Hongyuan Zha, Ming Gu, and Horst D Simon" for entry Fiedler
+while executing---line 944 of file unsrt.bst
+(There were 2 error messages)

@@ -9,9 +9,10 @@
 \backcite {FiducciaMattheyses}{{9}{2.1.1}{lstnumber.-1.18}}
 \backcite {KernighanLin}{{9}{2.1.1}{lstnumber.-1.18}}
 \backcite {KernighanLin}{{9}{2.1.2}{subsection.2.1.2}}
-\backcite {Chaco}{{11}{2.3.2}{lstnumber.-2.15}}
-\backcite {MeTis}{{11}{2.3.2}{lstnumber.-2.15}}
-\backcite {WGPP}{{11}{2.3.2}{lstnumber.-2.15}}
-\backcite {MeTis}{{11}{2.3.2}{lstnumber.-2.15}}
-\backcite {ErdosRenyi}{{13}{3}{chapter.3}}
-\backcite {NPCompleteness}{{14}{3}{lstnumber.-3.5}}
+\backcite {Fiedler}{{12}{2.2.2}{mydef.7}}
+\backcite {Chaco}{{13}{2.3.1}{lstnumber.-2.15}}
+\backcite {MeTis}{{13}{2.3.1}{lstnumber.-2.15}}
+\backcite {WGPP}{{13}{2.3.1}{lstnumber.-2.15}}
+\backcite {MeTis}{{13}{2.3.2}{subsection.2.3.2}}
+\backcite {ErdosRenyi}{{15}{3}{chapter.3}}
+\backcite {NPCompleteness}{{16}{3}{lstnumber.-3.5}}

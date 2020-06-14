@@ -70,3 +70,10 @@ sigue produciendo resultados precisos.
 además la eficiencia cambia con el número de particiones.
 
 Los algoritmos de partición probablemente producirán resultados diferentes dependiendo de los atributos del gráfico de entrada.
+
+Los algoritmos de particionamiento complejos tardan más en calcular las particiones. Sin embargo, crean particiones que a menudo son más equilibradas y / o minimizan la comunicación entre particiones mejor que los algoritmos de partición menos complejos. En general, el objetivo es reducir el tiempo de cálculo
+de un proceso. En consecuencia, en algunos casos un algoritmo menos complejo sería preferible a uno más complejo
+
+
+Considere un ejemplo para elaborar este punto un poco más. El tiempo para calcular un gráfico grande y bien dividido con una buena distribución de la carga de trabajo y conexiones de borde mínimas podría ser bastante alto, digamos 3 horas. Estimando el tiempo de 30 minutos para calcular los resultados con el uso de estas particiones, esto suma un total de 3.5 horas. Si, por otro lado, usamos un método de particionamiento menos refinado, el proceso de particionamiento en sí mismo puede demorar una hora y el tiempo posterior
+para calcular resultados 1.5 horas con un tiempo total de 2.5 horas. En este caso, sería rentable utilizar el método de partición menos refinado. Sin embargo, si queremos hacer múltiples cálculos utilizando los gráficos particionados, un método más refinado sería mejor. Un enfoque ampliamente utilizado para particionar gráficos grandes es el complejo algoritmo METIS.
