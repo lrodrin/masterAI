@@ -265,7 +265,7 @@ El particionamiento de grafos por \textit{multilevel} es un método moderno, que
 
 \subsection{Descripción}\label{msb_description}
 
-Al algoritmo de bisección espectral multinivel se basa en la construcción sucesiva de una serie de pequeñas matrices, cada una de las cuales se aproxima a su predecesora más grande. En algún momento, la matriz es tan pequeña que el algoritmo de Lanczos\cite{Lanczos} puede calcular el vector Fiedler\cite{Fiedler} de la matriz laplaciana en un período de tiempo insignificante. Este vector se interpola en el siguiente nivel superior, produciendo una aproximación de alto grado en el vector Fiedler para la matriz laplaciana correspondiente a este nivel. El vector interpolado es entonces mejorado usando el algoritmo de iteración del cociente de Rayleigh (ver Definición \ref{Rayleigh}). El proceso continúa hasta que se obtiene el vector de Fiedler para la matriz original.
+Al algoritmo de bisección espectral multinivel se basa en la construcción sucesiva de una serie de pequeñas matrices, cada una de las cuales se aproxima a su predecesora más grande. En algún momento, la matriz es tan pequeña que el algoritmo de Lanczos\cite{Lanczos} puede calcular el vector Fiedler\cite{Fiedler} de la matriz laplaciana en un período de tiempo insignificante. Este vector se interpola en el siguiente nivel superior, produciendo una aproximación de alto grado en el vector Fiedler para la matriz laplaciana correspondiente a este nivel. El vector intercambiado es entonces mejorado usando el algoritmo de iteración del cociente de Rayleigh (ver Definición \ref{Rayleigh}). El proceso continúa hasta que se obtiene el vector de Fiedler para la matriz original.
 
 \begin{mydef}\label{Rayleigh}
 	En matemáticas, dado una matriz $M$ y un vector distinto de cero $x$, el cociente de Rayleigh , se define como $R(M, x)$, tal que:
@@ -275,7 +275,7 @@ Al algoritmo de bisección espectral multinivel se basa en la construcción suce
 \end{mydef}
 
 
-Vemos que la idea básica es bastante simple. Dado un grafo inicial, intentamos reducirlo con un nuevo grafo que en cierto sentido es similar, pero con menos vértices, más pequeño. Ya que el nuevo grafo es más pequeño, es más barato calcular el vector de Fiedler del nuevo grafo.
+La idea de la técnica de multinivel es la de reducir la magnitud de un grafo, calcular una partición en este grafo reducido, y finalmente proyectar esta partición en el grafo original. Dado un grafo inicial, intentamos reducirlo con un nuevo grafo que en cierto sentido es similar, pero con menos vértices, más pequeño. Ya que el nuevo grafo es más pequeño, es más barato calcular el vector de Fiedler del nuevo grafo.
 
 El cálculo del vector de Fiedler propio para MSB sería así:
 
@@ -290,16 +290,35 @@ El cálculo del vector de Fiedler propio para MSB sería así:
 Por supuesto, se han omitido tres detalles bastante importantes: cómo construir el grafo más pequeño (fase de contracción), cómo encontrar una función inicial $f^(0)$ para $f$ (fase de intercalación) y cómo calcular eficientemente $f$ usando $f^(0)$ (fase de refinamiento). El algoritmo requiere que se agreguen estos tres elementos al nivel único básico del algoritmo de bisección espectral.
 
 \begin{itemize}
-	\item \textbf{Contracción}. La construcción de una serie de grafos más pequeños, que conserven la estructura del grafo original.
-	\item \textbf{Intercalación}. Dado un vector de Fiedler de un grafo más pequeño que el original, intercalar este vector al siguiente grafo más grande de manera que proporcione una buena aproximación al siguiente vector de Fiedler.
-	\item \textbf{Refinamiento}. Dado un vector de Fiedler de un grafo aproximado, calcular un vector más preciso de manera eficiente.
+	\item \textbf{Contracción}. La construcción de una serie de grafos más pequeños, que conserven la estructura del grafo original. En esta primera fase el grafo se reduce mediante la fusión de sus vértices. La fusión de los vértices se realiza de forma iterativa: de un grafo se crea un nuevo grafo más grande y de este nuevo grafo más grande se crea un grafo aún más grande. Esto se hace hasta que una pequeña cierta magnitud es alcanzada. De este modo se crean grafos con diferentes magnitudes. 
+	\item \textbf{Intercalación}. Dado un vector de Fiedler de un grafo más pequeño que el original, intercalar este vector al siguiente grafo más grande de manera que proporcione una buena aproximación al siguiente vector de Fiedler. Así se crea una partición del grafo más grande con la magnitud más pequeña. 
+	\item \textbf{Refinamiento}. La partición calculada iterativamente se proyecta de nuevo al grafo original. En cada iteración se aplica un refinamiento usando el algoritmo del cociente de Rayleigh. El refinamiento se usa para asegurar que el cálculo más preciso de manera eficiente del vector de Fiedler. En este proceso se usa el algoritmo del cociente de Rayleigh (ver Figura) dado el el vector de Fiedler de un grafo aproximado. 
 \end{itemize}
 
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.8]{Figures/rayleigh}
+	\vspace{1mm}
+	\caption{Iteración del cociente de Rayleigh.}
+	\label{rayleigh}
+\end{figure}
+
+Con estas mejoras respecto al algoritmo de bisección espectral, La técnica multinivel mejorará significativamente los resultados, tanto en términos de calidad y tiempo de funcionamiento.
+
+\newpage
 \subsection{Ejemplo de codificación}
 
-Para la codificación del algoritmo MSB se ha usado uno de los algoritmos más exitosos para el problema de partición de grafos, el algoritmo METIS.
+Para la codificación del algoritmo MSB se ha usado uno de los algoritmos más exitosos para el problema de partición de grafos, el algoritmo METIS. METIS\cite{MeTis} es un algoritmo que se enfoca en minimizar el número de aristas cruzadas de cada partición y distribuir el número de nodos de manera uniforme entre las particiones. La Figura \ref{metis} muestra el algoritmo:
 
-METIS\cite{MeTis} es un algoritmo que se enfoca en minimizar el número de aristas cruzadas de cada partición y distribuir el número de nodos de manera uniforme entre las particiones. Como algoritmo MSB, con METIS, los grafos se dividen en tres fases (ver sección \ref{msb_description}). La primera fase es la fase de engrosamiento, la segunda la fase de partición y la tercera y última fase la fase de no engrosamiento (ver Figura \ref{metis}). A continuación, se muestra una breve explicación de estas fases dentro del algoritmo METIS.
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.8]{Figures/metis}
+	\vspace{1mm}
+	\caption{Algoritmo METIS.}
+	\label{metis}
+\end{figure}
+
+Como algoritmo MSB, con METIS, los grafos se dividen en tres fases (ver sección \ref{msb_description}). La primera fase es la fase de engrosamiento, la segunda la fase de partición y la tercera y última fase la fase de no engrosamiento (ver Figura \ref{metis}). A continuación, se muestra una breve explicación de estas fases dentro del algoritmo METIS.
 
 \textbf{La fase de engrosamiento}. El objetivo principal de la fase de engrosamiento dentro del algoritmo METIS es reducir el grafo original a un grafo más pequeño, que aún contiene suficiente información para hacer una buena partición. Esto sucede con el uso de un algoritmo de coincidencia. Hay varios algoritmos de coincidencia, los más destacados son el algoritmo de coincidencia pesada y el algoritmo de coincidencia aleatoria. El algoritmo de coincidencia pesada inicialmente coincide con los pesos de las aristas más pesados. En cambio, el algoritmo de coincidencia aleatoria selecciona aleatoriamente los vértices más conectados (con más conexiones entre dos vértices). 
 
@@ -309,12 +328,13 @@ METIS\cite{MeTis} es un algoritmo que se enfoca en minimizar el número de arist
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale=0.7]{Figures/metis}
+	\includegraphics[scale=0.7]{Figures/fases}
 	\vspace{1mm}
-	\caption{Matriz de adyacencia.}
-	\label{metis}
+	\caption{Fases de MSB.}
+	\label{fases}
 \end{figure}
 
+\newpage
 Las características clave del algoritmo son las siguientes:
 
 \begin{itemize}

@@ -1,79 +1,58 @@
-Para finalizar, veremos una comparativa entre los algoritmos que hemos analizado en las secciones previas, tras ser aplicados sobre grafos aleatorios, también conocidos como grafos de Erdös y Renyi o grafos binomiales. Pero, en primer lugar, definimos el concepto de grafo aleatorio.
+En esta sección, veremos una comparativa entre los algoritmos que hemos descrito en las secciones previas, tras ser aplicados sobre diferentes grafos aleatorios, también conocidos como grafos de Erdös y Renyi\cite{ErdosRenyi} o grafos binomiales. Pero antes de ver la comparativa, en primer lugar, definimos el concepto de grafo aleatorio.
 
-Se dice que un grafo es aleatorio si la presencia y colocación de sus aristas siguen una distribución aleatoria. Por tanto, un grafo aleatorio no puede diseñarse con ningún criterio concreto. La noción del modelo de un grafo aleatorio incluye el límite entre cada par de nodos con igual probabilidad, independientemente de los extremos. Concretamente del modelo se denomina: modelo de Erdös y Renyi. El nombre del modelo proviene de los matemáticos Paul Erdős y Alfréd Rényi\cite{ErdosRenyi}, quienes lo presentaron por primera en 1959.
+Se dice que un grafo es aleatorio si la presencia y colocación de sus aristas siguen una distribución aleatoria. Por tanto, un grafo aleatorio no puede diseñarse bajo ningún criterio concreto. Los grafos aleatorios también son conocidos como grafos de Erdös y Renyi porqué utilizan el modelo de Erdös y Renyi. El nombre de este modelo proviene de los matemáticos Paul Erdős y Alfréd Rényi, quienes lo presentaron por primera en 1959.
 
-El modelo Erdös y Renyi (a veces nombrado en la literatura abreviado como modelo ER), es el método que se ha empleado en la generación de los grafos aleatorios. Para ello, un grafo se construye mediante la conexión de los nodos al azar. Cada arista se incluye en el grafo con una probabilidad de \textit{p} independiente de las otras aristas del grafo. De manera equivalente, todos los grafos con \textit{n} nodos y \textit{m} aristas tienen la misma probabilidad de:
+El modelo de Erdös y Renyi (a veces abreviado como modelo ER), es el método que se ha empleado para la generación de los grafos aleatorios de prueba que se usan en la comparativa de las codificaciones. Para ello, los grafos se han construido mediante la conexión de los nodos al azar. Cada arista se incluye en el grafo con una probabilidad de \textit{p} independiente de las otras aristas del grafo. De manera equivalente, todos los grafos con \textit{n} nodos y \textit{m} aristas tienen la misma probabilidad. Esa probabilidad es:
 
 \begin{center}
 	$p^m(1 - p)^{{n \choose 2} - m}$
 \end{center}
 
-Para la implementación de los grafos aleatorios se ha utilizado la librería de Python:  \href{https://networkx.github.io/documentation/latest/reference/generated/networkx.generators.random\_graphs.erdos\_renyi\_graph.html?highlight=erdos\%20renyi#networkx.generators.random\_graphs.erdos\_renyi\_graph}{NetworkX}. Concretamente el método que se ha utilizado nos devuelve un grafo no dirigido, donde se elige cada una de las aristas posibles con probabilidad \textit{p} = 0.7, según el número de nodos de entrada \textit{n}. En particular, el caso p = 0.7 se corresponde con el caso en el que todos los grafos en \textit{n} vértices se eligen con mayor probabilidad. Los pesos de las aristas también se han generado aleatoriamente dentro de un intervalo de pesos de 1 a 20.
+En la implementación de los grafos aleatorios se ha utilizado la librería de Python:  \href{https://networkx.github.io/documentation/latest/reference/generated/networkx.generators.random\_graphs.erdos\_renyi\_graph.html?highlight=erdos\%20renyi#networkx.generators.random\_graphs.erdos\_renyi\_graph}{NetworkX}. Concretamente el método que se ha utilizado nos devuelve un grafo no dirigido, donde se elige cada una de las aristas posibles con probabilidad \textit{p} = 0.7, según el número de nodos de entrada \textit{n}. En particular, el caso \textit{p} = 0.7 se corresponde con el caso en el los \textit{n} vértices se eligen con mayor probabilidad (\textit{p} < 0.5). Los pesos de las aristas también se han generado aleatoriamente dentro de un intervalo de pesos de 1 a 20.
 
-Podemos observar la codificación utilizada a continuación, que se ejecuta en tiempo $O$($n^2$).
+Podemos observar la codificación acabada de describir, que se ejecuta en tiempo $O$($n^2$).
 
 \lstset{language=Python}    
 \begin{lstlisting}[frame=single]  
 G = nx.erdos_renyi_graph(n, 0.7)
 
 for u, v in G.edges():
-if u != v:
-G[u][v]['label'] = random.randrange(1, 20)
+  if u != v:
+    G[u][v]['label'] = random.randrange(1, 20)
 \end{lstlisting}
 
-Finalmente, en la tabla siguiente, se presenta una comparación entre los algoritmos codificados sobre los grafos aleatorios de este trabajo en términos de tiempo computacional. Se muestra el tiempo (en segundos) en completar ejecuciones sobre conjuntos de grafos aleatorios para distintos números de vértices, \textit{n}. Para ello se ha utilizado un MacBook Pro, con un procesador de cuatro núcleos de 2.8 GHz y con 16 GB de memoria RAM. Es de esperar que, a mayor número de vértices, los algoritmos tengan mayor tiempo de ejecución.
+Y en la tabla siguiente, se presenta una comparación entre los algoritmos codificados sobre los grafos aleatorios generados en este informe, en términos de tiempo computacional. Se muestra el tiempo (en segundos) en completar las ejecuciones de los algoritmos sobre los grafos aleatorios para distintos números de vértices \textit{n}. Para ello se ha utilizado un MacBook Pro, con un procesador de cuatro núcleos de 2.8 GHz y con 16 GB de memoria RAM. Es de esperar que, a mayor número de vértices, los algoritmos tengan mayor tiempo de ejecución.
 
-\begin{center}
-	\begin{tabular}{|c|c|c|c|}
-		\hline
-		\textit{n} & 307 & 552 & 861 \\
-		\hline
-		Kernighan-Lin & 0.0117 & 0.0214 & 0.0451\\
-		\hline
-		Spectral Bisection & 0.0021 & 0.0031 & 0.0060 \\
-		\hline
-		Multilevel Spectral Bisection & 0.0025 & 0.0031 & 0.0037 \\ 
-		\hline
-	\end{tabular}
-\end{center}
+\renewcommand{\tablename}{Tabla}
+\begin{table}[h]	
+	\begin{center}
+		\begin{tabular}{|c|c|c|c|}
+			\hline
+			\textit{n} & 307 & 552 & 861 \\
+			\hline
+			Kernighan-Lin & 0.0117 & 0.0214 & 0.0451\\
+			\hline
+			Spectral Bisection & 0.0021 & 0.0031 & 0.0060 \\
+			\hline
+			MSB & 0.0025 & 0.0031 & 0.0037 \\ 
+			\hline
+		\end{tabular}
+		\vspace{1mm}
+		\caption{Tabla comparativa de los algoritmos.}
+	\end{center}
+\end{table}
 
-Podemos ver como los algoritmos Kernighan-Lin, Spectral Bisection y Multilevel Spectral Bisection tienen unos tiempos de ejecución similares cuando el número de vértices \textit{n} es más pequeño. Fenómeno que cambia cuando casi se duplican el número de vértices.
+Podemos ver como los algoritmos Kernighan-Lin, Spectral Bisection y Multilevel Spectral Bisection (MSB) tienen unos tiempos de ejecución similares cuando el número de vértices \textit{n} es más pequeño. Fenómeno que cambia cuando casi se duplican el número de vértices a 552. 
 
-Si nos fijamos con el algoritmo Kernighan-Lin, cuando el número de vértices inicialmente casi se dobla, el tiempo de ejecución también lo hace. Parece que el algoritmo va aumentando el tiempo de ejecución a medida que aumenta el número de vértices de manera proporcionada.
+\newpage
+Además, si nos fijamos en el algoritmo Kernighan-Lin, cuando el número de vértices casi se duplican a 552, el tiempo de ejecución del algoritmo también se duplica. Parece que el algoritmo va aumentando el tiempo de ejecución a medida que aumenta el número de vértices de manera proporcionada.
 
-En cambio, el algoritmo Spectral Bisection obtiene unos resultados muy parecidos con Multilevel Spectral Bisection, pero cuando el número de vértices empieza a ser muy elevado, la eficiencia baja drásticamente. Que no es el caso del algoritmo Multilevel Spectral Bisection.
+En cambio, el algoritmo Spectral Bisection obtiene unos resultados muy parecidos con el algoritmo Multilevel Spectral Bisection (MSB), pero cuando el número de vértices empieza a ser muy elevado, la eficiencia de este algoritmo baja drásticamente. Que no es el caso del algoritmo Multilevel Spectral Bisection (MSB).
 
-Como conclusión global a la comparación entre los algoritmos podemos decir que el algoritmo Multilevel Spectral Bisection es el más eficiente para grafos no dirigidos que se ha codificado, y el algoritmo Kernighan-Lin es el menos eficiente.
+Como conclusión general de esta breve comparación entre los algoritmos podemos decir que el algoritmo Multilevel Spectral Bisection (MSB) es el más eficiente, con tiempos de ejecución más pequeños, para los grafos aleatorios no dirigidos que se ha codificado, y el algoritmo Kernighan-Lin es el algoritmo menos eficiente, con tiempos de ejecución más grandes. También podemos observar que los tiempos de ejecución no son muy grandes, ya que solo se ha medido el tiempo de ejecución de los algoritmos y además el número de vértices totales no es muy grande. Aun así, nos ha permitido ver las diferencias en tiempo de ejecución de las tres codificaciones que se han implementado en este informe.
 
-En las secciones anteriores siempre hemos hablado de minimizar el tamaño de partición en ciertas condiciones. Pero para todos menos algunos gafos bien estructurados o pequeños, la minimización real no es factible porque tomaría mucho tiempo. Encontrar la solución óptima para el problema de partición de grafos es para todos los casos no triviales que se sabe que son NP-completos\cite{NPCompleteness}.
+La elección del tiempo de ejecución frente a la calidad de las particiones para la comparación de los algoritmos ha dependido del hecho que el problema de partición de grafos sea un problema NP-completo\cite{NPCompleteness}. Que recordemos que esto quiere decir que los algoritmos puede que no nos ofrezcan la solución óptima en cada ejecución, pero sí que nos dan una buena solución al menos la mayor parte del tiempo. O sea, que como es difícil comparar la calidad de las particiones entre los diferentes algoritmos se elijó la medida del tiempo computacional utilizado para cada algoritmo. Por otro lado, en el contexto de matriz-vector de los algoritmos que utilizan la bisección espectral, también solo nos interesaba el tiempo total. 
 
-En pocas palabras, esto significa que no hay un algoritmo conocido que sea mucho más rápido que probar todas las combinaciones posibles y hay pocas esperanzas de que se encuentre uno. Un poco más exacto (pero aún ignorando algunos fundamentos de la teoría NP) significa que la bisección del grafo cae en una gran clase de problemas, todos los cuales pueden transformarse entre sí y para los cuales no hay algoritmos conocidos que puedan resolver el problema en tiempo polinómico en el tamaño de la entrada.
+En el caso de los algoritmos Spectral Bisection y Multilevel Spectral Bisection (MSB), podría ser que, si solo utilizamos una determinada matriz una vez, el algoritmo rápido que entrega solo particiones de calidad media en general podría ser más rápido que el algoritmo más lento con particiones de mejor calidad. Pero si usamos la misma matriz (o diferentes matrices con el mismo grafo) a menudo, el algoritmo más lento podría ser preferible. De hecho, hay incluso más factores a considerar. Hasta ahora queríamos que las diferentes particiones tuvieran el mismo tamaño. Como hemos visto en la sección 2.2, podría ser una ventaja aceptar particiones de un tamaño ligeramente diferente para lograr una mejor solución. Todo esto debería demostrar que no existe un mejor algoritmo único para todas las situaciones y que los diferentes algoritmos descritos en las anteriores secciones pueden tener diferentes aplicaciones.
 
-Entonces, en lugar de encontrar la solución óptima, recurrimos a la heurística. Es decir, tratamos de usar algoritmos que pueden no ofrecer la solución óptima cada vez, pero que darán una buena solución al menos la mayor parte del tiempo. Como veremos, a menudo hay una compensación entre el tiempo de ejecución y la calidad de la solución. Algunos algoritmos se ejecutan bastante rápido, pero solo encuentran una solución de calidad media, mientras que otros tardan mucho tiempo pero ofrecen soluciones excelentes e incluso otros se pueden ajustar entre ambos extremos.
-
-La elección del tiempo frente a la calidad depende de la aplicación prevista. Para el diseño VLSI o el diseño de la red, puede ser aceptable esperar mucho tiempo porque una solución aún mejor puede ahorrar dinero real.
-
-Por otro lado, en el contexto de la multiplicación escasa de matriz-vector, solo nos interesa el tiempo total. Por lo tanto, el tiempo de ejecución para la partición del gráfico debe ser menor que el tiempo ahorrado por la multiplicación de matriz-vector más rápida.
-Si solo utilizamos una determinada matriz una vez, un algoritmo rápido que entrega solo particiones de calidad media en general podría ser más rápido que un algoritmo más lento con particiones de mejor calidad. Pero si usamos la misma matriz (o diferentes matrices con el mismo gráfico) a menudo, el algoritmo más lento podría ser preferible.
-
-De hecho, hay incluso más factores a considerar. Hasta ahora queríamos que las diferentes particiones tuvieran el mismo peso. Como veremos en la sección 2.2, podría ser una ventaja aceptar particiones de un tamaño ligeramente diferente para lograr un mejor
-
-tamaño de corte
-Todo esto debería demostrar que no existe un mejor algoritmo único para todas las situaciones y que los diferentes algoritmos descritos en los siguientes capítulos tienen sus aplicaciones.
-
-
-Después de crear las particiones, se calcula la distribución de nodos y bordes dentro de las particiones y entre las particiones. Esto ofrece una idea de cómo las proporciones de partición se desvían entre sí. Estas particiones se utilizan en dos algoritmos de validación diferentes, Pagerank y Breadth First Search, para ver la diferencia en la comunicación entre las particiones.
-Este proyecto se centrará en particionar usando los valores de partición en los nodos del gráfico completo.
-Los algoritmos de partición y los algoritmos distributivos se realizarán inicialmente para gráficos más pequeños. Luego, se utilizarán tipos de gráficos más grandes y diferentes con diferentes atributos para probar si el código
-sigue produciendo resultados precisos.
-
-además la eficiencia cambia con el número de particiones.
-
-Los algoritmos de partición probablemente producirán resultados diferentes dependiendo de los atributos del gráfico de entrada.
-
-Los algoritmos de particionamiento complejos tardan más en calcular las particiones. Sin embargo, crean particiones que a menudo son más equilibradas y / o minimizan la comunicación entre particiones mejor que los algoritmos de partición menos complejos. En general, el objetivo es reducir el tiempo de cálculo
-de un proceso. En consecuencia, en algunos casos un algoritmo menos complejo sería preferible a uno más complejo
-
-
-Considere un ejemplo para elaborar este punto un poco más. El tiempo para calcular un gráfico grande y bien dividido con una buena distribución de la carga de trabajo y conexiones de borde mínimas podría ser bastante alto, digamos 3 horas. Estimando el tiempo de 30 minutos para calcular los resultados con el uso de estas particiones, esto suma un total de 3.5 horas. Si, por otro lado, usamos un método de particionamiento menos refinado, el proceso de particionamiento en sí mismo puede demorar una hora y el tiempo posterior
-para calcular resultados 1.5 horas con un tiempo total de 2.5 horas. En este caso, sería rentable utilizar el método de partición menos refinado. Sin embargo, si queremos hacer múltiples cálculos utilizando los gráficos particionados, un método más refinado sería mejor. Un enfoque ampliamente utilizado para particionar gráficos grandes es el complejo algoritmo METIS.
+Aunque en general, los algoritmos de particionamiento complejos tardan más en calcular las particiones. Sin embargo, crean particiones que a menudo son más equilibradas y/o minimizan las conexiones entre particiones son mejores que los algoritmos de partición menos complejos. Ya que, el objetivo es reducir el tiempo de cálculo de una ejecución. En consecuencia, en algunos casos un algoritmo menos complejo sería preferible a uno más complejo. También nos encontramos con que la eficiencia cambia con el número de particiones y que los algoritmos producen resultados diferentes dependiendo de los atributos del grafo de entrada.
