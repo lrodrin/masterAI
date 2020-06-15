@@ -1,50 +1,60 @@
 \section{Partición de Grafos}
 
-Los grafos son una forma eficiente de representar estructuras de datos complejas y contienen todo tipo de información. Cuando un grafo se acerca o incluso excede los límites de memoria, se vuelve más difícil y muy costoso de procesar si no está particionado. La solución es dividir el grafo de manera que las particiones se puedan cargar en la memoria. Al particionar un grafo, los nodos y las aristas se deben dividir uniformemente para tener un buen equilibrio en la distribución de los recursos. Esto es necesario para mantener la máxima eficiencia.
+Los grafos son una forma eficiente de representar estructuras de datos complejas y contienen todo tipo de información. Cuando un grafo se acerca o incluso excede los límites de memoria, se vuelve más difícil y muy costoso de procesar si no está particionado. 
 
-La partición de grafos es una disciplina ubicada entre las ciencias computacionales y la matemática aplicada. La mayoría del trabajo previo en esta disciplina fue realizada por matemáticos que se enfocaron principalmente en lograr el equilibrio en la distribución de los recursos repartiendo uniformemente estos recursos entre las particiones.
+La solución es dividir el grafo de manera que las particiones se puedan cargar en la memoria. Al particionar un grafo, los nodos y las aristas se deben dividir uniformemente para tener un buen equilibrio en la distribución de las recursos computacionales. Esto es necesario para mantener la máxima eficiencia.
+
+La partición de grafos es una disciplina ubicada entre las ciencias computacionales y la matemática aplicada. La mayoría del trabajo previo en esta disciplina fue realizada por matemáticos que se enfocaron principalmente en lograr el equilibrio en la distribución de los recursos computacionales repartiendo uniformemente estos recursos entre las particiones.
 
 En los últimos años los grafos han sido ampliamente utilizados, en consecuencia, el problema de la partición de grafos también ha sido ampliamente estudiado. El problema de la partición de grafos es un problema muy conocido ya que se deriva de situaciones del mundo real que tiene aplicaciones en muchas áreas. 
 
-La primera aplicación del problema fue en la partición de componentes de un circuito en un conjunto de tarjetas que juntas realizaban tareas en un dispositivo electrónico. Las tarjetas tenían un tamaño limitado, de tal manera que el dispositivo no llegara a ser muy grande, y el número de elementos de cada tarjeta estaba restringido. Si el circuito era demasiado grande podía ser dividido en varias tarjetas las cuales estaban interconectadas, sin embargo, el coste de la interconexión era muy elevado por lo que el número de interconexiones debía ser minimizado.
+La primera aplicación del problema fue en la partición de componentes de un circuito en un conjunto de tarjetas, que juntas realizaban tareas en un dispositivo electrónico. Las tarjetas tenían un tamaño limitado, de tal manera que el dispositivo no llegara a ser muy grande, y el número de elementos de cada tarjeta estaba restringido. Si el circuito era demasiado grande podía ser dividido en varias tarjetas las cuales estaban interconectadas, sin embargo, el coste de la interconexión era muy elevado por lo que el número de interconexiones debía ser minimizado.
 
 La aplicación descrita fue presentada en \cite{KernighanLin}, en la cual se define un algoritmo eficiente para encontrar buenas soluciones. En la aplicación, el circuito es asociado a un grafo y las tarjetas como subconjuntos de una partición. Los nodos del grafo son representados por los componentes electrónicos y las aristas forman las interconexiones entre los componentes y las tarjetas.
 
-Los algoritmos de partición de grafos utilizados son a menudo complejos. El uso de tales algoritmos da como resultado un procesamiento computacionalmente intenso del grafo que lleva una cantidad considerable de tiempo. Se pueden utilizar algoritmos menos complejos para reducir este tiempo, a costa de una distribución de los recursos menos equilibrada en las particiones.
+Los algoritmos de partición de grafos utilizados son a menudo complejos. El uso de tales algoritmos da como resultado un procesamiento computacionalmente intenso del grafo que lleva una cantidad considerable de tiempo. Se pueden utilizar algoritmos menos complejos para reducir este tiempo, a costa de una distribución de los recursos menos equilibrada.
 
-El enfoque del informe se centra en la división de grafos en dos partes. Se ha elegido la partición en dos partes porque es la forma más sencilla de comparar las particiones con un método de \textit{"bisection"} (que siempre crea dos particiones). Además, asumiremos que la forma más eficiente de particionar todos los tipos de grafos no se limita a un solo algoritmo de partición. La codificación de tres algoritmos se utiliza para examinar el problema de partición de grafos: Kernighan-Lin, Spectral Bisection y Multilevel Spectral Bisection (ver sección \ref{chapter:Algoritmos}).
+El enfoque del informe se centra en la división de grafos en dos particiones. Se ha elegido la partición en dos partes porque es la forma más sencilla de comparar las particiones con un método de \textit{"bisección"} (ver Definición \ref{bisection}). 
 
-Su objetivo se centra en particionar diferentes grafos usando los algoritmos anteriores. Inicialmente se han usado grafos más pequeños para describir los algoritmos de partición y la hora de compararlos se han usado grafos más grandes para probar si el código sigue produciendo computacionalmente buenos resultados.
+Además, asumiremos que la forma más eficiente de particionar todos los tipos de grafos no se limita a un solo algoritmo de partición. La codificación de tres algoritmos se ha utilizado para examinar el problema de partición de grafos. Estos algoritmos son: Kernighan-Lin, Spectral Bisection y Multilevel Spectral Bisection (ver sección \ref{chapter:Algoritmos}).
 
+En este informe se muestra inicialmente el uso de grafos más pequeños para describir los tres algoritmos anteriores, y la hora de compararlos se han usado grafos más grandes para probar si las codificaciones siguen produciendo computacionalmente buenos resultados.
+
+\begin{mydef}\label{bisection}
+	En matemáticas, el método de bisección es un algoritmo de resolución numérica de ecuaciones no lineales que trabaja dividiendo un subconjunto a la mitad y seleccionando el subconjunto que genera la solución. 
+\end{mydef}
+
+\newpage
 \section{Descripción del problema de Partición de Grafos}
 
 El problema de partición de grafos puede formularse como un problema de programación lineal. La programación lineal se dedica a maximizar o minimizar (optimizar) una función lineal, denominada función objetivo, de tal forma que las variables de dicha función están sujetas a una serie de restricciones expresadas mediante un sistema de ecuaciones o inecuaciones también lineales. 
 
-\newpage
-Concretamente, el problema de partición de grafos puede formularse como un problema de programación lineal entera porqué los pesos de las aristas normalmente toman valores enteros. Los problemas de programación lineal entera generalmente están relacionados directamente con problemas de optimización combinatoria, esto genera que al momento de resolver los problemas de programación lineal entera se encuentren restricciones dado el coste computacional de resolverlos. Por ese motivo los algoritmos que buscan soluciones a este problema no pueden garantizar que la solución encontrada sea la óptima. 
+Concretamente, el problema de partición de grafos puede formularse como un problema de programación lineal entera porqué los pesos de las aristas normalmente toman valores enteros. 
+
+Los problemas de programación lineal entera generalmente están relacionados directamente con problemas de optimización combinatoria, esto genera que al momento de resolver los problemas de programación lineal entera se encuentren restricciones dado el coste computacional de resolverlos. Por ese motivo los algoritmos que buscan soluciones a este problema no pueden garantizar que la solución encontrada sea la óptima. 
 
 El problema de partición de grafos ha sido denominado como un problema NP-completo\cite{NPCompleteness}, lo que implica que las soluciones para él no pueden ser encontradas en tiempos razonables. Entonces, en lugar de encontrar la solución óptima para el problema, recurriremos a algoritmos que pueden no ofrecer la solución óptima pero que dan una buena solución, al menos la mayor parte del tiempo.
 
 La definición formal del problema tiene como objetivo principal, dividir un grafo en \textit{"k"} subgrafos. La única restricción trascendental para resolver el problema es que tiene que haber un número mínimo y máximo de nodos pertenecientes a cada subgrafo. Todos los subgrafos deben tener incorporados al menos 2 nodos y como máximo el doble de los nodos que podrían existir para cada subgrafo si se divide el grafo total en \textit{"k"} subgrafos con la misma cantidad de nodos. En definitiva, que las aristas que unen los subgrafos pesen lo menos posible y de esa manera poder evitar una cierta \textit{"dependencia trascendental"} entre ellos.
 
-La función objetivo es la que pretende minimizar las aristas que unen a los subgrafos. Para ello se analiza su peso, es decir, se intenta maximizar el peso de las aristas que pertenecen a un subgrafo. Esta función es a la que le incorporamos la restricción comentada anteriormente, el número mínimo y máximo de nodos por subgrafo.
+La función objetivo es la que pretende minimizar las aristas que unen a los subgrafos. Para ello se analiza su peso. Esta función es a la que le incorporamos la restricción comentada anteriormente, el número mínimo y máximo de nodos por subgrafo.
 
-A continuación, planteamos el problema de partición de grafos desde un punto de vista más riguroso.
+A continuación, planteamos el problema de partición de grafos desde un punto de vista más formal.
 
 \begin{mydef}\label{def:grafo}
 	Un grafo $G$ es un par ordenado $G = (V, E)$, donde $V$ es un conjunto de vértices y $E$ es un conjunto de aristas.
 \end{mydef}
 
-Sea $G = (V, E)$ un grafo formado por un conjunto de $n$ vértices $V$ y un conjunto de $m$ aristas $E$.
-Dado el grafo $G$, el problema de partición de grafos busca asignar a cada vértice $v \in V$ un entero $p(v) \in \{1, 2, ..., k\}$ tal que:
+Dado el grafo $G = (V, E)$ que está formado por un conjunto de $n$ vértices $V$ y un conjunto de $m$ aristas $E$, el problema de partición de grafos busca asignar a cada vértice $v \in V$ un entero $p(v) \in \{1, 2, ..., k\}$ tal que:
 
 \begin{itemize}
 	\item $p(v) \neq p(u) \, \forall\{u, v\} \in E$
-	\item k es mínimo
+	\item k sea mínimo
 \end{itemize}
 
-De las particiones sobre el conjunto de vértices $V$, una solución $S$ es representada por un conjunto de $k$ clases de pesos, $S = \{S_{1}, ... S_{k}\}$. Para que la solución $S$ sea factible, es necesario que se cumplan las siguientes restricciones a la vez que se minimice el número de clases de k:
+De las particiones sobre el conjunto de vértices $V$, una solución $S$ es representada por un subconjunto de $k$ clases de pesos, $S = \{S_{1}, ... S_{k}\}$. Para que la solución $S$ sea factible, es necesario que se cumplan las siguientes restricciones a la vez que se minimice el número de clases de k.
 
+\newpage
 \begin{equation}
 	\displaystyle \bigcup_{i = 1} ^ {k} S_{i} = V
 \end{equation}
@@ -57,7 +67,6 @@ De las particiones sobre el conjunto de vértices $V$, una solución $S$ es repr
 	\displaystyle \forall u, v \in S_{i}, \{u, v\} \notin E \, (1 \leq i \leq k)
 \end{equation}
 
-\newpage
-Las restricciones (1.1) y (1.2) establecen que la solución $S$ debe ser una partición del conjunto de vértices $V$ , mientras que la restricción (1.3) obliga a que ningún par de vértices adyacentes sean asignados a la misma clase, es decir, que todas las clases de pesos en la solución deben formar conjuntos independientes.
+Las restricciones (1.1) y (1.2) establecen que la solución $S$ debe ser una partición del subconjunto de vértices $V$ , mientras que la restricción (1.3) obliga a que ningún par de vértices adyacentes sean asignados a la misma clase $k$, es decir, que todas las clases de $k$ pesos en la solución deben formar subconjuntos independientes.
 
 

@@ -2,7 +2,7 @@
 \contentsline {chapter}{Resumen}{1}{chapter*.1}%
 \contentsline {chapter}{\numberline {1}Introducción}{3}{chapter.1}%
 \contentsline {section}{\numberline {1.1}Partición de Grafos}{3}{section.1.1}%
-\contentsline {section}{\numberline {1.2}Descripción del problema de Partición de Grafos}{3}{section.1.2}%
+\contentsline {section}{\numberline {1.2}Descripción del problema de Partición de Grafos}{4}{section.1.2}%
 \contentsline {chapter}{\numberline {2}Algoritmos}{6}{chapter.2}%
 \contentsline {section}{\numberline {2.1}Kernighan-Lin}{7}{section.2.1}%
 \contentsline {subsection}{\numberline {2.1.1}Descripción}{7}{subsection.2.1.1}%
