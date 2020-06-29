@@ -1,0 +1,19 @@
+Vamos a realizar un estudio acerca de los datos del hundimiento del Titanic a través de la herramienta WEKA. Los datos se encuentran en la dirección http://www.hakank.org/weka/titanic.arff y corresponden a las características de los 2201 pasajeros del Titanic. Estos datos son reales y se han obtenido de "Report on the Loss of the ‘Titanic’ (S.S.)" (1990), British Board of Trade Inquiry Report_ (reprint), Gloucester, UK: Allan Sutton Publishing.
+
+Para realizar esta práctica, debe cargar el dataset de Titanic que se ha descargado anteriormente y crear un documento PDF contestando a las siguientes preguntas:
+
+1) Cuando ejecutamos el algoritmo Apriori de Weka, podemos utilizar diferentes umbrales de soporte. Dependiente de qué umbrales de soporte pongamos, nos saldrán más o menos itemsets. Como resultado, Weka nos proporciona un conjunto de items L(1)...L(4) cuyos números van variando conforme cambiamos el umbral de soporte. Responda a las siguientes preguntas, utilizando capturas de pantalla y explicando los resultados de manera clara y concisa: 
+	1.1) ¿Qué representan cada uno de estos conjuntos de items? 
+	1.2) ¿Puede existir L(0)? Explique por qué
+	1.3) ¿Puede existir L(5)? Explique por qué
+	1.4) ¿Puede L(1) tomar un valor mayor que 10? Explique de manera teórica que eso no es posible 	y compruebelo experimentalmente.
+
+2) Además de los valores de soporte, el algoritmo Apriori de Weka nos permite utilizar diferentes umbrales de soporte y confianza. Responda a las siguientes preguntas, utilizando capturas de pantalla y explicando los resultados de manera clara y concisa: 
+	2.1) ¿Es posible que una regla tenga un valor de soporte inferior a su confianza? Explica por 	qué y demuestrelo experimentalmente
+	2.2) ¿Es posible que una regla tenga un valor de confianza inferior a su suporte? Explica por 	qué y demuestrelo experimentalmente
+	2.3) La variación del umbral de confianza (dado un umbral fijo de soporte) no afecta a los 	conjuntos L(1)...L(4). ¿Por qué?
+
+
+3) Usaremos ahora, 0.75 como valor mínimo de soporte y de confianza 0.00. Comprobamos que obtenemos dos reglas de asociación, sin embargo, L(2) es 1. ¿Qué quiere decir esto? ¿A qué corresponde L(2)? ¿Qué itemset representa?
+
+4) Analiza el conjunto de reglas que salen al aplicar diferentes umbrales de soporte y confianza. Coge una regla, la que veas más interesante, y coméntala. Explica sus valores de métricas y qué representan, y el significado de la regla, es decir, el conocimiento que te aporta dicha regla.
