@@ -47,11 +47,11 @@ Responde a las siguientes preguntas, utilizando capturas de pantalla y explicand
 
 \part ¿Puede existir L(0)? Explica porqué.
 
-No. El conjunto de ítems L(0) representaría el número de conjuntos de ítems de tamaño 0, es decir, el conjunto de ítems vacío, que no es válido como conjunto de ítems.
+No puede existir L(0). El conjunto de ítems L(0) representa el número de conjuntos de ítems de tamaño 0, es decir, el número de conjuntos de ítems vacíos, y el conjunto vacío ($\emptyset$) no es válido como conjunto de ítems.
 
 \part ¿Puede existir L(5)? Explica porqué.
 
-No. Porqué el dataset de Titanic solo contiene cuatro atributos diferentes. (ver Figura \ref{Captura_1_2}). 
+No puede existir L(5) porqué el dataset de Titanic solo contiene cuatro atributos diferentes. (ver Figura \ref{Captura_1_2}). 
 
 \begin{figure}[h]
 	\begin{center}
@@ -63,9 +63,11 @@ No. Porqué el dataset de Titanic solo contiene cuatro atributos diferentes. (ve
 
 \part ¿Puede L(1) tomar un valor mayor que 10? Explica de manera teórica que eso no es posible y compruébalo experimentalmente.
 
-No. El número de conjuntos de ítems de tamaño 1, como máximo, será 9.  Ya que el conjunto, como máximo, puede formarse con los diferentes valores de cada atributo del dataset. En este caso, el dataset de Titanic, contiene 9 valores diferentes, como vemos a continuación:
+L(1) no puede tomar un valor mayor que 10. El número de conjuntos de ítems de tamaño 1 será 9. Ya que, como máximo, el número de conjuntos de ítems de tamaño 1, cuenta con los diferentes valores de cada atributo del dataset. 
 
 \newpage
+En este caso, el dataset de Titanic, contiene 9 valores diferentes:
+
 \begin{itemize}
 	\item Class ("1st", "2nd", "3rd", "Crew")
 	\item Age {"Adult", "Child"}
@@ -73,7 +75,7 @@ No. El número de conjuntos de ítems de tamaño 1, como máximo, será 9.  Ya q
 	\item Survived {"Yes", "No"}
 \end{itemize}
 
-El algoritmo Apriori siempre comienza obteniendo los itemsets más fecuentes de tamaño 1. Donde, el número de ocurrencias de estos es 1. Para comprobarlo experimentalmente, el umbral de confianza debe ser igual a 1. (ver Figura \ref{Captura_1_3})
+Para comprobarlo experimentalmente, el umbral de confianza debe ser igual a 1. (ver Figura \ref{Captura_1_3})
 
 \begin{figure}[h]
 	\centering
@@ -90,7 +92,7 @@ El algoritmo Apriori siempre comienza obteniendo los itemsets más fecuentes de 
 \begin{parts}
 \part ¿Es posible que una regla tenga un valor de soporte inferior a su confianza? Explica porqué y demuéstralo experimentalmente.
 
-Sí. Lo podemos volver a ver en la Figura \ref{Captura_1_1}.
+Sí. Lo podemos volver a ver en la Figura \ref{Captura_1_1}. Puede ser que la proporción de los conjuntos de ítems dentro del dataset sea alta y que la frecuencia co aparezca mucho en el dataset y la regla que contiene ese conjunto de datos tenga una frecuencia baja
 
 \part ¿Es posible que una regla tenga un valor de confianza inferior a su suporte? Explica porqué y demuéstralo experimentalmente.
 
@@ -98,15 +100,15 @@ Sí, ver Figura \ref{Captura_1_4}.
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale=0.5]{Captura_1_4.png}	% TODO
-	\caption{Soporte = 0.75 y confianza = 0.00.}
+	\includegraphics[scale=0.5]{Captura_1_4.png}
+	\caption{Soporte = 0.7 y confianza = 0.5.}
 	\label{Captura_1_4}
 \end{figure}
 
-\part La variación del umbral de confianza (dado un umbral fijo de soporte) no afecta a los 	conjuntos L(1)... L(4). ¿Por qué?
+\part La variación del umbral de confianza (dado un umbral fijo de soporte) no afecta a los conjuntos L(1)... L(4). ¿Por qué?
 \end{parts}
 
-
+Porqué la variación del umbral de confianza es una métrica enfocada para las reglas, y mide la frecuencia con que se pueden encontrar. En cambio, el umbral de soporte es una métrica enfocada para los conjuntos de ítems, que mide la proporción de estos dentro del dataset. Y como los  conjuntos L(1)... L(4) representan el número de apariciones de conjuntos de ítems según su tamaño dentro del dataset, el umbral les afectará.
 
 % Pregunta 3
 {\question Usaremos ahora, 0.75 como valor mínimo de soporte y de confianza 0.00. Comprobamos que obtenemos dos reglas de asociación, sin embargo, L(2) es 1. ¿Qué quiere decir esto? ¿A qué corresponde L(2)? ¿Qué itemset representa?}
@@ -123,7 +125,7 @@ Ver Figura \ref{Captura_1_5}.
 % Pregunta 4
 {\question Analiza el conjunto de reglas que salen al aplicar diferentes umbrales de soporte y confianza. Coge una regla, la que veas más interesante, y coméntala. Explica sus valores de métricas y qué representan, y el significado de la regla, es decir, el conocimiento que te aporta dicha regla.}
 
-Después de aplicar diferentes umbrales de soporte y confianza nos quedamos con la siguiente regla:
+Después de aplicar diferentes umbrales de soporte y confianza la regla elegida es:
 \end{questions}
 
 \end{document}
