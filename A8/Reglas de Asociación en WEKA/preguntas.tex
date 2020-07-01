@@ -39,10 +39,10 @@ Responde a las siguientes preguntas, utilizando capturas de pantalla y explicand
 \end{figure}
 
 \begin{enumerate}
-	\item El conjunto de ítems L(1) representa el número de conjuntos de ítems de tamaño 1. Que en este caso son 7.
-	\item El conjunto de ítems L(2) representa el número de conjuntos de ítems de tamaño 2. Que en este caso son 13.
-	\item El conjunto de ítems L(3) representa el número de conjuntos de ítems de tamaño 3. Que en este caso son 8.
-	\item El conjunto de ítems L(4) representa el número de conjuntos de ítems de tamaño 4. Que en este caso son 2.
+	\item El conjunto de ítems L(1) representa el número de conjuntos de ítems de tamaño 1 encontrados en el dataset. Que en este caso son 7.
+	\item El conjunto de ítems L(2) representa el número de conjuntos de ítems de tamaño 2 encontrados en el dataset. Que en este caso son 13.
+	\item El conjunto de ítems L(3) representa el número de conjuntos de ítems de tamaño 3 encontrados en el dataset. Que en este caso son 8.
+	\item El conjunto de ítems L(4) representa el número de conjuntos de ítems de tamaño 4 encontrados en el dataset. Que en este caso son 2.
 \end{enumerate}	
 
 \part ¿Puede existir L(0)? Explica porqué.
@@ -92,18 +92,42 @@ Para comprobarlo experimentalmente, el umbral de confianza debe ser igual a 1. (
 \begin{parts}
 \part ¿Es posible que una regla tenga un valor de soporte inferior a su confianza? Explica porqué y demuéstralo experimentalmente.
 
-Sí. Lo podemos volver a ver en la Figura \ref{Captura_1_1}. Puede ser que la proporción de los conjuntos de ítems dentro del dataset sea alta y que la frecuencia co aparezca mucho en el dataset y la regla que contiene ese conjunto de datos tenga una frecuencia baja
+Es posible. Para explicar el porqué y demostrarlo nos ayudaremos de la métrica \textit{lift} (mejora de la confianza). La métrica lift mide la relación del valor del soporte observado y del valor del soporte esperado de los conjuntos de ítems que forman las reglas, si esos conjuntos fueran independientes. Los conjuntos de ítems estarán positivamente correlacionados si el valor de lift es superior a 1, si el valor es inferior a 1 estarán negativamente correlacionados.
 
-\part ¿Es posible que una regla tenga un valor de confianza inferior a su suporte? Explica porqué y demuéstralo experimentalmente.
+Si una regla puede tener un valor de soporte inferior a su confianza, el valor de lift será superior a uno, y nos indicará que el conjunto de ítems que forman la regla aparecen una cantidad de veces superior a lo esperado, por lo que se puede intuir que la regla hace que los conjuntos de ítems que la forman aparezcan más de lo normal. Por ejemplo, la regla: 
 
-Sí, ver Figura \ref{Captura_1_4}.
+\vspace{2mm}
+\textit{class=crew 885 ==$>$ age=adult 885    $<$conf:(1)$>$ lift:(1.05) lev:(0.02) [43] conv:(43.83)}
+\vspace{2mm}
+
+\newpage
+Vemos que el número de instancias donde aparecen los conjuntos de ítems es elevado (885) y el valor de lift es superior a uno. Eso nos permite saber que existen muchas ocurrencias entre estos dos conjuntos y que la regla será potencialmente útil para predecir en futuros conjuntos de datos. Ha resultado ser la regla número uno (Ver Figura \ref{Captura_1_4}).
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale=0.5]{Captura_1_4.png}
-	\caption{Soporte = 0.7 y confianza = 0.5.}
+	\includegraphics[scale=0.45]{Captura_1_4.png}
+	\caption{soporte inferior a confianza.}
 	\label{Captura_1_4}
 \end{figure}
+
+\part ¿Es posible que una regla tenga un valor de confianza inferior a su suporte? Explica porqué y demuéstralo experimentalmente.
+
+También es posible. Una regla puede tener un valor de confianza inferior a su soporte. Aunque en este caso el valor de lift será inferior a uno, y nos indicará que el conjunto de ítems que forman la regla aparecen una cantidad de veces inferior a lo esperado,por lo que se puede intuir que la regla hace que los conjuntos de ítems que la forman aparezcan menos de lo normal. Por ejemplo, la regla: 
+
+\vspace{2mm}
+\textit{class=3rd 706 ==$>$ age=adult sex=male 462    $<$conf:(0.65)$>$ lift:(0.86) lev:(-0.03) [-72] conv:(0.7)}
+\vspace{2mm}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.45]{Captura_1_5.png}
+	\caption{soporte superior a confianza.}
+	\label{Captura_1_5}
+\end{figure}
+
+Vemos que el número de instancias donde aparecen los conjuntos de datos no son tan elevados (706 y 462), además no lo hacen de la misma forma, y el valor de lift es inferior a uno. Eso nos permite saber que existen menos ocurrencias entre los conjuntos de ítems que forman la regla y que esto tiene un efecto negativo entre ellos. 
+
+Potencialmente no será tan útil para predecir en futuros conjuntos de datos. Ha resultado ser la regla número uno (Ver Figura \ref{Captura_1_5}).
 
 \part La variación del umbral de confianza (dado un umbral fijo de soporte) no afecta a los conjuntos L(1)... L(4). ¿Por qué?
 \end{parts}
@@ -113,19 +137,37 @@ Porqué la variación del umbral de confianza es una métrica enfocada para las 
 % Pregunta 3
 {\question Usaremos ahora, 0.75 como valor mínimo de soporte y de confianza 0.00. Comprobamos que obtenemos dos reglas de asociación, sin embargo, L(2) es 1. ¿Qué quiere decir esto? ¿A qué corresponde L(2)? ¿Qué itemset representa?}
 
-Ver Figura \ref{Captura_1_5}.
+Ver Figura \ref{Captura_1_6}.
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale=0.5]{Captura_1_5.png}
+	\includegraphics[scale=0.5]{Captura_1_6.png}
 	\caption{Soporte = 0.75 y confianza = 0.}
-	\label{Captura_1_5}
+	\label{Captura_1_6}
 \end{figure}
 
+\newpage
 % Pregunta 4
 {\question Analiza el conjunto de reglas que salen al aplicar diferentes umbrales de soporte y confianza. Coge una regla, la que veas más interesante, y coméntala. Explica sus valores de métricas y qué representan, y el significado de la regla, es decir, el conocimiento que te aporta dicha regla.}
 
-Después de aplicar diferentes umbrales de soporte y confianza la regla elegida es:
+Después de aplicar diferentes umbrales de soporte y confianza la regla elegida es la siguiente:
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.5]{Captura_1_7.png}
+	\caption{tripulación que no sobrevivió.}
+	\label{Captura_1_7}
+\end{figure}
+
+Esta regla nos indica que la mayoría de personas de la tripulación que no sobrevivieron al naufragio del Titanic fueron personas adultas. Las métricas que podemos observar en ella son:
+
+\begin{itemize}
+	\item La confianza con valor igual a 1. Lo que significa que para el 100\% de las transacciones del dataset que contienen los conjuntos de ítems que forman la regla, la regla se cumplirá siempre. Es decir, siempre que una persona de la tripulación no haya sobrevivido, esta persona será adulta.
+	\item La mejora de la confianza o lift, con valor igual a 1.05. Como se ha comentado anteriormente, si el valor de lift es superior a 1, permite saber que hay muchas ocurrencias entre los conjuntos de ítems que forman la regla y que dependen unas de ellas. Eso hace que la regla sea potencialmente útil para predecir en futuros conjuntos de datos.
+	\item La influencia o \textit{leverage}, con valor igual a 0.02. Es una métrica muy parecida a lift, ya que mide la 
+	\item La convicción o \textit{conviction}, con valor igual a 33.33. Esta métrica nos indica el grado de implicación de la regla dentro del dataset. Hay cierto grado de implicación, la regla puede señalar un aspecto concluyente del dataset. Es decir, podríamos afirmar que muchas de las personas que no sobrevivieron fueron personas adultas de la tripulación, exactamente un 33.33\% del total de pasajeros a bordo.
+\end{itemize}
+
 \end{questions}
 
 \end{document}
