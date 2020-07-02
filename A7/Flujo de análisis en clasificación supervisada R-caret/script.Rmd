@@ -1,0 +1,35 @@
+---
+title: "| Introducción al paquete caret: \n| \"classification and regression training
+  in R.\"\n"
+author: "Laura Rodriguez Navas"
+output:
+  html_notebook: default
+  pdf_document: default
+---
+
+El paquetecaret[2, 1] se est ́a convirtiendo durante los ́ultimos a ̃nos en un referente clave para realizar
+tareas de clasificaci ́on y regresi ́on enR. Tambi ́en podr ́ıamos mencionar otro paquete,rattle, con su ́util in-
+terfaz gr ́afico, en muchas cuestiones similar a WEKA.caretpor otro lado trabaja en l ́ınea de comandos, con
+una ampl ́ısima variedad de funciones que puedes consultar con el comandols("package:caret"). Entre ́estas,
+destacar las relacionadas con la construcci ́on de modelos y su evaluaci ́on, as ́ı como algoritmos para selecci ́on de
+variables.
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+plot(cars)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
+## Bibliografía
+
+[1] Max Kuhn. Contributions from Jed Wing, Steve Weston, Andre Williams, Chris Keefer, Allan Engelhardt, Tony Cooper, Zachary Mayer, and the R Core Team. caret: Classification and Regression Training, 2014. R package version 6.0-35.
+
+[2] M. Kuhn and K. Johnson.Applied Predictive Modeling. Springer, 2013.
