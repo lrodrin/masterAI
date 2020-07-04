@@ -1,0 +1,14 @@
+Vamos a realizar un estudio acerca de la base de datos Iris. Esta BD se distribuye junto a la herramienta Weka, y puede ser encontrado en el directorio data.
+
+1) Ejecutar el algoritmo SimpleKMeans usando la herramienta Weka con las distancia Euclidea y Manhattan.
+
+1.1 ¿Cuántas instancias contiene cada grupo?
+ 
+1.2 ¿Cuáles son los centroides?
+
+1.3 Analice los centroides ¿Hay algo destacable en esos centroides? ¿ están los centroides separados en el espacio?, ¿tienen componentes similares?...
+
+2) Ejecute el algoritmo HierarchicalClusterer con tipo de link completo y métrica de distancia euclidea, y visualice las gráficas 
+de los puntos agrupados. ¿Alguno de ellos produce grupos bien diferenciados y con fronteras claras?
+
+Nota: Comparando en el eje X instance_number y el eje Y vaya variando y mostrando cada uno de las variables (debe adjuntar las imágenes).

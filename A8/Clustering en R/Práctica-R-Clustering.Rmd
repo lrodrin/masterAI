@@ -1,0 +1,238 @@
+---
+title: "Práctica en R del tema Clustering"
+author: "Laura Rodríguez Navas"
+date: "10/07/2020"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+  word_document: default
+---
+
+\usepackage[utf8]{inputenc}
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Parte introductoria de la práctica
+
+Para la correcta ejecución de esta práctica, el estudiante debe verificar que los paquetes **mlbench** y **caret** están correctamente instalados en la plataforma R. Para instalar estos paquetes en R, solo debe ejecutar:
+
+- **install.packages("mlbench")**
+- **install.packages("caret")**
+
+Además, para esta práctica personalmente se ha decidido que se necesitan los siguientes paquetes de R:
+
+- **install.packages("lattice")**
+- **install.packages("ggplot2")**
+- **install.packages("factoextra")**
+
+Luego de haber instalado los paquetes en R, pasamos a cargar en memoria las librerías que usaremos.
+
+```{r message=FALSE, warning=FALSE}
+library(mlbench)
+library(lattice)
+library(ggplot2)
+library(caret)
+library(factoextra)
+```
+
+El paquete **mlbench** se utiliza para cargar los datasets con los cuales trabajaremos en esta práctica. El paquete **caret** engloba más de 200 modelos de clasificación así como funciones útiles para el preprocesado de datos. A continuación cargamos el dataset BreastCancer de la librería **mlbench**. El objetivo de este dataset es describir si los pacientes tienen un cáncer benigno o maligno.
+
+```{r  message=FALSE, warning=FALSE}
+data(BreastCancer)
+```
+
+El dataset ya se encuentra disponible en el entorno, ahora solo podrás referenciarlo con la variable BreastCancer.
+
+## Ejercicios
+
+A continuación debe resolver los siguientes ejercicios, escribiendo el código en cada sección correspondiente después del comentario *#INSERTAR CÓDIGO AQUÍ*.
+
+### Preprocesamiento de datos
+
+Describa brevemente el dataset BreastCancer. Puede apoyarse en las funciones str(..) y summary (..). Como mínimo se espera que aporte la siguiente información:
+
+* Número de ejemplos (observaciones).
+* Número de variables.
+* Tipo de variables.
+* Distribuciones de datos por cada variable.
+* Número de valores perdidos.
+
+```{r}
+#INSERTAR CÓDIGO AQUÍ
+str(BreastCancer)
+```
+
+* Número de ejemplos (observaciones) = 699.
+* Número de variables = 11.
+* Tipo de variables. Consideramos el dataset BreastCancer definido sobre 10 variables descriptoras (9 discretas, 5 de ellas ordenadas; y una variable de tipo carácter) y una variable clase binaria \{benign, malignant\}.
+
+* Distribuciones de datos por cada variable:
+
+```{r}
+#INSERTAR CÓDIGO AQUÍ
+summary(BreastCancer)
+```
+
+* Número de valores perdidos.
+
+```{r}
+#INSERTAR CÓDIGO AQUÍ
+sum(is.na(BreastCancer))
+```
+
+- En caso de ser necesario, elimine los valores perdidos (R los representa como NA).
+
+```{r}
+#INSERTAR CÓDIGO AQUÍ
+BreastCancer <- na.omit(BreastCancer) 
+any(is.na(BreastCancer))
+```
+
+Nota: en esta práctica, solo con la eliminación de registros es suficiente. Sin embargo, tenga en cuenta que la eliminación de registros que presentan valores perdidos no es una alternativa efectiva en la mayoría de los casos.
+
+- Ahora, transforma todas las variables descriptoras a tipo numérico. Esto es necesario porque muchos métodos de clustering trabajan solamente con variables numéricas.
+
+```{r}
+#INSERTAR CÓDIGO AQUÍ
+for (i in 1:(ncol(BreastCancer) - 1))
+  BreastCancer[, i] <- as.numeric(as.character(BreastCancer[, i]))
+
+str(BreastCancer)
+```
+
+- La variable "ID" representa un identificador que es único para cada paciente y no aporta ninguna información para el aprendizaje automático, por lo que podemos eliminarlo con seguridad.
+
+```{r}
+#INSERTAR CÓDIGO AQUÍ
+BreastCancer$Id <- NULL
+str(BreastCancer)
+```
+
+- Debido a que los algoritmos de clustering se basan en el cómputo de valores de distancias entre los ejemplos, es ventajoso tener todas las variables en la misma escala para el cálculo de las distancias entre ejemplos. Convierta todos los atributos descriptores a una misma escala. 
+
+Nota: se recomienda utilizar la función preProcess(.., method = "scale") de la librería caret.
+
+```{r}
+# INSERTAR CÓDIGO AQUÍ
+preProcess(BreastCancer, method = "scale")
+```
+
+### Clustering con kMeans
+
+Una vez que los datos han sido preprocesados, la librería ggplot2, la cual es automaticamente importada por la librería caret, nos permite visualizar los datos para comprobar cómo las diferentes variables afectan al tipo de cáncer.
+
+```{r}
+# En este caso solo estamos mostrando el gráfico para las variables Cl.thickness y Cell.size.
+ggplot(BreastCancer, aes(Cl.thickness, Cell.size, color = Class)) + geom_point()
+```
+
+Se puede apreciar que considerando estos pares de variables se observan dos grupos claramente definidos.
+
+- Pasemos ahora a ejecutar algoritmos de clustering sobre nuestros datos. Mediante un agrupamiento usando kmeans(..), encuentre el par de variables descriptoras a partir del cual se logra un mejor agrupamiento. Utilice 20 asignaciones aleatorias para inicializar los centroides y además fije el número de cluster igual al número de clases existentes en el dataset.
+
+Nota: recuerde que la variable Class no se debe tener en cuenta a la hora de realizar el clustering, ya que estamos haciendo un aprendizaje no supervisado. El atributo Class es útil para usar una métrica de evaluación externa y así comprobar la calidad del agrupamiento...
+
+```{r}
+#INSERTAR CÓDIGO AQUÍ
+set.seed(101)
+data <- BreastCancer[, 1:9]
+km_clusters <- kmeans(x = data, centers = 2, nstart = 20)
+km_clusters
+```
+
+- A partir de los resultados obtenidos, ¿Por qué se puede considerar un buen agrupamiento? Justifica de forma clara y concisa la elección del par de atributos. Puedes ayudarte con la funciones table(..) y ggplot(..) para justificar tu respuesta.
+
+RESPUESTA:
+
+```{r}
+#INSERTAR CÓDIGO AQUÍ
+fviz_cluster(km_clusters, data = data,
+             palette = c("#00AFBB","#2E9FDF"),
+             ggtheme = theme_minimal(),
+             main = "Partitioning Clustering Plot")
+```
+
+
+```{r}
+#INSERTAR CÓDIGO AQUÍ
+fviz_nbclust(x = data, FUNcluster = kmeans, method = "wss", k.max = 10, 
+             diss = get_dist(data, method = "euclidean"), nstart = 20)
+```
+
+En este análisis, a partir de 2 clusters la reducción en la suma total de cuadrados internos parece estabilizarse, indicando que K = 2 es una buena opción.
+
+- Mediante la función preprocess(..) de la librería caret, analice si se obtienen mejores resultados de agrupamiento con el par de atributos seleccionados anteriormente, pero en este caso haciendo inicialmente las siguientes combinaciones de transformaciones a los datos:
+
+* c("center", "scale")
+* c("center", "scale", "YeoJohnson")
+* c("range")
+* c("range", "YeoJohnson")
+
+Ayúdate de los resultados obtenidos con table y ggplot. 
+
+```{r}
+#INSERTAR CÓDIGO AQUÍ
+
+
+```
+
+- A partir del par de variables seleccionadas, cree un agrupamiento conformado por tres variables; las dos variables previamente seleccionadas y otra variable seleccionada aleatoriamente entre las variables descriptoras restantes. Este proceso debes repetirlo cinco veces de tal manera que en cada ejecución la variable añadida no necesariamente sea la misma.
+
+```{r}
+#INSERTAR CÓDIGO AQUÍ
+
+
+
+```
+
+- A partir de los resultados obtenidos responda lo siguiente, ¿Tiene alguna ventaja o desventaja incluir más variables? ¿Qué posible explicación puedes darle a los resultados?
+
+3- Clustering jerárquico
+
+Como hemos visto, con kmeans debemos de especificar a priori el número de clusters que queremos obtener. Dado que el clustering es una tarea de aprendizaje no supervisado, en algunos casos puede que no tengamos
+esa información a priori, por lo que necesitaremos de otro tipo de técnicas, como por ejemplo el agrupamiento jerárquico. Un agrupamiento jerárquico en R se puede realizar mediante la función hclust(..), para ello debemos especificar el tipo de método de aglomeración a usar.
+
+-	Crea un agrupamiento jerárquico usando hclust(..), para ello debe encontrar el método de aglomeración que mejor agrupa los tipos de cáncer. Una vez encontrado el mejor método, grafica un dendograma que muestre información sobre el agrupamiento.
+
+Nota: Consulta la ayuda de la función hclust(..) para ver los tipos de métodos de aglomeración que soporta. También puedes ayudarte de las funciones table(..) y plot(..) para realizar tu elección final. Además, recuerda que no debes tener en cuenta la variable Class cuando ejecutas la función hclust(..).
+
+```{r}
+#INSERTAR CÓDIGO AQUÍ
+
+
+```
+
+- ¿Por qué el dendograma tendrá tantos grupos en el nivel más bajo? ¿Coincide este número con algún otro? Justifique
+
+RESPUESTA: 
+
+
+- ¿Por qué es necesario usar la función dist(..) al llamar a hclust(..)?
+
+RESPUESTA:
+
+
+
+- ¿Por qué no es necesario usar set.seed(..) antes de llamar a hclust(..)?
+
+RESPUESTA:
+
+
+
+- Debido a que hclust puede crear un número elevado de clústers, utilice la función cutree(..) para fijar el número de clúster igual al número de clases existentes en el dataset.
+
+```{r}
+#INSERTAR CÓDIGO AQUÍ
+
+
+```
+
+
+-¿Cuando hacemos esta última operación con la función cutree(..), el agrupamiento que obtenemos por hclust(..) es mejor al obtenido con kMeans en el ejercicio anterior?
+
+RESPUESTA:
+
+
