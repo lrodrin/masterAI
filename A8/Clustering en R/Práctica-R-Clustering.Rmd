@@ -26,7 +26,7 @@ Además, para esta práctica personalmente se ha decidido que se necesitan los s
 
 - **install.packages("lattice")**
 - **install.packages("ggplot2")**
-- **install.packages("factoextra")**
+- **install.packages("ggdendro")**
 
 Luego de haber instalado los paquetes en R, pasamos a cargar en memoria las librerías que usaremos.
 
@@ -35,7 +35,7 @@ library(mlbench)
 library(lattice)
 library(ggplot2)
 library(caret)
-library(factoextra)
+library(ggdendro)
 ```
 
 El paquete **mlbench** se utiliza para cargar los datasets con los cuales trabajaremos en esta práctica. El paquete **caret** engloba más de 200 modelos de clasificación así como funciones útiles para el preprocesado de datos. A continuación cargamos el dataset BreastCancer de la librería **mlbench**. El objetivo de este dataset es describir si los pacientes tienen un cáncer benigno o maligno.
@@ -133,13 +133,34 @@ Se puede apreciar que considerando estos pares de variables se observan dos grup
 
 - Pasemos ahora a ejecutar algoritmos de clustering sobre nuestros datos. Mediante un agrupamiento usando kmeans(..), encuentre el par de variables descriptoras a partir del cual se logra un mejor agrupamiento. Utilice 20 asignaciones aleatorias para inicializar los centroides y además fije el número de cluster igual al número de clases existentes en el dataset.
 
-Nota: recuerde que la variable Class no se debe tener en cuenta a la hora de realizar el clustering, ya que estamos haciendo un aprendizaje no supervisado. El atributo Class es útil para usar una métrica de evaluación externa y así comprobar la calidad del agrupamiento...
+Nota: recuerde que la variable Class no se debe tener en cuenta a la hora de realizar el clustering, ya que estamos haciendo un aprendizaje no supervisado. El atributo Class es útil para usar una métrica de evaluación externa y así comprobar la calidad del agrupamiento.
+
+```{r}
+#INSERTAR CÓDIGO AQUÍ
+BreastCancer.features = BreastCancer[, 1:9]
+str(BreastCancer.features)
+```
+
+Para encontrar el par de variables descriptoras a partir del cual se logrará un mejor agrupamiento, se usa la matriz de correlación.
+
+```{r}
+#INSERTAR CÓDIGO AQUÍ
+cor(BreastCancer.features, method = "pearson")
+```
+
+Como se puede observar, las variables Cell.size y Cell.shape son las variables con el valor de correlación más elevado (0.9072282). Como consecuencia, sus elementos se encuentran más cercanos entre sí, pero con menos solapamiento. Así que, se usa este par de variables en la ejecución del algoritmo de clustering. Pero antes, comprobamos que estos pares de variables forman dos grupos claramente definidos.
+
+```{r}
+#INSERTAR CÓDIGO AQUÍ
+ggplot(BreastCancer, aes(Cell.size, Cell.shape, color = Class)) + geom_point()
+```
+
+Y se procede a la ejecución del algoritmo de clustering.
 
 ```{r}
 #INSERTAR CÓDIGO AQUÍ
 set.seed(101)
-data <- BreastCancer[, 1:9]
-km_clusters <- kmeans(x = data, centers = 2, nstart = 20)
+km_clusters <- kmeans(BreastCancer.features[c("Cell.size", "Cell.shape")], centers = 2, nstart = 20)
 km_clusters
 ```
 
@@ -149,74 +170,121 @@ RESPUESTA:
 
 ```{r}
 #INSERTAR CÓDIGO AQUÍ
-fviz_cluster(km_clusters, data = data,
-             palette = c("#00AFBB","#2E9FDF"),
-             ggtheme = theme_minimal(),
-             main = "Partitioning Clustering Plot")
+clusters <- km_clusters$cluster
+table(BreastCancer$Class, clusters)
+ggplot(BreastCancer, aes(Cell.size, Cell.shape, color = as.factor(clusters))) + geom_point()
 ```
-
-
-```{r}
-#INSERTAR CÓDIGO AQUÍ
-fviz_nbclust(x = data, FUNcluster = kmeans, method = "wss", k.max = 10, 
-             diss = get_dist(data, method = "euclidean"), nstart = 20)
-```
-
-En este análisis, a partir de 2 clusters la reducción en la suma total de cuadrados internos parece estabilizarse, indicando que K = 2 es una buena opción.
 
 - Mediante la función preprocess(..) de la librería caret, analice si se obtienen mejores resultados de agrupamiento con el par de atributos seleccionados anteriormente, pero en este caso haciendo inicialmente las siguientes combinaciones de transformaciones a los datos:
 
-* c("center", "scale")
-* c("center", "scale", "YeoJohnson")
-* c("range")
-* c("range", "YeoJohnson")
+  - c("center", "scale")
+  - c("center", "scale", "YeoJohnson")
+  - c("range")
+  - c("range", "YeoJohnson")
 
 Ayúdate de los resultados obtenidos con table y ggplot. 
 
+- c("center", "scale")
+
 ```{r}
 #INSERTAR CÓDIGO AQUÍ
+preProcess(BreastCancer.features, method = c("center", "scale"))
+set.seed(101)
+km_clusters <- kmeans(BreastCancer.features[c("Cell.size", "Cell.shape")], centers = 2, nstart = 20)
+km_clusters
+clusters <- km_clusters$cluster
+table(BreastCancer$Class, clusters)
+ggplot(BreastCancer, aes(Cell.size, Cell.shape, color = as.factor(clusters))) + geom_point()
+```
 
+- c("center", "scale", "YeoJohnson")
 
+```{r}
+#INSERTAR CÓDIGO AQUÍ
+preProcess(BreastCancer.features, method = c("center", "scale", "YeoJohnson"))
+set.seed(101)
+km_clusters <- kmeans(BreastCancer.features[c("Cell.size", "Cell.shape")], centers = 2, nstart = 20)
+km_clusters
+clusters <- km_clusters$cluster
+table(BreastCancer$Class, clusters)
+ggplot(BreastCancer, aes(Cell.size, Cell.shape, color = as.factor(clusters))) + geom_point()
+```
+
+- c("range")
+
+```{r}
+#INSERTAR CÓDIGO AQUÍ
+preProcess(BreastCancer.features, method = c("range"))
+set.seed(101)
+km_clusters <- kmeans(BreastCancer.features[c("Cell.size", "Cell.shape")], centers = 2, nstart = 20)
+km_clusters
+clusters <- km_clusters$cluster
+table(BreastCancer$Class, clusters)
+ggplot(BreastCancer, aes(Cell.size, Cell.shape, color = as.factor(clusters))) + geom_point()
+```
+
+- c("range", "YeoJohnson")
+
+```{r}
+#INSERTAR CÓDIGO AQUÍ
+preProcess(BreastCancer.features, method = c("range", "YeoJohnson"))
+set.seed(101)
+km_clusters <- kmeans(BreastCancer.features[c("Cell.size", "Cell.shape")], centers = 2, nstart = 20)
+km_clusters
+clusters <- km_clusters$cluster
+table(BreastCancer$Class, clusters)
+ggplot(BreastCancer, aes(Cell.size, Cell.shape, color = as.factor(clusters))) + geom_point()
 ```
 
 - A partir del par de variables seleccionadas, cree un agrupamiento conformado por tres variables; las dos variables previamente seleccionadas y otra variable seleccionada aleatoriamente entre las variables descriptoras restantes. Este proceso debes repetirlo cinco veces de tal manera que en cada ejecución la variable añadida no necesariamente sea la misma.
 
 ```{r}
 #INSERTAR CÓDIGO AQUÍ
+func <- function (var) { 
+  new_data <- c("Cell.size", "Cell.shape", var)
+  set.seed(101)
+  km_clusters <- kmeans(BreastCancer.features[new_data], centers = 2, nstart = 20)
+  km_clusters
+}
 
+vars <- c("Cl.thickness", "Marg.adhesion", "Epith.c.size", "Bare.nuclei", "Bl.cromatin")
 
-
+func(vars[1])
+func(vars[2])
+func(vars[3])
+func(vars[4])
+func(vars[5])
 ```
 
 - A partir de los resultados obtenidos responda lo siguiente, ¿Tiene alguna ventaja o desventaja incluir más variables? ¿Qué posible explicación puedes darle a los resultados?
 
-3- Clustering jerárquico
+### Clustering jerárquico
 
 Como hemos visto, con kmeans debemos de especificar a priori el número de clusters que queremos obtener. Dado que el clustering es una tarea de aprendizaje no supervisado, en algunos casos puede que no tengamos
 esa información a priori, por lo que necesitaremos de otro tipo de técnicas, como por ejemplo el agrupamiento jerárquico. Un agrupamiento jerárquico en R se puede realizar mediante la función hclust(..), para ello debemos especificar el tipo de método de aglomeración a usar.
 
--	Crea un agrupamiento jerárquico usando hclust(..), para ello debe encontrar el método de aglomeración que mejor agrupa los tipos de cáncer. Una vez encontrado el mejor método, grafica un dendograma que muestre información sobre el agrupamiento.
+-	Crea un agrupamiento jerárquico usando hclust(..), para ello debe encontrar el método de aglomeración que mejor agrupa los tipos de cáncer. Una vez encontrado el mejor método, gráfica un dendograma que muestre información sobre el agrupamiento.
 
 Nota: Consulta la ayuda de la función hclust(..) para ver los tipos de métodos de aglomeración que soporta. También puedes ayudarte de las funciones table(..) y plot(..) para realizar tu elección final. Además, recuerda que no debes tener en cuenta la variable Class cuando ejecutas la función hclust(..).
 
 ```{r}
 #INSERTAR CÓDIGO AQUÍ
-
-
+dendrogram <- hclust(dist(BreastCancer.features, method = 'euclidean'), method = 'ward.D')
+ggdendrogram(dendrogram, rotate = FALSE, labels = FALSE, theme_dendro = TRUE) + labs(title = "Dendrograma")
 ```
 
-- ¿Por qué el dendograma tendrá tantos grupos en el nivel más bajo? ¿Coincide este número con algún otro? Justifique
+- ¿Por qué el dendograma tendrá tantos grupos en el nivel más bajo? ¿Coincide este número con algún otro? Justifica.
 
 RESPUESTA: 
 
 
-- ¿Por qué es necesario usar la función dist(..) al llamar a hclust(..)?
+- ¿Por qué es necesario usar la función dist(..) al llamar a hclust(..) ?
+
 
 RESPUESTA:
 
 
-
-- ¿Por qué no es necesario usar set.seed(..) antes de llamar a hclust(..)?
+- ¿Por qué no es necesario usar set.seed(..) antes de llamar a hclust(..) ?
 
 RESPUESTA:
 
@@ -226,10 +294,14 @@ RESPUESTA:
 
 ```{r}
 #INSERTAR CÓDIGO AQUÍ
+agrupamientoJ <- hclust(dist(BreastCancer.features, method = 'euclidean'), method = 'ward.D')
+clases_aj <- cutree(agrupamientoJ, k = 2)
+BreastCancer.features$cluster <- clases_aj
+clusters <- BreastCancer.features$cluster
 
-
+ggplot(BreastCancer, aes(Cell.size, Cell.shape, color = as.factor(clusters))) + geom_point()
+table(BreastCancer$Class, clusters)
 ```
-
 
 -¿Cuando hacemos esta última operación con la función cutree(..), el agrupamiento que obtenemos por hclust(..) es mejor al obtenido con kMeans en el ejercicio anterior?
 
