@@ -3,13 +3,9 @@ title: "Práctica en R del tema Clustering"
 author: "Laura Rodríguez Navas"
 date: "10/07/2020"
 output:
-  html_document:
-    df_print: paged
   pdf_document: default
-  word_document: default
+  html_document: default
 ---
-
-\usepackage[utf8]{inputenc}
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
