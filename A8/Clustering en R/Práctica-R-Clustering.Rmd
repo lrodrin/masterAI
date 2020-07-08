@@ -3,8 +3,10 @@ title: "Práctica en R del tema Clustering"
 author: "Laura Rodríguez Navas"
 date: "10/07/2020"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: 
+    fig_caption: yes
+    keep_tex: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -18,10 +20,11 @@ Para la correcta ejecución de esta práctica, el estudiante debe verificar que 
 - **install.packages("mlbench")**
 - **install.packages("caret")**
 
-Además, para esta práctica personalmente se ha decidido que se necesitan los siguientes paquetes de R:
+Además, para esta práctica se ha decidido que se necesitan los siguientes paquetes de R:
 
 - **install.packages("lattice")**
 - **install.packages("ggplot2")**
+- **install.packages("factoextra")**
 - **install.packages("ggdendro")**
 
 Luego de haber instalado los paquetes en R, pasamos a cargar en memoria las librerías que usaremos.
@@ -31,6 +34,7 @@ library(mlbench)
 library(lattice)
 library(ggplot2)
 library(caret)
+library(factoextra)
 library(ggdendro)
 ```
 
@@ -58,7 +62,7 @@ Describa brevemente el dataset BreastCancer. Puede apoyarse en las funciones str
 
 ```{r}
 #INSERTAR CÓDIGO AQUÍ
-str(BreastCancer)
+str(BreastCancer, width = 85, strict.width = "cut")
 ```
 
 * Número de ejemplos (observaciones) = 699.
@@ -72,6 +76,7 @@ str(BreastCancer)
 summary(BreastCancer)
 ```
 
+\newpage
 * Número de valores perdidos.
 
 ```{r}
@@ -96,7 +101,7 @@ Nota: en esta práctica, solo con la eliminación de registros es suficiente. Si
 for (i in 1:(ncol(BreastCancer) - 1))
   BreastCancer[, i] <- as.numeric(as.character(BreastCancer[, i]))
 
-str(BreastCancer)
+str(BreastCancer, width = 85, strict.width = "cut")
 ```
 
 - La variable "ID" representa un identificador que es único para cada paciente y no aporta ninguna información para el aprendizaje automático, por lo que podemos eliminarlo con seguridad.
@@ -104,7 +109,7 @@ str(BreastCancer)
 ```{r}
 #INSERTAR CÓDIGO AQUÍ
 BreastCancer$Id <- NULL
-str(BreastCancer)
+head(BreastCancer, 3)
 ```
 
 - Debido a que los algoritmos de clustering se basan en el cómputo de valores de distancias entre los ejemplos, es ventajoso tener todas las variables en la misma escala para el cálculo de las distancias entre ejemplos. Convierta todos los atributos descriptores a una misma escala. 
@@ -113,14 +118,16 @@ Nota: se recomienda utilizar la función preProcess(.., method = "scale") de la 
 
 ```{r}
 # INSERTAR CÓDIGO AQUÍ
-preProcess(BreastCancer, method = "scale")
+BreastCancer.scale <- preProcess(BreastCancer[, 1:9], method=c("scale"))
+BreastCancer.features <- predict(BreastCancer.scale, BreastCancer[, 1:9])
+str(BreastCancer.features, width = 85, strict.width = "cut")
 ```
 
 ### Clustering con kMeans
 
 Una vez que los datos han sido preprocesados, la librería ggplot2, la cual es automaticamente importada por la librería caret, nos permite visualizar los datos para comprobar cómo las diferentes variables afectan al tipo de cáncer.
 
-```{r}
+```{r fig.align='center', out.width='70%'}
 # En este caso solo estamos mostrando el gráfico para las variables Cl.thickness y Cell.size.
 ggplot(BreastCancer, aes(Cl.thickness, Cell.size, color = Class)) + geom_point()
 ```
@@ -133,30 +140,9 @@ Nota: recuerde que la variable Class no se debe tener en cuenta a la hora de rea
 
 ```{r}
 #INSERTAR CÓDIGO AQUÍ
-BreastCancer.features = BreastCancer[, 1:9]
-str(BreastCancer.features)
-```
-
-Para encontrar el par de variables descriptoras a partir del cual se logrará un mejor agrupamiento, se usa la matriz de correlación.
-
-```{r}
-#INSERTAR CÓDIGO AQUÍ
-cor(BreastCancer.features, method = "pearson")
-```
-
-Como se puede observar, las variables Cell.size y Cell.shape son las variables con el valor de correlación más elevado (0.9072282). Como consecuencia, sus elementos se encuentran más cercanos entre sí, pero con menos solapamiento. Así que, se usa este par de variables en la ejecución del algoritmo de clustering. Pero antes, comprobamos que estos pares de variables forman dos grupos claramente definidos.
-
-```{r}
-#INSERTAR CÓDIGO AQUÍ
-ggplot(BreastCancer, aes(Cell.size, Cell.shape, color = Class)) + geom_point()
-```
-
-Y se procede a la ejecución del algoritmo de clustering.
-
-```{r}
-#INSERTAR CÓDIGO AQUÍ
 set.seed(101)
-km_clusters <- kmeans(BreastCancer.features[c("Cell.size", "Cell.shape")], centers = 2, nstart = 20)
+km_clusters <- kmeans(BreastCancer.features[, c("Cell.size", "Cell.shape")], 
+                      centers = 2, nstart = 20)
 km_clusters
 ```
 
@@ -164,11 +150,11 @@ km_clusters
 
 RESPUESTA:
 
-```{r}
+```{r fig.align='center', out.width='70%'}
 #INSERTAR CÓDIGO AQUÍ
-clusters <- km_clusters$cluster
-table(BreastCancer$Class, clusters)
-ggplot(BreastCancer, aes(Cell.size, Cell.shape, color = as.factor(clusters))) + geom_point()
+fviz_cluster(km_clusters, data = BreastCancer.features[, c("Cell.size", "Cell.shape")],
+             ggtheme = theme_minimal(),
+             main = "Partitioning Clustering Plot")
 ```
 
 - Mediante la función preprocess(..) de la librería caret, analice si se obtienen mejores resultados de agrupamiento con el par de atributos seleccionados anteriormente, pero en este caso haciendo inicialmente las siguientes combinaciones de transformaciones a los datos:
@@ -182,65 +168,78 @@ Ayúdate de los resultados obtenidos con table y ggplot.
 
 - c("center", "scale")
 
-```{r}
+```{r fig.align='center', out.width='70%'}
 #INSERTAR CÓDIGO AQUÍ
-preProcess(BreastCancer.features, method = c("center", "scale"))
+BreastCancer.scale <- preProcess(BreastCancer[, 1:9], method=c("center", "scale"))
+BreastCancer.features <- predict(BreastCancer.scale, BreastCancer[, 1:9])
 set.seed(101)
-km_clusters <- kmeans(BreastCancer.features[c("Cell.size", "Cell.shape")], centers = 2, nstart = 20)
-km_clusters
-clusters <- km_clusters$cluster
-table(BreastCancer$Class, clusters)
-ggplot(BreastCancer, aes(Cell.size, Cell.shape, color = as.factor(clusters))) + geom_point()
+km_clusters <- kmeans(BreastCancer.features[, c("Cell.size", "Cell.shape")], 
+                      centers = 2, nstart = 20)
+km_clusters$centers
+fviz_cluster(km_clusters, data = BreastCancer.features[, c("Cell.size", "Cell.shape")],
+             ggtheme = theme_minimal(),
+             main = "Partitioning Clustering Plot")
 ```
 
 - c("center", "scale", "YeoJohnson")
 
-```{r}
+```{r fig.align='center', out.width='70%'}
 #INSERTAR CÓDIGO AQUÍ
-preProcess(BreastCancer.features, method = c("center", "scale", "YeoJohnson"))
+BreastCancer.scale <- preProcess(BreastCancer[, 1:9], method=c("center", "scale", "YeoJohnson"))
+BreastCancer.features <- predict(BreastCancer.scale, BreastCancer[, 1:9])
 set.seed(101)
-km_clusters <- kmeans(BreastCancer.features[c("Cell.size", "Cell.shape")], centers = 2, nstart = 20)
-km_clusters
-clusters <- km_clusters$cluster
-table(BreastCancer$Class, clusters)
-ggplot(BreastCancer, aes(Cell.size, Cell.shape, color = as.factor(clusters))) + geom_point()
+km_clusters <- kmeans(BreastCancer.features[, c("Cell.size", "Cell.shape")], 
+                      centers = 2, nstart = 20)
+km_clusters$centers
+fviz_cluster(km_clusters, data = BreastCancer.features[, c("Cell.size", "Cell.shape")],
+             ggtheme = theme_minimal(),
+             main = "Partitioning Clustering Plot")
 ```
 
 - c("range")
 
-```{r}
+```{r fig.align='center', out.width='70%'}
 #INSERTAR CÓDIGO AQUÍ
-preProcess(BreastCancer.features, method = c("range"))
+BreastCancer.scale <- preProcess(BreastCancer[, 1:9], method=c("range"))
+BreastCancer.features <- predict(BreastCancer.scale, BreastCancer[, 1:9])
 set.seed(101)
-km_clusters <- kmeans(BreastCancer.features[c("Cell.size", "Cell.shape")], centers = 2, nstart = 20)
-km_clusters
-clusters <- km_clusters$cluster
-table(BreastCancer$Class, clusters)
-ggplot(BreastCancer, aes(Cell.size, Cell.shape, color = as.factor(clusters))) + geom_point()
+km_clusters <- kmeans(BreastCancer.features[, c("Cell.size", "Cell.shape")], 
+                      centers = 2, nstart = 20)
+km_clusters$centers
+fviz_cluster(km_clusters, data = BreastCancer.features[, c("Cell.size", "Cell.shape")],
+             ggtheme = theme_minimal(),
+             main = "Partitioning Clustering Plot")
 ```
 
 - c("range", "YeoJohnson")
 
-```{r}
+```{r fig.align='center', out.width='70%'}
 #INSERTAR CÓDIGO AQUÍ
-preProcess(BreastCancer.features, method = c("range", "YeoJohnson"))
+BreastCancer.scale <- preProcess(BreastCancer[, 1:9], method=c("range", "YeoJohnson"))
+BreastCancer.features <- predict(BreastCancer.scale, BreastCancer[, 1:9])
 set.seed(101)
-km_clusters <- kmeans(BreastCancer.features[c("Cell.size", "Cell.shape")], centers = 2, nstart = 20)
-km_clusters
-clusters <- km_clusters$cluster
-table(BreastCancer$Class, clusters)
-ggplot(BreastCancer, aes(Cell.size, Cell.shape, color = as.factor(clusters))) + geom_point()
+km_clusters <- kmeans(BreastCancer.features[, c("Cell.size", "Cell.shape")], 
+                      centers = 2, nstart = 20)
+km_clusters$centers
+fviz_cluster(km_clusters, data = BreastCancer.features[, c("Cell.size", "Cell.shape")],
+             ggtheme = theme_minimal(),
+             main = "Partitioning Clustering Plot")
 ```
 
 - A partir del par de variables seleccionadas, cree un agrupamiento conformado por tres variables; las dos variables previamente seleccionadas y otra variable seleccionada aleatoriamente entre las variables descriptoras restantes. Este proceso debes repetirlo cinco veces de tal manera que en cada ejecución la variable añadida no necesariamente sea la misma.
 
-```{r}
+```{r fig.align='center', out.width='70%'}
 #INSERTAR CÓDIGO AQUÍ
+BreastCancer.scale <- preProcess(BreastCancer[, 1:9], method=c("scale"))
+BreastCancer.features <- predict(BreastCancer.scale, BreastCancer[, 1:9])
+
 func <- function (var) { 
   new_data <- c("Cell.size", "Cell.shape", var)
   set.seed(101)
   km_clusters <- kmeans(BreastCancer.features[new_data], centers = 2, nstart = 20)
-  km_clusters
+  fviz_cluster(km_clusters, data = BreastCancer.features[, c("Cell.size", "Cell.shape")],
+             ggtheme = theme_minimal(),
+             main = "Partitioning Clustering Plot")
 }
 
 vars <- c("Cl.thickness", "Marg.adhesion", "Epith.c.size", "Bare.nuclei", "Bl.cromatin")
@@ -302,5 +301,4 @@ table(BreastCancer$Class, clusters)
 -¿Cuando hacemos esta última operación con la función cutree(..), el agrupamiento que obtenemos por hclust(..) es mejor al obtenido con kMeans en el ejercicio anterior?
 
 RESPUESTA:
-
 

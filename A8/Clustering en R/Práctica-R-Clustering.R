@@ -2,7 +2,7 @@ library(mlbench)
 library(lattice)
 library(ggplot2)
 library(caret)
-
+library(factoextra)
 
 data(BreastCancer)
 str(BreastCancer)
@@ -17,37 +17,31 @@ for (i in 1:(ncol(BreastCancer) - 1))
 
 BreastCancer$Id <- NULL
 
-
 # scale
-preProcess(BreastCancer, method = "scale")
-
-# center scale
-preProcess(BreastCancer, method = c("center", "scale"))
-
-# center scale YeoJohnson
-preProcess(BreastCancer, method = c("center", "scale", "YeoJohnson"))
-
-#range
-preProcess(BreastCancer, method = "range")
-
-# range YeoJohnson
-preProcess(BreastCancer, method = c("range", "YeoJohnson"))
-
-BreastCancer.features = BreastCancer[, 1:9]
+BreastCancer.scale <- preProcess(BreastCancer[, 1:9], method=c("scale"))
+BreastCancer.features <- predict(BreastCancer.scale, BreastCancer[, 1:9])
 str(BreastCancer.features)
 
 set.seed(101)
-km_clusters <- kmeans(BreastCancer.features[c("Cell.size", "Cell.shape")], centers = 2, nstart = 20)
+km_clusters <- kmeans(BreastCancer.features[, c("Cell.size", "Cell.shape")], centers = 2, nstart = 20)
 km_clusters
 
-clusters <- km_clusters$cluster
+km_clusters <- kmeans(BreastCancer.features, centers = 2, nstart = 20)
+km_clusters
 
-ggplot(BreastCancer, aes(Cell.size, Cell.shape, color = Class)) + geom_point()
-ggplot(BreastCancer, aes(Cell.size, Cell.shape, color = as.factor(clusters))) + geom_point()
+aggregate(BreastCancer, by = list(cluster = km_clusters$cluster), mean)
+
+# plot
+fviz_cluster(km_clusters, data = BreastCancer.features[, c("Cell.size", "Cell.shape")],
+             ggtheme = theme_minimal(),
+             main = "Partitioning Clustering Plot")
+
+# ggplot(BreastCancer, aes(Cell.size, Cell.shape, color = Class)) + geom_point()
+# ggplot(BreastCancer, aes(Cell.size, Cell.shape, color = as.factor(km_clusters$cluster))) + geom_point()
 
 table(BreastCancer$Class, clusters)
 
-library(factoextra)
+fviz_cluster(km_clusters, data = BreastCancer.features)
 fviz_cluster(km_clusters, data = BreastCancer.features,
              palette = c("#00AFBB","#2E9FDF"),
              ggtheme = theme_minimal(),
