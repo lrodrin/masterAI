@@ -1,12 +1,12 @@
 ---
-title: "Práctica en R del tema Clustering"
+title: "Práctica: clustering en R"
 author: "Laura Rodríguez Navas"
 date: "10/07/2020"
 output:
+  html_document: default
   pdf_document: 
     fig_caption: yes
     keep_tex: yes
-  html_document: default
 ---
 
 ```{r setup, include=FALSE}
