@@ -27,7 +27,7 @@ La BD está formada por 4 variables descriptivas y una variable clase. No se apl
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale=0.4]{kmeans_euclidea.png}
+	\includegraphics[width=0.6\textwidth]{kmeans_euclidea.png}
 	\caption{KMeans con distancia Euclídea.}
 	\label{Captura_1}
 \end{figure}
@@ -35,7 +35,7 @@ La BD está formada por 4 variables descriptivas y una variable clase. No se apl
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale=0.4]{kmeans_manhattan.png}
+	\includegraphics[width=0.6\textwidth]{kmeans_manhattan.png}
 	\caption{KMeans con distancia Manhattan.}
 	\label{Captura_2}
 \end{figure}
@@ -49,83 +49,80 @@ En la ejecución del algoritmo KMeans con distancia Euclídea (ver Figura \ref{C
 \newpage
 \part ¿Cuáles son los centroides?
 
-Si nos volvemos a fijar en la figura \ref{Captura_1}, podemos observar los centroides de la ejecución de Kmeans con distancia Euclídea, y si nos volvemos a fijar en la figura \ref{Captura_2}, podemos observar los centroides de la ejecución de Kmeans con distancia Manhattan. Se muestran más detalladamente en las siguientes figuras:
+Si nos volvemos a fijar en la figura \ref{Captura_1}, podemos observar los centroides de la ejecución de Kmeans con distancia Euclídea, y en la figura \ref{Captura_2}, podemos observar los centroides de la ejecución de Kmeans con distancia Manhattan. Se muestran más detalladamente en las siguientes figuras:
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale=0.35]{kmeans_euclidea_centroides.png}
+	\includegraphics[width=0.45\textwidth]{kmeans_euclidea_centroides.png}
 	\caption{KMeans centroides con distancia Euclídea.}
 	\label{Captura_3}
-\end{figure}
-
-\begin{figure}[h]
-	\centering
-	\includegraphics[scale=0.35]{kmeans_manhattan_centroides.png}
+	\bigbreak
+	\includegraphics[width=0.45\textwidth]{kmeans_manhattan_centroides.png}
 	\caption{KMeans centroides con distancia Manhattan.}
 	\label{Captura_4}
 \end{figure}
 
+\newpage
 \part Analiza los centroides. ¿Hay algo destacable en esos centroides? ¿Están los centroides separados en el espacio? ¿Tienen componentes similares?
 
-Los centroides resultantes de la ejecución del algoritmo KMeans con distancia Euclídea y los centroides resultantes de la ejecución del algoritmo KMeans con distancia Manhattan son muy parecidos. Tienen componentes muy similares. Este comportamiento nos podría indicar que en la BD no existen \textit{outliers}, la distancia Manhattan se ve menos afectada por ellos (es más robusta), y al no presentar diferencias significantes con la distancia Euclídea, este podría ser el motivo de tanta similitud.
+Los centroides resultantes de la ejecución del algoritmo KMeans con distancia Euclídea y los centroides resultantes de la ejecución del algoritmo KMeans con distancia Manhattan son muy parecidos. Tienen componentes muy similares. Este comportamiento nos podría indicar que en la BD no existen \textit{outliers}, la distancia Manhattan se ve menos afectada por ellos (es más robusta), y al no presentar diferencias significantes con la distancia Euclídea, podría ser el motivo de tanta similitud.
 
 En la figura \ref{Captura_5} se puede observar que los centroides están separados en el espacio. Aunque los centroides de los grupos 0 y 1 están más cercanos entre ellos. El centroide del grupo 2 es el que está más alejado.
 
-Nota: Solo se muestra el gráfico de los centroides resultantes de la ejecución del algoritmo KMeans con distancia Euclídea, porqué casi es igual al gráfico de los centroides resultantes de la ejecución del algoritmo KMeans con distancia Manhattan. 
-
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale=0.4]{kmeans_euclidea_centroides_graph.png}
+	\includegraphics[width=0.6\textwidth]{kmeans_euclidea_centroides_graph.png}
 	\caption{Representación de los centroides de KMeans con distancia Euclídea.}
 	\label{Captura_5}
 \end{figure}
 
 \end{parts}
 
+Nota: Solo se muestra la gráfica de los centroides resultantes de la ejecución del algoritmo KMeans con distancia Euclídea, porqué casi es igual a la gráfica de los centroides resultantes de la ejecución del algoritmo KMeans con distancia Manhattan.
+
 % Pregunta 2
 {\question Ejecuta el algoritmo HierarchicalClusterer con tipo de enlace completo y métrica de distancia euclídea, y visualice las gráficas de los puntos agrupados. ¿Alguno de ellas produce grupos bien diferenciados y con fronteras claras?}
 
 Nota: Compara que el eje X instance\_number y el eje Y vaya variando y muestra cada una de las variables (debes adjuntar las imágenes).
 
-Como se ha comentado anteriormente, la variable de clase puede tomar tres valores, así que volvemos a elegir que el valor de \textit{k} sea igual a 3 para la ejecución del algoritmo HierarchicalClusterer (ver Figura ).
+Como se ha comentado anteriormente, la variable de clase puede tomar tres valores, así que volvemos a elegir \textit{k} igual a 3 para la ejecución del algoritmo (ver Figura \ref{Captura_6}).
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale=0.4]{hc_euclidea.png}
+	\includegraphics[width=0.6\textwidth]{hc_euclidea.png}
 	\caption{Hierarchical Clustering con distancia Euclídea.}
 	\label{Captura_6}
 \end{figure}
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale=0.4]{hc_petallenght.png}
-	\caption{X instance\_number con distancia Manhattan.}
+	\includegraphics[width=0.6\textwidth]{hc_petallenght.png}
+	\caption{X instance\_number con Y \textit{petallenght}.}
 	\label{Captura_7}
 \end{figure}
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale=0.4]{hc_petalwidth.png}
-	\caption{X instance\_number con distancia Manhattan.}
+	\includegraphics[width=0.6\textwidth]{hc_petalwidth.png}
+	\caption{X instance\_number con Y \textit{petalwidth}.}
 	\label{Captura_8}
 \end{figure}
 
-
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale=0.4]{hc_sepallebgth.png}
-	\caption{X instance\_number con distancia Manhattan.}
+	\includegraphics[width=0.6\textwidth]{hc_sepallebgth.png}
+	\caption{X instance\_number con Y \textit{sepalleght}.}
 	\label{Captura_9}
 \end{figure}
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale=0.5]{hc_sepalwidth.png}
-	\caption{X instance\_number con distancia Manhattan.}
+	\includegraphics[width=0.6\textwidth]{hc_sepalwidth.png}
+	\caption{X instance\_number con Y \textit{sepalwidth}.}
 	\label{Captura_10}
 \end{figure}
 
-Las gráficas donde el eje Y es igual a las variables \textit{sepallebgth} i \textit{sepalwidth} muestran grupos bien diferenciados y con las fronteras claras.
+Las gráficas donde el eje Y es igual a las variables \textit{petallenght} i \textit{petalwidth} muestran grupos bien diferenciados y con las fronteras claras.
 
 \end{questions}
 
