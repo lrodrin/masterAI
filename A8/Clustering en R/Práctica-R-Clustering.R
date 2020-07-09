@@ -22,11 +22,19 @@ BreastCancer.scale <- preProcess(BreastCancer[, 1:9], method=c("scale"))
 BreastCancer.features <- predict(BreastCancer.scale, BreastCancer[, 1:9])
 str(BreastCancer.features)
 
+
 set.seed(101)
 km_clusters <- kmeans(BreastCancer.features[, c("Cell.size", "Cell.shape")], centers = 2, nstart = 20)
 km_clusters
 
-km_clusters <- kmeans(BreastCancer.features, centers = 2, nstart = 20)
+require("cluster")
+sil <- silhouette(km_clusters$cluster, dist(BreastCancer.features))
+fviz_silhouette(sil)
+
+library(corrplot)
+corrplot(cor(BreastCancer.features), method = "number",type = "lower")
+
+km_clusters <- kmeans(BreastCancer.features, 2, nstart = 20)
 km_clusters
 
 aggregate(BreastCancer, by = list(cluster = km_clusters$cluster), mean)
@@ -80,4 +88,4 @@ clusters <- BreastCancer.features$cluster
 ggplot(BreastCancer, aes(Cell.size, Cell.shape, color = Class)) + geom_point()
 ggplot(BreastCancer, aes(Cell.size, Cell.shape, color = as.factor(clusters))) + geom_point()
 
-table(BreastCancer$Class, clusters)
+table(BreastCancer$Class, km_clusters$cluster)
