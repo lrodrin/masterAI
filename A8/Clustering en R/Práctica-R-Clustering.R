@@ -34,8 +34,16 @@ fviz_silhouette(sil)
 library(corrplot)
 corrplot(cor(BreastCancer.features), method = "number",type = "lower")
 
-km_clusters <- kmeans(BreastCancer.features, 2, nstart = 20)
+km_clusters <- kmeans(BreastCancer.features[, c(2, 3)], 2, nstart = 20)
 km_clusters
+
+tablaResultados <- table(km_clusters$cluster, BreastCancer$Class)
+
+tablaResultados
+# Podemos apreciar que el segundo cluster engloba a un mayor número de ejemplos malignos que benignos.
+# También se puede apreciar que el primer cluster engloba a más ejemplso benignos que malignos.
+# sin embargo, el cluster nº 1 también alberga ejemplos del tipo maligno. 
+# Se puede concluir por tanto que los resultados son bastante mejorables, 
 
 aggregate(BreastCancer, by = list(cluster = km_clusters$cluster), mean)
 
@@ -45,7 +53,7 @@ fviz_cluster(km_clusters, data = BreastCancer.features[, c("Cell.size", "Cell.sh
              main = "Partitioning Clustering Plot")
 
 # ggplot(BreastCancer, aes(Cell.size, Cell.shape, color = Class)) + geom_point()
-# ggplot(BreastCancer, aes(Cell.size, Cell.shape, color = as.factor(km_clusters$cluster))) + geom_point()
+ggplot(BreastCancer, aes(Cell.size, Cell.shape, color = as.factor(km_clusters$cluster))) + geom_point()
 
 table(BreastCancer$Class, clusters)
 
@@ -89,3 +97,6 @@ ggplot(BreastCancer, aes(Cell.size, Cell.shape, color = Class)) + geom_point()
 ggplot(BreastCancer, aes(Cell.size, Cell.shape, color = as.factor(clusters))) + geom_point()
 
 table(BreastCancer$Class, km_clusters$cluster)
+
+
+ggplot(BreastCancer, aes(Mitoses, Epith.c.size, color = Class)) + geom_point()

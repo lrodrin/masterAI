@@ -1,12 +1,12 @@
 ---
 title: "Práctica: clustering en R"
 author: "Laura Rodríguez Navas"
-date: "10/07/2020"
+date: "12/07/2020"
 output:
-  html_document: default
   pdf_document: 
     fig_caption: yes
     keep_tex: yes
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -22,22 +22,18 @@ Para la correcta ejecución de esta práctica, el estudiante debe verificar que 
 
 Además, para esta práctica se ha decidido que se necesitan los siguientes paquetes de R:
 
-- **install.packages("lattice")**
-- **install.packages("ggplot2")**
 - **install.packages("factoextra")**
 - **install.packages("ggdendro")**
-- **install.packages("cluster")**
+- **install.packages("corrplot")**
 
 Luego de haber instalado los paquetes en R, pasamos a cargar en memoria las librerías que usaremos.
 
 ```{r message=FALSE, warning=FALSE}
 library(mlbench)
-library(lattice)
-library(ggplot2)
 library(caret)
 library(factoextra)
 library(ggdendro)
-library(cluster)
+library(corrplot)
 ```
 
 El paquete **mlbench** se utiliza para cargar los datasets con los cuales trabajaremos en esta práctica. El paquete **caret** engloba más de 200 modelos de clasificación así como funciones útiles para el preprocesado de datos. A continuación cargamos el dataset BreastCancer de la librería **mlbench**. El objetivo de este dataset es describir si los pacientes tienen un cáncer benigno o maligno.
@@ -78,7 +74,6 @@ str(BreastCancer, width = 85, strict.width = "cut")
 summary(BreastCancer)
 ```
 
-\newpage
 * Número de valores perdidos.
 
 ```{r}
@@ -125,6 +120,8 @@ BreastCancer.features <- predict(BreastCancer.scale, BreastCancer[, 1:9])
 str(BreastCancer.features, width = 85, strict.width = "cut")
 ```
 
+Se ha eliminado la variable clase.
+
 ### Clustering con kMeans
 
 Una vez que los datos han sido preprocesados, la librería ggplot2, la cual es automaticamente importada por la librería caret, nos permite visualizar los datos para comprobar cómo las diferentes variables afectan al tipo de cáncer.
@@ -143,7 +140,7 @@ Nota: recuerde que la variable Class no se debe tener en cuenta a la hora de rea
 ```{r}
 #INSERTAR CÓDIGO AQUÍ
 set.seed(101)
-km_clusters <- kmeans(BreastCancer.features, centers = 2, nstart = 20)
+km_clusters <- kmeans(BreastCancer.features[, c(2, 3)], centers = 2, nstart = 20)
 km_clusters
 ```
 
@@ -151,27 +148,29 @@ km_clusters
 
 RESPUESTA:
 
-```{r fig.align='center', out.width='70%'}
-#INSERTAR CÓDIGO AQUÍ
-fviz_cluster(km_clusters, data = BreastCancer.features,
-             ggtheme = theme_minimal(),
-             main = "Partitioning Clustering Plot")
+El resultado obtenido del clustering representa el 78.2\% de la información del dataset.
+
+```{r}
+table(km_clusters$cluster, BreastCancer$Class)
 ```
-La propia función (*fviz_cluster*) determina las dos dimensiones, es decir, el par de variables más representativo en el dataset.
+Podemos apreciar que el primer cluster engloba a un mayor número de ejemplos benignos que malignos. También se puede apreciar que el segundo cluster engloba a más ejemplos malignos que benignos. Sin embargo, el primer cluster también alberga ejemplos del tipo maligno. Y el segundo cluster, también alberga ejemplos del tipo benigno. Por ello, podemos concluir que es un buen agrupamiento aunque los resultados son mejorables; el número de ejemplos benignos del segundo cluster es muy pequeño (4), casi se ha agrupado perfectamente.
 
-Si observamos la anterior figura, el agrupamiento no ha sido del todo bueno. Los clusters no acaban de verse bien diferenciados, y se puede observar un poco de *overlapping* entre ellos.
-
-Para la validación de los clusters se utiliza el coeficiente de Silhouette: un valor de Si cercano a 1 indica que el cluster estará bien agrupado. Un valor de Si cercano a -1 indicará que el cluster estará mal agrupado.
-
-A continuación vemos la representación del coeficiente de Silhouette:
+Si representamos los resultados en una gráfica, se puede apreciar en ella que los clusters están bien definidos con una frontera clara entre ellos.
 
 ```{r fig.align='center', out.width='70%'}
 #INSERTAR CÓDIGO AQUÍ
-sil <- silhouette(km_clusters$cluster, dist(BreastCancer.features))
-fviz_silhouette(sil)
+fviz_cluster(km_clusters, data = BreastCancer.features[, c(2, 3)])
+```
+Para el clustering, se han elegido las variables *Cell.size* y *Cell.shape* porqué forman el par de variables más correlacionadas del dataset. Cuanto más correlacionadas están dos variables, serán más fáciles de agrupar, porqué sus valores están más agrupados.
+
+```{r fig.align='center', out.width='70%'}
+#INSERTAR CÓDIGO AQUÍ
+corrplot(cor(BreastCancer.features), method = "number", type = "lower")
 ```
 
 - Mediante la función preprocess(..) de la librería caret, analice si se obtienen mejores resultados de agrupamiento con el par de atributos seleccionados anteriormente, pero en este caso haciendo inicialmente las siguientes combinaciones de transformaciones a los datos:
+
+\newpage
 
   - c("center", "scale")
   - c("center", "scale", "YeoJohnson")
@@ -187,32 +186,27 @@ Ayúdate de los resultados obtenidos con table y ggplot.
 BreastCancer.scale <- preProcess(BreastCancer[, 1:9], method=c("center", "scale"))
 BreastCancer.features <- predict(BreastCancer.scale, BreastCancer[, 1:9])
 set.seed(101)
-km_clusters <- kmeans(BreastCancer.features, centers = 2, nstart = 20)
-fviz_cluster(km_clusters, data = BreastCancer.features,
-             ggtheme = theme_minimal(),
-             main = "Partitioning Clustering Plot")
-sil <- silhouette(km_clusters$cluster, dist(BreastCancer.features))
-fviz_silhouette(sil)
+km_clusters <- kmeans(BreastCancer.features[, c(2, 3)], centers = 2, nstart = 20)
+table(km_clusters$cluster, BreastCancer$Class)
+fviz_cluster(km_clusters, data = BreastCancer.features[, c(2, 3)])
 ```
 
-El resultado de agrupamiento no presenta mejoras.
+El resultado no presenta mejoras.
 
 - c("center", "scale", "YeoJohnson")
 
 ```{r fig.align='center', out.width='70%'}
 #INSERTAR CÓDIGO AQUÍ
-BreastCancer.scale <- preProcess(BreastCancer[, 1:9], method=c("center", "scale", "YeoJohnson"))
+BreastCancer.scale <- preProcess(BreastCancer[, 1:9], 
+                                 method=c("center", "scale", "YeoJohnson"))
 BreastCancer.features <- predict(BreastCancer.scale, BreastCancer[, 1:9])
 set.seed(101)
-km_clusters <- kmeans(BreastCancer.features, centers = 2, nstart = 20)
-fviz_cluster(km_clusters, data = BreastCancer.features,
-             ggtheme = theme_minimal(),
-             main = "Partitioning Clustering Plot")
-sil <- silhouette(km_clusters$cluster, dist(BreastCancer.features))
-fviz_silhouette(sil)
+km_clusters <- kmeans(BreastCancer.features[, c(2, 3)], centers = 2, nstart = 20)
+table(km_clusters$cluster, BreastCancer$Class)
+fviz_cluster(km_clusters, data = BreastCancer.features[, c(2, 3)])
 ```
 
-El resultado de agrupamiento sí presenta mejoras. Los clusters están más definidos. Ya no existe *overlapping* entre ellos. 
+El resultado de agrupamiento presenta mejoras. El primer cluster ha reducido el número de ejemplos malignos a 5, y casi se ha agrupado perfectamente. Y aunque, han aumentado el número de ejemplos benignos en el segundo cluster, este presenta mayor número de ejemplos malignos. Visualmente vemos que el segundo cluster se ha cohesionado mucho más, y la separación entre los clusters ha aumentado.
 
 - c("range")
 
@@ -221,15 +215,12 @@ El resultado de agrupamiento sí presenta mejoras. Los clusters están más defi
 BreastCancer.scale <- preProcess(BreastCancer[, 1:9], method=c("range"))
 BreastCancer.features <- predict(BreastCancer.scale, BreastCancer[, 1:9])
 set.seed(101)
-km_clusters <- kmeans(BreastCancer.features, centers = 2, nstart = 20)
-fviz_cluster(km_clusters, data = BreastCancer.features,
-             ggtheme = theme_minimal(),
-             main = "Partitioning Clustering Plot")
-sil <- silhouette(km_clusters$cluster, dist(BreastCancer.features))
-fviz_silhouette(sil)
+km_clusters <- kmeans(BreastCancer.features[, c(2, 3)], centers = 2, nstart = 20)
+table(km_clusters$cluster, BreastCancer$Class)
+fviz_cluster(km_clusters, data = BreastCancer.features[, c(2, 3)])
 ```
 
-El resultado de agrupamiento sí presenta mejoras.
+El resultado no presenta mejoras.
 
 - c("range", "YeoJohnson")
 
@@ -238,15 +229,12 @@ El resultado de agrupamiento sí presenta mejoras.
 BreastCancer.scale <- preProcess(BreastCancer[, 1:9], method=c("range", "YeoJohnson"))
 BreastCancer.features <- predict(BreastCancer.scale, BreastCancer[, 1:9])
 set.seed(101)
-km_clusters <- kmeans(BreastCancer.features, centers = 2, nstart = 20)
-fviz_cluster(km_clusters, data = BreastCancer.features,
-             ggtheme = theme_minimal(),
-             main = "Partitioning Clustering Plot")
-sil <- silhouette(km_clusters$cluster, dist(BreastCancer.features))
-fviz_silhouette(sil)
+km_clusters <- kmeans(BreastCancer.features[, c(2, 3)], centers = 2, nstart = 20)
+table(km_clusters$cluster, BreastCancer$Class)
+fviz_cluster(km_clusters, data = BreastCancer.features[, c(2, 3)])
 ```
 
-El resultado de agrupamiento no presenta mejoras.
+El resultado de agrupamiento presenta mejoras. Justamente, presenta las mismas mejoras que si escalamos con el método que contiene c("center", "scale", "YeoJohnson").
 
 - A partir del par de variables seleccionadas, cree un agrupamiento conformado por tres variables; las dos variables previamente seleccionadas y otra variable seleccionada aleatoriamente entre las variables descriptoras restantes. Este proceso debes repetirlo cinco veces de tal manera que en cada ejecución la variable añadida no necesariamente sea la misma.
 
@@ -259,9 +247,7 @@ func <- function (var) {
   new_data <- c("Cell.size", "Cell.shape", var)
   set.seed(101)
   km_clusters <- kmeans(BreastCancer.features[new_data], centers = 2, nstart = 20)
-  fviz_cluster(km_clusters, data = BreastCancer.features[, c("Cell.size", "Cell.shape")],
-             ggtheme = theme_minimal(),
-             main = "Partitioning Clustering Plot")
+  fviz_cluster(km_clusters, data = BreastCancer.features[, c("Cell.size", "Cell.shape")])
 }
 
 vars <- c("Cl.thickness", "Marg.adhesion", "Epith.c.size", "Bare.nuclei", "Bl.cromatin")

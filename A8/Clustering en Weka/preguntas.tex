@@ -1,7 +1,8 @@
-\documentclass[11pt]{exam}
+\documentclass[a4paper, 11pt]{exam}
 \usepackage[utf8]{inputenc}
 \usepackage{hyperref}
 \usepackage{graphicx}
+\usepackage{subfig}
 \usepackage[export]{adjustbox}
 
 \title{Clustering en Weka}
@@ -14,115 +15,144 @@
 	
 \maketitle
 
-En esta práctica se realiza un estudio acerca de la base de datos Iris. Esta BD se distribuye junto a la herramienta \href{https://www.cs.waikato.ac.nz/ml/weka/}{Weka}. 
+\renewcommand{\figurename}{Figura}
+\renewcommand{\tablename}{Tabla}
 
+
+En esta práctica vamos a realizar un estudio acerca de los datos de Iris. Esta BD se distribuye junto a la herramienta \href{https://www.cs.waikato.ac.nz/ml/weka/}{Weka}. Toda la información sobre esta BD se puede encontrar en el siguiente enlace: \url{https://archive.ics.uci.edu/ml/datasets/Iris}. La BD contiene 4 variables descriptivas y una variable clase. Dado que no contiene valores perdidos, no deberemos de eliminarlos antes de continuar el análisis. Además, como las variables descriptivas son numéricas no deberemos de transformarlas.
+
+\vspace{3mm}
+Debido a que los algoritmos de clustering se basan en el cómputo de valores de distancias entre los grupos, es ventajoso tener todas las variables en la misma escala para el cálculo de las distancias entre grupos. Así que, vamos a convertir todas las variables descriptivas a una misma escala. Para ello, vamos a utilizar un filtro de atributo de tipo no supervisado llamado \textit{Standardize} (ver Figura \ref{Figura_1}), y vamos a ignorar la variable clase durante el proceso.
+
+\vspace{5mm}
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.6\textwidth]{iris_scaled.png}
+	\caption{Filtro \textit{Standardize}.}
+	\label{Figura_1}
+\end{figure}
+
+La variable clase no se debe tener en cuenta a la hora de realizar el clustering, ya que estamos haciendo un aprendizaje no supervisado, y por tanto la vamos a eliminar. Para ello, vamos a utilizar un filtro de atributo no supervisado llamado \textit{Remove} (ver Figura \ref{Figura_2}).
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.6\textwidth]{iris_sin_class.png}
+	\caption{Filtro \textit{Remove}.}
+	\label{Figura_2}
+\end{figure}
+
+\newpage
 \begin{questions}
 	
 % Pregunta 1
 {\question Ejecuta el algoritmo SimpleKMeans usando la herramienta Weka con las distancias Euclídea y Manhattan.}
 
-La BD está formada por 4 variables descriptivas y una variable clase. No se aplica preprocesamiento de datos ya que las variables descriptivas son numéricas y no existen valores perdidos en la BD. Además, como la variable de clase puede tomar tres valores, elegimos que el valor de \textit{k} sea igual a 3.
-
-\renewcommand{\figurename}{Figura}
-
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.6\textwidth]{kmeans_euclidea.png}
-	\caption{KMeans con distancia Euclídea.}
-	\label{Captura_1}
+	\subfloat[con distancia Euclídea.]{{\includegraphics[width=6cm]{kmeans_euclidea.png} }}
+	\qquad
+	\subfloat[con distancia Manhattan.]{{\includegraphics[width=6cm]{kmeans_manhattan.png} }}
+	\caption{SimpleKMeans.}
+	\label{Figura_3}
 \end{figure}
 
+Nota: Como la variable de clase puede tomar 3 valores diferentes, hemos elegido que el valor de \textit{k} sea igual a 3. 
 
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=0.6\textwidth]{kmeans_manhattan.png}
-	\caption{KMeans con distancia Manhattan.}
-	\label{Captura_2}
-\end{figure}
+Si nos fijamos en el valor de SSE, vemos que el primer clustering con distancia Euclídea ha funcionado mejor, ya que el valor de SSE es pequeño (6.998). En cambio, el clustering con distancia Manhattan no ha funcionado muy bien, ya que el valor de SSE es muy alto (47.779). Para mejorar el segundo clustering, tendríamos que augmentar el valor de \textit{k}.
 
 \begin{parts}
-
+	
+\newpage
 \part ¿Cuántas instancias contiene cada grupo?
 
-En la ejecución del algoritmo KMeans con distancia Euclídea (ver Figura \ref{Captura_1}) se han formado tres grupos: 0, 1 y 2. Los 3 grupos contienen 50 instancias cada uno. En la ejecución del algoritmo KMeans con distancia Manhattan (ver Figura \ref{Captura_2}) también se han formado los grupos 0, 1 y 2, con el mismo número de instancias cada uno.
+En la Figura \ref{Figura_3} podemos ver las instancias que contienen cada grupo (0, 1 y 2), que se resumen en la siguiente Tabla \ref{Tabla_1}.
 
-\newpage
+\begin{table}[h] 
+	\begin{center}
+		\begin{tabular}{|c|c|c|c|}
+			\hline
+			Distancia & Grupo 0 & Grupo 1 & Grupo 2 \\ \hline
+			Euclídea & 61 & 50 & 39 \\ \hline
+			Manhattan & 62 & 50 & 38 \\ \hline
+		\end{tabular}
+	\end{center}
+	\caption{Instancias de cada grupo en SimpleKMeans.}
+	\label{Tabla_1}
+\end{table}
+
 \part ¿Cuáles son los centroides?
 
-Si nos volvemos a fijar en la figura \ref{Captura_1}, podemos observar los centroides de la ejecución de Kmeans con distancia Euclídea, y en la figura \ref{Captura_2}, podemos observar los centroides de la ejecución de Kmeans con distancia Manhattan. Se muestran más detalladamente en las siguientes figuras:
+Si nos volvemos a fijar en la figura \ref{Figura_3}, podemos observar los centroides de cada ejecución de SimpleKMeans, que se muestran más detalladamente en la siguiente figura.
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.45\textwidth]{kmeans_euclidea_centroides.png}
-	\caption{KMeans centroides con distancia Euclídea.}
-	\label{Captura_3}
-	\bigbreak
-	\includegraphics[width=0.45\textwidth]{kmeans_manhattan_centroides.png}
-	\caption{KMeans centroides con distancia Manhattan.}
-	\label{Captura_4}
+	\subfloat[con distancia Euclídea.]{{\includegraphics[width=7cm]{kmeans_euclidea_centroides.png} }}
+	\qquad
+	\subfloat[con distancia Manhattan.]{{\includegraphics[width=7cm]{kmeans_manhattan_centroides.png} }}
+	\caption{Centroides en SimpleKMeans.}
+	\label{Figura_4}
 \end{figure}
 
-\newpage
 \part Analiza los centroides. ¿Hay algo destacable en esos centroides? ¿Están los centroides separados en el espacio? ¿Tienen componentes similares?
 
-Los centroides resultantes de la ejecución del algoritmo KMeans con distancia Euclídea y los centroides resultantes de la ejecución del algoritmo KMeans con distancia Manhattan son muy parecidos. Tienen componentes muy similares. Este comportamiento nos podría indicar que en la BD no existen \textit{outliers}, la distancia Manhattan se ve menos afectada por ellos (es más robusta), y al no presentar diferencias significantes con la distancia Euclídea, podría ser el motivo de tanta similitud.
-
-En la figura \ref{Captura_5} se puede observar que los centroides están separados en el espacio. Aunque los centroides de los grupos 0 y 1 están más cercanos entre ellos. El centroide del grupo 2 es el que está más alejado.
+En general, vemos que hay bastante cohesión entre los centroides, eso quiere decir que tienen componentes muy similares. Por ejemplo, el grupo 0 presenta mucha cohesión. También vemos que existe mucha separación entre los centroides. A continuación, podemos observar visualmente la separación entre los centroides (ver Figura \ref{Figura_5}).
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.6\textwidth]{kmeans_euclidea_centroides_graph.png}
-	\caption{Representación de los centroides de KMeans con distancia Euclídea.}
-	\label{Captura_5}
+	\subfloat[con distancia Euclídea.]{{\includegraphics[width=7cm]{kmeans_euclidea_centroides_graph.png} }}
+	\qquad
+	\subfloat[con distancia Manhattan.]{{\includegraphics[width=7cm]{kmeans_manhattan_centroides_graph.png} }}
+	\caption{Centroides en SimpleKMeans.}
+	\label{Figura_5}
 \end{figure}
 
 \end{parts}
 
-Nota: Solo se muestra la gráfica de los centroides resultantes de la ejecución del algoritmo KMeans con distancia Euclídea, porqué casi es igual a la gráfica de los centroides resultantes de la ejecución del algoritmo KMeans con distancia Manhattan.
-
 % Pregunta 2
-{\question Ejecuta el algoritmo HierarchicalClusterer con tipo de enlace completo y métrica de distancia euclídea, y visualice las gráficas de los puntos agrupados. ¿Alguno de ellas produce grupos bien diferenciados y con fronteras claras?}
+{\question Ejecuta el algoritmo HierarchicalClusterer con tipo de enlace completo y métrica de distancia Euclídea, y visualiza las gráficas de los puntos agrupados. ¿Alguna de ellas produce grupos bien diferenciados y con fronteras claras?}
 
 Nota: Compara que el eje X instance\_number y el eje Y vaya variando y muestra cada una de las variables (debes adjuntar las imágenes).
 
-Como se ha comentado anteriormente, la variable de clase puede tomar tres valores, así que volvemos a elegir \textit{k} igual a 3 para la ejecución del algoritmo (ver Figura \ref{Captura_6}).
+Nota: Volvemos a elegir para la ejecución del algoritmo que el valor de \textit{k} sea igual a 3.
+
+El resultado de la ejecución del algoritmo HierarchicalClusterer se puede observar en la siguiente figura:
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.6\textwidth]{hc_euclidea.png}
-	\caption{Hierarchical Clustering con distancia Euclídea.}
-	\label{Captura_6}
+	\includegraphics[width=0.8\textwidth]{hc_euclidea.png}
+	\caption{HierarchicalClusterer con distancia Euclídea.}
+	\label{Figura_6}
 \end{figure}
 
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=0.6\textwidth]{hc_petallenght.png}
-	\caption{X instance\_number con Y \textit{petallenght}.}
-	\label{Captura_7}
-\end{figure}
+La ejecución del algoritmo HierarchicalClusterer ha formado el grupo 0 con 50 instancias, el grupo 1 con 66 instancias, y el grupo 2 con 34 instancias. Aunque el valor de \textit{k} es el mismo que en la ejecución del algoritmo SimpleKMeans, no se obtiene el mismo resultado (ver Tabla \ref{Tabla_1}).
 
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=0.6\textwidth]{hc_petalwidth.png}
-	\caption{X instance\_number con Y \textit{petalwidth}.}
-	\label{Captura_8}
-\end{figure}
+A continuación se visualizan ls gráficas de los puntos agrupados para cada variable descriptiva del eje Y con el eje X instance\_number.
 
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=0.6\textwidth]{hc_sepallebgth.png}
-	\caption{X instance\_number con Y \textit{sepalleght}.}
-	\label{Captura_9}
-\end{figure}
+\begin{itemize}
+	\item \textit{sepallength} y \textit{sepalwidth}
+	\begin{figure}[h]
+		\subfloat[con Y \textit{sepallength}.]{{\includegraphics[width=8cm]{hc_sepallength.png} }}
+		\qquad
+		\subfloat[con Y \textit{sepalwidth}.]{{\includegraphics[width=8cm]{hc_sepalwidth.png} }}
+		\caption{X instance\_number con \textit{sepallength} y \textit{sepalwidth}.}
+		\label{Figura_7}
+	\end{figure}
+	\newpage
+	\item \textit{petallength} y \textit{petalwidth}
+	\begin{figure}[h]
+		\subfloat[con Y \textit{petallength}.]{{\includegraphics[width=8cm]{hc_petallength.png} }}
+		\qquad
+		\subfloat[con Y \textit{petalwidth}.]{{\includegraphics[width=8cm]{hc_petalwidth.png} }}
+		\caption{X instance\_number con \textit{petallength} y \textit{petalwidth}.}
+		\label{Figura_8}
+	\end{figure}
+\end{itemize}
 
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=0.6\textwidth]{hc_sepalwidth.png}
-	\caption{X instance\_number con Y \textit{sepalwidth}.}
-	\label{Captura_10}
-\end{figure}
+En ninguna de ellas, todos los grupos están totalmente diferenciados y con fronteras claras. 
 
-Las gráficas donde el eje Y es igual a las variables \textit{petallenght} i \textit{petalwidth} muestran grupos bien diferenciados y con las fronteras claras.
+En las gráficas de la Figura \ref{Figura_7} los grupos no se han agrupado correctamente.
+
+En las gráficas de la Figura \ref{Figura_8} los grupos 1 y 2 no se han agrupado correctamente. Sí que se ha agrupado correctamente el grupo 0.
 
 \end{questions}
 

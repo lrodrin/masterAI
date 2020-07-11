@@ -36,7 +36,7 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
 \hypersetup{
-  pdftitle={Práctica en R del tema Clustering},
+  pdftitle={Práctica: clustering en R},
   pdfauthor={Laura Rodríguez Navas},
   hidelinks,
   pdfcreator={LaTeX via pandoc}}
@@ -100,9 +100,9 @@
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 
-\title{Práctica en R del tema Clustering}
+\title{Práctica: clustering en R}
 \author{Laura Rodríguez Navas}
-\date{10/07/2020}
+\date{12/07/2020}
 
 \begin{document}
 \maketitle
@@ -130,15 +130,11 @@ siguientes paquetes de R:
 \begin{itemize}
 \tightlist
 \item
-  \textbf{install.packages(``lattice'')}
-\item
-  \textbf{install.packages(``ggplot2'')}
-\item
   \textbf{install.packages(``factoextra'')}
 \item
   \textbf{install.packages(``ggdendro'')}
 \item
-  \textbf{install.packages(``cluster'')}
+  \textbf{install.packages(``corrplot'')}
 \end{itemize}
 
 Luego de haber instalado los paquetes en R, pasamos a cargar en memoria
@@ -147,12 +143,10 @@ las librerías que usaremos.
 \begin{Shaded}
 \begin{Highlighting}[]
 \KeywordTok{library}\NormalTok{(mlbench)}
-\KeywordTok{library}\NormalTok{(lattice)}
-\KeywordTok{library}\NormalTok{(ggplot2)}
 \KeywordTok{library}\NormalTok{(caret)}
 \KeywordTok{library}\NormalTok{(factoextra)}
 \KeywordTok{library}\NormalTok{(ggdendro)}
-\KeywordTok{library}\NormalTok{(cluster)}
+\KeywordTok{library}\NormalTok{(corrplot)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -270,8 +264,6 @@ siguiente información:
 ##                 
 ## 
 \end{verbatim}
-
-\newpage
 
 \begin{itemize}
 \tightlist
@@ -411,6 +403,8 @@ Nota: se recomienda utilizar la función preProcess(.., method =
 ##  $ Mitoses        : num  0.577 0.577 0.577 0.577 0.577 ...
 \end{verbatim}
 
+Se ha eliminado la variable clase.
+
 \hypertarget{clustering-con-kmeans}{%
 \subsubsection{Clustering con kMeans}\label{clustering-con-kmeans}}
 
@@ -451,67 +445,64 @@ evaluación externa y así comprobar la calidad del agrupamiento.
 \begin{Highlighting}[]
 \CommentTok{#INSERTAR CÓDIGO AQUÍ}
 \KeywordTok{set.seed}\NormalTok{(}\DecValTok{101}\NormalTok{)}
-\NormalTok{km_clusters <-}\StringTok{ }\KeywordTok{kmeans}\NormalTok{(BreastCancer.features, }\DataTypeTok{centers =} \DecValTok{2}\NormalTok{, }\DataTypeTok{nstart =} \DecValTok{20}\NormalTok{)}
+\NormalTok{km_clusters <-}\StringTok{ }\KeywordTok{kmeans}\NormalTok{(BreastCancer.features[, }\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{)], }\DataTypeTok{centers =} \DecValTok{2}\NormalTok{, }\DataTypeTok{nstart =} \DecValTok{20}\NormalTok{)}
 \NormalTok{km_clusters}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## K-means clustering with 2 clusters of sizes 453, 230
+## K-means clustering with 2 clusters of sizes 500, 183
 ## 
 ## Cluster means:
-##   Cl.thickness Cell.size Cell.shape Marg.adhesion Epith.c.size Bare.nuclei
-## 1     1.077629 0.4191542  0.4712566     0.4700817    0.9423492   0.3840871
-## 2     2.554044 2.2270031  2.2665986     2.0080464    2.4642601   2.1322365
-##   Bl.cromatin Normal.nucleoli  Mitoses
-## 1   0.8578798       0.4092973 0.617912
-## 2   2.4865546       1.9854346 1.530682
+##   Cell.size Cell.shape
+## 1 0.4874158   0.547417
+## 2 2.5048068   2.519609
 ## 
 ## Clustering vector:
 ##   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20 
-##   1   2   1   2   1   2   1   1   1   1   1   1   1   1   2   2   1   1   2   1 
+##   1   1   1   2   1   2   1   1   1   1   1   1   1   1   2   2   1   1   2   1 
 ##  21  22  23  25  26  27  28  29  30  31  32  33  34  35  36  37  38  39  40  42 
-##   2   2   1   1   1   1   1   1   1   1   1   2   1   1   1   2   1   2   2   2 
+##   1   2   1   1   1   1   1   1   1   1   1   2   1   1   1   2   1   1   1   1 
 ##  43  44  45  46  47  48  49  50  51  52  53  54  55  56  57  58  59  60  61  62 
-##   2   2   2   1   2   1   1   2   2   1   2   2   2   2   2   1   1   1   2   1 
+##   2   2   2   1   2   1   1   2   2   1   1   2   2   2   2   1   1   2   1   1 
 ##  63  64  65  66  67  68  69  70  71  72  73  74  75  76  77  78  79  80  81  82 
-##   2   1   1   2   1   2   2   1   1   2   1   2   2   1   1   1   1   1   1   1 
+##   2   1   1   1   1   1   2   1   1   2   1   1   2   1   1   1   1   1   1   1 
 ##  83  84  85  86  87  88  89  90  91  92  93  94  95  96  97  98  99 100 101 102 
-##   1   1   2   2   2   2   1   1   1   1   1   1   1   1   1   1   2   2   2   1 
+##   1   1   2   2   1   2   1   1   1   1   1   1   1   1   1   1   2   2   1   1 
 ## 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 
-##   1   1   2   2   2   2   1   2   1   2   2   2   1   1   1   2   1   1   1   1 
+##   1   1   2   1   2   2   1   1   1   2   1   2   1   1   1   2   1   1   1   1 
 ## 123 124 125 126 127 128 129 130 131 132 133 134 135 136 137 138 139 141 142 143 
-##   2   2   2   1   2   1   2   1   1   1   2   1   1   1   1   1   1   1   1   2 
+##   2   1   2   1   1   1   1   1   1   1   2   1   1   1   1   1   1   1   1   2 
 ## 144 145 147 148 149 150 151 152 153 154 155 156 157 158 160 161 162 163 164 166 
-##   1   1   1   1   1   2   1   2   2   1   1   2   1   1   2   2   1   1   1   1 
+##   1   1   1   1   1   2   1   1   2   1   1   2   1   1   2   2   1   1   1   1 
 ## 167 168 169 170 171 172 173 174 175 176 177 178 179 180 181 182 183 184 185 186 
 ##   2   2   1   1   1   1   1   2   2   2   1   2   1   1   1   1   1   2   2   1 
 ## 187 188 189 190 191 192 193 194 195 196 197 198 199 200 201 202 203 204 205 206 
-##   2   2   2   1   2   2   1   1   1   1   2   1   1   1   2   2   1   1   1   2 
+##   2   2   2   1   2   2   1   1   1   1   1   1   1   1   2   2   1   1   1   2 
 ## 207 208 209 210 211 212 213 214 215 216 217 218 219 220 221 222 223 224 225 226 
 ##   2   1   1   1   2   2   1   2   2   2   1   1   2   1   1   2   1   2   2   1 
 ## 227 228 229 230 231 232 233 234 235 237 238 239 240 241 242 243 244 245 246 247 
-##   2   2   1   2   2   2   1   2   1   2   2   2   2   1   1   1   1   1   1   2 
+##   2   2   1   2   2   2   2   1   1   2   2   2   1   1   1   1   1   1   1   2 
 ## 248 249 251 252 253 254 255 256 257 258 259 260 261 262 263 264 265 266 267 268 
-##   1   1   1   2   2   2   2   2   1   1   1   2   2   2   2   2   2   1   2   2 
+##   1   1   1   1   1   2   2   2   1   1   1   2   2   2   2   1   2   1   2   1 
 ## 269 270 271 272 273 274 275 277 278 279 280 281 282 283 284 285 286 287 288 289 
-##   2   1   2   1   2   1   1   1   1   1   2   1   1   2   2   2   2   2   1   2 
+##   2   1   2   1   1   1   1   1   1   1   2   1   1   1   2   1   2   2   1   1 
 ## 290 291 292 294 296 297 299 300 301 302 303 304 305 306 307 308 309 310 311 312 
-##   2   1   1   2   2   2   1   2   2   1   2   1   2   2   1   1   2   1   1   1 
+##   2   1   1   1   2   1   1   1   2   1   2   1   1   2   1   1   2   1   1   1 
 ## 313 314 315 317 318 319 320 321 323 324 325 326 327 328 329 330 331 332 333 334 
-##   2   1   1   2   2   1   2   2   1   2   1   1   1   1   2   2   2   1   1   2 
+##   2   1   1   2   2   1   1   1   1   2   1   1   1   1   2   2   2   1   1   2 
 ## 335 336 337 338 339 340 341 342 343 344 345 346 347 348 349 350 351 352 353 354 
-##   2   1   2   1   1   2   2   1   1   1   2   1   1   1   1   2   1   1   2   2 
+##   2   1   2   1   1   2   1   1   1   1   2   1   1   1   1   1   1   1   1   2 
 ## 355 356 357 358 359 360 361 362 363 364 365 366 367 368 369 370 371 372 373 374 
-##   1   1   1   2   2   2   2   2   1   1   1   1   2   2   1   1   1   1   1   1 
+##   1   1   1   2   2   1   2   2   1   1   1   1   2   2   1   1   1   1   1   1 
 ## 375 376 377 378 379 380 381 382 383 384 385 386 387 388 389 390 391 392 393 394 
-##   1   1   1   1   1   1   1   2   1   1   1   1   2   1   1   1   1   2   1   1 
+##   1   1   1   1   1   1   1   1   1   1   1   1   2   1   1   1   1   2   1   1 
 ## 395 396 397 398 399 400 401 402 403 404 405 406 407 408 409 410 411 413 414 415 
 ##   1   1   1   1   1   1   2   1   1   1   1   1   1   1   1   1   1   2   1   2 
 ## 416 417 418 419 420 421 422 423 424 425 426 427 428 429 430 431 432 433 434 435 
 ##   1   2   1   1   1   1   2   1   1   1   2   1   2   1   1   1   1   1   1   2 
 ## 436 437 438 439 440 441 442 443 444 445 446 447 448 449 450 451 452 453 454 455 
-##   2   2   1   1   1   2   1   1   1   1   1   1   1   1   2   1   1   1   2   1 
+##   2   2   1   1   1   1   1   1   1   1   1   1   1   1   2   1   1   1   2   1 
 ## 456 457 458 459 460 461 462 463 464 465 466 467 468 469 470 471 472 473 474 475 
 ##   1   2   2   1   1   1   1   1   1   1   2   2   2   1   1   1   1   1   1   1 
 ## 476 477 478 479 480 481 482 483 484 485 486 487 488 489 490 491 492 493 494 495 
@@ -519,29 +510,29 @@ evaluación externa y así comprobar la calidad del agrupamiento.
 ## 496 497 498 499 500 501 502 503 504 505 506 507 508 509 510 511 512 513 514 515 
 ##   1   1   1   1   1   1   1   1   1   1   1   2   1   1   1   1   1   1   1   2 
 ## 516 517 518 519 520 521 522 523 524 525 526 527 528 529 530 531 532 533 534 535 
-##   2   1   1   1   2   1   1   2   2   1   1   1   1   1   1   2   1   1   1   1 
+##   2   1   1   1   2   1   1   1   2   1   1   1   1   1   1   1   1   1   1   1 
 ## 536 537 538 539 540 541 542 543 544 545 546 547 548 549 550 551 552 553 554 555 
 ##   1   1   1   1   1   1   1   1   1   1   1   2   1   1   2   1   1   1   1   1 
 ## 556 557 558 559 560 561 562 563 564 565 566 567 568 569 570 571 572 573 574 575 
-##   1   1   1   1   1   1   1   1   1   1   2   1   1   2   2   2   2   1   1   2 
+##   1   1   1   1   1   1   1   1   1   1   2   1   1   1   2   2   2   1   1   2 
 ## 576 577 578 579 580 581 582 583 584 585 586 587 588 589 590 591 592 593 594 595 
-##   1   1   1   1   1   1   2   2   1   1   1   2   1   2   1   2   2   2   1   2 
+##   1   1   1   1   1   1   2   2   1   1   1   2   1   2   1   2   2   1   1   2 
 ## 596 597 598 599 600 601 602 603 604 605 606 607 608 609 610 611 612 613 614 615 
-##   1   1   1   1   1   1   1   1   2   2   2   1   1   2   1   2   2   2   1   1 
+##   1   1   1   1   1   1   1   1   2   1   2   1   1   2   1   1   2   2   1   1 
 ## 616 617 619 620 621 622 623 624 625 626 627 628 629 630 631 632 633 634 635 636 
 ##   1   1   1   1   1   1   1   1   1   1   2   1   1   1   1   1   1   2   1   1 
 ## 637 638 639 640 641 642 643 644 645 646 647 648 649 650 651 652 653 654 655 656 
 ##   2   1   1   1   1   1   1   1   1   1   1   1   2   1   1   1   1   1   1   1 
 ## 657 658 659 660 661 662 663 664 665 666 667 668 669 670 671 672 673 674 675 676 
-##   1   2   2   1   1   1   1   1   1   1   1   1   2   2   2   1   1   1   1   1 
+##   1   1   2   1   1   1   1   1   1   1   1   1   2   2   2   1   1   1   1   1 
 ## 677 678 679 680 681 682 683 684 685 686 687 688 689 690 691 692 693 694 695 696 
 ##   1   1   1   1   2   2   1   1   1   1   1   1   1   1   1   2   1   1   1   1 
 ## 697 698 699 
 ##   2   2   2 
 ## 
 ## Within cluster sum of squares by cluster:
-## [1]  573.4613 2150.6939
-##  (between_SS / total_SS =  55.6 %)
+## [1] 118.6897 179.0062
+##  (between_SS / total_SS =  78.2 %)
 ## 
 ## Available components:
 ## 
@@ -560,65 +551,79 @@ evaluación externa y así comprobar la calidad del agrupamiento.
 
 RESPUESTA:
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{#INSERTAR CÓDIGO AQUÍ}
-\KeywordTok{fviz_cluster}\NormalTok{(km_clusters, }\DataTypeTok{data =}\NormalTok{ BreastCancer.features,}
-             \DataTypeTok{ggtheme =} \KeywordTok{theme_minimal}\NormalTok{(),}
-             \DataTypeTok{main =} \StringTok{"Partitioning Clustering Plot"}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-12-1} \end{center}
-
-La propia función (\emph{fviz\_cluster}) determina las dos dimensiones,
-es decir, el par de variables más representativo en el dataset.
-
-Si observamos la anterior figura, el agrupamiento no ha sido del todo
-bueno. Los clusters no acaban de verse bien diferenciados, y se puede
-observar un poco de \emph{overlapping} entre ellos.
-
-Para la validación de los clusters se utiliza el coeficiente de
-Silhouette: un valor de Si cercano a 1 indica que el cluster estará bien
-agrupado. Un valor de Si cercano a -1 indicará que el cluster estará mal
-agrupado.
-
-A continuación vemos la representación del coeficiente de Silhouette:
+El resultado obtenido del clustering representa el 78.2\% de la
+información del dataset.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{#INSERTAR CÓDIGO AQUÍ}
-\NormalTok{sil <-}\StringTok{ }\KeywordTok{silhouette}\NormalTok{(km_clusters}\OperatorTok{$}\NormalTok{cluster, }\KeywordTok{dist}\NormalTok{(BreastCancer.features))}
-\KeywordTok{fviz_silhouette}\NormalTok{(sil)}
+\KeywordTok{table}\NormalTok{(km_clusters}\OperatorTok{$}\NormalTok{cluster, BreastCancer}\OperatorTok{$}\NormalTok{Class)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-##   cluster size ave.sil.width
-## 1       1  453          0.75
-## 2       2  230          0.23
+##    
+##     benign malignant
+##   1    440        60
+##   2      4       179
 \end{verbatim}
+
+Podemos apreciar que el primer cluster engloba a un mayor número de
+ejemplos benignos que malignos. También se puede apreciar que el segundo
+cluster engloba a más ejemplos malignos que benignos. Sin embargo, el
+primer cluster también alberga ejemplos del tipo maligno. Y el segundo
+cluster, también alberga ejemplos del tipo benigno. Por ello, podemos
+concluir que es un buen agrupamiento aunque los resultados son
+mejorables; el número de ejemplos benignos del segundo cluster es muy
+pequeño (4), casi se ha agrupado perfectamente.
+
+Si representamos los resultados en una gráfica, se puede apreciar en
+ella que los clusters están bien definidos con una frontera clara entre
+ellos.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#INSERTAR CÓDIGO AQUÍ}
+\KeywordTok{fviz_cluster}\NormalTok{(km_clusters, }\DataTypeTok{data =}\NormalTok{ BreastCancer.features[, }\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{)])}
+\end{Highlighting}
+\end{Shaded}
 
 \begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-13-1} \end{center}
 
+Para el clustering, se han elegido las variables \emph{Cell.size} y
+\emph{Cell.shape} porqué forman el par de variables más correlacionadas
+del dataset. Cuanto más correlacionadas están dos variables, serán más
+fáciles de agrupar, porqué sus valores están más agrupados.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#INSERTAR CÓDIGO AQUÍ}
+\KeywordTok{corrplot}\NormalTok{(}\KeywordTok{cor}\NormalTok{(BreastCancer.features), }\DataTypeTok{method =} \StringTok{"number"}\NormalTok{, }\DataTypeTok{type =} \StringTok{"lower"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-14-1} \end{center}
+
 \begin{itemize}
+\tightlist
 \item
   Mediante la función preprocess(..) de la librería caret, analice si se
   obtienen mejores resultados de agrupamiento con el par de atributos
   seleccionados anteriormente, pero en este caso haciendo inicialmente
   las siguientes combinaciones de transformaciones a los datos:
+\end{itemize}
 
-  \begin{itemize}
-  \tightlist
-  \item
-    c(``center'', ``scale'')
-  \item
-    c(``center'', ``scale'', ``YeoJohnson'')
-  \item
-    c(``range'')
-  \item
-    c(``range'', ``YeoJohnson'')
-  \end{itemize}
+\newpage
+
+\begin{itemize}
+\tightlist
+\item
+  c(``center'', ``scale'')
+\item
+  c(``center'', ``scale'', ``YeoJohnson'')
+\item
+  c(``range'')
+\item
+  c(``range'', ``YeoJohnson'')
 \end{itemize}
 
 Ayúdate de los resultados obtenidos con table y ggplot.
@@ -635,31 +640,27 @@ Ayúdate de los resultados obtenidos con table y ggplot.
 \NormalTok{BreastCancer.scale <-}\StringTok{ }\KeywordTok{preProcess}\NormalTok{(BreastCancer[, }\DecValTok{1}\OperatorTok{:}\DecValTok{9}\NormalTok{], }\DataTypeTok{method=}\KeywordTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{, }\StringTok{"scale"}\NormalTok{))}
 \NormalTok{BreastCancer.features <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(BreastCancer.scale, BreastCancer[, }\DecValTok{1}\OperatorTok{:}\DecValTok{9}\NormalTok{])}
 \KeywordTok{set.seed}\NormalTok{(}\DecValTok{101}\NormalTok{)}
-\NormalTok{km_clusters <-}\StringTok{ }\KeywordTok{kmeans}\NormalTok{(BreastCancer.features, }\DataTypeTok{centers =} \DecValTok{2}\NormalTok{, }\DataTypeTok{nstart =} \DecValTok{20}\NormalTok{)}
-\KeywordTok{fviz_cluster}\NormalTok{(km_clusters, }\DataTypeTok{data =}\NormalTok{ BreastCancer.features,}
-             \DataTypeTok{ggtheme =} \KeywordTok{theme_minimal}\NormalTok{(),}
-             \DataTypeTok{main =} \StringTok{"Partitioning Clustering Plot"}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-14-1} \end{center}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{sil <-}\StringTok{ }\KeywordTok{silhouette}\NormalTok{(km_clusters}\OperatorTok{$}\NormalTok{cluster, }\KeywordTok{dist}\NormalTok{(BreastCancer.features))}
-\KeywordTok{fviz_silhouette}\NormalTok{(sil)}
+\NormalTok{km_clusters <-}\StringTok{ }\KeywordTok{kmeans}\NormalTok{(BreastCancer.features[, }\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{)], }\DataTypeTok{centers =} \DecValTok{2}\NormalTok{, }\DataTypeTok{nstart =} \DecValTok{20}\NormalTok{)}
+\KeywordTok{table}\NormalTok{(km_clusters}\OperatorTok{$}\NormalTok{cluster, BreastCancer}\OperatorTok{$}\NormalTok{Class)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-##   cluster size ave.sil.width
-## 1       1  453          0.75
-## 2       2  230          0.23
+##    
+##     benign malignant
+##   1    440        60
+##   2      4       179
 \end{verbatim}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-14-2} \end{center}
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{fviz_cluster}\NormalTok{(km_clusters, }\DataTypeTok{data =}\NormalTok{ BreastCancer.features[, }\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{)])}
+\end{Highlighting}
+\end{Shaded}
 
-El resultado de agrupamiento no presenta mejoras.
+\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-15-1} \end{center}
+
+El resultado no presenta mejoras.
 
 \begin{itemize}
 \tightlist
@@ -670,35 +671,36 @@ El resultado de agrupamiento no presenta mejoras.
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{#INSERTAR CÓDIGO AQUÍ}
-\NormalTok{BreastCancer.scale <-}\StringTok{ }\KeywordTok{preProcess}\NormalTok{(BreastCancer[, }\DecValTok{1}\OperatorTok{:}\DecValTok{9}\NormalTok{], }\DataTypeTok{method=}\KeywordTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{, }\StringTok{"scale"}\NormalTok{, }\StringTok{"YeoJohnson"}\NormalTok{))}
+\NormalTok{BreastCancer.scale <-}\StringTok{ }\KeywordTok{preProcess}\NormalTok{(BreastCancer[, }\DecValTok{1}\OperatorTok{:}\DecValTok{9}\NormalTok{], }
+                                 \DataTypeTok{method=}\KeywordTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{, }\StringTok{"scale"}\NormalTok{, }\StringTok{"YeoJohnson"}\NormalTok{))}
 \NormalTok{BreastCancer.features <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(BreastCancer.scale, BreastCancer[, }\DecValTok{1}\OperatorTok{:}\DecValTok{9}\NormalTok{])}
 \KeywordTok{set.seed}\NormalTok{(}\DecValTok{101}\NormalTok{)}
-\NormalTok{km_clusters <-}\StringTok{ }\KeywordTok{kmeans}\NormalTok{(BreastCancer.features, }\DataTypeTok{centers =} \DecValTok{2}\NormalTok{, }\DataTypeTok{nstart =} \DecValTok{20}\NormalTok{)}
-\KeywordTok{fviz_cluster}\NormalTok{(km_clusters, }\DataTypeTok{data =}\NormalTok{ BreastCancer.features,}
-             \DataTypeTok{ggtheme =} \KeywordTok{theme_minimal}\NormalTok{(),}
-             \DataTypeTok{main =} \StringTok{"Partitioning Clustering Plot"}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-15-1} \end{center}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{sil <-}\StringTok{ }\KeywordTok{silhouette}\NormalTok{(km_clusters}\OperatorTok{$}\NormalTok{cluster, }\KeywordTok{dist}\NormalTok{(BreastCancer.features))}
-\KeywordTok{fviz_silhouette}\NormalTok{(sil)}
+\NormalTok{km_clusters <-}\StringTok{ }\KeywordTok{kmeans}\NormalTok{(BreastCancer.features[, }\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{)], }\DataTypeTok{centers =} \DecValTok{2}\NormalTok{, }\DataTypeTok{nstart =} \DecValTok{20}\NormalTok{)}
+\KeywordTok{table}\NormalTok{(km_clusters}\OperatorTok{$}\NormalTok{cluster, BreastCancer}\OperatorTok{$}\NormalTok{Class)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-##   cluster size ave.sil.width
-## 1       1  435          0.59
-## 2       2  248          0.44
+##    
+##     benign malignant
+##   1    409         5
+##   2     35       234
 \end{verbatim}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-15-2} \end{center}
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{fviz_cluster}\NormalTok{(km_clusters, }\DataTypeTok{data =}\NormalTok{ BreastCancer.features[, }\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{)])}
+\end{Highlighting}
+\end{Shaded}
 
-El resultado de agrupamiento sí presenta mejoras. Los clusters están más
-definidos. Ya no existe \emph{overlapping} entre ellos.
+\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-16-1} \end{center}
+
+El resultado de agrupamiento presenta mejoras. El primer cluster ha
+reducido el número de ejemplos malignos a 5, y casi se ha agrupado
+perfectamente. Y aunque, han aumentado el número de ejemplos benignos en
+el segundo cluster, este presenta mayor número de ejemplos malignos.
+Visualmente vemos que el segundo cluster se ha cohesionado mucho más, y
+la separación entre los clusters ha aumentado.
 
 \begin{itemize}
 \tightlist
@@ -712,31 +714,27 @@ definidos. Ya no existe \emph{overlapping} entre ellos.
 \NormalTok{BreastCancer.scale <-}\StringTok{ }\KeywordTok{preProcess}\NormalTok{(BreastCancer[, }\DecValTok{1}\OperatorTok{:}\DecValTok{9}\NormalTok{], }\DataTypeTok{method=}\KeywordTok{c}\NormalTok{(}\StringTok{"range"}\NormalTok{))}
 \NormalTok{BreastCancer.features <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(BreastCancer.scale, BreastCancer[, }\DecValTok{1}\OperatorTok{:}\DecValTok{9}\NormalTok{])}
 \KeywordTok{set.seed}\NormalTok{(}\DecValTok{101}\NormalTok{)}
-\NormalTok{km_clusters <-}\StringTok{ }\KeywordTok{kmeans}\NormalTok{(BreastCancer.features, }\DataTypeTok{centers =} \DecValTok{2}\NormalTok{, }\DataTypeTok{nstart =} \DecValTok{20}\NormalTok{)}
-\KeywordTok{fviz_cluster}\NormalTok{(km_clusters, }\DataTypeTok{data =}\NormalTok{ BreastCancer.features,}
-             \DataTypeTok{ggtheme =} \KeywordTok{theme_minimal}\NormalTok{(),}
-             \DataTypeTok{main =} \StringTok{"Partitioning Clustering Plot"}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-16-1} \end{center}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{sil <-}\StringTok{ }\KeywordTok{silhouette}\NormalTok{(km_clusters}\OperatorTok{$}\NormalTok{cluster, }\KeywordTok{dist}\NormalTok{(BreastCancer.features))}
-\KeywordTok{fviz_silhouette}\NormalTok{(sil)}
+\NormalTok{km_clusters <-}\StringTok{ }\KeywordTok{kmeans}\NormalTok{(BreastCancer.features[, }\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{)], }\DataTypeTok{centers =} \DecValTok{2}\NormalTok{, }\DataTypeTok{nstart =} \DecValTok{20}\NormalTok{)}
+\KeywordTok{table}\NormalTok{(km_clusters}\OperatorTok{$}\NormalTok{cluster, BreastCancer}\OperatorTok{$}\NormalTok{Class)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-##   cluster size ave.sil.width
-## 1       1  453          0.76
-## 2       2  230          0.28
+##    
+##     benign malignant
+##   1    440        60
+##   2      4       179
 \end{verbatim}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-16-2} \end{center}
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{fviz_cluster}\NormalTok{(km_clusters, }\DataTypeTok{data =}\NormalTok{ BreastCancer.features[, }\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{)])}
+\end{Highlighting}
+\end{Shaded}
 
-El resultado de agrupamiento sí presenta mejoras.
+\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-17-1} \end{center}
+
+El resultado no presenta mejoras.
 
 \begin{itemize}
 \tightlist
@@ -750,31 +748,29 @@ El resultado de agrupamiento sí presenta mejoras.
 \NormalTok{BreastCancer.scale <-}\StringTok{ }\KeywordTok{preProcess}\NormalTok{(BreastCancer[, }\DecValTok{1}\OperatorTok{:}\DecValTok{9}\NormalTok{], }\DataTypeTok{method=}\KeywordTok{c}\NormalTok{(}\StringTok{"range"}\NormalTok{, }\StringTok{"YeoJohnson"}\NormalTok{))}
 \NormalTok{BreastCancer.features <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(BreastCancer.scale, BreastCancer[, }\DecValTok{1}\OperatorTok{:}\DecValTok{9}\NormalTok{])}
 \KeywordTok{set.seed}\NormalTok{(}\DecValTok{101}\NormalTok{)}
-\NormalTok{km_clusters <-}\StringTok{ }\KeywordTok{kmeans}\NormalTok{(BreastCancer.features, }\DataTypeTok{centers =} \DecValTok{2}\NormalTok{, }\DataTypeTok{nstart =} \DecValTok{20}\NormalTok{)}
-\KeywordTok{fviz_cluster}\NormalTok{(km_clusters, }\DataTypeTok{data =}\NormalTok{ BreastCancer.features,}
-             \DataTypeTok{ggtheme =} \KeywordTok{theme_minimal}\NormalTok{(),}
-             \DataTypeTok{main =} \StringTok{"Partitioning Clustering Plot"}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-17-1} \end{center}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{sil <-}\StringTok{ }\KeywordTok{silhouette}\NormalTok{(km_clusters}\OperatorTok{$}\NormalTok{cluster, }\KeywordTok{dist}\NormalTok{(BreastCancer.features))}
-\KeywordTok{fviz_silhouette}\NormalTok{(sil)}
+\NormalTok{km_clusters <-}\StringTok{ }\KeywordTok{kmeans}\NormalTok{(BreastCancer.features[, }\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{)], }\DataTypeTok{centers =} \DecValTok{2}\NormalTok{, }\DataTypeTok{nstart =} \DecValTok{20}\NormalTok{)}
+\KeywordTok{table}\NormalTok{(km_clusters}\OperatorTok{$}\NormalTok{cluster, BreastCancer}\OperatorTok{$}\NormalTok{Class)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-##   cluster size ave.sil.width
-## 1       1  433          0.61
-## 2       2  250          0.50
+##    
+##     benign malignant
+##   1    409         5
+##   2     35       234
 \end{verbatim}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-17-2} \end{center}
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{fviz_cluster}\NormalTok{(km_clusters, }\DataTypeTok{data =}\NormalTok{ BreastCancer.features[, }\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{)])}
+\end{Highlighting}
+\end{Shaded}
 
-El resultado de agrupamiento no presenta mejoras.
+\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-18-1} \end{center}
+
+El resultado de agrupamiento presenta mejoras. Justamente, presenta las
+mismas mejoras que si escalamos con el método que contiene c(``center'',
+``scale'', ``YeoJohnson'').
 
 \begin{itemize}
 \tightlist
@@ -797,9 +793,7 @@ El resultado de agrupamiento no presenta mejoras.
 \NormalTok{  new_data <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Cell.size"}\NormalTok{, }\StringTok{"Cell.shape"}\NormalTok{, var)}
   \KeywordTok{set.seed}\NormalTok{(}\DecValTok{101}\NormalTok{)}
 \NormalTok{  km_clusters <-}\StringTok{ }\KeywordTok{kmeans}\NormalTok{(BreastCancer.features[new_data], }\DataTypeTok{centers =} \DecValTok{2}\NormalTok{, }\DataTypeTok{nstart =} \DecValTok{20}\NormalTok{)}
-  \KeywordTok{fviz_cluster}\NormalTok{(km_clusters, }\DataTypeTok{data =}\NormalTok{ BreastCancer.features[, }\KeywordTok{c}\NormalTok{(}\StringTok{"Cell.size"}\NormalTok{, }\StringTok{"Cell.shape"}\NormalTok{)],}
-             \DataTypeTok{ggtheme =} \KeywordTok{theme_minimal}\NormalTok{(),}
-             \DataTypeTok{main =} \StringTok{"Partitioning Clustering Plot"}\NormalTok{)}
+  \KeywordTok{fviz_cluster}\NormalTok{(km_clusters, }\DataTypeTok{data =}\NormalTok{ BreastCancer.features[, }\KeywordTok{c}\NormalTok{(}\StringTok{"Cell.size"}\NormalTok{, }\StringTok{"Cell.shape"}\NormalTok{)])}
 \NormalTok{\}}
 
 \NormalTok{vars <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Cl.thickness"}\NormalTok{, }\StringTok{"Marg.adhesion"}\NormalTok{, }\StringTok{"Epith.c.size"}\NormalTok{, }\StringTok{"Bare.nuclei"}\NormalTok{, }\StringTok{"Bl.cromatin"}\NormalTok{)}
@@ -808,7 +802,7 @@ El resultado de agrupamiento no presenta mejoras.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-18-1} \end{center}
+\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-19-1} \end{center}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -816,7 +810,7 @@ El resultado de agrupamiento no presenta mejoras.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-18-2} \end{center}
+\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-19-2} \end{center}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -824,7 +818,7 @@ El resultado de agrupamiento no presenta mejoras.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-18-3} \end{center}
+\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-19-3} \end{center}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -832,7 +826,7 @@ El resultado de agrupamiento no presenta mejoras.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-18-4} \end{center}
+\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-19-4} \end{center}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -840,7 +834,7 @@ El resultado de agrupamiento no presenta mejoras.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-18-5} \end{center}
+\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-19-5} \end{center}
 
 \begin{itemize}
 \tightlist
@@ -888,7 +882,7 @@ la función hclust(..).
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-19-1.pdf}
+\includegraphics{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-20-1.pdf}
 
 \begin{itemize}
 \tightlist
@@ -937,7 +931,7 @@ RESPUESTA:
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-20-1.pdf}
+\includegraphics{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-21-1.pdf}
 
 \begin{Shaded}
 \begin{Highlighting}[]
