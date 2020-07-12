@@ -63,6 +63,8 @@ fviz_cluster(km_clusters, data = BreastCancer.features,
              ggtheme = theme_minimal(),
              main = "Partitioning Clustering Plot")
 
+fviz_nbclust(BreastCancer.features, km_clusters, method = "gap_stat")
+
 fviz_nbclust(x = BreastCancer.features, FUNcluster = kmeans, method = "wss", k.max = 10, 
              diss = get_dist(BreastCancer.features, method = "euclidean"), nstart = 20)
 

@@ -578,7 +578,8 @@ pequeño (4), casi se ha agrupado perfectamente.
 
 Si representamos los resultados en una gráfica, se puede apreciar en
 ella que los clusters están bien definidos con una frontera clara entre
-ellos.
+ellos. Aunque, no hay mucha cohesión entre los valores de cada uno de
+los clusters y la separación entre ellos es mejorable.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -591,8 +592,7 @@ ellos.
 
 Para el clustering, se han elegido las variables \emph{Cell.size} y
 \emph{Cell.shape} porqué forman el par de variables más correlacionadas
-del dataset. Cuanto más correlacionadas están dos variables, serán más
-fáciles de agrupar, porqué sus valores están más agrupados.
+positivamente del dataset.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -697,7 +697,7 @@ El resultado no presenta mejoras.
 
 El resultado de agrupamiento presenta mejoras. El primer cluster ha
 reducido el número de ejemplos malignos a 5, y casi se ha agrupado
-perfectamente. Y aunque, han aumentado el número de ejemplos benignos en
+perfectamente. Y aunque han aumentado el número de ejemplos benignos en
 el segundo cluster, este presenta mayor número de ejemplos malignos.
 Visualmente vemos que el segundo cluster se ha cohesionado mucho más, y
 la separación entre los clusters ha aumentado.
@@ -769,8 +769,8 @@ El resultado no presenta mejoras.
 \begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-18-1} \end{center}
 
 El resultado de agrupamiento presenta mejoras. Justamente, presenta las
-mismas mejoras que si escalamos con el método que contiene c(``center'',
-``scale'', ``YeoJohnson'').
+mismas mejoras que si escalamos con el método c(``center'', ``scale'',
+``YeoJohnson'').
 
 \begin{itemize}
 \tightlist
@@ -792,17 +792,23 @@ mismas mejoras que si escalamos con el método que contiene c(``center'',
 \NormalTok{func <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{ (var) \{ }
 \NormalTok{  new_data <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Cell.size"}\NormalTok{, }\StringTok{"Cell.shape"}\NormalTok{, var)}
   \KeywordTok{set.seed}\NormalTok{(}\DecValTok{101}\NormalTok{)}
-\NormalTok{  km_clusters <-}\StringTok{ }\KeywordTok{kmeans}\NormalTok{(BreastCancer.features[new_data], }\DataTypeTok{centers =} \DecValTok{2}\NormalTok{, }\DataTypeTok{nstart =} \DecValTok{20}\NormalTok{)}
-  \KeywordTok{fviz_cluster}\NormalTok{(km_clusters, }\DataTypeTok{data =}\NormalTok{ BreastCancer.features[, }\KeywordTok{c}\NormalTok{(}\StringTok{"Cell.size"}\NormalTok{, }\StringTok{"Cell.shape"}\NormalTok{)])}
+\NormalTok{  km_clusters <-}\StringTok{ }\KeywordTok{kmeans}\NormalTok{(BreastCancer.features[new_data], }\DataTypeTok{centers =} \DecValTok{3}\NormalTok{, }\DataTypeTok{nstart =} \DecValTok{20}\NormalTok{)}
+  \KeywordTok{fviz_cluster}\NormalTok{(km_clusters, }\DataTypeTok{data =}\NormalTok{ BreastCancer.features[new_data])}
 \NormalTok{\}}
 
 \NormalTok{vars <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Cl.thickness"}\NormalTok{, }\StringTok{"Marg.adhesion"}\NormalTok{, }\StringTok{"Epith.c.size"}\NormalTok{, }\StringTok{"Bare.nuclei"}\NormalTok{, }\StringTok{"Bl.cromatin"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
 
+\newpage
+
+\begin{Shaded}
+\begin{Highlighting}[]
 \KeywordTok{func}\NormalTok{(vars[}\DecValTok{1}\NormalTok{])}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-19-1} \end{center}
+\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-20-1} \end{center}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -810,7 +816,9 @@ mismas mejoras que si escalamos con el método que contiene c(``center'',
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-19-2} \end{center}
+\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-20-2} \end{center}
+
+\newpage
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -818,7 +826,7 @@ mismas mejoras que si escalamos con el método que contiene c(``center'',
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-19-3} \end{center}
+\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-21-1} \end{center}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -826,7 +834,9 @@ mismas mejoras que si escalamos con el método que contiene c(``center'',
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-19-4} \end{center}
+\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-21-2} \end{center}
+
+\newpage
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -834,7 +844,7 @@ mismas mejoras que si escalamos con el método que contiene c(``center'',
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-19-5} \end{center}
+\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-22-1} \end{center}
 
 \begin{itemize}
 \tightlist
@@ -844,9 +854,30 @@ mismas mejoras que si escalamos con el método que contiene c(``center'',
   explicación puedes darle a los resultados?
 \end{itemize}
 
-En todos los casos es una desventaja. Al incluir más variables los dos
-clusters se agrupan incorrectamente. Vemos como existe
-\emph{overlapping}.
+En las gráficas anteriores, podemos visualizar que incluir más variables
+en un problema de alta dimensionalidad es una ventaja, aumenta la
+cohesión. Los algoritmos que se basan en distancias, como en este caso
+un algoritmo de clustering, tienen una maldición con los problemas de
+alta dimensionalidad, llamada la maldición de la dimensión. Esta
+maldición nos enseña que la variabilidad de las distancias entre
+nuestros datos disminuye exponencialmente con el número de dimensiones.
+
+Para mitigar el efecto de la maldición de la dimensión existen dos
+opciones:
+
+\begin{itemize}
+\tightlist
+\item
+  reducir el número de dimensiones.
+\item
+  augmentar la cantidad de datos.
+\end{itemize}
+
+En este caso se ha elegido augmentar la cantidad de datos, y hemos visto
+visualmente es una buena medida. Ya que anteriormente hemos podido
+comprobar que cuando el número de dimensiones es muy alto, el espacio
+está casi vacío, hay poca cohesión. Por eso es tan difícil encontrar
+puntos que estén cerca.
 
 \hypertarget{clustering-jeruxe1rquico}{%
 \subsubsection{Clustering jerárquico}\label{clustering-jeruxe1rquico}}
@@ -877,12 +908,15 @@ la función hclust(..).
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{#INSERTAR CÓDIGO AQUÍ}
-\NormalTok{dendrogram <-}\StringTok{ }\KeywordTok{hclust}\NormalTok{(}\KeywordTok{dist}\NormalTok{(BreastCancer.features, }\DataTypeTok{method =} \StringTok{'euclidean'}\NormalTok{), }\DataTypeTok{method =} \StringTok{'ward.D'}\NormalTok{)}
-\KeywordTok{ggdendrogram}\NormalTok{(dendrogram, }\DataTypeTok{rotate =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{labels =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{theme_dendro =} \OtherTok{TRUE}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \StringTok{"Dendrograma"}\NormalTok{)}
+\NormalTok{BreastCancer.scale <-}\StringTok{ }\KeywordTok{preProcess}\NormalTok{(BreastCancer[, }\DecValTok{1}\OperatorTok{:}\DecValTok{9}\NormalTok{], }\DataTypeTok{method=}\KeywordTok{c}\NormalTok{(}\StringTok{"scale"}\NormalTok{))}
+\NormalTok{BreastCancer.features <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(BreastCancer.scale, BreastCancer[, }\DecValTok{1}\OperatorTok{:}\DecValTok{9}\NormalTok{])}
+\NormalTok{hc <-}\StringTok{ }\KeywordTok{hclust}\NormalTok{(}\KeywordTok{dist}\NormalTok{(BreastCancer.features, }\DataTypeTok{method =} \StringTok{'euclidean'}\NormalTok{), }\DataTypeTok{method =} \StringTok{'complete'}\NormalTok{)}
+\KeywordTok{ggdendrogram}\NormalTok{(hc, }\DataTypeTok{rotate =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{labels =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{theme_dendro =} \OtherTok{TRUE}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \StringTok{"Cluster Dendrogram"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-20-1.pdf}
+\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-23-1} \end{center}
 
 \begin{itemize}
 \tightlist
@@ -893,6 +927,18 @@ la función hclust(..).
 
 RESPUESTA:
 
+En el eje horizontal del dendograma tenemos cada una de las
+observaciones del dataset (699). Cada observación está asignada a un
+grupo, de modo que si tienen 699 observaciones, se tienen 699 clusters,
+cada uno con una sola observación.
+
+En el eje vertical se representa la distancia euclídea que existe entre
+cada grupo a medida que éstos se van jerarquizando. Cada línea vertical
+del diagrama representa un agrupamiento que coincide con los puntos
+arropados por ésta, y como se ve en el dendrograma, estos van formándose
+progresivamente hasta tener un solo gran grupo determinado por la línea
+horizontal superior.
+
 \begin{itemize}
 \tightlist
 \item
@@ -901,6 +947,19 @@ RESPUESTA:
 \end{itemize}
 
 RESPUESTA:
+
+A diferencia del método de kMeans, cuando efectuamos un clustering
+jerárquico es necesario determinar previamente los valores de distancia
+entre clusters (matriz de similaridad o distancia). Para ello, se
+utiliza la función \emph{dist} de la función \emph{hclust}. La medida
+predeterminada para la función dist es `Euclidiana', sin embargo, se
+puede cambiar. También necesitamos especificar el método de vinculación
+que queremos usar (es decir, ``completo'', ``promedio'', etc.). En este
+caso se ha elegido el método completo.
+
+La elección de la medida de distancia es muy importante para que el
+clustering tenga sentido. Con distintas medidas obtenemos distintos
+agrupamientos.
 
 \begin{itemize}
 \tightlist
@@ -911,45 +970,74 @@ RESPUESTA:
 
 RESPUESTA:
 
+No es necesaria la asignación aleatoria inicial de los centroides en un
+agrupamiento jerárquico, por el uso de la matriz de similaridad o
+distancia.
+
 \begin{itemize}
 \tightlist
 \item
   Debido a que hclust puede crear un número elevado de clústers, utilice
-  la función cutree(..) para fijar el número de clúster igual al número
+  la función cutree(..) para fijar el número de clusters igual al número
   de clases existentes en el dataset.
 \end{itemize}
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{#INSERTAR CÓDIGO AQUÍ}
-\NormalTok{agrupamientoJ <-}\StringTok{ }\KeywordTok{hclust}\NormalTok{(}\KeywordTok{dist}\NormalTok{(BreastCancer.features, }\DataTypeTok{method =} \StringTok{'euclidean'}\NormalTok{), }\DataTypeTok{method =} \StringTok{'ward.D'}\NormalTok{)}
-\NormalTok{clases_aj <-}\StringTok{ }\KeywordTok{cutree}\NormalTok{(agrupamientoJ, }\DataTypeTok{k =} \DecValTok{2}\NormalTok{)}
-\NormalTok{BreastCancer.features}\OperatorTok{$}\NormalTok{cluster <-}\StringTok{ }\NormalTok{clases_aj}
-\NormalTok{clusters <-}\StringTok{ }\NormalTok{BreastCancer.features}\OperatorTok{$}\NormalTok{cluster}
-
-\KeywordTok{ggplot}\NormalTok{(BreastCancer, }\KeywordTok{aes}\NormalTok{(Cell.size, Cell.shape, }\DataTypeTok{color =} \KeywordTok{as.factor}\NormalTok{(clusters))) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_point}\NormalTok{()}
+\NormalTok{hc <-}\StringTok{ }\KeywordTok{hclust}\NormalTok{(}\KeywordTok{dist}\NormalTok{(BreastCancer.features[, }\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{)], }\DataTypeTok{method =} \StringTok{'euclidean'}\NormalTok{), }
+             \DataTypeTok{method =} \StringTok{'complete'}\NormalTok{)}
+\NormalTok{clusters <-}\StringTok{ }\KeywordTok{cutree}\NormalTok{(hc, }\DataTypeTok{k =} \DecValTok{2}\NormalTok{)}
+\NormalTok{BreastCancer.features}\OperatorTok{$}\NormalTok{cluster <-}\StringTok{ }\NormalTok{clusters}
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-21-1.pdf}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{table}\NormalTok{(BreastCancer}\OperatorTok{$}\NormalTok{Class, clusters)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-##            clusters
-##               1   2
-##   benign    412  32
-##   malignant   2 237
-\end{verbatim}
+Se ha escogido el método \emph{euclidean} porqué se tendrá que comparar
+con los resultados de la ejecución de kMeans, y se ha utilizado la
+distancia Euclídea. Y también se ha elegido el método completo porqué es
+la medida más conservadora.
 
 -¿Cuando hacemos esta última operación con la función cutree(..), el
 agrupamiento que obtenemos por hclust(..) es mejor al obtenido con
 kMeans en el ejercicio anterior?
 
 RESPUESTA:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#INSERTAR CÓDIGO AQUÍ}
+\KeywordTok{table}\NormalTok{(BreastCancer.features}\OperatorTok{$}\NormalTok{cluster, BreastCancer}\OperatorTok{$}\NormalTok{Class)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    
+##     benign malignant
+##   1    441        85
+##   2      3       154
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{fviz_cluster}\NormalTok{(}\KeywordTok{list}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ BreastCancer.features[, }\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{)], }\DataTypeTok{cluster =}\NormalTok{ clusters))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-25-1} \end{center}
+
+Visualmente el agrupamiento es muy parecido al primer agrupamiento de
+kMeans. Pero al igual que hacíamos en el caso anterior, podemos mostrar
+el número de ejemplos de cada tipo de cáncer que cada grupo contiene con
+la ayuda de la función \emph{table}. Podemos apreciar que el primer
+cluster engloba a un mayor número de ejemplos malignos, está peor
+agrupado que el primer cluster en kMeans. Y aunque el número de ejemplos
+benignos del segundo cluster es el mismo (4), existen menos ejemplos
+malignos, es menos representativo en el total de ejemplos del dataset.
+Así que, con estas observaciones podemos concluir que el agrupamiento es
+peor que el obtenido con kMeans.
+
+Parece menos apropiado en datasets muy grandes, donde hay mucho ruido y
+datos atípicos. Podría ser porqué este algoritmo es más sensible al
+ruido y a los datos atípicos.
 
 \end{document}
