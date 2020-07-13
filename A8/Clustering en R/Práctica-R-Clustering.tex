@@ -1,46 +1,39 @@
-% Options for packages loaded elsewhere
-\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{unicode=true}{hyperref} % options for packages loaded elsewhere
 \PassOptionsToPackage{hyphens}{url}
 %
-\documentclass[
-]{article}
+\documentclass[]{article}
 \usepackage{lmodern}
 \usepackage{amssymb,amsmath}
 \usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
 \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
-  \usepackage{textcomp} % provide euro and other symbols
-\else % if luatex or xetex
+  \usepackage{textcomp} % provides euro and other symbols
+\else % if luatex or xelatex
   \usepackage{unicode-math}
-  \defaultfontfeatures{Scale=MatchLowercase}
-  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
 \fi
-% Use upquote if available, for straight quotes in verbatim environments
+% use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
-\IfFileExists{microtype.sty}{% use microtype if available
-  \usepackage[]{microtype}
-  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage[]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
 }{}
-\makeatletter
-\@ifundefined{KOMAClassName}{% if non-KOMA class
-  \IfFileExists{parskip.sty}{%
-    \usepackage{parskip}
-  }{% else
-    \setlength{\parindent}{0pt}
-    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
-}{% if KOMA class
-  \KOMAoptions{parskip=half}}
-\makeatother
-\usepackage{xcolor}
-\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\usepackage{hyperref}
 \hypersetup{
-  pdftitle={Práctica: clustering en R},
-  pdfauthor={Laura Rodríguez Navas},
-  hidelinks,
-  pdfcreator={LaTeX via pandoc}}
-\urlstyle{same} % disable monospaced font for URLs
+            pdftitle={Práctica: clustering en R},
+            pdfauthor={Laura Rodríguez Navas},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
 \usepackage[margin=1in]{geometry}
 \usepackage{color}
 \usepackage{fancyvrb}
@@ -91,14 +84,25 @@
 % margins by default, and it is still possible to overwrite the defaults
 % using explicit options in \includegraphics[width, height, ...]{}
 \setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
-% Set default figure placement to htbp
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+% set default figure placement to htbp
 \makeatletter
 \def\fps@figure{htbp}
 \makeatother
-\setlength{\emergencystretch}{3em} % prevent overfull lines
-\providecommand{\tightlist}{%
-  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+
 
 \title{Práctica: clustering en R}
 \author{Laura Rodríguez Navas}
@@ -265,6 +269,8 @@ siguiente información:
 ## 
 \end{verbatim}
 
+\newpage
+
 \begin{itemize}
 \tightlist
 \item
@@ -420,7 +426,7 @@ afectan al tipo de cáncer.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-10-1} \end{center}
+\begin{center}\includegraphics[width=0.5\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-10-1} \end{center}
 
 Se puede apreciar que considerando estos pares de variables se observan
 dos grupos claramente definidos.
@@ -588,7 +594,7 @@ los clusters y la separación entre ellos es mejorable.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-13-1} \end{center}
+\begin{center}\includegraphics[width=0.5\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-13-1} \end{center}
 
 Para el clustering, se han elegido las variables \emph{Cell.size} y
 \emph{Cell.shape} porqué forman el par de variables más correlacionadas
@@ -601,29 +607,40 @@ positivamente del dataset.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-14-1} \end{center}
+\begin{center}\includegraphics[width=0.5\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-14-1} \end{center}
+
+Además porqué tampoco presentan \emph{outliers}. Los valores atípicos
+afectan muy negativamente a los algoritmos de clustering. Y otras
+variables del dataset contienen valores atípicos. Lo podemos observar en
+la siguiente gráfica.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#INSERTAR CÓDIGO AQUÍ}
+\KeywordTok{boxplot}\NormalTok{(BreastCancer.features)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics[width=0.5\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-15-1} \end{center}
 
 \begin{itemize}
-\tightlist
 \item
   Mediante la función preprocess(..) de la librería caret, analice si se
   obtienen mejores resultados de agrupamiento con el par de atributos
   seleccionados anteriormente, pero en este caso haciendo inicialmente
   las siguientes combinaciones de transformaciones a los datos:
-\end{itemize}
 
-\newpage
-
-\begin{itemize}
-\tightlist
-\item
-  c(``center'', ``scale'')
-\item
-  c(``center'', ``scale'', ``YeoJohnson'')
-\item
-  c(``range'')
-\item
-  c(``range'', ``YeoJohnson'')
+  \begin{itemize}
+  \tightlist
+  \item
+    c(``center'', ``scale'')
+  \item
+    c(``center'', ``scale'', ``YeoJohnson'')
+  \item
+    c(``range'')
+  \item
+    c(``range'', ``YeoJohnson'')
+  \end{itemize}
 \end{itemize}
 
 Ayúdate de los resultados obtenidos con table y ggplot.
@@ -658,9 +675,11 @@ Ayúdate de los resultados obtenidos con table y ggplot.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-15-1} \end{center}
+\begin{center}\includegraphics[width=0.5\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-16-1} \end{center}
 
 El resultado no presenta mejoras.
+
+\newpage
 
 \begin{itemize}
 \tightlist
@@ -693,7 +712,7 @@ El resultado no presenta mejoras.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-16-1} \end{center}
+\begin{center}\includegraphics[width=0.5\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-17-1} \end{center}
 
 El resultado de agrupamiento presenta mejoras. El primer cluster ha
 reducido el número de ejemplos malignos a 5, y casi se ha agrupado
@@ -732,7 +751,7 @@ la separación entre los clusters ha aumentado.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-17-1} \end{center}
+\begin{center}\includegraphics[width=0.5\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-18-1} \end{center}
 
 El resultado no presenta mejoras.
 
@@ -766,7 +785,7 @@ El resultado no presenta mejoras.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-18-1} \end{center}
+\begin{center}\includegraphics[width=0.5\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-19-1} \end{center}
 
 El resultado de agrupamiento presenta mejoras. Justamente, presenta las
 mismas mejoras que si escalamos con el método c(``center'', ``scale'',
@@ -800,15 +819,13 @@ mismas mejoras que si escalamos con el método c(``center'', ``scale'',
 \end{Highlighting}
 \end{Shaded}
 
-\newpage
-
 \begin{Shaded}
 \begin{Highlighting}[]
 \KeywordTok{func}\NormalTok{(vars[}\DecValTok{1}\NormalTok{])}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-20-1} \end{center}
+\begin{center}\includegraphics[width=0.5\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-21-1} \end{center}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -816,7 +833,7 @@ mismas mejoras que si escalamos con el método c(``center'', ``scale'',
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-20-2} \end{center}
+\begin{center}\includegraphics[width=0.5\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-21-2} \end{center}
 
 \newpage
 
@@ -826,7 +843,7 @@ mismas mejoras que si escalamos con el método c(``center'', ``scale'',
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-21-1} \end{center}
+\begin{center}\includegraphics[width=0.5\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-22-1} \end{center}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -834,7 +851,7 @@ mismas mejoras que si escalamos con el método c(``center'', ``scale'',
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-21-2} \end{center}
+\begin{center}\includegraphics[width=0.5\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-22-2} \end{center}
 
 \newpage
 
@@ -844,7 +861,7 @@ mismas mejoras que si escalamos con el método c(``center'', ``scale'',
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-22-1} \end{center}
+\begin{center}\includegraphics[width=0.5\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-23-1} \end{center}
 
 \begin{itemize}
 \tightlist
@@ -916,7 +933,7 @@ la función hclust(..).
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-23-1} \end{center}
+\begin{center}\includegraphics[width=0.5\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-24-1} \end{center}
 
 \begin{itemize}
 \tightlist
@@ -1023,7 +1040,7 @@ RESPUESTA:
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-25-1} \end{center}
+\begin{center}\includegraphics[width=0.5\linewidth]{Práctica-R-Clustering_files/figure-latex/unnamed-chunk-26-1} \end{center}
 
 Visualmente el agrupamiento es muy parecido al primer agrupamiento de
 kMeans. Pero al igual que hacíamos en el caso anterior, podemos mostrar

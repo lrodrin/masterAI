@@ -74,6 +74,7 @@ str(BreastCancer, width = 85, strict.width = "cut")
 summary(BreastCancer)
 ```
 
+\newpage
 * Número de valores perdidos.
 
 ```{r}
@@ -126,7 +127,7 @@ Se ha eliminado la variable clase.
 
 Una vez que los datos han sido preprocesados, la librería ggplot2, la cual es automaticamente importada por la librería caret, nos permite visualizar los datos para comprobar cómo las diferentes variables afectan al tipo de cáncer.
 
-```{r fig.align='center', out.width='70%'}
+```{r fig.align='center', out.width='50%'}
 # En este caso solo estamos mostrando el gráfico para las variables Cl.thickness y Cell.size.
 ggplot(BreastCancer, aes(Cl.thickness, Cell.size, color = Class)) + geom_point()
 ```
@@ -153,24 +154,31 @@ El resultado obtenido del clustering representa el 78.2\% de la información del
 ```{r}
 table(km_clusters$cluster, BreastCancer$Class)
 ```
+
 Podemos apreciar que el primer cluster engloba a un mayor número de ejemplos benignos que malignos. También se puede apreciar que el segundo cluster engloba a más ejemplos malignos que benignos. Sin embargo, el primer cluster también alberga ejemplos del tipo maligno. Y el segundo cluster, también alberga ejemplos del tipo benigno. Por ello, podemos concluir que es un buen agrupamiento aunque los resultados son mejorables; el número de ejemplos benignos del segundo cluster es muy pequeño (4), casi se ha agrupado perfectamente.
 
 Si representamos los resultados en una gráfica, se puede apreciar en ella que los clusters están bien definidos con una frontera clara entre ellos. Aunque, no hay mucha cohesión entre los valores de cada uno de los clusters y la separación entre ellos es mejorable.
 
-```{r fig.align='center', out.width='70%'}
+```{r fig.align='center', out.width='50%'}
 #INSERTAR CÓDIGO AQUÍ
 fviz_cluster(km_clusters, data = BreastCancer.features[, c(2, 3)])
 ```
+
 Para el clustering, se han elegido las variables *Cell.size* y *Cell.shape* porqué forman el par de variables más correlacionadas positivamente del dataset.
 
-```{r fig.align='center', out.width='70%'}
+```{r fig.align='center', out.width='50%'}
 #INSERTAR CÓDIGO AQUÍ
 corrplot(cor(BreastCancer.features), method = "number", type = "lower")
 ```
 
-- Mediante la función preprocess(..) de la librería caret, analice si se obtienen mejores resultados de agrupamiento con el par de atributos seleccionados anteriormente, pero en este caso haciendo inicialmente las siguientes combinaciones de transformaciones a los datos:
+Además porqué tampoco presentan *outliers*. Los valores atípicos afectan muy negativamente a los algoritmos de clustering. Y otras variables del dataset contienen valores atípicos. Lo podemos observar en la siguiente gráfica.
 
-\newpage
+```{r fig.align='center', out.width='50%'}
+#INSERTAR CÓDIGO AQUÍ
+boxplot(BreastCancer.features)
+```
+
+- Mediante la función preprocess(..) de la librería caret, analice si se obtienen mejores resultados de agrupamiento con el par de atributos seleccionados anteriormente, pero en este caso haciendo inicialmente las siguientes combinaciones de transformaciones a los datos:
 
   - c("center", "scale")
   - c("center", "scale", "YeoJohnson")
@@ -181,7 +189,7 @@ Ayúdate de los resultados obtenidos con table y ggplot.
 
 - c("center", "scale")
 
-```{r fig.align='center', out.width='70%'}
+```{r fig.align='center', out.width='50%'}
 #INSERTAR CÓDIGO AQUÍ
 BreastCancer.scale <- preProcess(BreastCancer[, 1:9], method=c("center", "scale"))
 BreastCancer.features <- predict(BreastCancer.scale, BreastCancer[, 1:9])
@@ -193,9 +201,11 @@ fviz_cluster(km_clusters, data = BreastCancer.features[, c(2, 3)])
 
 El resultado no presenta mejoras.
 
+\newpage
+
 - c("center", "scale", "YeoJohnson")
 
-```{r fig.align='center', out.width='70%'}
+```{r fig.align='center', out.width='50%'}
 #INSERTAR CÓDIGO AQUÍ
 BreastCancer.scale <- preProcess(BreastCancer[, 1:9], 
                                  method=c("center", "scale", "YeoJohnson"))
@@ -210,7 +220,7 @@ El resultado de agrupamiento presenta mejoras. El primer cluster ha reducido el 
 
 - c("range")
 
-```{r fig.align='center', out.width='70%'}
+```{r fig.align='center', out.width='50%'}
 #INSERTAR CÓDIGO AQUÍ
 BreastCancer.scale <- preProcess(BreastCancer[, 1:9], method=c("range"))
 BreastCancer.features <- predict(BreastCancer.scale, BreastCancer[, 1:9])
@@ -224,7 +234,7 @@ El resultado no presenta mejoras.
 
 - c("range", "YeoJohnson")
 
-```{r fig.align='center', out.width='70%'}
+```{r fig.align='center', out.width='50%'}
 #INSERTAR CÓDIGO AQUÍ
 BreastCancer.scale <- preProcess(BreastCancer[, 1:9], method=c("range", "YeoJohnson"))
 BreastCancer.features <- predict(BreastCancer.scale, BreastCancer[, 1:9])
@@ -238,7 +248,7 @@ El resultado de agrupamiento presenta mejoras. Justamente, presenta las mismas m
 
 - A partir del par de variables seleccionadas, cree un agrupamiento conformado por tres variables; las dos variables previamente seleccionadas y otra variable seleccionada aleatoriamente entre las variables descriptoras restantes. Este proceso debes repetirlo cinco veces de tal manera que en cada ejecución la variable añadida no necesariamente sea la misma.
 
-```{r fig.align='center', out.width='70%'}
+```{r fig.align='center', out.width='50%'}
 #INSERTAR CÓDIGO AQUÍ
 BreastCancer.scale <- preProcess(BreastCancer[, 1:9], method=c("scale"))
 BreastCancer.features <- predict(BreastCancer.scale, BreastCancer[, 1:9])
@@ -253,23 +263,22 @@ func <- function (var) {
 vars <- c("Cl.thickness", "Marg.adhesion", "Epith.c.size", "Bare.nuclei", "Bl.cromatin")
 ```
 
-\newpage
 
-```{r fig.align='center', out.width='70%'}
+```{r fig.align='center', out.width='50%'}
 func(vars[1])
 func(vars[2])
 ```
 
 \newpage
 
-```{r fig.align='center', out.width='70%'}
+```{r fig.align='center', out.width='50%'}
 func(vars[3])
 func(vars[4])
 ```
 
 \newpage
 
-```{r fig.align='center', out.width='70%'}
+```{r fig.align='center', out.width='50%'}
 func(vars[5])
 ```
 
@@ -293,7 +302,7 @@ esa información a priori, por lo que necesitaremos de otro tipo de técnicas, c
 
 Nota: Consulta la ayuda de la función hclust(..) para ver los tipos de métodos de aglomeración que soporta. También puedes ayudarte de las funciones table(..) y plot(..) para realizar tu elección final. Además, recuerda que no debes tener en cuenta la variable Class cuando ejecutas la función hclust(..).
 
-```{r fig.align='center', out.width='70%'}
+```{r fig.align='center', out.width='50%'}
 #INSERTAR CÓDIGO AQUÍ
 BreastCancer.scale <- preProcess(BreastCancer[, 1:9], method=c("scale"))
 BreastCancer.features <- predict(BreastCancer.scale, BreastCancer[, 1:9])
@@ -340,7 +349,7 @@ Se ha escogido el método *euclidean* porqué se tendrá que comparar con los re
 
 RESPUESTA:
 
-```{r fig.align='center', out.width='70%'}
+```{r fig.align='center', out.width='50%'}
 #INSERTAR CÓDIGO AQUÍ
 table(BreastCancer.features$cluster, BreastCancer$Class)
 fviz_cluster(list(data = BreastCancer.features[, c(2, 3)], cluster = clusters))

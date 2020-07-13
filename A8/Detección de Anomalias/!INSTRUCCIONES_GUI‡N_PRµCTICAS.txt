@@ -1,0 +1,47 @@
+1. Instale la última versión de RStudio
+
+2. Instale los paquetes incluidos en el fichero
+   !Outliers_A1_Paquetes_a_instalar_una_sola_vez.R
+   Estos paquetes sólo se instalan una vez. Para ello, basta seleccionar
+   el anterior fichero y hacer click sobre la pestaña "Source" de RStudio
+
+3. Cada vez que iniciemos una sesión en R, hay que cargar las librerías incluidas
+   en los paquetes anteriores. Para ello, cargamos en RStudio el fichero
+   !Outliers_A2_Librerias_a_cargar_en_cada_sesion.R
+   Y seleccionamos "Source"
+   A continuación también cargaremos las funciones definidas en el fichero:
+   !Outliers_A3_Funciones_a_cargar_en_cada_sesion.R
+   y pulsamos de nuevo sobre "Source"
+
+4. Lea los scripts incluidos en los siguientes ficheros y complete las instrucciones
+   que faltan en las líneas en las que aparece "# COMPLETAR"
+
+   !MasterIA_GuionPracticas_Outliers_B1_1Variate_IQR.R
+   !MasterIA_GuionPracticas_Outliers_B2_1Variate_TestsEstadisticos.R
+   !MasterIA_GuionPracticas_Outliers_C1_MultiVariate_Mahalanobis.R
+   !MasterIA_GuionPracticas_Outliers_D1_LOF.R
+   !MasterIA_GuionPracticas_Outliers_D2_ClusterBasedOutliers.R
+
+   Cuando se indique que tiene que construir una variable, también debe mostrar
+   en pantalla el resultado obtenido en esa variable (en el caso de que sea posible).
+   Por ejemplo, en el fichero !MasterIA_GuionPracticas_Outliers_B1_1Variate_IQR.R
+   se indica que debe calcular la variable cuartil.primero
+   Se espera por tanto que incluya las siguientes instrucciones:
+
+   cuartil.primero = quantile(columna, 0.25)
+   print(cuartil.primero)
+
+   La primera sentencia calcula la variable cuartil.primero
+   y la segunda lo muestra en pantalla de RStudio
+
+5. Genere un fichero zip que contenga los ficheros anteriores con las soluciones
+   propuestas por el alumno.
+   Cree también un informe en pdf que contenga la salida de la ejecución de
+   todas las sentencias incluidas en los scripts anteriores
+   (tanto las que vienen resueltas como las que el alumno ha tenido que completar)
+   Para los gráficos puede usar cualquier herramienta de captura de pantallas
+   (como por ejemplo "Recortes" si está usando Windows)
+   con una breve descripción que resuma los resultados obtenidos.
+   También puede usar, si así lo prefiere, R Markdown.
+   Añada el fichero pdf al zip anterior y entréguelo a través de la plataforma
+   

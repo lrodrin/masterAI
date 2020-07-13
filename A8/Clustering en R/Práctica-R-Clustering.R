@@ -22,6 +22,7 @@ BreastCancer.scale <- preProcess(BreastCancer[, 1:9], method=c("scale"))
 BreastCancer.features <- predict(BreastCancer.scale, BreastCancer[, 1:9])
 str(BreastCancer.features)
 
+boxplot(BreastCancer.features[, c(2, 3)])
 
 set.seed(101)
 km_clusters <- kmeans(BreastCancer.features[, c("Cell.size", "Cell.shape")], centers = 2, nstart = 20)
