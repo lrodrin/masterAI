@@ -1,5 +1,5 @@
 # Máster -> Detección de anomalías
-# Juan Carlos Cubero. Universidad de Granada
+# Laura Rodríguez Navas
 
 ###########################################################################
 # Funciones utilizadas a lo largo del curso

@@ -1,13 +1,12 @@
-# M·ster -> DetecciÛn de anomalÌas
-# Juan Carlos Cubero. Universidad de Granada
+# M√°ster -> Detecci√≥n de anomal√≠as
+# Laura Rodr√≠guez Navas
 
 ###########################################################################
 # Paquetes usados a lo largo del curso
 ###########################################################################
 
 
-
-#Gr·ficos
+#Gr√°ficos
 #install.packages("ggplot2")
 
 library(ggplot2)
