@@ -100,7 +100,7 @@ mvoutlier.plot = uni.plot(mydata.numeric, symb=FALSE, alpha = alpha.value.penali
 is.MCD.outlier = mvoutlier.plot$outliers
 is.MCD.outlier 
 
-numero.de.outliers.MCD = sum(is.MCD.outlier )
+numero.de.outliers.MCD = sum(is.MCD.outlier)
 numero.de.outliers.MCD
 
 
