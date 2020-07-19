@@ -25,8 +25,8 @@ MiPlot_Univariate_Outliers = function (datos, indices_de_Outliers, titulo){
   
   cat("\nNúmero de datos: ")
   cat(numero.de.datos)
-  cat("\nQuién es outlier?: ")
-  cat(vectorTFoutliers)
+  cat("\n¿Quién es outlier?: \n")
+  cat(vectorTFoutliers, fill = TRUE)
   cat('\n')
   
   X11()
@@ -208,7 +208,7 @@ MiPlot_resultados_TestRosner = function(datos){
   cat("\nTest de Rosner")
   cat("\nÍndices de las k-mayores desviaciones de la media: ")
   cat(k.mayores.desviaciones.de.la.media)
-  cat("\nDe las k mayores desviaciones, Quién es outlier? ")
+  cat("\nDe las k mayores desviaciones, ¿Quién es outlier? ")
   cat(is.outlier.rosner)
   cat("\nLos índices de los outliers son: ")
   cat(indices.de.outliers.rosner)
@@ -221,7 +221,7 @@ MiPlot_resultados_TestRosner = function(datos){
 
 MiBiplot = function(datos){
   PCA.model = princomp(scale(datos))
-  biplot = ggbiplot(PCA.model, obs.scale = 1, var.scale=1 , varname.size = 5,alpha = 1/2) 
+  biplot = ggbiplot(PCA.model, obs.scale = 1, var.scale=1 , varname.size = 4,alpha = 1/2) 
   X11()
   print(biplot)
 }
@@ -229,11 +229,11 @@ MiBiplot = function(datos){
 MiBiPlot_Multivariate_Outliers = function (datos, vectorTFoutliers, titulo){
    identificadores_de_datos = rownames(datos)
    identificadores_de_datos[!vectorTFoutliers] = ''
-   cat(identificadores_de_datos)
+   #cat(identificadores_de_datos)
  
    PCA.model = princomp(scale(datos))
    outlier.shapes = c(".","x") #c(21,8)
-   biplot = ggbiplot(PCA.model, obs.scale = 1, var.scale=1 , varname.size = 5,groups =  vectorTFoutliers, alpha = 1/2) #alpha = 1/10, 
+   biplot = ggbiplot(PCA.model, obs.scale = 1, var.scale=1 , varname.size = 4,groups =  vectorTFoutliers, alpha = 1/2) #alpha = 1/10, 
    biplot = biplot + labs(color = "Outliers")
    biplot = biplot + scale_color_manual(values = c("black","red"))
    biplot = biplot + geom_text(label = identificadores_de_datos, stat = "identity", size = 3, hjust=0, vjust=0)
