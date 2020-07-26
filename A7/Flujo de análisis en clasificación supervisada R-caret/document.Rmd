@@ -21,7 +21,7 @@ dim(Sonar)
 
 La base de datos *Sonar*, con 208 instancias, contiene 60 variables explicativas numéricas y dos valores en la variable clase ("M" y "R"). 
 
-Definimos las instancias de entrenamiento y test que darán forma al modelo de clasificación. Fijamos una semilla para futuras generaciones de números aleatorios. Hacemos uso de la función **createDataPartition** para generar una partición train-test de las 208 instancias, que mantendremos durante todo el flujo de análisis.
+Definimos las instancias de train y test que darán forma al modelo de clasificación. Fijamos una semilla para futuras generaciones de números aleatorios. Hacemos uso de la función **createDataPartition** para generar una partición train-test de las 208 instancias, que mantendremos durante todo el flujo de análisis.
 
 Cross validation, split the data into train (75%) and test (30%).
 
@@ -118,4 +118,87 @@ xyplot(resamps, what="BlandAltman")
 diffs <- diff(resamps)
 summary(diffs)
 ```
+## Ejercicio propuesto
 
+Cargamos las librerías necesarias:
+
+```{r message=FALSE}
+library(tidyverse)
+```
+
+El dataset escogido se puede encontrar en (https://www.kaggle.com/c/nlp-getting-started/data). Este dataset, con 10.876 instancias, contiene 4 variables explicativas; *id*, *keyword*, *location* y *test*, y dos valores en la variable clase *target* (1 y 0). La variable clase es de tipo binaria así que vamos a aprender un modelo de clasificación binaria, y 
+vamos a predecir si dado un tweet, este tweet trata sobre un desastre real o no. Si es un desastre real, se predice un 1. Si no, se predice un 0. 
+
+La partición inicial train-test, no se tiene que realizar, ya que las instancias de train y test ya vienen definidas en los ficheros *train.csv* y *test.csv*, proporcionados por la competición en [Kaggle](https://www.kaggle.com/c/nlp-getting-started/overview) que se ha elegido. El conjunto de datos de train contiene 7613 instancias y el conjunto de datos de test contiene 3262 instancias.
+
+Cargamos el dataset:
+
+```{r}
+train <- read.csv("train.csv", na.strings=c("","NA"))
+dim(train)
+test <- read.csv("test.csv", na.strings=c("","NA"))
+dim(test)
+```
+
+Cada instancia en el conjunto de train y test contiene la siguiente información:
+
+- **id**: un identificador único para cada tweet. 
+- **keyword**: una palabra clave del tweet (puede estar en blanco).
+- **location**: la ubicación desde la que se envió el tweet (puede estar en blanco).
+- **text**: el texto del tweet. 
+- **target**: solo en el conjunto de datos de train porqué es la variable clase a predecir. Indica si un tweet es sobre un desastre real (1) o no (0). 
+
+```{r}
+str(train)
+str(test)
+```
+
+Factorización de la variable clase, que inicialmente es de tipo entero.
+
+```{r}
+str(train$target)
+train$target <- as.factor(train$target)
+str(train$target)
+```
+
+Distribución de la variable clase:
+
+```{r fig.align='center'}
+ggplot(train, aes(x=target)) + 
+  geom_bar(aes(fill=target))
+
+sum(train$target == "0") / dim(train)[1] * 100
+sum(train$target == "1") / dim(train)[1] * 100
+```
+
+La distribución de la variable a predecir está relativamente equilibrada, donde el 57% de las instancias de los tweets son sobre un desastre no real y el 43% sobre un desastre real.
+
+[//]: # (método de resampling)
+
+### correlaciones entre variables explicativas
+
+### mética de evaluación
+
+### valores perdidos
+
+```{r}
+colSums(sapply(train, is.na))
+colSums(sapply(test, is.na))
+```
+
+Las variables *keyword* y *location* tienen valores perdidos. Sobretodo hay una gran cantidad de tweets, para los cuales falta la ubicación. Potencialmente, esto podría ser una buena variable predictiva en sí misma. No faltan valores en las variables *target* y *text*.
+
+Nos ocuparemos de los valores perdidos más adelante. 
+
+Eliminamos la variable *id*.
+
+```{r}
+train$id <- NULL
+test$id <- NULL
+```
+
+## keyword
+
+## location
+
+## text
