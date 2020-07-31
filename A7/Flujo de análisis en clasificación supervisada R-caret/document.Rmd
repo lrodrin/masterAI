@@ -124,6 +124,8 @@ Cargamos las librerías necesarias:
 
 ```{r message=FALSE}
 library(tidyverse)
+library(tm)
+library(SnowballC)
 ```
 
 El dataset escogido se puede encontrar en (https://www.kaggle.com/c/nlp-getting-started/data). Este dataset, con 10.876 instancias, contiene 4 variables explicativas; *id*, *keyword*, *location* y *test*, y dos valores en la variable clase *target* (1 y 0). La variable clase es de tipo binaria así que vamos a aprender un modelo de clasificación binaria, y 
@@ -199,6 +201,61 @@ test$id <- NULL
 
 ## keyword
 
+```{r}
+length(unique(train$keyword))
+length(unique(test$keyword))
+train$keyword <- as.factor(train$keyword)
+all.equal(levels(train$keyword), levels(test$keyword))
+```
+
 ## location
+
+```{r}
+length(unique(train$location))
+length(unique(test$location))
+train_and_test <- rbind(train[, 1:3], test)
+str(train_and_test)
+```
+
+1. Create a corpus
+2. Convert to lowercase
+3. Remove punctuation
+4. Remove stopwords
+5. Stemming (using Porter’s stemming algorithm)
+6. Create document term matrix
+
+```{r warning=FALSE}
+corpus_location <- Corpus(VectorSource(train_and_test$location))
+corpus_location[[33]]$content
+
+corpus_location <- tm_map(corpus_location, tolower)
+corpus_location[[33]]$content
+
+corpus_location <- tm_map(corpus_location, removePunctuation)
+corpus_location[[33]]$content
+
+corpus_location <- tm_map(corpus_location, removeWords, stopwords("english"))
+corpus_location[[33]]$content
+ 
+corpus_location <- tm_map(corpus_location, stemDocument)
+corpus_location[[33]]$content
+```
+
+- Create document term matrix
+- Reduce sparsity
+- Convert to data frame
+
+```{r}
+dtm_location <- DocumentTermMatrix(corpus_location)
+dtm_location
+
+dtm_location <- removeSparseTerms(dtm_location, 0.9975)
+dtm_location
+
+bag_of_words_location <- as.data.frame(as.matrix(dtm_location))
+colnames(bag_of_words_location) <- paste0(colnames(bag_of_words_location), "_location")
+str(bag_of_words_location, list.len=10)
+```
+
 
 ## text

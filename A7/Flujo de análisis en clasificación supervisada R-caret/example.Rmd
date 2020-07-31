@@ -1,0 +1,734 @@
+---
+title: "Bag of Words -> Stack (KNN + Tree + Lasso)"
+author: "Sambit Mukherjee"
+output: 
+  html_document:
+    number_sections: true
+    toc: true
+    theme: cosmo
+    highlight: haddock
+    code_folding: show
+---
+
+---
+
+Let's import some packages for data wrangling, visualisation, text mining and machine learning.
+```{r message=FALSE}
+library(dplyr)
+library(ggplot2)
+library(tm)
+library(caret)
+library(rpart)
+library(glmnet)
+library(MASS)
+```
+
+---
+
+# Data Import & Target Visualisation
+
+Let's read in the training set and examine its structure.
+```{r}
+train <- read.csv("train.csv", stringsAsFactors = FALSE)
+
+str(train)
+```
+
+Next, let's read in the test set and examine its structure.
+```{r}
+test <- read.csv("test.csv", stringsAsFactors = FALSE)
+
+str(test)
+```
+
+Distribution of the `target` variable:
+```{r}
+ggplot(train) + 
+  geom_bar(aes(x = target), fill = "darkblue") + 
+  scale_x_continuous(breaks = c(0, 1))
+```
+
+The distribution isn't very skewed.
+
+---
+
+# Text Preprocessing
+
+## Variable: `keyword`
+
+```{r include=FALSE}
+options(max.print = 250)
+```
+
+Let's examine the unique values of `keyword` in `train`.
+```{r}
+unique(train$keyword)
+```
+
+There are `222` unique values.
+
+Next, let's examine the unique values of `keyword` in `test`.
+```{r}
+unique(test$keyword)
+```
+
+These are the same `222` unique values that are present in `train`. This makes it convenient to deal with this variable.
+
+> **Strategy:** Simply convert `keyword` to a categorical variable.
+
+```{r}
+train$keyword <- as.factor(train$keyword)
+test$keyword <- as.factor(test$keyword)
+```
+
+Let's verify that the factor levels of `keyword` in `train` and `test` match.
+```{r}
+all.equal(levels(train$keyword), levels(test$keyword))
+```
+
+## Variable: `location`
+
+```{r include=FALSE}
+options(max.print = 100)
+```
+
+Let's examine the unique values of `location` in `train`.
+```{r}
+unique(train$location)
+```
+
+There are `3342` unique values:
+```{r}
+length(unique(train$location))
+```
+
+Next, let's examine the unique values of `location` in `test`.
+```{r}
+unique(test$location)
+```
+
+There are `1603` unique values:
+```{r}
+length(unique(test$location))
+```
+
+We notice that the unique values of `location` in `train` and `test` aren't the same. Hence, we cannot simply convert `location` to a categorical variable.
+
+> **Strategy:** Convert `location` to a bag of words.
+
+### Create a corpus
+
+Let's bind the rows of `train` and `test` (except the `target` variable) into a single data frame.
+```{r}
+train_and_test <- rbind(train[, 1:4], test)
+
+str(train_and_test)
+```
+
+Next, let's create a corpus of text contained in the `location` column.
+```{r}
+corpus_location <- Corpus(VectorSource(train_and_test$location))
+```
+
+Let's examine it.
+```{r}
+corpus_location
+```
+
+It contains `10876` documents (corresponding to the `10876` rows in `train_and_test`).
+
+Let's take a look at the 50th location.
+```{r}
+corpus_location[[50]]$content
+```
+
+### Convert to lowercase
+
+```{r warning=FALSE}
+corpus_location <- tm_map(corpus_location, tolower)
+```
+
+Let's see what this did to our 50th location.
+```{r}
+corpus_location[[50]]$content
+```
+
+### Remove punctuation
+
+```{r warning=FALSE}
+corpus_location <- tm_map(corpus_location, removePunctuation)
+```
+
+Let's see what this did to our 50th location.
+```{r}
+corpus_location[[50]]$content
+```
+
+### Remove stop words
+
+```{r warning=FALSE}
+corpus_location <- tm_map(corpus_location, removeWords, stopwords("english"))
+```
+
+Let's see what this did to our 50th location.
+```{r}
+corpus_location[[50]]$content
+```
+
+### Stem words (using Porter's stemming algorithm)
+
+```{r warning=FALSE}
+corpus_location <- tm_map(corpus_location, stemDocument)
+```
+
+Let's see what this did to our 50th location.
+```{r}
+corpus_location[[50]]$content
+```
+
+### Create document term matrix
+
+```{r}
+dtm_location <- DocumentTermMatrix(corpus_location)
+```
+
+Let's examine it.
+```{r}
+dtm_location
+```
+
+It contains `3839` terms. We notice that the matrix has an extremely high sparsity (`100%`).
+
+### Reduce sparsity
+
+```{r}
+dtm_location <- removeSparseTerms(dtm_location, 0.9975) # Retain terms that appear in at least 0.25% of the observations.
+
+dtm_location
+```
+
+The sparsity has reduced to `99%`. As a result, the number of terms has dropped from `3839` to `55`.
+
+### Convert to data frame
+
+```{r}
+bag_of_words_location <- as.data.frame(as.matrix(dtm_location))
+```
+
+Let's ensure that the data frame has valid column names.
+```{r}
+colnames(bag_of_words_location) <- make.names(colnames(bag_of_words_location))
+```
+
+Let's also add `"_location"` to each column name to avoid any potential duplications with the `text` column's bag of words (see Section 2.3).
+```{r}
+colnames(bag_of_words_location) <- paste0(colnames(bag_of_words_location), "_location")
+```
+
+Finally, let's examine its structure.
+```{r}
+str(bag_of_words_location, list.len = 20) # Display first 20 columns.
+```
+
+## Variable: `text`
+
+We shall preprocess the `text` column in the same manner.
+
+> **Strategy:** Convert `text` to a bag of words.
+
+### Create a corpus
+
+Let's create a corpus of tweets contained in the `text` column of `train_and_test`.
+```{r}
+corpus_text <- Corpus(VectorSource(train_and_test$text))
+```
+
+Let's examine it.
+```{r}
+corpus_text
+```
+
+It contains `10876` documents (corresponding to the `10876` rows in `train_and_test`).
+
+Let's take a look at the 1st tweet.
+```{r}
+corpus_text[[1]]$content
+```
+
+### Convert to lowercase
+
+```{r warning=FALSE}
+corpus_text <- tm_map(corpus_text, tolower)
+```
+
+Let's see what this did to our 1st tweet.
+```{r}
+corpus_text[[1]]$content
+```
+
+### Remove punctuation
+
+```{r warning=FALSE}
+corpus_text <- tm_map(corpus_text, removePunctuation)
+```
+
+Let's see what this did to our 1st tweet.
+```{r}
+corpus_text[[1]]$content
+```
+
+### Remove stop words
+
+```{r warning=FALSE}
+corpus_text <- tm_map(corpus_text, removeWords, stopwords("english"))
+```
+
+Let's see what this did to our first tweet.
+```{r}
+corpus_text[[1]]$content
+```
+
+### Stem words (using Porter's stemming algorithm)
+
+```{r warning=FALSE}
+corpus_text <- tm_map(corpus_text, stemDocument)
+```
+
+Let's see what this did to our first tweet.
+```{r}
+corpus_text[[1]]$content
+```
+
+### Create document term matrix
+
+```{r}
+dtm_text <- DocumentTermMatrix(corpus_text)
+```
+
+Let's examine it.
+```{r}
+dtm_text
+```
+
+It contains `24906` terms. We notice that the matrix has an extremely high sparsity (`100%`).
+
+### Reduce sparsity
+
+```{r}
+dtm_text <- removeSparseTerms(dtm_text, 0.9975) # Retain terms that appear in at least 0.25% of the observations.
+
+dtm_text
+```
+
+The sparsity has reduced to `99%`. As a result, the number of terms has dropped from `24906` to `719`.
+
+### Convert to data frame
+
+```{r}
+bag_of_words_text <- as.data.frame(as.matrix(dtm_text))
+```
+
+Let's ensure that the data frame has valid column names.
+```{r}
+colnames(bag_of_words_text) <- make.names(colnames(bag_of_words_text))
+```
+
+Let's also add `"_text"` to each column name to avoid any potential duplications with the `location` column's bag of words.
+```{r}
+colnames(bag_of_words_text) <- paste0(colnames(bag_of_words_text), "_text")
+bag_of_words_text <- bag_of_words_text[, !duplicated(colnames(bag_of_words_text))]
+```
+
+Finally, let's examine its structure.
+```{r}
+str(bag_of_words_text, list.len = 20) # Display first 20 columns.
+```
+
+## Putting Together
+
+Let's bind the columns of `bag_of_words_location` and `bag_of_words_text`.
+```{r}
+bag_of_words <- cbind(bag_of_words_location, bag_of_words_text)
+```
+
+Next, let's separate `bag_of_words` into two data frames (for training and testing).
+```{r}
+train_processed <- bag_of_words[1:7613, ] # Rows 1 to 7613 were obtained from `train`.
+test_processed <- bag_of_words[7614:10876, ] # Rows 7614 to 10876 were obtained from `test`.
+```
+
+Finally, let's add the `id`, `keyword` and `target` columns to `train_processed` and `test_processed`.
+```{r}
+train_processed$id <- train$id
+train_processed$keyword <- train$keyword
+train_processed$target <- train$target
+
+test_processed$id <- test$id
+test_processed$keyword <- test$keyword
+```
+
+---
+
+# Modelling & Training Set Predictions
+
+**Outcome variable:** `target`
+
+**Features:**
+
+- `keyword` (categorical variable with `222` unique values)
+- All the columns obtained from `bag_of_words_location`
+- All the columns obtained from `bag_of_words_text`
+
+Since this is a classification problem, let's convert `target` to a categorical variable.
+```{r}
+train_processed$target <- as.factor(train_processed$target)
+```
+
+## Base Model: KNN (K Nearest Neighbours)
+
+Let's specify 5-fold cross-validation, and define our parameter grid.
+```{r}
+num_folds <- trainControl(method = "cv", number = 5)
+parameter_grid <- expand.grid(k = 1:5) # Explore values of `k` between 1 and 5.
+```
+
+Next, let's perform a grid search.
+```{r}
+grid_search <- train(
+  target ~ . - id,  # Use all variables in `train_processed` except `id`.
+  data = train_processed, 
+  method = "knn",
+  trControl = num_folds, 
+  tuneGrid = parameter_grid
+)
+
+grid_search
+```
+
+The best value of `k` is `3`. Let’s use this value to train our KNN model.
+```{r}
+set.seed(1) # Ensure reproducibility.
+knn_model <- knn3(target ~ . - id, data = train_processed, k = 3)
+```
+
+**Training set predictions:**
+
+Let's obtain the predicted classes.
+```{r}
+knn_train_pred_class <- predict(knn_model, newdata = train_processed, type = "class")
+
+summary(knn_train_pred_class)
+```
+
+**Training set confusion matrix:**
+```{r}
+confusionMatrix(knn_train_pred_class, train_processed$target)
+```
+
+**Training set F1 score:**
+```{r}
+true_positives <- 2208
+false_positives <- 336
+false_negatives <- 1063
+
+precision <- true_positives / (true_positives + false_positives)
+recall <- true_positives / (true_positives + false_negatives)
+
+F1_knn <- 2 * (precision * recall) / (precision + recall)
+F1_knn <- round(F1_knn, digits = 4)
+
+F1_knn
+```
+
+## Base Model: Tree (CART)
+
+Let's specify 5-fold cross-validation, and define our parameter grid.
+```{r}
+num_folds <- trainControl(method = "cv", number = 5)
+parameter_grid <- expand.grid(.cp = seq(0, 0.01, 0.001)) # Explore values of `cp` between 0 and 0.01.
+```
+
+Next, let's perform a grid search.
+```{r}
+grid_search <- train(
+  target ~ . - id, 
+  data = train_processed, 
+  method = "rpart", # CART algorithm
+  trControl = num_folds, 
+  tuneGrid = parameter_grid
+)
+
+grid_search
+```
+
+The best value of `cp` is `0`. Let’s use this value to train our tree.
+```{r}
+tree_model <- rpart(
+  target ~ . - id,
+  data = train_processed, 
+  method = "class",
+  cp = 0
+)
+```
+
+**Variable importance:**
+```{r}
+tree_summary <- data.frame(
+  variable = names(tree_model$variable.importance), 
+  importance = tree_model$variable.importance, 
+  stringsAsFactors = FALSE, 
+  row.names = NULL
+) %>% 
+  arrange(desc(importance))
+
+DT::datatable(tree_summary)
+```
+
+**Training set predictions:**
+
+Let's obtain the predicted classes.
+```{r}
+tree_train_pred_class <- predict(tree_model, newdata = train_processed, type = "class")
+
+summary(tree_train_pred_class)
+```
+
+**Training set confusion matrix:**
+```{r}
+confusionMatrix(tree_train_pred_class, train_processed$target)
+```
+
+**Training set F1 score:**
+```{r}
+true_positives <- 2280
+false_positives <- 505
+false_negatives <- 991
+
+precision <- true_positives / (true_positives + false_positives)
+recall <- true_positives / (true_positives + false_negatives)
+
+F1_tree <- 2 * (precision * recall) / (precision + recall)
+F1_tree <- round(F1_tree, digits = 4)
+
+F1_tree
+```
+
+## Base Model: Lasso (Regularised Logistic Regression)
+         
+Unfortunately, the `glmnet()` function doesn't provide a formula interface. Instead, it expects an `X_train` matrix and a `y_train` vector as arguments.
+
+The `model.matrix()` function is useful for generating `X_train`:
+
+- It produces a matrix containing all the features.
+- It automatically transforms any categorical variables (factors) into dummy variables.
+
+Let's generate `X_train` and `y_train`.
+```{r}
+X_train <- model.matrix(target ~ . - id, data = train_processed)
+X_train <- X_train[, 2:ncol(X_train)] # Remove the "(Intercept)" column, since `glmnet()` automatically adds an intercept.
+y_train <- train_processed$target
+```
+
+Next, let's perform 5-fold cross-validation.
+```{r}
+set.seed(1) # Ensure reproducibility.
+cross_val <- cv.glmnet(
+  X_train, 
+  y_train, 
+  family = "binomial", # Specify logistic regression.
+  alpha = 1, # Specify ridge penalty (0) or lasso penalty (1).  
+  type.measure = "class", # Specify "Misclassification Error" as the loss to use for cross-validation.
+  nfolds = 5
+)
+
+plot(cross_val)                              
+```
+
+The best value of `lambda` is:
+```{r}
+best_lambda <- cross_val$lambda.min
+
+best_lambda
+```
+
+Let’s use this value to train our lasso model.
+```{r}
+lasso_model <- glmnet(X_train, y_train, family = "binomial", alpha = 1, lambda = best_lambda)
+                                              
+lasso_model
+```
+
+**Regression coefficients:**
+```{r}
+lasso_coef <- as.data.frame(as.matrix(coef(lasso_model)))
+colnames(lasso_coef) <- "coefficient"
+
+DT::datatable(lasso_coef)
+```
+
+**Training set predictions:**
+                                              
+Let's obtain the predicted classes.
+```{r}
+lasso_train_pred_class <- as.factor(predict(lasso_model, s = best_lambda, newx = X_train, type = "class"))
+
+summary(lasso_train_pred_class)
+```
+
+**Training set confusion matrix:**
+```{r}
+confusionMatrix(lasso_train_pred_class, train_processed$target)
+```
+
+**Training set F1 score:**
+```{r}
+true_positives <- 2453
+false_positives <- 403
+false_negatives <- 818
+
+precision <- true_positives / (true_positives + false_positives)
+recall <- true_positives / (true_positives + false_negatives)
+
+F1_lasso <- 2 * (precision * recall) / (precision + recall)
+F1_lasso <- round(F1_lasso, digits = 4)
+
+F1_lasso
+```
+
+## Stacking
+
+We shall use **Quadratic Discriminant Analysis (QDA)** as our metalearner algorithm. 
+
+Earlier, we obtained our base models' *predicted classes*. Now, let's obtain their *predicted probabilities*.
+```{r}
+knn_train_pred_prob <- predict(knn_model, newdata = train_processed, type = "prob")[, 2]
+tree_train_pred_prob <- predict(tree_model, newdata = train_processed, type = "prob")[, 2]
+lasso_train_pred_prob <- as.numeric(predict(lasso_model, s = best_lambda, newx = X_train, type = "response"))
+```
+
+Let's create the data frame for training, and examine its first `20` rows.
+```{r}
+stack_train <- data.frame(
+  target = train_processed$target, 
+  pred_knn = knn_train_pred_prob, 
+  pred_tree = tree_train_pred_prob,
+  pred_lasso = lasso_train_pred_prob
+)
+
+DT::datatable(head(stack_train, 20))
+```
+
+**Feature correlation matrix:**
+```{r}
+cor(stack_train[, 2:4])
+```
+
+The correlations are not too high. Hence, we can expect some benefit from stacking.
+
+Now, let's train our metalearner.
+```{r}
+qda_model <- qda(target ~ pred_knn + pred_tree + pred_lasso, data = stack_train)
+
+qda_model
+```
+
+**Training set predictions:**
+
+Let's obtain the predicted classes.
+```{r}
+qda_train_pred_class <- predict(qda_model, newdata = stack_train)$class
+
+summary(qda_train_pred_class)
+```
+
+**Training set confusion matrix:**
+```{r}
+confusionMatrix(qda_train_pred_class, train_processed$target)
+```
+
+**Training set F1 score:**
+```{r}
+true_positives <- 2652
+false_positives <- 484
+false_negatives <- 619
+
+precision <- true_positives / (true_positives + false_positives)
+recall <- true_positives / (true_positives + false_negatives)
+
+F1_metalearner <- 2 * (precision * recall) / (precision + recall)
+F1_metalearner <- round(F1_metalearner, digits = 4)
+
+F1_metalearner
+```
+
+As expected, the metalearner has a higher F1 than the base models.
+
+**Summary of F1 scores:**
+```{r}
+F1_summary <- data.frame(
+  model = c("KNN", "Tree", "Lasso", "Metalearner"), 
+  F1 = c(F1_knn, F1_tree, F1_lasso, F1_metalearner)
+)
+
+DT::datatable(F1_summary)
+```
+
+---
+
+# Test Set Predictions & Submission
+
+## Test set predictions
+
+**KNN:**
+
+Let's obtain the predicted probabilities.
+```{r}
+knn_test_pred_prob <- predict(knn_model, newdata = test_processed, type = "prob")[, 2]
+```
+                                              
+**Tree:**
+
+Let's obtain the predicted probabilities.
+```{r}
+tree_test_pred_prob <- predict(tree_model, newdata = test_processed, type = "prob")[, 2]
+```
+
+**Lasso:**
+
+First, let's generate the `X_test` matrix using the `model.matrix()` function.
+```{r}
+X_test <- model.matrix(~ . - id, data = test_processed)
+X_test <- X_test[, 2:ncol(X_test)] # Remove the "(Intercept)" column, since `glmnet()` automatically adds an intercept.
+```
+                                              
+Next, let's obtain the predicted probabilities.
+```{r}
+lasso_test_pred_prob <- as.numeric(predict(lasso_model, s = best_lambda, newx = X_test, type = "response"))
+```
+
+**Metalearner:**
+
+Let's put the above predictions into a data frame, and obtain the predicted classes.
+```{r}
+stack_test <- data.frame(
+  pred_knn = knn_test_pred_prob, 
+  pred_tree = tree_test_pred_prob, 
+  pred_lasso = lasso_test_pred_prob
+)
+
+qda_test_pred_class <- predict(qda_model, newdata = stack_test)$class
+
+summary(qda_test_pred_class)
+```
+
+## Submission
+
+Let’s generate the submission dataset.
+```{r}
+submission <- data.frame(id = test_processed$id, target = qda_test_pred_class)
+```
+
+Finally, let's write it to disk.
+```{r}
+write.csv(submission, file = "submission.csv", row.names = FALSE)
+```

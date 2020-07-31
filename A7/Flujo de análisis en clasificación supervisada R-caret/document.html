@@ -728,7 +728,9 @@ summary(diffs)</code></pre>
 <div id="ejercicio-propuesto" class="section level2">
 <h2>Ejercicio propuesto</h2>
 <p>Cargamos las librerías necesarias:</p>
-<pre class="r"><code>library(tidyverse)</code></pre>
+<pre class="r"><code>library(tidyverse)
+library(tm)
+library(SnowballC)</code></pre>
 <p>El dataset escogido se puede encontrar en (<a href="https://www.kaggle.com/c/nlp-getting-started/data" class="uri">https://www.kaggle.com/c/nlp-getting-started/data</a>). Este dataset, con 10.876 instancias, contiene 4 variables explicativas; <em>id</em>, <em>keyword</em>, <em>location</em> y <em>test</em>, y dos valores en la variable clase <em>target</em> (1 y 0). La variable clase es de tipo binaria así que vamos a aprender un modelo de clasificación binaria, y vamos a predecir si dado un tweet, este tweet trata sobre un desastre real o no. Si es un desastre real, se predice un 1. Si no, se predice un 0.</p>
 <p>La partición inicial train-test, no se tiene que realizar, ya que las instancias de train y test ya vienen definidas en los ficheros <em>train.csv</em> y <em>test.csv</em>, proporcionados por la competición en <a href="https://www.kaggle.com/c/nlp-getting-started/overview">Kaggle</a> que se ha elegido. El conjunto de datos de train contiene 7613 instancias y el conjunto de datos de test contiene 3262 instancias.</p>
 <p>Cargamos el dataset:</p>
@@ -788,11 +790,97 @@ str(train$target)</code></pre>
 <pre class="r"><code>colSums(sapply(test, is.na))</code></pre>
 <pre><code>##       id  keyword location     text 
 ##        0       26     1105        0</code></pre>
-<p>Las variables <em>keyword</em> y <em>location</em> tienen muchos valores perdidos.</p>
+<p>Las variables <em>keyword</em> y <em>location</em> tienen valores perdidos. Sobretodo hay una gran cantidad de tweets, para los cuales falta la ubicación. Potencialmente, esto podría ser una buena variable predictiva en sí misma. No faltan valores en las variables <em>target</em> y <em>text</em>.</p>
+<p>Nos ocuparemos de los valores perdidos más adelante.</p>
 <p>Eliminamos la variable <em>id</em>.</p>
 <pre class="r"><code>train$id &lt;- NULL
 test$id &lt;- NULL</code></pre>
 </div>
+</div>
+<div id="keyword" class="section level2">
+<h2>keyword</h2>
+<pre class="r"><code>length(unique(train$keyword))</code></pre>
+<pre><code>## [1] 222</code></pre>
+<pre class="r"><code>length(unique(test$keyword))</code></pre>
+<pre><code>## [1] 222</code></pre>
+<pre class="r"><code>train$keyword &lt;- as.factor(train$keyword)
+all.equal(levels(train$keyword), levels(test$keyword))</code></pre>
+<pre><code>## [1] &quot;Modes: character, NULL&quot;              
+## [2] &quot;Lengths: 221, 0&quot;                     
+## [3] &quot;target is character, current is NULL&quot;</code></pre>
+</div>
+<div id="location" class="section level2">
+<h2>location</h2>
+<pre class="r"><code>length(unique(train$location))</code></pre>
+<pre><code>## [1] 3342</code></pre>
+<pre class="r"><code>length(unique(test$location))</code></pre>
+<pre><code>## [1] 1603</code></pre>
+<pre class="r"><code>train_and_test &lt;- rbind(train[, 1:3], test)
+str(train_and_test)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    10876 obs. of  3 variables:
+##  $ keyword : Factor w/ 221 levels &quot;ablaze&quot;,&quot;accident&quot;,..: NA NA NA NA NA NA NA NA NA NA ...
+##  $ location: chr  NA NA NA NA ...
+##  $ text    : chr  &quot;Our Deeds are the Reason of this #earthquake May ALLAH Forgive us all&quot; &quot;Forest fire near La Ronge Sask. Canada&quot; &quot;All residents asked to &#39;shelter in place&#39; are being notified by officers. No other evacuation or shelter in pla&quot;| __truncated__ &quot;13,000 people receive #wildfires evacuation orders in California &quot; ...</code></pre>
+<ol style="list-style-type: decimal">
+<li>Create a corpus</li>
+<li>Convert to lowercase</li>
+<li>Remove punctuation</li>
+<li>Remove stopwords</li>
+<li>Stemming (using Porter’s stemming algorithm)</li>
+<li>Create document term matrix</li>
+</ol>
+<pre class="r"><code>corpus_location &lt;- Corpus(VectorSource(train_and_test$location))
+corpus_location[[33]]$content</code></pre>
+<pre><code>## [1] &quot;Est. September 2012 - Bristol&quot;</code></pre>
+<pre class="r"><code>corpus_location &lt;- tm_map(corpus_location, tolower)
+corpus_location[[33]]$content</code></pre>
+<pre><code>## [1] &quot;est. september 2012 - bristol&quot;</code></pre>
+<pre class="r"><code>corpus_location &lt;- tm_map(corpus_location, removePunctuation)
+corpus_location[[33]]$content</code></pre>
+<pre><code>## [1] &quot;est september 2012  bristol&quot;</code></pre>
+<pre class="r"><code>corpus_location &lt;- tm_map(corpus_location, removeWords, stopwords(&quot;english&quot;))
+corpus_location[[33]]$content</code></pre>
+<pre><code>## [1] &quot;est september 2012  bristol&quot;</code></pre>
+<pre class="r"><code>corpus_location &lt;- tm_map(corpus_location, stemDocument)
+corpus_location[[33]]$content</code></pre>
+<pre><code>## [1] &quot;est septemb 2012 bristol&quot;</code></pre>
+<ul>
+<li>Create document term matrix</li>
+<li>Reduce sparsity</li>
+<li>Convert to data frame</li>
+</ul>
+<pre class="r"><code>dtm_location &lt;- DocumentTermMatrix(corpus_location)
+dtm_location</code></pre>
+<pre><code>## &lt;&lt;DocumentTermMatrix (documents: 10876, terms: 3840)&gt;&gt;
+## Non-/sparse entries: 11855/41751985
+## Sparsity           : 100%
+## Maximal term length: 41
+## Weighting          : term frequency (tf)</code></pre>
+<pre class="r"><code>dtm_location &lt;- removeSparseTerms(dtm_location, 0.9975)
+dtm_location</code></pre>
+<pre><code>## &lt;&lt;DocumentTermMatrix (documents: 10876, terms: 55)&gt;&gt;
+## Non-/sparse entries: 3967/594213
+## Sparsity           : 99%
+## Maximal term length: 10
+## Weighting          : term frequency (tf)</code></pre>
+<pre class="r"><code>bag_of_words_location &lt;- as.data.frame(as.matrix(dtm_location))
+colnames(bag_of_words_location) &lt;- paste0(colnames(bag_of_words_location), &quot;_location&quot;)
+str(bag_of_words_location, list.len=10)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    10876 obs. of  55 variables:
+##  $ africa_location    : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ london_location    : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ world_location     : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ citi_location      : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ carolina_location  : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ england_location   : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ ohio_location      : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ india_location     : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ usa_location       : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ south_location     : num  0 0 0 0 0 0 0 0 0 0 ...
+##   [list output truncated]</code></pre>
+</div>
+<div id="text" class="section level2">
+<h2>text</h2>
 </div>
 
 
