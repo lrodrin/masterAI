@@ -2,134 +2,36 @@
 title: "Flujo de análisis en clasificación supervisada"
 author: "Laura Rodríguez Navas"
 date: "Septiembre 2020"
-output: html_document
+output:
+  html_document: default
+  pdf_document: 
+    toc: yes
+    fig_caption: yes
+    fig_crop: no
+    keep_tex: yes
+    number_sections: yes
+subtitle: Métodos supervisados
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Comenzamos cargando los paquetes y la base de datos:
+Comenzamos cargando los paquetes necesarios.
 
 ```{r message=FALSE}
 library(caret)
 library(mlbench)
-data(Sonar)
-str(Sonar)
-dim(Sonar)
-```
-
-La base de datos *Sonar*, con 208 instancias, contiene 60 variables explicativas numéricas y dos valores en la variable clase ("M" y "R"). 
-
-Definimos las instancias de train y test que darán forma al modelo de clasificación. Fijamos una semilla para futuras generaciones de números aleatorios. Hacemos uso de la función **createDataPartition** para generar una partición train-test de las 208 instancias, que mantendremos durante todo el flujo de análisis.
-
-Cross validation, split the data into train (75%) and test (30%).
-
-```{r}
-set.seed(107)
-inTrain <- createDataPartition(y=Sonar$Class, p=.75, list=FALSE)
-training <- Sonar[inTrain, ]
-testing <- Sonar[-inTrain, ]
-dim(training)
-dim(testing)
-```
-
-K-Fold Cross Validation
-
-Create 10 fold cross validation. This will create 10 folds, each with a training set(approx 187 records) and test set(approx 20 records).
-
-```{r}
-set.seed(107)
-folds <- createFolds(y=Sonar$Class, k=10, list=TRUE, 
-                     returnTrain = TRUE)
-lapply(folds, length)
-
-fold <- folds[[1]]
-training_folds <- Sonar[fold, ]
-testing_folds <- Sonar[-fold, ]
-dim(training_folds)
-dim(testing_folds)
-```
-
-Create 10 resamples (sampling with replacement) from the data. Each sample will have the 208 rows.
-
-```{r}
-set.seed(107)
-resample <- createResample(y=Sonar$Class, times=10, list=TRUE)
-lapply(resample, length)
-
-fold <- resample[[1]]
-training_resample <- Sonar[fold, ]
-testing_resample <- Sonar[-fold, ]
-dim(training_resample)
-dim(testing_resample)
-```
-
-
-```{r}
-ldaModel <- train (Class ~ ., data=training, method="lda", 
-                   preProc=c("center","scale"))
-ldaModel
-
-ctrl <- trainControl(method = "repeatedcv", repeats=3)
-ldaModel3x10cv <- train (Class ~ ., data=training,method="lda", 
-                         trControl=ctrl, 
-                         preProc=c("center","scale"))
-ldaModel3x10cv
-```
-
-
-```{r}
-ctrl <- trainControl(method = "repeatedcv", repeats=3, 
-                     classProbs=TRUE, 
-                     summaryFunction=twoClassSummary)
-ldaModel3x10cv <- train (Class ~ ., data=training, method="lda", 
-                         trControl=ctrl,metric="ROC", 
-                         preProc=c("center","scale"))
-ldaModel3x10cv
-```
-
-
-```{r fig.align='center'}
-plsFit3x10cv <- train (Class ~ ., data=training,method="pls", 
-                       trControl=ctrl,metric="ROC", 
-                       preProc=c("center","scale"))
-plsFit3x10cv
-plot(plsFit3x10cv)
-
-plsFit3x10cv <- train (Class ~ ., data=training,method="pls", 
-                       trControl=ctrl, 
-                       metric="ROC", tuneLength=15, 
-                       preProc=c("center","scale"))
-plsFit3x10cv
-plot(plsFit3x10cv)
-```
-
-```{r}
-plsProbs <- predict(plsFit3x10cv, newdata = testing, type = "prob")
-plsClasses <- predict(plsFit3x10cv, newdata = testing, type = "raw")
-confusionMatrix(data=plsClasses, testing$Class)
-```
-
-```{r fig.align='center'}
-resamps = resamples(list(pls=plsFit3x10cv, lda=ldaModel3x10cv))
-summary(resamps)
-xyplot(resamps, what="BlandAltman")
-diffs <- diff(resamps)
-summary(diffs)
-```
-## Ejercicio propuesto
-
-Cargamos las librerías necesarias:
-
-```{r message=FALSE}
 library(tidyverse)
 library(tm)
 library(SnowballC)
 ```
 
-El dataset escogido se puede encontrar en (https://www.kaggle.com/c/nlp-getting-started/data). Este dataset, con 10.876 instancias, contiene 4 variables explicativas; *id*, *keyword*, *location* y *test*, y dos valores en la variable clase *target* (1 y 0). La variable clase es de tipo binaria así que vamos a aprender un modelo de clasificación binaria, y 
-vamos a predecir si dado un tweet, este tweet trata sobre un desastre real o no. Si es un desastre real, se predice un 1. Si no, se predice un 0. 
+## Descripción
+
+El dataset escogido para realizar el ejercicio propuesto se puede encontrar en (https://www.kaggle.com/c/nlp-getting-started/data). Este dataset, con 10.876 instancias, contiene 4 variables explicativas; id, keyword, location y test; y dos valores en la variable clase target (0 y 1). La variable clase es binaria, así que, vamos a aprender un modelo de clasificación binaria.
+
+El objetivo del modelo será predecir si dado un tweet, este tweet trata sobre un desastre real o no. Si un tweet trata sobre un desastre real, se predice un 1. Si no, se predice un 0. 
 
 La partición inicial train-test, no se tiene que realizar, ya que las instancias de train y test ya vienen definidas en los ficheros *train.csv* y *test.csv*, proporcionados por la competición en [Kaggle](https://www.kaggle.com/c/nlp-getting-started/overview) que se ha elegido. El conjunto de datos de train contiene 7613 instancias y el conjunto de datos de test contiene 3262 instancias.
 
@@ -151,9 +53,27 @@ Cada instancia en el conjunto de train y test contiene la siguiente información
 - **target**: solo en el conjunto de datos de train porqué es la variable clase a predecir. Indica si un tweet es sobre un desastre real (1) o no (0). 
 
 ```{r}
-str(train)
-str(test)
+str(train, width = 85, strict.width = "cut")
+str(test, width = 85, strict.width = "cut")
 ```
+
+## Gráficas de visualización
+
+## Preprocesamiento
+
+## Modelos de clasificación
+
+## Métrica de evaluación
+
+## Selección de variables
+
+## Predicción
+
+## Comparativa entre modelos
+
+## Bibliografía
+
+
 
 Factorización de la variable clase, que inicialmente es de tipo entero.
 

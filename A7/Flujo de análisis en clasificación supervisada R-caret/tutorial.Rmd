@@ -1,0 +1,160 @@
+---
+title: "Flujo de análisis en clasificación supervisada"
+author: "Laura Rodríguez Navas"
+date: "Septiembre 2020"
+output:
+  html_document: default
+  pdf_document: 
+    toc: yes
+    fig_caption: yes
+    fig_crop: no
+    keep_tex: yes
+    number_sections: yes
+subtitle: Métodos supervisados
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Comenzamos cargando los paquetes y la base de datos:
+
+```{r message=FALSE}
+library(caret)
+library(mlbench)
+data(Sonar)
+str(Sonar, width = 85, strict.width = "cut")
+```
+
+La base de datos *Sonar*, con 208 instancias, contiene 60 variables explicativas numéricas y dos valores en la variable clase ("M" y "R"). 
+
+Definimos las instancias de train y test que darán forma al modelo de clasificación. Fijamos una semilla para futuras generaciones de números aleatorios. Hacemos uso de la función **createDataPartition** para generar una partición train-test de las 208 instancias, que mantendremos durante todo el flujo de análisis.
+
+Tomaremos una muestra del 75% de la base de datos como conjunto de datos de train, y el 25% de la misma como conjunto de datos de test.
+
+```{r}
+set.seed(107)
+inTrain <- createDataPartition(y=Sonar$Class, p=.75, list=FALSE)
+training <- Sonar[inTrain, ]
+testing <- Sonar[-inTrain, ]
+```
+
+El conjunto de datos de train contiene 157 instancias y el conjunto de datos de test contiene 51 instancias. 
+
+```{r}
+dim(training)
+dim(testing)
+```
+
+El mismo proceso usando la función **createFolds**.
+
+```{r}
+set.seed(107)
+folds <- createFolds(y=Sonar$Class, k=10, list=TRUE, returnTrain = TRUE)
+lapply(folds, length)
+fold <- folds[[1]]
+training_folds <- Sonar[fold, ]
+testing_folds <- Sonar[-fold, ]
+```
+
+El conjunto de datos de train contiene 188 instancias y el conjunto de datos de test contiene 20 instancias. 
+
+```{r}
+dim(training_folds)
+dim(testing_folds)
+```
+
+Usamos la función **createResample**.
+
+```{r}
+set.seed(107)
+folds <- createResample(y=Sonar$Class, times=10, list=TRUE)
+lapply(folds, length)
+fold <- folds[[1]]
+resample <- Sonar[fold, ]
+```
+
+El conjunto de datos, con 208 instancias, contiene 60 variables explicativas y la variable clase.
+
+```{r}
+dim(resample)
+```
+Ya que tenemos los datos para el aprendizaje (y testado) del modelo en la línea de salida, vamos a ello. Aprendemos todo un clásico, un modelo de análisis discriminante lineal (LDA). En la misma llamada al train del modelo hay que resaltar otro parámetro clave en cualquier tarea de análisis de datos: los filtros de preproceso por los pasarán las variables explicativas previo al aprendizaje (parámetro **preProc**). En este caso filtramos mediante un centrado y escalado de las variables.
+
+```{r}
+ldaModel <- train (Class ~ ., data=training, method="lda", preProc=c("center","scale"))
+ldaModel
+```
+
+Estudiando el output del modelo, podemos comprobar que la llamada **train** de caret siempre estima un porcentaje de bien clasificados sobre la partición inicial de train que ya hemos fijado (objeto training en nuestro caso). Por defecto, esta estimación se realiza mediante la técnica de *bootstrap*. 
+
+En el output del modelo, también podemos observar la estimación del porcentaje de bien clasificados ("Accuracy") y el valor del estadístico *Kappa*, el cual es una medida que compara el *Accuracy* observado respecto al *Accuracy* esperado (de una predicción al azar). Esto es, cuánto mejor estimamos con nuestro clasificador respecto a otro que predijese al azar la variable clase (siguiendo la probabilidad a priori de ésta). Un ejemplo para entenderlo mejor se pùede encuentrar [aquí](https://stats.stackexchange.com/questions/82162/cohens-kappa-in-plain-english).
+
+A continuación, usamos la función **trainControl** que controla el tipo de estimación del error. Realizamos una validación cruzada de (por defecto) 10 hojas ("folds"), repitiéndola 3 veces. El parámetro **method** de la función **trainControl** hace posible utilizar distintos tipos de validación. Aparte del tipo de validación, la función **trainControl** permite fijar multitud de parámetros del proceso de validación.
+
+```{r}
+ctrl <- trainControl(method = "repeatedcv", repeats=3)
+ldaModel3x10cv <- train (Class ~ ., data=training,method="lda", trControl=ctrl, 
+                         preProc=c("center","scale"))
+ldaModel3x10cv
+```
+
+El formato de expresión **Class ~** es todo un clásico en **R** para denotar primeramente la variable que se quiere predecir, y después del símbolo **~**, representando explícitamente el subconjunto de variables explicativas, o bien mediante un punto indicando que el resto de variables de la base de datos son explicativas
+
+La llamada al proceso de train del clasificador se puede seguir enriqueciendo con argumentos adicionales a la función **trainControl**. Uno de ellos es **summaryFunction**, referente a las medidas de evaluación del clasificador. Así, activando su opción **twoClassSummary** en un escenario de valores binarios a predecir, obtendremos medidas como el área bajo la curva ROC, sensibilidad y especificidad. Para ello y ya que no se calculan de manera automática, también hay que activar la opción **classProbs** para que se tengan en cuenta, en cada instancia, las probabilidades de predecir para cada valor de la variable clase. 
+
+```{r}
+ctrl <- trainControl(method = "repeatedcv", repeats=3, classProbs=TRUE, 
+                     summaryFunction=twoClassSummary)
+ldaModel3x10cv <- train (Class ~ ., data=training, method="lda", trControl=ctrl, 
+                         metric="ROC", 
+                         preProc=c("center","scale"))
+ldaModel3x10cv
+```
+
+Hasta ahora hemos trabajado con un análisis discriminante lineal, un clasificador que no tiene parámetros extra para ser construido. En la amplia lista de modelos que podemos aprender en **caret**, la gran mayoría tienen parámetros que se pueden adaptar para el train. Se pueden consultar, tanto los clasificadores, agrupados por familias, como sus respectivos parámetros, en [este enlace](https://topepo.github.io/caret/train-models-by-tag.html). Así, para clasificadores con al menos un parámetro para su aprendizaje, **caret** realiza las mismas evaluaciones que hemos visto hasta ahora para (por defecto) 3 valores de cada parámetro. 
+
+Para ver el efecto de lo expuesto en el output de aprendizaje-evaluación, escogeremos, por ejemplo, el clasificador *partial least squares discriminant analysis (PLSDA)*, hermanado con el LDA utilizado hasta ahora. Observamos que para su proceso de train hay un único parámetro a tunear. Por otro lado, vemos que se mantienen los mismos parámetros de control del train utilizados hasta ahora. Mediante el parámetro **tuneLength** podemos ampliar el número de valores por parámetro a considerar en el train. 
+
+```{r fig.align='center', out.width='70%'}
+plsFit3x10cv <- train (Class ~ ., data=training, method="pls", trControl=ctrl, 
+                       metric="ROC", 
+                       preProc=c("center","scale"))
+plsFit3x10cv
+plot(plsFit3x10cv)
+plsFit3x10cv <- train (Class ~ ., data=training, method="pls", trControl=ctrl, 
+                       metric="ROC", 
+                       tuneLength=15, 
+                       preProc=c("center","scale"))
+plsFit3x10cv
+plot(plsFit3x10cv)
+```
+
+Para predecir la clase de casos futuros, **caret** tendrá en cuenta el clasificador con el mejor valor de sus parámetros. Consulta los parámetros de la llamada a la función **predict** en [este enlace](https://www.rdocumentation.org/packages/caret/versions/6.0-72/topics/extractPrediction): entre éstos, la opción **type** merece ser estudiada. Con la opción **probs** se calcula, por caso de test, la probabilidad a-posteriori para cada valor de la clase; nos quedamos con la opción **raw**, para el caso de test, con el valor de la variable clase con mayor probabilidad a-posteriori. A partir de esta segunda opción podemos calcular la matriz de confusión y la colección de estadísticos de evaluación asociados; al fin y al cabo esto supone "cruzar", para el caso de test, los valores de clase predichos con los valores de clase reales.
+
+```{r}
+plsProbs <- predict(plsFit3x10cv, newdata = testing, type = "prob")
+plsClasses <- predict(plsFit3x10cv, newdata = testing, type = "raw")
+confusionMatrix(data=plsClasses, testing$Class)
+```
+
+A continuación, realizaremos una comparativa en base a los resultados de evaluación interna de 3x10cv entre LDA y PLSDA. Ya que no hemos cambiado la semilla de aleatorización, las particiones (de casos de training) utilizadas en los procesos de “resampling"-validación de cada clasificador han sido las mismas: esto es, las “folds"-hojas del proceso de validación cruzada han sido las mismas en ambos clasificadores. 
+
+```{r}
+resamps = resamples(list(pls=plsFit3x10cv, lda=ldaModel3x10cv))
+summary(resamps)
+```
+
+
+```{r fig.align='center', out.width='70%'}
+xyplot(resamps, what="BlandAltman")
+```
+
+
+```{r}
+diffs <- diff(resamps)
+summary(diffs)
+```
+Al compartir las "folds"-hojas, un *t-test* pareado calculará la significancia de las diferencias entre los estimadores de error de ambos modelos. El output de la comparativa contiene, para cada medida (área bajo la curva ROC, sensibilidad y especifidad), la diferencia de medias (positiva o negativa) entre clasificadores (siguiendo el orden de la llamada a la función **resamps**); y el *p-value* asociado para interpretar el nivel de significatividad de las diferencias entre los modelos.
+
+Finalmente, se trata de chequear las diferencias, para cada score, entre el par de clasificadores comparado. Y de interpretar, mediante el *p-value* asociado, si estas diferencias son estadísticamente significativas o no, https://en.wikipedia.org/wiki/Statistical_significance, usando el clásico umbral de 0.05 a 0.10.

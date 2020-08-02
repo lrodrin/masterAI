@@ -1,10 +1,12 @@
 ---
 title: "Bag of Words -> Stack (KNN + Tree + Lasso)"
 author: "Sambit Mukherjee"
-output: 
+output:
+  pdf_document:
+    toc: yes
   html_document:
-    number_sections: true
-    toc: true
+    number_sections: yes
+    toc: yes
     theme: cosmo
     highlight: haddock
     code_folding: show
