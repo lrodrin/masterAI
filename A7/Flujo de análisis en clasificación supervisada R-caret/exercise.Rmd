@@ -21,7 +21,6 @@ Comenzamos cargando los paquetes necesarios.
 
 ```{r message=FALSE}
 library(caret)
-library(mlbench)
 library(tidyverse)
 library(tm)
 library(SnowballC)
@@ -29,37 +28,260 @@ library(SnowballC)
 
 ## Descripción
 
-El dataset escogido para realizar el ejercicio propuesto se puede encontrar en (https://www.kaggle.com/c/nlp-getting-started/data). Este dataset, con 10.876 instancias, contiene 4 variables explicativas; id, keyword, location y test; y dos valores en la variable clase target (0 y 1). La variable clase es binaria, así que, vamos a aprender un modelo de clasificación binaria.
+Para la realización del ejercicio propuesto se ha elegido la competición en Kaggle: *Real or Not? NLP with Disaster Tweets*. El dataset de la competición se puede encontrar en el siguiente enlace: https://www.kaggle.com/c/nlp-getting-started/data. Este dataset, con 10.876 instancias, contiene 4 variables explicativas; **id**, **keyword**, **location** y **text**, y dos valores en la variable clase **target** (0 y 1). La variable clase es binaria, así que, vamos a aprender un modelo de clasificación binaria. El objetivo de este modelo será predecir si dado un tweet, este tweet trata sobre un desastre real o no. Si un tweet trata sobre un desastre real, se predice un 1. Si no, se predice un 0.
 
-El objetivo del modelo será predecir si dado un tweet, este tweet trata sobre un desastre real o no. Si un tweet trata sobre un desastre real, se predice un 1. Si no, se predice un 0. 
+La métrica de evaluación esperada por la competición es [F1](https://www.kaggle.com/c/nlp-getting-started/overview/evaluation). Y se calcula de la siguiente manera:
 
-La partición inicial train-test, no se tiene que realizar, ya que las instancias de train y test ya vienen definidas en los ficheros *train.csv* y *test.csv*, proporcionados por la competición en [Kaggle](https://www.kaggle.com/c/nlp-getting-started/overview) que se ha elegido. El conjunto de datos de train contiene 7613 instancias y el conjunto de datos de test contiene 3262 instancias.
+```{r echo=FALSE, fig.align='center', out.width='30%'}
+knitr::include_graphics('F1_score.png')
+```
 
-Cargamos el dataset:
+donde:
+
+```{r echo=FALSE, fig.align='center', out.width='25%'}
+knitr::include_graphics('F1_score_2.png')
+```
+
+La partición inicial train-test, no se tiene que realizar, ya que las instancias de train y test ya vienen definidas en el dataset de la competición (ficheros **train.csv** y **test.csv**). 
+
+A continuación, cargaremos el conjunto de datos de train y test. Además, nombraremos los valores perdidos como **NA** para que los podamos tratar más adelante. 
 
 ```{r}
-train <- read.csv("train.csv", na.strings=c("","NA"))
+train <- read.csv("train.csv", na.strings=c("", "NA"))
+test <- read.csv("test.csv", na.strings=c("", "NA"))
 dim(train)
-test <- read.csv("test.csv", na.strings=c("","NA"))
 dim(test)
 ```
 
-Cada instancia en el conjunto de train y test contiene la siguiente información:
+El conjunto de datos de train contiene 7613 instancias y el conjunto de datos de test contiene 3263 instancias. Cada instancia de los conjuntos de train y test contiene la siguiente información:
 
-- **id**: un identificador único para cada tweet. 
-- **keyword**: una palabra clave del tweet (puede estar en blanco).
-- **location**: la ubicación desde la que se envió el tweet (puede estar en blanco).
-- **text**: el texto del tweet. 
-- **target**: solo en el conjunto de datos de train porqué es la variable clase a predecir. Indica si un tweet es sobre un desastre real (1) o no (0). 
+* **id**: un identificador único para cada tweet. 
+* **keyword**: una palabra clave del tweet (puede estar en blanco).
+* **location**: la ubicación desde la que se envió el tweet (puede estar en blanco).
+* **text**: el texto del tweet. 
+* **target**: solo en el conjunto de datos de train porqué es la variable clase a predecir. Indica si un tweet es un desastre real (1) o no (0). 
 
 ```{r}
 str(train, width = 85, strict.width = "cut")
 str(test, width = 85, strict.width = "cut")
 ```
 
+Tenemos que categorizar la variable a predecir, ya que inicialmente es de tipo entero.
+
+```{r}
+train$target <- as.factor(train$target)
+str(train, width = 85, strict.width = "cut")
+```
+
+En la siguiente figura vemos la distribución de la variable a predecir:
+
+```{r fig.align='center', out.width='70%'}
+ggplot(train, aes(x=target)) + geom_bar(aes(fill=target))
+sum(train$target == "0") / dim(train)[1] * 100
+sum(train$target == "1") / dim(train)[1] * 100
+```
+
+La distribución de la variable a predecir está relativamente equilibrada, donde el 57% de las instancias de los tweets son sobre un desastre no real y el 43% sobre un desastre real.
+
 ## Gráficas de visualización
 
 ## Preprocesamiento
+
+Eliminamos la variable **id**, porqué no nos aporta información interesante. 
+
+```{r}
+train$id <- NULL
+test$id <- NULL
+```
+
+Valores perdidos.
+
+```{r}
+colSums(sapply(train, is.na))
+colSums(sapply(test, is.na))
+```
+
+Las variables explicativas **keyword** y **location** contienen valores perdidos. Sobretodo hay una gran cantidad de tweets, para los cuales falta su ubicación. No existen valores perdidos para **text** y la variable a predecir **target**.
+
+Nos ocuparemos de los valores perdidos más adelante.
+
+### Análisis de sentimientos.
+
+- Examinemos los valores únicos de la variable **keyword**.
+
+```{r}
+length(unique(train$keyword))
+length(unique(test$keyword))
+```
+Los mismos valores únicos se encuentran presentes en el conjunto de datos de train y test.
+
+Convertimos la variable **keyword** en una variable categórica.
+
+```{r}
+train$keyword <- as.factor(train$keyword)
+test$keyword <- as.factor(test$keyword)
+```
+
+- Examinemos los valores únicos de la variable **location**.
+
+```{r}
+length(unique(train$location))
+length(unique(test$location))
+```
+Vemos que los valores únicos no son los mismos en los conjuntos de datos de train y test. Así que, no podemos simplemente convertir la variable **location** en una variable categórica. Tenemos que convertir la variable **location** en una **bag of words**. Una **bag of words** se usa comúnmente en los métodos de clasificación de textos donde la (frecuencia de) aparición de cada palabra se usa como una característica para entrenar a un modelo. 
+
+Primero uniremos el conjunto de datos de train y test para extraer los sentimientos. Dejaremos al margen de esta union la variable a predecir.
+
+```{r}
+train_and_test <- rbind(train[, 1:3], test)
+str(train_and_test,  width = 85, strict.width = "cut")
+```
+
+- Creamos un corpus lingüístico del texto contenido en la variable **location**.
+
+```{r}
+corpus_location <- Corpus(VectorSource(train_and_test$location))
+corpus_location[[50]]$content
+```
+
+
+- Convertimos los textos a minúsculas.
+
+```{r warning=FALSE}
+corpus_location <- tm_map(corpus_location, tolower)
+corpus_location[[50]]$content
+```
+
+- Eliminamos signos de puntuación de los textos.
+
+```{r warning=FALSE}
+corpus_location <- tm_map(corpus_location, removePunctuation)
+corpus_location[[50]]$content
+```
+
+- Eliminamos los *stop words* de los textos.
+
+```{r warning=FALSE}
+corpus_location <- tm_map(corpus_location, removeWords, stopwords("english"))
+corpus_location[[50]]$content
+```
+
+- *Stemming* (usando el algoritmo stemming de Porter).
+
+```{r warning=FALSE}
+corpus_location <- tm_map(corpus_location, stemDocument)
+corpus_location[[50]]$content
+```
+
+- Creamos una matriz de términos. 
+
+Una matriz de términos es una matriz matemática que describe la frecuencia de los términos (columnas) que ocurren en un conjunto de textos (filas).
+
+```{r}
+dtm_location <- DocumentTermMatrix(corpus_location)
+dtm_location
+```
+La matriz contiene 3839 términos. Pero la mayoría de los elementos de la matriz son cero, ya que el valor *Sparsity* es 100%. 
+
+- Reduciremos la *Sparsity* conservando sólo los términos que aparecen al menos un 0.25% en las instancias.
+
+```{r}
+dtm_location <- removeSparseTerms(dtm_location, 0.9975)
+dtm_location
+```
+La *Sparsity* se ha reducido al 99%. Como resultado, el número de términos a bajado a 55.
+
+- Convertimos la matriz de términos en un data frame.
+
+```{r}
+bag_of_words_location <- as.data.frame(as.matrix(dtm_location))
+```
+
+Finalmente nos aseguraremos que el data frame contiene columnas válidas, que no se repiten, y les añadiremos "_location" para evitar duplicaciones con la **bag of words** que tendremos que crear para la variable **text**.
+
+```{r}
+colnames(bag_of_words_location) <- paste0(colnames(bag_of_words_location), "_location")
+bag_of_words_location <- bag_of_words_location[, !duplicated(colnames(bag_of_words_location))]
+str(bag_of_words_location, list.len=10)
+```
+
+- Examinemos los valores únicos de la variable **text**.
+
+```{r}
+length(unique(train$text))
+length(unique(test$text))
+```
+Vemos que los valores únicos no son los mismos en los conjuntos de datos de train y test. Hacemos lo mismo que con la variable **location**.
+
+- Creamos un corpus lingüístico del texto contenido en la variable **text**.
+
+```{r}
+corpus_text <- Corpus(VectorSource(train_and_test$text))
+corpus_text[[50]]$content
+```
+
+- Convertimos los textos a minúsculas.
+
+```{r warning=FALSE}
+corpus_text <- tm_map(corpus_text, tolower)
+corpus_text[[50]]$content
+```
+
+- Eliminamos signos de puntuación de los textos.
+
+```{r warning=FALSE}
+corpus_text <- tm_map(corpus_text, removePunctuation)
+corpus_text[[50]]$content
+```
+
+- Eliminamos los *stop words* de los textos.
+
+```{r warning=FALSE}
+corpus_text <- tm_map(corpus_text, removeWords, stopwords("english"))
+corpus_text[[50]]$content
+```
+
+- *Stemming* (usando el algoritmo stemming de Porter).
+
+```{r warning=FALSE}
+corpus_text <- tm_map(corpus_text, stemDocument)
+corpus_text[[50]]$content
+```
+
+- Creamos una matriz de términos. 
+
+Una matriz de términos es una matriz matemática que describe la frecuencia de los términos (columnas) que ocurren en un conjunto de textos (filas).
+
+```{r}
+dtm_text <- DocumentTermMatrix(corpus_text)
+dtm_text
+```
+
+La matriz contiene 24938 términos. Pero la mayoría de los elementos de la matriz son cero, ya que el valor *Sparsity* es 100%. 
+
+- Reduciremos la *Sparsity* conservando sólo los términos que aparecen al menos un 0.25% en las instancias.
+
+```{r}
+dtm_text <- removeSparseTerms(dtm_text, 0.9975)
+dtm_text
+```
+
+La *Sparsity* se ha reducido al 99%. Como resultado, el número de términos a bajado a 720.
+
+- Convertimos la matriz de términos en un data frame.
+
+```{r}
+bag_of_words_text <- as.data.frame(as.matrix(dtm_text))
+```
+
+Finalmente nos aseguraremos que el data frame contiene columnas válidas, que no se repiten, y les añadiremos "_text" para evitar duplicaciones con la **bag of words** de **location**.
+
+```{r}
+colnames(bag_of_words_text) <- paste0(colnames(bag_of_words_text), "_test")
+bag_of_words_text <- bag_of_words_text[, !duplicated(colnames(bag_of_words_text))]
+str(bag_of_words_text, list.len=10)
+```
+
 
 ## Modelos de clasificación
 
@@ -71,111 +293,6 @@ str(test, width = 85, strict.width = "cut")
 
 ## Comparativa entre modelos
 
+## Conclusiones
+
 ## Bibliografía
-
-
-
-Factorización de la variable clase, que inicialmente es de tipo entero.
-
-```{r}
-str(train$target)
-train$target <- as.factor(train$target)
-str(train$target)
-```
-
-Distribución de la variable clase:
-
-```{r fig.align='center'}
-ggplot(train, aes(x=target)) + 
-  geom_bar(aes(fill=target))
-
-sum(train$target == "0") / dim(train)[1] * 100
-sum(train$target == "1") / dim(train)[1] * 100
-```
-
-La distribución de la variable a predecir está relativamente equilibrada, donde el 57% de las instancias de los tweets son sobre un desastre no real y el 43% sobre un desastre real.
-
-[//]: # (método de resampling)
-
-### correlaciones entre variables explicativas
-
-### mética de evaluación
-
-### valores perdidos
-
-```{r}
-colSums(sapply(train, is.na))
-colSums(sapply(test, is.na))
-```
-
-Las variables *keyword* y *location* tienen valores perdidos. Sobretodo hay una gran cantidad de tweets, para los cuales falta la ubicación. Potencialmente, esto podría ser una buena variable predictiva en sí misma. No faltan valores en las variables *target* y *text*.
-
-Nos ocuparemos de los valores perdidos más adelante. 
-
-Eliminamos la variable *id*.
-
-```{r}
-train$id <- NULL
-test$id <- NULL
-```
-
-## keyword
-
-```{r}
-length(unique(train$keyword))
-length(unique(test$keyword))
-train$keyword <- as.factor(train$keyword)
-all.equal(levels(train$keyword), levels(test$keyword))
-```
-
-## location
-
-```{r}
-length(unique(train$location))
-length(unique(test$location))
-train_and_test <- rbind(train[, 1:3], test)
-str(train_and_test)
-```
-
-1. Create a corpus
-2. Convert to lowercase
-3. Remove punctuation
-4. Remove stopwords
-5. Stemming (using Porter’s stemming algorithm)
-6. Create document term matrix
-
-```{r warning=FALSE}
-corpus_location <- Corpus(VectorSource(train_and_test$location))
-corpus_location[[33]]$content
-
-corpus_location <- tm_map(corpus_location, tolower)
-corpus_location[[33]]$content
-
-corpus_location <- tm_map(corpus_location, removePunctuation)
-corpus_location[[33]]$content
-
-corpus_location <- tm_map(corpus_location, removeWords, stopwords("english"))
-corpus_location[[33]]$content
- 
-corpus_location <- tm_map(corpus_location, stemDocument)
-corpus_location[[33]]$content
-```
-
-- Create document term matrix
-- Reduce sparsity
-- Convert to data frame
-
-```{r}
-dtm_location <- DocumentTermMatrix(corpus_location)
-dtm_location
-
-dtm_location <- removeSparseTerms(dtm_location, 0.9975)
-dtm_location
-
-bag_of_words_location <- as.data.frame(as.matrix(dtm_location))
-colnames(bag_of_words_location) <- paste0(colnames(bag_of_words_location), "_location")
-str(bag_of_words_location, list.len=10)
-```
-
-
-## text
