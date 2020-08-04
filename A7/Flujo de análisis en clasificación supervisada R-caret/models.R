@@ -1,33 +1,30 @@
 library(caret)
 
-source('data.R')
+# Creating stratified folds for 5-fold cross validation repeated 
+# 3 times (i.e., create 30 random stratified samples)
+set.seed(1985)
+cv.folds <- createMultiFolds(train.df$target, k = 5, times = 3)
 
-# Since this is a classification problem, let’s convert target to a categorical variable.
-train_processed$target <- as.factor(train_processed$target)
+cv.cntrl <- trainControl(method = "repeatedcv", number = 5, repeats = 3, 
+                         index = cv.folds, summaryFunction = twoClassSummary, classProbs = T,
+                         allowParallel = TRUE, savePredictions = TRUE)
 
 
-## KNN
+gc()
+
 num_folds <- trainControl(method = "cv", number = 5)
-parameter_grid <- expand.grid(k = 1:3) # Explore values of `k` between 1 and 3.
+parameter_grid <- expand.grid(k = 1:3) # Explore values of `k` between 1 and 5.
 
-knn <- train(
+set.seed(1985)
+grid_search <- train(
   target ~ .,  # Use all variables in `train_processed` except `id`.
-  data = train_processed, 
+  data = train.df, 
   method = "knn",
   trControl = num_folds, 
   tuneGrid = parameter_grid
 )
 
-knn
-
-num_folds <- trainControl(method = "cv", number = 5)
-parameter_grid <- expand.grid(.cp = seq(0, 0.01, 0.001)) # Explore values of `cp` between 0 and 0.01.
-
-grid_search <- train(
-  target ~ . - id, 
-  data = train_processed, 
-  method = "rpart", # CART algorithm
-  trControl = num_folds
-)
-
 grid_search
+
+# Stop parallel computing
+stopCluster(cl)
