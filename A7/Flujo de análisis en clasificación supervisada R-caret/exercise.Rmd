@@ -281,11 +281,24 @@ colnames(bag_of_words_text) <- paste0(colnames(bag_of_words_text), "_test")
 bag_of_words_text <- bag_of_words_text[, !duplicated(colnames(bag_of_words_text))]
 str(bag_of_words_text, list.len=10)
 ```
-putting together
-las dos matrizes train y test
-analizar frequency words
 
-dps modelar
+Jutamos *bag_of_words_location* con *bag_of_words_text* y separamos los datos en un nuevo conjunto de datos de train y test.
+
+```{r}
+bag_of_words <- cbind(bag_of_words_location, bag_of_words_text)
+
+train_processed <- bag_of_words[1:7613, ] # filas obtenidas por train
+test_processed <- bag_of_words[7614:10876, ] # filas obtenidas por test
+```
+
+Añadimos *keyword* y *target* los nuevos conjuntos *train_processed* y *test_processed*.
+
+```{r}
+train_processed$keyword <- train$keyword
+train_processed$target <- train$target
+test_processed$keyword <- test$keyword
+test_processed$target <- test$target
+```
 
 ## Modelos de clasificación
 

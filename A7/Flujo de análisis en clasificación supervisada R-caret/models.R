@@ -1,25 +1,39 @@
-# Creating stratified folds for 5-fold cross validation repeated 
-# 3 times (i.e., create 30 random stratified samples)
-set.seed(1985)
-cv.folds <- createMultiFolds(train.df$target, k = 5, times = 3)
-
-cv.cntrl <- trainControl(method = "repeatedcv", number = 5, repeats = 3, 
-                         index = cv.folds, summaryFunction = twoClassSummary, classProbs = T,
-                         allowParallel = TRUE, savePredictions = TRUE)
-
-
-gc()
-
-cl <- makeCluster(3)
+# PARALELIZACIÓN DE PROCESO
+#===============================================================================
+library(doParallel)
+cl <- makePSOCKcluster(4, setup_strategy = "sequential") # number of cores to use
 registerDoParallel(cl)
-getDoParWorkers()
 
+# HIPERPARÁMETROS, NÚMERO DE REPETICIONES Y SEMILLAS PARA CADA REPETICIÓN
+#===============================================================================
+particiones  <- 10
+repeticiones <- 5
+
+# Hiperparámetros
+hiperparametros <- data.frame(k = c(1, 2, 3))
+
+set.seed(123)
+seeds <- vector(mode = "list", length = (particiones * repeticiones) + 1)
+for (i in 1:(particiones * repeticiones)) {
+  seeds[[i]] <- sample.int(1000, nrow(hiperparametros)) 
+}
+seeds[[(particiones * repeticiones) + 1]] <- sample.int(1000, 1)
+
+# DEFINICIÓN DEL ENTRENAMIENTO
+#===============================================================================
+control_train <- trainControl(method = "repeatedcv", number = particiones,
+                              repeats = repeticiones, seeds = seeds,
+                              returnResamp = "final", verboseIter = FALSE,
+                              allowParallel = TRUE)
+
+# AJUSTE DEL MODELO
+# ==============================================================================
 set.seed(342)
 modelo_knn <- train(target ~ ., data = train.df,
                     method = "knn",
+                    tuneGrid = hiperparametros,
                     metric = "Accuracy",
-                    trControl = cv.cntrl)
+                    trControl = control_train)
 modelo_knn
 
-# Stop parallel computing
 stopCluster(cl)

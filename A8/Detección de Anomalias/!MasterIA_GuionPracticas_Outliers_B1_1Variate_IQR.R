@@ -1,10 +1,10 @@
 # Máster -> Detección de anomalías
-# Juan Carlos Cubero. Universidad de Granada
+# Laura Rodríguez Navas
 
 ###########################################################################
 # UNIVARIATE STATISTICAL OUTLIERS -> IQR 
 ###########################################################################
-
+source("!Outliers_A3_Funciones_a_cargar_en_cada_sesion.R")
 
 # Siga las instrucciones indicadas en el fichero INSTRUCCIONES.txt
 
@@ -92,10 +92,19 @@ cuartil.primero <- quantile(columna, 0.25)
 cuartil.tercero <- quantile(columna, 0.75)
 iqr <- IQR(columna)
 
+cuartil.primero
+cuartil.tercero
+iqr
+
 extremo.superior.outlier.normal = cuartil.tercero + 1.5 * iqr
 extremo.inferior.outlier.normal = cuartil.primero - 1.5 * iqr
 extremo.superior.outlier.extremo = cuartil.tercero + 3 * iqr
 extremo.inferior.outlier.extremo = cuartil.primero - 3 * iqr
+
+extremo.superior.outlier.normal
+extremo.inferior.outlier.normal
+extremo.superior.outlier.extremo
+extremo.inferior.outlier.extremo
 
 vector.es.outlier.normal = columna > extremo.superior.outlier.normal |
   columna < extremo.inferior.outlier.normal
