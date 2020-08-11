@@ -1,5 +1,3 @@
-library(caret)
-
 # Creating stratified folds for 5-fold cross validation repeated 
 # 3 times (i.e., create 30 random stratified samples)
 set.seed(1985)
@@ -12,19 +10,16 @@ cv.cntrl <- trainControl(method = "repeatedcv", number = 5, repeats = 3,
 
 gc()
 
-num_folds <- trainControl(method = "cv", number = 5)
-parameter_grid <- expand.grid(k = 1:3) # Explore values of `k` between 1 and 5.
+cl <- makeCluster(3)
+registerDoParallel(cl)
+getDoParWorkers()
 
-set.seed(1985)
-grid_search <- train(
-  target ~ .,  # Use all variables in `train_processed` except `id`.
-  data = train.df, 
-  method = "knn",
-  trControl = num_folds, 
-  tuneGrid = parameter_grid
-)
-
-grid_search
+set.seed(342)
+modelo_knn <- train(target ~ ., data = train.df,
+                    method = "knn",
+                    metric = "Accuracy",
+                    trControl = cv.cntrl)
+modelo_knn
 
 # Stop parallel computing
 stopCluster(cl)
