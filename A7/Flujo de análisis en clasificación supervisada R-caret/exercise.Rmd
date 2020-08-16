@@ -21,14 +21,13 @@ Comenzamos cargando los paquetes necesarios.
 
 ```{r message=FALSE}
 library(caret)
-library(tidyverse)
-library(tm)
-library(SnowballC)
+library(dplyr)
+library(doParallel)
 ```
 
 ## Descripción
 
-Para la realización del ejercicio propuesto se ha elegido la competición en Kaggle: *Real or Not? NLP with Disaster Tweets*. El dataset de la competición se puede encontrar en el siguiente enlace: https://www.kaggle.com/c/nlp-getting-started/data. Este dataset, con 10.876 instancias, contiene 4 variables explicativas; **id**, **keyword**, **location** y **text**, y dos valores en la variable clase **target** (0 y 1). La variable clase es binaria, así que, vamos a aprender un modelo de clasificación binaria. El objetivo de este modelo será predecir si dado un tweet, este tweet trata sobre un desastre real o no. Si un tweet trata sobre un desastre real, se predice un 1. Si no, se predice un 0.
+Para la realización del ejercicio propuesto se ha elegido la competición en Kaggle: **Real or Not? NLP with Disaster Tweets**. El dataset de la competición se puede encontrar en el siguiente enlace: https://www.kaggle.com/c/nlp-getting-started/data. Este dataset, con 10.876 instancias, contiene 4 variables explicativas: **id**, **keyword**, **location** y **text**, y dos valores en la variable clase **target** (0 y 1). La variable clase es binaria, así que, vamos a aprender un modelo de clasificación binaria. El objetivo de este modelo será predecir si dado un tweet, este tweet trata sobre un desastre real o no. Si un tweet trata sobre un desastre real, se predice un 1. Si no, se predice un 0.
 
 La métrica de evaluación esperada por la competición es [F1](https://www.kaggle.com/c/nlp-getting-started/overview/evaluation). Y se calcula de la siguiente manera:
 
@@ -44,7 +43,7 @@ knitr::include_graphics('F1_score_2.png')
 
 La partición inicial train-test, no se tiene que realizar, ya que las instancias de train y test ya vienen definidas en el dataset de la competición (ficheros **train.csv** y **test.csv**). 
 
-A continuación, cargaremos el conjunto de datos de train y test. Además, nombraremos los valores perdidos como **NA** para que los podamos tratar más adelante. 
+A continuación, cargaremos el conjunto de datos de train y test, nombrando los valores perdidos como **NA** para que los podamos tratar más adelante, y mostraremos sus dimensiones. 
 
 ```{r}
 train <- read.csv("train.csv", na.strings=c("", "NA"))
@@ -53,18 +52,27 @@ dim(train)
 dim(test)
 ```
 
-El conjunto de datos de train contiene 7613 instancias y el conjunto de datos de test contiene 3263 instancias. Cada instancia de los conjuntos de train y test contiene la siguiente información:
+El conjunto de datos de train contiene 7613 instancias y el conjunto de datos de test contiene 3263 instancias. Cada instancia de estos conjuntos contiene la siguiente información:
 
 * **id**: un identificador único para cada tweet. 
-* **keyword**: una palabra clave del tweet (puede estar en blanco).
-* **location**: la ubicación desde la que se envió el tweet (puede estar en blanco).
+* **keyword**: una palabra clave del tweet.
+* **location**: la ubicación desde la que se envió el tweet.
 * **text**: el texto del tweet. 
-* **target**: solo en el conjunto de datos de train porqué es la variable clase a predecir. Indica si un tweet es un desastre real (1) o no (0). 
+* **target**: solo en el conjunto de datos de train porqué es la variable clase a predecir. Indica si un tweet es sobre un desastre real (1) o no (0). 
 
 ```{r}
 str(train, width = 85, strict.width = "cut")
 str(test, width = 85, strict.width = "cut")
 ```
+
+Unimos los conjuntos de train y test (*7613 + 3263 observaciones*) para poder analizar y extraer los sentimientos más adelante.
+
+```{r}
+complete_df <- bind_rows(train, test)
+str(complete_df, width = 85, strict.width = "cut")
+```
+
+El análisis de sentimientos es una técnica de *Machine Learning*, basada en el [procesado del lenguaje natural](https://www.kdnuggets.com/2017/02/natural-language-processing-key-terms-explained.html), que pretende obtener información subjetiva de una serie de textos. Su aplicación es este caso, consiste en resolver si un tweet es real o no real en relación a un desastre. 
 
 Tenemos que categorizar la variable a predecir, ya que inicialmente es de tipo entero.
 
