@@ -98,7 +98,7 @@
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\setcounter{secnumdepth}{5}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 
 \title{Flujo de análisis en clasificación supervisada}
 \usepackage{etoolbox}
@@ -122,14 +122,23 @@ Comenzamos cargando los paquetes necesarios.
 
 \begin{Shaded}
 \begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(tidyverse)}
+\KeywordTok{library}\NormalTok{(stringi)}
+\KeywordTok{library}\NormalTok{(tm)}
+\KeywordTok{library}\NormalTok{(irlba)}
+\KeywordTok{library}\NormalTok{(RColorBrewer)}
+\KeywordTok{library}\NormalTok{(wordcloud)}
+\KeywordTok{library}\NormalTok{(gridExtra)}
 \KeywordTok{library}\NormalTok{(caret)}
-\KeywordTok{library}\NormalTok{(dplyr)}
 \KeywordTok{library}\NormalTok{(doParallel)}
+\KeywordTok{library}\NormalTok{(syuzhet)}
+\KeywordTok{library}\NormalTok{(ggcorrplot)}
 \end{Highlighting}
 \end{Shaded}
 
-\hypertarget{descripciuxf3n}{%
-\subsection{Descripción}\label{descripciuxf3n}}
+\hypertarget{anuxe1lisis-exploratorio-de-los-datos}{%
+\subsection{Análisis Exploratorio de los
+Datos}\label{anuxe1lisis-exploratorio-de-los-datos}}
 
 Para la realización del ejercicio propuesto se ha elegido la competición
 en Kaggle: \textbf{Real or Not? NLP with Disaster Tweets}. El dataset de
@@ -232,8 +241,250 @@ conjuntos contiene la siguiente información:
 ##  $ text    : chr  "Just happened a terrible car crash" "Heard about #earthquake is"..
 \end{verbatim}
 
-Unimos los conjuntos de train y test (\emph{7613 + 3263 observaciones})
-para poder analizar y extraer los sentimientos más adelante.
+\hypertarget{variable-target}{%
+\subsubsection{\texorpdfstring{Variable
+\emph{target}}{Variable target}}\label{variable-target}}
+
+Categorizamos la variable a predecir, ya que inicialmente es de tipo
+entero, y observamos su distribución.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{train}\OperatorTok{$}\NormalTok{target <-}\StringTok{ }\KeywordTok{as.factor}\NormalTok{(}\KeywordTok{ifelse}\NormalTok{(train}\OperatorTok{$}\NormalTok{target }\OperatorTok{==}\StringTok{ }\DecValTok{0}\NormalTok{, }\StringTok{"No"}\NormalTok{, }\StringTok{"Yes"}\NormalTok{))}
+\KeywordTok{ggplot}\NormalTok{(train, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{target)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_bar}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{fill=}\NormalTok{target))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics[width=0.7\linewidth]{document_files/figure-latex/unnamed-chunk-6-1} \end{center}
+
+La distribución no está muy sesgada y vemos que hay menos tweets que se
+refieren a desastres reales. La distribución de la variable a predecir
+está relativamente equilibrada, donde el 43\% de las observaciones son
+desastrosas y el 57\% no.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{sum}\NormalTok{(train}\OperatorTok{$}\NormalTok{target }\OperatorTok{==}\StringTok{ "Yes"}\NormalTok{) }\OperatorTok{/}\StringTok{ }\KeywordTok{dim}\NormalTok{(train)[}\DecValTok{1}\NormalTok{] }\OperatorTok{*}\StringTok{ }\DecValTok{100}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 42.96598
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{sum}\NormalTok{(train}\OperatorTok{$}\NormalTok{target }\OperatorTok{==}\StringTok{ "No"}\NormalTok{) }\OperatorTok{/}\StringTok{ }\KeywordTok{dim}\NormalTok{(train)[}\DecValTok{1}\NormalTok{] }\OperatorTok{*}\StringTok{ }\DecValTok{100}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 57.03402
+\end{verbatim}
+
+Tampoco presenta un problema notable de \emph{desbalanceo de clase}
+porqué contamos con muchas muestras del caso minoritario.
+
+\hypertarget{variable-keyword}{%
+\subsubsection{\texorpdfstring{Variable
+\emph{keyword}}{Variable keyword}}\label{variable-keyword}}
+
+La variable \textbf{keyword} representa una palabra representativa de
+cada tweet, se muestran las primeras 10.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{train }\OperatorTok{%>%}\StringTok{ }\KeywordTok{select}\NormalTok{(keyword) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{unique}\NormalTok{() }\OperatorTok{%>%}\StringTok{ }\KeywordTok{head}\NormalTok{(}\DecValTok{10}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                 keyword
+## 1                  <NA>
+## 32               ablaze
+## 68             accident
+## 103          aftershock
+## 137 airplane%20accident
+## 172           ambulance
+## 210         annihilated
+## 244        annihilation
+## 273          apocalypse
+## 305          armageddon
+\end{verbatim}
+
+Ahora veremos si la asociación de cada \textbf{keyword} con un
+sentimiento indica una relación con la variable a predecir. Para ello
+realizaremos un análisis de sentimientos de cada palabra clave.
+
+\emph{El análisis de sentimientos es una técnica de }Machine
+Learning\emph{, basada en el
+\href{https://www.kdnuggets.com/2017/02/natural-language-processing-key-terms-explained.html}{procesado
+del lenguaje natural}, que pretende obtener información subjetiva de una
+serie de textos. Su aplicación es este caso, consiste en resolver si un
+tweet es real o no real en relación a un desastre.}
+
+Para ello usaremos los paquetes \textbf{syuzhet}, \textbf{ggcorrplot} y
+\textbf{doParallel}.
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{syuzhet} cuenta con la función \textbf{get\_nrc\_sentiment}
+  que calcula la presencia de los diferentes sentimientos dado un
+  conjunto de textos. Los parámetros de esta función son:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \textbf{char\_v}. Un vector de caracteres que en este caso contiene
+    todas las palabras clave.
+  \item
+    \textbf{language}. Define el lenguaje.
+  \item
+    \textbf{cl}. Para análisis paralelo. Es opcional, pero en este caso
+    lo usaremos porqué hay muchas palabras clave.
+  \end{itemize}
+\item
+  \textbf{ggcorrplot} muestra una visualización gráfica de una matriz de
+  correlación usando \emph{ggplot2}.
+\item
+  \textbf{doParallel} proporciona una computación paralela. Los
+  parámetros de esta función son:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \textbf{makePSOCKcluster}. Crea un clúster de sockets paralelos.
+  \item
+    \textbf{registerDoParallel}. Registra el número de \emph{cores} que
+    usará el clúster creado.
+  \item
+    \textbf{stopCluster}. Detiene la computación paralela.
+  \end{itemize}
+\end{itemize}
+
+Análisis de correlaciones entre \textbf{keyword} y \textbf{target}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cl <-}\StringTok{ }\KeywordTok{makePSOCKcluster}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DataTypeTok{setup_strategy=}\StringTok{"sequential"}\NormalTok{)}
+\KeywordTok{registerDoParallel}\NormalTok{(cl)}
+
+\NormalTok{emocion.df <-}\StringTok{ }\KeywordTok{get_nrc_sentiment}\NormalTok{(}\DataTypeTok{char_v =} \KeywordTok{gsub}\NormalTok{(}\StringTok{"_"}\NormalTok{, }\StringTok{" "}\NormalTok{, train}\OperatorTok{$}\NormalTok{keyword), }
+                                \DataTypeTok{language =} \StringTok{"english"}\NormalTok{, }\DataTypeTok{cl=}\NormalTok{cl)}
+\NormalTok{emocion.df <-}\StringTok{ }\NormalTok{emocion.df }\OperatorTok{%>%}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{target =}\NormalTok{ train}\OperatorTok{$}\NormalTok{target)}
+\NormalTok{emocion.df}\OperatorTok{$}\NormalTok{target <-}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(emocion.df}\OperatorTok{$}\NormalTok{target)}
+
+\KeywordTok{cor}\NormalTok{(emocion.df) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{ggcorrplot}\NormalTok{(}\DataTypeTok{lab =} \OtherTok{TRUE}\NormalTok{, }
+             \DataTypeTok{title =} \StringTok{"Matriz de correlación entre los }\CharTok{\textbackslash{}n}\StringTok{sentimientos de keyword y target"}\NormalTok{,}
+             \DataTypeTok{legend.title =} \StringTok{"correlation"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics[width=0.7\linewidth]{document_files/figure-latex/unnamed-chunk-9-1} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{stopCluster}\NormalTok{(cl)}
+\end{Highlighting}
+\end{Shaded}
+
+Al observar la matriz de correlaciones, se observa una correlación nula
+con cada uno de los sentimientos. Esto hace que esta variable
+explicativa no sea buena para hacer una predicción.
+
+\hypertarget{variable-location}{%
+\subsubsection{\texorpdfstring{Variable
+\emph{location}}{Variable location}}\label{variable-location}}
+
+La variable \textbf{location} representa la ubicación desde donde se
+generaron los tweets, se muestran las primeras 10.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{train }\OperatorTok{%>%}\StringTok{ }\KeywordTok{select}\NormalTok{(location) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{unique}\NormalTok{() }\OperatorTok{%>%}\StringTok{ }\KeywordTok{head}\NormalTok{(}\DecValTok{10}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                         location
+## 1                           <NA>
+## 32                    Birmingham
+## 33 Est. September 2012 - Bristol
+## 34                        AFRICA
+## 35              Philadelphia, PA
+## 36                    London, UK
+## 37                      Pretoria
+## 38                  World Wide!!
+## 40                Paranaque City
+## 41                Live On Webcam
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{count}\NormalTok{(train }\OperatorTok{%>%}\StringTok{ }\KeywordTok{select}\NormalTok{(location) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{unique}\NormalTok{())}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      n
+## 1 3342
+\end{verbatim}
+
+En total hay 3342 ubicaciones. A continuación, mostramos las ubicaciones
+más frecuentes:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{location.freq <-}\StringTok{ }\KeywordTok{table}\NormalTok{(}\KeywordTok{unlist}\NormalTok{(train }\OperatorTok{%>%}\StringTok{ }\KeywordTok{select}\NormalTok{(location)))}
+\NormalTok{location.freq[}\KeywordTok{which}\NormalTok{(location.freq }\OperatorTok{>}\StringTok{ }\DecValTok{10}\NormalTok{)]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##         Australia        California   California, USA            Canada 
+##                18                17                15                29 
+##           Chicago       Chicago, IL             Earth        Everywhere 
+##                11                18                11                15 
+##           Florida             India         Indonesia           Ireland 
+##                14                24                13                12 
+##             Kenya            London       Los Angeles   Los Angeles, CA 
+##                20                45                13                26 
+##            Mumbai          New York      New York, NY           Nigeria 
+##                22                71                15                28 
+##               NYC     San Francisco San Francisco, CA           Seattle 
+##                12                14                11                11 
+##           Toronto                UK    United Kingdom     United States 
+##                12                27                14                50 
+##               USA  Washington, D.C.    Washington, DC         Worldwide 
+##               104                13                21                19
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{barplot}\NormalTok{(location.freq[}\KeywordTok{which}\NormalTok{(location.freq}\OperatorTok{>}\DecValTok{10}\NormalTok{)], }\DataTypeTok{las =} \DecValTok{2}\NormalTok{,  }
+        \DataTypeTok{ylab =} \StringTok{"Frequency"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics[width=0.7\linewidth]{document_files/figure-latex/unnamed-chunk-11-1} \end{center}
+
+Del total de ubicaciones (3342), la mayoría de ellas cuenta con menos de
+10 observaciones. Esto hace que esta variable explicativa tampoco sea
+buena para hacer una predicción.
+
+\hypertarget{variable-text}{%
+\subsubsection{\texorpdfstring{Variable
+\emph{text}}{Variable text}}\label{variable-text}}
+
+Hemos considerado que las variables explicativas \textbf{keyword} y
+\textbf{location} no son buenas para hacer una predicción, así que nos
+centraremos en la variable \textbf{text}.
+
+Llegados a este punto unimos los conjuntos de train y test (\emph{7613 +
+3263 observaciones}) para poder extraer los sentimientos más adelante.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -245,13 +496,6 @@ para poder analizar y extraer los sentimientos más adelante.
 \begin{verbatim}
 ## [1] 10876     5
 \end{verbatim}
-
-El análisis de sentimientos es una técnica de \emph{Machine Learning},
-basada en el
-\href{https://www.kdnuggets.com/2017/02/natural-language-processing-key-terms-explained.html}{procesado
-del lenguaje natural}, que pretende obtener información subjetiva de una
-serie de textos. Su aplicación es este caso, consiste en resolver si un
-tweet es real o no real en relación a un desastre.
 
 Echamos un vistazo más de cerca a las variables del nuevo conjunto de
 datos \textbf{complete\_df}.
@@ -270,73 +514,302 @@ datos \textbf{complete\_df}.
 ##  Mean   : 5438                                                           
 ##  3rd Qu.: 8156                                                           
 ##  Max.   :10875                                                           
-##                                                                          
-##      target    
-##  Min.   :0.00  
-##  1st Qu.:0.00  
-##  Median :0.00  
-##  Mean   :0.43  
-##  3rd Qu.:1.00  
-##  Max.   :1.00  
-##  NA's   :3263
+##   target    
+##  No  :4342  
+##  Yes :3271  
+##  NA's:3263  
+##             
+##             
+## 
 \end{verbatim}
 
-Vemos que la variable \textbf{id} es solo un identificador único y la
+La variable \textbf{id} es solo un identificador único y la
 eliminaremos.
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{complete_df}\OperatorTok{$}\NormalTok{id <-}\StringTok{ }\OtherTok{NULL}
-\KeywordTok{dim}\NormalTok{(complete_df)}
+\end{Highlighting}
+\end{Shaded}
+
+Observamos si existen valores perdidos.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{colSums}\NormalTok{(}\KeywordTok{sapply}\NormalTok{(complete_df, is.na))}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 10876     4
+##  keyword location     text   target 
+##       87     3638        0     3263
 \end{verbatim}
 
-\begin{itemize}
+Las variables explicativas \textbf{keyword} y \textbf{location}
+contienen valores perdidos. Sobretodo hay una gran cantidad de tweets,
+para los cuales falta su ubicación. No existen valores perdidos para la
+variable explicativa \textbf{text}, tampoco para la variable a predecir
+\textbf{target}. Los 3263 valores perdidos de la variable a predecir
+provienen del conjunto de datos de test. Nos ocuparemos de los valores
+perdidos más adelante.
+
+Parece que la variable explicativa \textbf{text} es una buena elección
+para una buena predicción y basaremos los siguientes pasos en ella.
+
+\hypertarget{procesamiento-de-texto}{%
+\subsection{Procesamiento de texto}\label{procesamiento-de-texto}}
+
+Como en todo procesamiento de lenguaje natural, realizaremos el
+procesamiento de un conjunto de textos. En este caso realizaremos un
+procesamiento de los textos de los tweets y los prepararemos para el
+modelado. Comencemos por crear un corpus de los mensajes de texto de los
+tweets. Para ello usaremos la función \textbf{Corpus} del paquete
+\textbf{tm}, que creará nuestro corpus a partir de un vector de textos.
+La función \textbf{VectorSource} interpretará cada mensaje de texto de
+los tweets como un elemento del vector de textos.
+
+\emph{Un corpus lingüístico se define como ``un conjunto de textos de un
+mismo origen'' y que tiene por función recopilar un conjunto de textos.
+El uso de un corpus lingüístico nos permitirá obtener información de las
+palabras utilizadas con más o menor frecuencia.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{myCorpus <-}\StringTok{ }\KeywordTok{Corpus}\NormalTok{(}\KeywordTok{VectorSource}\NormalTok{(complete_df}\OperatorTok{$}\NormalTok{text))}
+\end{Highlighting}
+\end{Shaded}
+
+Durante el procesamiento de texto seguiremos la transformación de un
+mensaje de tweet específico para ver como se modifica a medida que
+avanzamos en el procesamiento de texto. Este mensaje es:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{paste0}\NormalTok{(myCorpus[[}\DecValTok{400}\NormalTok{]])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Jewish leaders prayed at the hospital where a Palestinian family is being treated after arson http://t.co/Wf8iTK2KVx via @HuffPostRelig"
+\end{verbatim}
+
+Dividimos el procesamiento de texto en 7 pasos.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Confirmamos que la variable \textbf{target} es la variable
-  dependiente, la que nos interesa es predecir. Al observarla podemos
-  decir que el 32\% de los tweets en realidad se refieren a un desastre
-  y el 43\% no.
-\end{itemize}
-
-\hypertarget{gruxe1ficas-de-visualizaciuxf3n}{%
-\subsection{Gráficas de
-visualización}\label{gruxe1ficas-de-visualizaciuxf3n}}
-
-Relacionado con la descripción anterior, mostraremos algunas gráficas de
-visualización de algunas variables de interés. Pero primero tenemos que
-categorizar la variable a predecir, ya que inicialmente es de tipo
-entero.
+  Eliminar enlaces.
+\end{enumerate}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{complete_df}\OperatorTok{$}\NormalTok{target <-}\StringTok{ }\KeywordTok{as.factor}\NormalTok{(}\KeywordTok{ifelse}\NormalTok{(complete_df}\OperatorTok{$}\NormalTok{target }\OperatorTok{==}\StringTok{ }\DecValTok{0}\NormalTok{, }\StringTok{"No"}\NormalTok{, }\StringTok{"Yes"}\NormalTok{))}
-\KeywordTok{str}\NormalTok{(complete_df, }\DataTypeTok{width =} \DecValTok{85}\NormalTok{, }\DataTypeTok{strict.width =} \StringTok{"cut"}\NormalTok{)}
+\NormalTok{removeURL <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x) }\KeywordTok{gsub}\NormalTok{(}\StringTok{"http[^[:space:]]*"}\NormalTok{, }\StringTok{""}\NormalTok{, x)  }
+\NormalTok{myCorpus <-}\StringTok{ }\KeywordTok{tm_map}\NormalTok{(myCorpus, }\KeywordTok{content_transformer}\NormalTok{(removeURL))}
+\KeywordTok{paste0}\NormalTok{(myCorpus[[}\DecValTok{400}\NormalTok{]])}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## 'data.frame':    10876 obs. of  4 variables:
-##  $ keyword : chr  NA NA NA NA ...
-##  $ location: chr  NA NA NA NA ...
-##  $ text    : chr  "Our Deeds are the Reason of this #earthquake May ALLAH Forgive "..
-##  $ target  : Factor w/ 2 levels "No","Yes": 2 2 2 2 2 2 2 2 2 2 ...
+## [1] "Jewish leaders prayed at the hospital where a Palestinian family is being treated after arson  via @HuffPostRelig"
 \end{verbatim}
 
-La primera visualización representa la distribución de la variable a
-predecir.
+Hemos eliminado: \emph{\url{http://t.co/Wf8iTK2KVx}}.
+
+La función \textbf{gsub} busca y reemplaza desde la primera hasta todas
+las coincidencias de un patrón (que normalmente representa una
+\emph{regular expression}). La función \textbf{tm\_map} es la encargada
+de aplicar las diferentes transformaciones de los textos al corpus
+creado.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\tightlist
+\item
+  Convertir a minúsculas.
+\end{enumerate}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{ggplot}\NormalTok{(train, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{target)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_bar}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{fill=}\NormalTok{target))}
+\NormalTok{myCorpus <-}\StringTok{ }\KeywordTok{tm_map}\NormalTok{(myCorpus, }\KeywordTok{content_transformer}\NormalTok{(stri_trans_tolower))}
+\KeywordTok{paste0}\NormalTok{(myCorpus[[}\DecValTok{400}\NormalTok{]])}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{document_files/figure-latex/unnamed-chunk-10-1} \end{center}
+\begin{verbatim}
+## [1] "jewish leaders prayed at the hospital where a palestinian family is being treated after arson  via @huffpostrelig"
+\end{verbatim}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{2}
+\tightlist
+\item
+  Eliminar los nombres de usuario.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{removeUsername <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x) }\KeywordTok{gsub}\NormalTok{(}\StringTok{"@[^[:space:]]*"}\NormalTok{, }\StringTok{""}\NormalTok{, x)  }
+\NormalTok{myCorpus <-}\StringTok{ }\KeywordTok{tm_map}\NormalTok{(myCorpus, }\KeywordTok{content_transformer}\NormalTok{(removeUsername))}
+\KeywordTok{paste0}\NormalTok{(myCorpus[[}\DecValTok{400}\NormalTok{]])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "jewish leaders prayed at the hospital where a palestinian family is being treated after arson  via "
+\end{verbatim}
+
+Hemos eliminado: \emph{@huffpostrelig}.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{3}
+\tightlist
+\item
+  Eliminar todo excepto el idioma y el espacio en inglés.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{removeNumPunct <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x) }\KeywordTok{gsub}\NormalTok{(}\StringTok{"[^[:alpha:][:space:]]*"}\NormalTok{, }\StringTok{""}\NormalTok{, x)   }
+\NormalTok{myCorpus <-}\StringTok{ }\KeywordTok{tm_map}\NormalTok{(myCorpus, }\KeywordTok{content_transformer}\NormalTok{(removeNumPunct))}
+\KeywordTok{paste0}\NormalTok{(myCorpus[[}\DecValTok{400}\NormalTok{]])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "jewish leaders prayed at the hospital where a palestinian family is being treated after arson  via "
+\end{verbatim}
+
+No se observan cambios en en ejemplo.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{4}
+\tightlist
+\item
+  Eliminar palabras irrelevantes (eliminación de redundancias).
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{myStopWords <-}\StringTok{ }\KeywordTok{c}\NormalTok{((}\KeywordTok{stopwords}\NormalTok{(}\StringTok{'english'}\NormalTok{)), }
+           \KeywordTok{c}\NormalTok{(}\StringTok{"really"}\NormalTok{, }\StringTok{"tweets"}\NormalTok{, }\StringTok{"saw"}\NormalTok{, }\StringTok{"just"}\NormalTok{, }\StringTok{"feel"}\NormalTok{, }\StringTok{"may"}\NormalTok{, }\StringTok{"us"}\NormalTok{, }\StringTok{"rt"}\NormalTok{, }\StringTok{"every"}\NormalTok{, }\StringTok{"one"}\NormalTok{,}
+             \StringTok{"amp"}\NormalTok{, }\StringTok{"like"}\NormalTok{, }\StringTok{"will"}\NormalTok{, }\StringTok{"got"}\NormalTok{, }\StringTok{"new"}\NormalTok{, }\StringTok{"can"}\NormalTok{, }\StringTok{"still"}\NormalTok{, }\StringTok{"back"}\NormalTok{, }\StringTok{"top"}\NormalTok{, }\StringTok{"much"}\NormalTok{,}
+             \StringTok{"near"}\NormalTok{, }\StringTok{"im"}\NormalTok{, }\StringTok{"see"}\NormalTok{, }\StringTok{"via"}\NormalTok{, }\StringTok{"get"}\NormalTok{, }\StringTok{"now"}\NormalTok{, }\StringTok{"come"}\NormalTok{, }\StringTok{"oil"}\NormalTok{, }\StringTok{"let"}\NormalTok{, }\StringTok{"god"}\NormalTok{, }\StringTok{"want"}\NormalTok{,}
+             \StringTok{"pm"}\NormalTok{, }\StringTok{"last"}\NormalTok{, }\StringTok{"hope"}\NormalTok{, }\StringTok{"since"}\NormalTok{, }\StringTok{"everyone"}\NormalTok{, }\StringTok{"food"}\NormalTok{, }\StringTok{"content"}\NormalTok{, }\StringTok{"always"}\NormalTok{, }\StringTok{"th"}\NormalTok{,}
+             \StringTok{"full"}\NormalTok{, }\StringTok{"found"}\NormalTok{, }\StringTok{"dont"}\NormalTok{, }\StringTok{"look"}\NormalTok{, }\StringTok{"cant"}\NormalTok{, }\StringTok{"mh"}\NormalTok{, }\StringTok{"lol"}\NormalTok{, }\StringTok{"set"}\NormalTok{, }\StringTok{"old"}\NormalTok{, }\StringTok{"service"}\NormalTok{,}
+             \StringTok{"city"}\NormalTok{, }\StringTok{"home"}\NormalTok{, }\StringTok{"live"}\NormalTok{, }\StringTok{"night"}\NormalTok{, }\StringTok{"news"}\NormalTok{, }\StringTok{"say"}\NormalTok{, }\StringTok{"video"}\NormalTok{, }\StringTok{"people"}\NormalTok{, }\StringTok{"ill"}\NormalTok{, }
+             \StringTok{"way"}\NormalTok{,  }\StringTok{"please"}\NormalTok{, }\StringTok{"years"}\NormalTok{, }\StringTok{"take"}\NormalTok{, }\StringTok{"homes"}\NormalTok{, }\StringTok{"read"}\NormalTok{, }\StringTok{"man"}\NormalTok{, }\StringTok{"next"}\NormalTok{, }\StringTok{"cross"}\NormalTok{, }
+             \StringTok{"boy"}\NormalTok{, }\StringTok{"bad"}\NormalTok{, }\StringTok{"ass"}\NormalTok{))}
+
+\NormalTok{myCorpus <-}\StringTok{ }\KeywordTok{tm_map}\NormalTok{(myCorpus, removeWords, myStopWords) }
+\KeywordTok{paste0}\NormalTok{(myCorpus[[}\DecValTok{400}\NormalTok{]])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "jewish leaders prayed   hospital   palestinian family   treated  arson   "
+\end{verbatim}
+
+Hemos eliminado: at the where a is being after via.
+
+Las palabras irrelevantes que hemos eliminado se denominan \emph{stop
+words o palabras vacías}. Cada idioma tiene sus propias palabras vacías.
+Como los textos están en inglés hemos eliminado los \emph{stop words}
+que pertenecen al inglés usando la función \textbf{stopwords}, además
+hemos añadido aleatóriamente alguna de las palabras vacías más usadas en
+los mensajes de texto de los tweets (ver
+\url{https://techland.time.com/2009/06/08/the-500-most-frequently-used-words-on-twitter/}).
+
+\emph{Las stop words o palabras vacías son todas aquellas palabras que
+carecen de un significado por si solas. Suelen ser artículos,
+preposiciones, conjunciones, pronombres, etc.}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{5}
+\tightlist
+\item
+  Eliminar palabras de una sola letra.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{removeSingle <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x) }\KeywordTok{gsub}\NormalTok{(}\StringTok{" . "}\NormalTok{, }\StringTok{" "}\NormalTok{, x)   }
+\NormalTok{myCorpus <-}\StringTok{ }\KeywordTok{tm_map}\NormalTok{(myCorpus, }\KeywordTok{content_transformer}\NormalTok{(removeSingle))}
+\KeywordTok{paste0}\NormalTok{(myCorpus[[}\DecValTok{400}\NormalTok{]])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "jewish leaders prayed hospital palestinian family treated  arson "
+\end{verbatim}
+
+No se observan cambios en en ejemplo.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{6}
+\tightlist
+\item
+  Eliminar espacios en blanco adicionales.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{myCorpus <-}\StringTok{ }\KeywordTok{tm_map}\NormalTok{(myCorpus, stripWhitespace)}
+\KeywordTok{paste0}\NormalTok{(myCorpus[[}\DecValTok{400}\NormalTok{]])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "jewish leaders prayed hospital palestinian family treated arson "
+\end{verbatim}
+
+Terminamos con el procesamiento de texto. A continuación, crearemos dos
+\emph{Term Document Matrix} (matriz que describe la frecuencia de las
+palabras que se producen en una colección de textos) para un análisis de
+sentimientos más detallado. Usaremos la función
+\textbf{TermDocumentMatrix} y dividiremos el corpus en dos, según el
+número de elementos de los conjuntos de datos train y test. Recordamos
+que el conjunto de datos de train contiene 7613 observaciones, y el
+conjunto de datos de test contiene 3263 observaciones. El parámetro
+\textbf{control} evalúa cada texto de la matriz, concretamente se
+evaluaran todas las palabras de cada texto (no aplicamos ningún filtro).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{train_tdm <-}\StringTok{ }\KeywordTok{TermDocumentMatrix}\NormalTok{(myCorpus[}\DecValTok{1}\OperatorTok{:}\DecValTok{7613}\NormalTok{], }
+                                \DataTypeTok{control=} \KeywordTok{list}\NormalTok{(}\DataTypeTok{wordLengths=} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\OtherTok{Inf}\NormalTok{)))}
+\NormalTok{test_tdm <-}\StringTok{ }\KeywordTok{TermDocumentMatrix}\NormalTok{(myCorpus[}\DecValTok{7614}\OperatorTok{:}\DecValTok{10876}\NormalTok{], }
+                               \DataTypeTok{control=} \KeywordTok{list}\NormalTok{(}\DataTypeTok{wordLengths=} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\OtherTok{Inf}\NormalTok{)))}
+\NormalTok{train_tdm}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## <<TermDocumentMatrix (terms: 14825, documents: 7613)>>
+## Non-/sparse entries: 58707/112804018
+## Sparsity           : 100%
+## Maximal term length: 49
+## Weighting          : term frequency (tf)
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{test_tdm}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## <<TermDocumentMatrix (terms: 8966, documents: 3263)>>
+## Non-/sparse entries: 25434/29230624
+## Sparsity           : 100%
+## Maximal term length: 35
+## Weighting          : term frequency (tf)
+\end{verbatim}
 
 \end{document}
