@@ -8,6 +8,8 @@ output:
     fig_caption: yes
     fig_crop: no
     keep_tex: yes
+    includes:
+      in_header: preamble.tex
   html_document: default
 subtitle: Métodos supervisados
 ---
@@ -16,7 +18,15 @@ subtitle: Métodos supervisados
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Comenzamos cargando los paquetes necesarios.
+Empezamos por cargar a nuestro espacio de trabajo los paquetes que usaremos:
+
+- tidyverse
+- stringi
+- tm, específico para minería de textos.
+- irlba
+- RColorBrewer
+- gridExtra
+- gbm
 
 ```{r message=FALSE}
 library(tidyverse)
@@ -34,23 +44,13 @@ library(gbm)
 
 ## Análisis Exploratorio de los Datos
 
-Para la realización del ejercicio propuesto se ha elegido la competición en Kaggle: **Real or Not? NLP with Disaster Tweets**. El dataset de la competición se puede encontrar en el siguiente enlace: https://www.kaggle.com/c/nlp-getting-started/data. Este dataset, con 10.876 instancias, contiene 4 variables explicativas: **id**, **keyword**, **location** y **text**, y dos valores en la variable clase **target** (0 y 1). La variable clase es binaria, así que, vamos a aprender un modelo de clasificación binaria. El objetivo de este modelo será predecir si dado un tweet, este tweet trata sobre un desastre real o no. Si un tweet trata sobre un desastre real, se predice un 1. Si no, se predice un 0.
+Para la realización del ejercicio propuesto se ha elegido la competición en Kaggle: **Real or Not? NLP with Disaster Tweets**. El dataset de la competición se puede encontrar en el siguiente enlace: https://www.kaggle.com/c/nlp-getting-started/data. Este dataset, con 10.876 instancias, contiene 4 variables explicativas: **id**, **keyword**, **location** y **text**, y dos valores en la variable clase **target** (0 y 1). Como podemos observar la variable clase es binaria, así que, durante este ejercicio vamos a aprender un modelo de clasificación binaria. El objetivo de este modelo será predecir si dado un tweet, éste trata sobre un desastre real o no. Si un tweet trata sobre un desastre real, se predice un 1. Si no, se predice un 0.
 
-La métrica de evaluación esperada por la competición es [F1](https://www.kaggle.com/c/nlp-getting-started/overview/evaluation). Y se calcula de la siguiente manera:
+La métrica de evaluación esperada por la competición es **F1 score**. Para ver como se calcula consultar el siguiente enlace: https://www.kaggle.com/c/nlp-getting-started/overview/evaluation.
 
-```{r echo=FALSE, fig.align='center', out.width='30%'}
-knitr::include_graphics('F1_score.png')
-```
+La partición inicial train-test, no se tiene que realizar, ya que las instancias de train y test ya vienen definidas en el dataset de la competición (descargar a nuestro espacio de trabajo los ficheros **train.csv** y **test.csv** de https://www.kaggle.com/c/nlp-getting-started/data). 
 
-donde:
-
-```{r echo=FALSE, fig.align='center', out.width='25%'}
-knitr::include_graphics('F1_score_2.png')
-```
-
-La partición inicial train-test, no se tiene que realizar, ya que las instancias de train y test ya vienen definidas en el dataset de la competición (ficheros **train.csv** y **test.csv**). 
-
-A continuación, cargaremos el conjunto de datos de train y test, nombrando los valores perdidos como **NA** para que los podamos tratar más adelante, y mostraremos sus dimensiones. 
+Cargamos a nuestro espacio de trabajo los conjuntos de datos de train y test descargados, renombrando los valores perdidos como **NA** para que los podamos tratar más adelante. También mostramos las dimensiones de los conjuntos de datos usando la función **dim**. 
 
 ```{r}
 train <- read.csv("train.csv", na.strings=c("", "NA"))
@@ -59,70 +59,73 @@ dim(train)
 dim(test)
 ```
 
-El conjunto de datos de train contiene 7613 instancias y el conjunto de datos de test contiene 3263 instancias. Cada instancia de estos conjuntos contiene la siguiente información:
+Vemos que el conjunto de datos de train contiene 7613 instancias y el conjunto de datos de test contiene 3263 instancias. Cada instancia contiene las siguientes variables:
 
-* **id**: un identificador único para cada tweet. 
-* **keyword**: una palabra clave del tweet.
-* **location**: la ubicación desde la que se envió el tweet.
-* **text**: el texto del tweet. 
-* **target**: solo en el conjunto de datos de train porqué es la variable clase a predecir. Indica si un tweet es sobre un desastre real (1) o no (0). 
+- **id**: un identificador único para cada tweet. 
+- **keyword**: una palabra clave del tweet.
+- **location**: la ubicación desde la que se envió el tweet.
+- **text**: el texto del tweet. 
+- **target**: solo en el conjunto de datos de train porqué es la variable clase a predecir. Indica si un tweet corresponde a un desastre real (1) o no (0). 
 
-```{r}
+```{r echo=FALSE}
 str(train, width = 85, strict.width = "cut")
 str(test, width = 85, strict.width = "cut")
 ```
 
+Analizamos las variables más detenidamente a continuación.
+
 ### Variable *target*
 
-Categorizamos la variable a predecir, ya que inicialmente es de tipo entero, y observamos su distribución.
+Como ya hemos comentado, la variable **target** es la variable a predecir. Primero la categorizamos, ya que inicialmente es de tipo entero, y observamos su distribución.
 
 ```{r fig.align='center', out.width='70%'}
 train$target <- as.factor(ifelse(train$target == 0, "No", "Yes"))
 ggplot(train, aes(x=target)) + geom_bar(aes(fill=target))
 ```
 
-La distribución no está muy sesgada y vemos que hay menos tweets que se refieren a desastres reales. La distribución de la variable a predecir está relativamente equilibrada, donde el 43% de las observaciones son desastrosas y el 57% no.
+Su distribución no está muy sesgada y está relativamente equilibrada. Observamos que hay menos tweets que se refieren a desastres reales (clase minoritaria), donde el 43% de las observaciones son desastrosas y el 57% no. 
 
 ```{r}
 sum(train$target == "Yes") / dim(train)[1] * 100
 sum(train$target == "No") / dim(train)[1] * 100
 ```
 
-Tampoco presenta un problema notable de *desbalanceo de clase* porqué contamos con muchas muestras del caso minoritario.
+Parece que no presenta un problema notable de *desbalanceo de clase*, porqué contamos con muchas muestras del caso minoritario.
 
 ### Variable *keyword*
 
-La variable **keyword** representa una palabra representativa de cada tweet, se muestran las primeras 10.
+La variable explicativa **keyword** representa una palabra clave de cada tweet y a continuación se muestran las 10 primeras del conjunto de datos de train.
 
 ```{r}
 train %>% select(keyword) %>% unique() %>% head(10)
 ```
 
-Ahora veremos si la asociación de cada **keyword** con un sentimiento indica una relación con la variable a predecir. Para ello realizaremos un análisis de sentimientos de cada palabra clave. 
+Nuestro interés ahora es ver si existen correlaciones entre la variable **keyword** con la variable a predecir. Para ello realizaremos un análisis de sentimientos. 
 
-*El análisis de sentimientos es una técnica de *Machine Learning*, basada en el [procesado del lenguaje natural](https://www.kdnuggets.com/2017/02/natural-language-processing-key-terms-explained.html), que pretende obtener información subjetiva de una serie de textos. Su aplicación es este caso, consiste en resolver si un tweet es real o no real en relación a un desastre.*
+*El análisis de sentimientos es una técnica de [Machine Learning](https://en.wikipedia.org/wiki/Machine_learning), basada en el [procesado del lenguaje natural](https://www.kdnuggets.com/2017/02/natural-language-processing-key-terms-explained.html), que pretende obtener información subjetiva de una serie de textos. Su aplicación es este caso, consiste en resolver si un tweet es real o no en relación a un desastre.*
 
-Para ello usaremos los paquetes **syuzhet**, **ggcorrplot** y **doParallel**.
+Para el análisis de sentimientos usamos los paquetes de R: **syuzhet**, **ggcorrplot** y **doParallel**.
 
-- **syuzhet** cuenta con la función **get_nrc_sentiment** que calcula la presencia de los diferentes sentimientos dado un conjunto de textos. Los parámetros de esta función son:
-  - **char_v**. Un vector de caracteres que en este caso contiene todas las palabras clave.
-  - **language**. Define el lenguaje.
-  - **cl**. Para análisis paralelo. Es opcional, pero en este caso lo usaremos porqué hay muchas palabras clave.
+- El paquete **syuzhet** cuenta con la función **get_nrc_sentiment** que calcula la presencia de los diferentes sentimientos dado un conjunto de textos. Los parámetros de esta función son:
+  - **char_v**. Un vector de caracteres que en este caso contendrá todas las palabras clave.
+  - **language**. Define el lenguaje. Los tweets están en inglés, así que el lenguaje será el inglés.
+  - **cl**. Para el análisis en paralelo. Es opcional, pero en este caso lo usaremos porqué hay muchas palabras clave.
 - **ggcorrplot** muestra una visualización gráfica de una matriz de correlación usando *ggplot2*.
-- **doParallel** proporciona una computación paralela. Los parámetros de esta función son:
+- **doParallel** proporciona computación paralela. Los parámetros de esta función son:
   - **makePSOCKcluster**. Crea un clúster de sockets paralelos.
   - **registerDoParallel**. Registra el número de *cores* que usará el clúster creado. 
   - **stopCluster**. Detiene la computación paralela.
+  
+La computación paralela la usaremos en muchas de las ejecuciones de este ejercicio ya que nos encontramos delante de un problema de *alta dimensionalidad*. Eso es, que la dimensionalidad de nuestros datos es muy elevada y puede reducir drásticamente la eficiencia de los algoritmos de clasificación supervisada que entrenaremos. Una de las técnicas más ampliamente utilizada y conocida para la reducción de la dimensionalidad es Principal Component Analysis (PCA) Esta técnica lleva a cabo la transformación de los datos generando unas nuevas variables.
 
-Análisis de correlaciones entre **keyword** y **target**:
+La reducción de la dimensionalidad que aplicaremos en este ejercicio se realiza más adelante y se calculará teniendo en cuenta las palabras más frecuentes de los tweets del conjunto de datos.
 
-```{r include=FALSE}
-cl <- makePSOCKcluster(4, setup_strategy="sequential")
-registerDoParallel(cl)
-```
-
+### Análisis de sentimientos entre *keyword* y *target*:
 
 ```{r fig.align='center', warning=FALSE, out.width='70%'}
+cl <- makePSOCKcluster(4, setup_strategy="sequential")
+registerDoParallel(cl)
+
 emocion.df <- get_nrc_sentiment(char_v = gsub("_", " ", train$keyword), 
                                 language = "english", cl=cl)
 
@@ -133,8 +136,7 @@ cor(emocion.df) %>%
   ggcorrplot(lab = TRUE, 
              title = "Matriz de correlación entre los \nsentimientos de keyword y target",
              legend.title = "correlation")
-```
-```{r include=FALSE}
+
 stopCluster(cl)
 ```
 
@@ -528,8 +530,8 @@ head(submission)
 write.csv(submission, "submission.csv", row.names=FALSE)
 ```
 
-## Conclusiones
+## Conclusión
 
-## Bibliografía
+## Referencias
 
 https://www.cienciadedatos.net/documentos/41_machine_learning_con_r_y_caret
