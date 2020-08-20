@@ -24,12 +24,12 @@ library(stringi)
 library(tm)
 library(irlba)
 library(RColorBrewer)
-library(wordcloud)
 library(gridExtra)
 library(caret)
 library(doParallel)
 library(syuzhet)
 library(ggcorrplot)
+library(gbm)
 ```
 
 ## Análisis Exploratorio de los Datos
@@ -116,12 +116,16 @@ Para ello usaremos los paquetes **syuzhet**, **ggcorrplot** y **doParallel**.
 
 Análisis de correlaciones entre **keyword** y **target**:
 
-```{r fig.align='center', warning=FALSE, out.width='70%'}
+```{r include=FALSE}
 cl <- makePSOCKcluster(4, setup_strategy="sequential")
 registerDoParallel(cl)
+```
 
+
+```{r fig.align='center', warning=FALSE, out.width='70%'}
 emocion.df <- get_nrc_sentiment(char_v = gsub("_", " ", train$keyword), 
                                 language = "english", cl=cl)
+
 emocion.df <- emocion.df %>% data.frame(target = train$target)
 emocion.df$target <- as.numeric(emocion.df$target)
 
@@ -129,7 +133,8 @@ cor(emocion.df) %>%
   ggcorrplot(lab = TRUE, 
              title = "Matriz de correlación entre los \nsentimientos de keyword y target",
              legend.title = "correlation")
-
+```
+```{r include=FALSE}
 stopCluster(cl)
 ```
 
@@ -281,7 +286,7 @@ myCorpus <- tm_map(myCorpus, stripWhitespace)
 paste0(myCorpus[[400]])
 ```
 
-Terminamos con el procesamiento de texto. A continuación, crearemos dos *Term Document Matrix* (matriz que describe la frecuencia de las palabras que se producen en una colección de textos) para un análisis de sentimientos más detallado. Usaremos la función **TermDocumentMatrix** y dividiremos el corpus en dos, según el número de elementos de los conjuntos de datos train y test. Recordamos que el conjunto de datos de train contiene 7613 observaciones, y el conjunto de datos de test contiene 3263 observaciones. El parámetro **control** evalúa cada texto de la matriz, concretamente se evaluaran todas las palabras de cada texto (no aplicamos ningún filtro).
+Terminamos con el procesamiento de texto. A continuación, crearemos dos *Term Document Matrix* (matriz que describe la frecuencia de las palabras que se producen en una colección de textos) para un análisis de sentimientos más detallado. Usaremos la función **TermDocumentMatrix** y dividiremos el corpus en dos, según el número de elementos de los conjuntos de datos train y test. Recordamos que el conjunto de datos de train contiene 7613 observaciones, y el conjunto de datos de test contiene 3263 observaciones. El parámetro **control** evalúa cada texto de la matriz, específicamente se evaluaran todas las palabras de cada texto (no aplicamos ningún filtro).
 
 ```{r}
 train_tdm <- TermDocumentMatrix(myCorpus[1:7613], 
@@ -291,6 +296,240 @@ test_tdm <- TermDocumentMatrix(myCorpus[7614:10876],
 train_tdm
 test_tdm
 ```
+La matriz para los datos de train contiene 14825 palabras y la matriz para los datos de test contiene 8966 palabras. Utilizaremos las matrices para ver las palabras más utilizadas en los tweets y predecir a partir de ellas.
+
+## Palabras más frecuentes
+
+- Palabras más frecuentes en los datos de train.
+
+```{r fig.align='center', out.width='70%'}
+train.term.freq <- rowSums(as.matrix(train_tdm))
+train.term.freq <- subset(train.term.freq, train.term.freq > 60)
+freq_train_df <- data.frame(term = names(train.term.freq), freq= train.term.freq)
+head(freq_train_df[order(-freq_train_df$freq), ])
+ggplot(freq_train_df, aes(reorder(term, freq), freq)) + theme_bw() + 
+  geom_bar(stat = "identity")  + 
+  coord_flip() + 
+  theme(axis.text.y = element_text(size=7))
+```
+
+- Palabras más frecuentes en los datos de test
+
+```{r fig.align='center', out.width='50%'}
+test.term.freq <- rowSums(as.matrix(test_tdm))
+test.term.freq <- subset(test.term.freq, test.term.freq > 60)
+freq_test_df <- data.frame(term = names(test.term.freq), freq= test.term.freq)
+freq_test_df[order(-freq_test_df$freq), ]
+ggplot(freq_test_df, aes(reorder(term, freq), freq)) + theme_bw() + 
+  geom_bar(stat = "identity")  + 
+  coord_flip() + 
+  theme(axis.text.y = element_text(size=7))
+```
+
+Las palabras *"fire"*, *"attack"* y *"emergency"* aparecen con alta frecuencia tanto en el conjunto de train como en el conjunto de test. Estas palabras son muy útiles para predecir un desastre real.
+
+## Modelado
+
+Para la construcción de modelos, necesitamos construir una *Term Document Matrix* donde cada fila represente un texto y cada palabra única esté representada por una columna. Comencemos construyendo la matriz para nuestro corpus completo.
+
+```{r}
+complete.tdm <- TermDocumentMatrix(myCorpus, control= list(wordLengths= c(4, Inf)))
+complete.term.matrix <- as.matrix(t(complete.tdm))
+dim(complete.term.matrix)
+```
+Podemos ver que es una matriz dispersa con 10876 textos, es decir, tweets y 16880 palabras. Además, se generan algunos casos incompletos, que necesitaremos manejar antes de continuar con la construcción del modelo.
+
+Sin embargo, si intentamos convertir esto para usar esta matriz para la construcción del modelo, es posible que no podamos entrenar nuestro modelo debido a restricciones computacionales. Necesitamos reducir la dimensión/características de la matriz.
+
+Primero tratamos los casos incompletos.
+
+```{r}
+incomplete.cases <- which(!complete.cases(complete.term.matrix))
+complete.term.matrix[incomplete.cases,] <- rep(0.0, ncol(complete.term.matrix))
+```
+
+```{r include=FALSE}
+cl <- makePSOCKcluster(4, setup_strategy="sequential")
+registerDoParallel(cl)
+```
 
 
+```{r}
+complete_irlba <- irlba(t(complete.term.matrix), nv = 150, maxit = 600)
+complete_irlba$v[1:10, 1:5]
+```
 
+
+```{r include=FALSE}
+stopCluster(cl)
+```
+
+
+```{r}
+complete.svd <- data.frame(target = complete_df$target, complete_irlba$v)
+train.df <- complete.svd[1:7613, ]
+test.df <- complete.svd[7614:10876, -1]
+dim(train.df)
+dim(test.df)
+names(train.df) <- make.names(names(train.df))
+names(test.df) <- make.names(names(test.df))
+```
+
+```{r}
+set.seed(123)
+cv.folds <- createMultiFolds(train.df$target, k=5, times=3)
+cv.cntrl <- trainControl(method = "repeatecv", number = 5,
+                         index = cv.folds, allowParallel = TRUE, returnResamp="final",
+                         verboseIter=FALSE)
+```
+
+### Regresión Logística
+
+```{r include=FALSE}
+cl <- makePSOCKcluster(4, setup_strategy="sequential")
+registerDoParallel(cl)
+```
+
+
+```{r}
+model_glmnet <- train(target ~ ., data=train.df,
+                      method="glmnet",
+                      metric="Accuracy",
+                      trControl=cv.cntrl,
+                      tuneLenght=15)
+model_glmnet
+```
+```{r include=FALSE}
+stopCluster(cl)
+```
+
+### Random Forest
+
+```{r include=FALSE}
+cl <- makePSOCKcluster(4, setup_strategy="sequential")
+registerDoParallel(cl)
+```
+
+
+```{r}
+model_rf <- train(target ~ ., data=train.df,
+                      method="rf",
+                      metric="Accuracy",
+                      trControl=cv.cntrl,
+                      tuneGrid=expand.grid(mtry=c(3, 4, 5, 7)))
+model_rf
+```
+
+```{r include=FALSE}
+stopCluster(cl)
+```
+
+### Gradient Boosting
+
+```{r include=FALSE}
+cl <- makePSOCKcluster(4, setup_strategy="sequential")
+registerDoParallel(cl)
+```
+
+
+```{r}
+cv.grid <- expand.grid(interaction.depth=c(1, 2),
+                       n.trees=100,
+                       shrinkage=c(0.001, 0.01, 0.1),
+                       n.minobsinnode=c(2, 5, 25))
+
+model_gbm <- train(target ~ ., data=train.df,
+                  method="gbm",
+                  metric="Accuracy",
+                  trControl=cv.cntrl,
+                  tuneGrid=cv.grid,
+                  distribution="adaboost",
+                  verbose=FALSE)
+model_gbm
+```
+
+```{r include=FALSE}
+stopCluster(cl)
+```
+
+### K-Nearest Neighbor (kNN)
+
+```{r include=FALSE}
+cl <- makePSOCKcluster(4, setup_strategy="sequential")
+registerDoParallel(cl)
+```
+
+
+```{r}
+cv.grid <- expand.grid(k=1:3)
+
+model_knn <- train(target ~ ., data=train.df,
+                   method="knn",
+                   metric="Accuracy",
+                   trControl=cv.cntrl,
+                   tuneGrid=cv.grid)
+model_knn
+```
+
+```{r include=FALSE}
+stopCluster(cl)
+```
+
+
+### SVM
+
+```{r include=FALSE}
+cl <- makePSOCKcluster(4, setup_strategy="sequential")
+registerDoParallel(cl)
+```
+
+
+```{r}
+cv.grid <- expand.grid(sigma=c(0.001, 0.01, 0.1, 0.5, 1),
+                       C=c(1, 20, 50, 100))
+
+model_svm <- train(target ~ ., data=train.df,
+                      method="svmRadial",
+                      metric="Accuracy",
+                      trControl=cv.cntrl,
+                      tuneLenght=15)
+model_svm
+```
+
+```{r include=FALSE}
+stopCluster(cl)
+```
+
+
+## Comparación de modelos
+
+### Métrica de validación
+
+### Evaluación de modelos mediante resampling
+
+```{r}
+models <- list(KNN=model_knn, logistic=model_glmnet,
+               RF=model_rf, boosting=model_gbm, SVMRadial=model_svm)
+
+resamps <- resamples(models)
+summary(resamps)
+```
+
+## Predicción y resultados
+
+```{r}
+pred_svm <- predict(model_svm, test.df, type="raw")
+```
+
+```{r}
+submission <- read.csv("sample_submission.csv")
+submission$target <- ifelse(pred_svm=="No", 0, 1)
+head(submission)
+write.csv(submission, "submission.csv", row.names=FALSE)
+```
+
+## Conclusiones
+
+## Bibliografía
+
+https://www.cienciadedatos.net/documentos/41_machine_learning_con_r_y_caret

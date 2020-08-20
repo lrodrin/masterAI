@@ -127,12 +127,12 @@ Comenzamos cargando los paquetes necesarios.
 \KeywordTok{library}\NormalTok{(tm)}
 \KeywordTok{library}\NormalTok{(irlba)}
 \KeywordTok{library}\NormalTok{(RColorBrewer)}
-\KeywordTok{library}\NormalTok{(wordcloud)}
 \KeywordTok{library}\NormalTok{(gridExtra)}
 \KeywordTok{library}\NormalTok{(caret)}
 \KeywordTok{library}\NormalTok{(doParallel)}
 \KeywordTok{library}\NormalTok{(syuzhet)}
 \KeywordTok{library}\NormalTok{(ggcorrplot)}
+\KeywordTok{library}\NormalTok{(gbm)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -367,11 +367,9 @@ Análisis de correlaciones entre \textbf{keyword} y \textbf{target}:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{cl <-}\StringTok{ }\KeywordTok{makePSOCKcluster}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DataTypeTok{setup_strategy=}\StringTok{"sequential"}\NormalTok{)}
-\KeywordTok{registerDoParallel}\NormalTok{(cl)}
-
 \NormalTok{emocion.df <-}\StringTok{ }\KeywordTok{get_nrc_sentiment}\NormalTok{(}\DataTypeTok{char_v =} \KeywordTok{gsub}\NormalTok{(}\StringTok{"_"}\NormalTok{, }\StringTok{" "}\NormalTok{, train}\OperatorTok{$}\NormalTok{keyword), }
                                 \DataTypeTok{language =} \StringTok{"english"}\NormalTok{, }\DataTypeTok{cl=}\NormalTok{cl)}
+
 \NormalTok{emocion.df <-}\StringTok{ }\NormalTok{emocion.df }\OperatorTok{%>%}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{target =}\NormalTok{ train}\OperatorTok{$}\NormalTok{target)}
 \NormalTok{emocion.df}\OperatorTok{$}\NormalTok{target <-}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(emocion.df}\OperatorTok{$}\NormalTok{target)}
 
@@ -382,13 +380,7 @@ Análisis de correlaciones entre \textbf{keyword} y \textbf{target}:
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{document_files/figure-latex/unnamed-chunk-9-1} \end{center}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{stopCluster}\NormalTok{(cl)}
-\end{Highlighting}
-\end{Shaded}
+\begin{center}\includegraphics[width=0.7\linewidth]{document_files/figure-latex/unnamed-chunk-10-1} \end{center}
 
 Al observar la matriz de correlaciones, se observa una correlación nula
 con cada uno de los sentimientos. Esto hace que esta variable
@@ -469,7 +461,7 @@ más frecuentes:
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{document_files/figure-latex/unnamed-chunk-11-1} \end{center}
+\begin{center}\includegraphics[width=0.7\linewidth]{document_files/figure-latex/unnamed-chunk-13-1} \end{center}
 
 Del total de ubicaciones (3342), la mayoría de ellas cuenta con menos de
 10 observaciones. Esto hace que esta variable explicativa tampoco sea
@@ -696,14 +688,14 @@ No se observan cambios en en ejemplo.
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{myStopWords <-}\StringTok{ }\KeywordTok{c}\NormalTok{((}\KeywordTok{stopwords}\NormalTok{(}\StringTok{'english'}\NormalTok{)), }
-           \KeywordTok{c}\NormalTok{(}\StringTok{"really"}\NormalTok{, }\StringTok{"tweets"}\NormalTok{, }\StringTok{"saw"}\NormalTok{, }\StringTok{"just"}\NormalTok{, }\StringTok{"feel"}\NormalTok{, }\StringTok{"may"}\NormalTok{, }\StringTok{"us"}\NormalTok{, }\StringTok{"rt"}\NormalTok{, }\StringTok{"every"}\NormalTok{, }\StringTok{"one"}\NormalTok{,}
-             \StringTok{"amp"}\NormalTok{, }\StringTok{"like"}\NormalTok{, }\StringTok{"will"}\NormalTok{, }\StringTok{"got"}\NormalTok{, }\StringTok{"new"}\NormalTok{, }\StringTok{"can"}\NormalTok{, }\StringTok{"still"}\NormalTok{, }\StringTok{"back"}\NormalTok{, }\StringTok{"top"}\NormalTok{, }\StringTok{"much"}\NormalTok{,}
-             \StringTok{"near"}\NormalTok{, }\StringTok{"im"}\NormalTok{, }\StringTok{"see"}\NormalTok{, }\StringTok{"via"}\NormalTok{, }\StringTok{"get"}\NormalTok{, }\StringTok{"now"}\NormalTok{, }\StringTok{"come"}\NormalTok{, }\StringTok{"oil"}\NormalTok{, }\StringTok{"let"}\NormalTok{, }\StringTok{"god"}\NormalTok{, }\StringTok{"want"}\NormalTok{,}
-             \StringTok{"pm"}\NormalTok{, }\StringTok{"last"}\NormalTok{, }\StringTok{"hope"}\NormalTok{, }\StringTok{"since"}\NormalTok{, }\StringTok{"everyone"}\NormalTok{, }\StringTok{"food"}\NormalTok{, }\StringTok{"content"}\NormalTok{, }\StringTok{"always"}\NormalTok{, }\StringTok{"th"}\NormalTok{,}
-             \StringTok{"full"}\NormalTok{, }\StringTok{"found"}\NormalTok{, }\StringTok{"dont"}\NormalTok{, }\StringTok{"look"}\NormalTok{, }\StringTok{"cant"}\NormalTok{, }\StringTok{"mh"}\NormalTok{, }\StringTok{"lol"}\NormalTok{, }\StringTok{"set"}\NormalTok{, }\StringTok{"old"}\NormalTok{, }\StringTok{"service"}\NormalTok{,}
-             \StringTok{"city"}\NormalTok{, }\StringTok{"home"}\NormalTok{, }\StringTok{"live"}\NormalTok{, }\StringTok{"night"}\NormalTok{, }\StringTok{"news"}\NormalTok{, }\StringTok{"say"}\NormalTok{, }\StringTok{"video"}\NormalTok{, }\StringTok{"people"}\NormalTok{, }\StringTok{"ill"}\NormalTok{, }
-             \StringTok{"way"}\NormalTok{,  }\StringTok{"please"}\NormalTok{, }\StringTok{"years"}\NormalTok{, }\StringTok{"take"}\NormalTok{, }\StringTok{"homes"}\NormalTok{, }\StringTok{"read"}\NormalTok{, }\StringTok{"man"}\NormalTok{, }\StringTok{"next"}\NormalTok{, }\StringTok{"cross"}\NormalTok{, }
-             \StringTok{"boy"}\NormalTok{, }\StringTok{"bad"}\NormalTok{, }\StringTok{"ass"}\NormalTok{))}
+         \KeywordTok{c}\NormalTok{(}\StringTok{"really"}\NormalTok{, }\StringTok{"tweets"}\NormalTok{, }\StringTok{"saw"}\NormalTok{, }\StringTok{"just"}\NormalTok{, }\StringTok{"feel"}\NormalTok{, }\StringTok{"may"}\NormalTok{, }\StringTok{"us"}\NormalTok{, }\StringTok{"rt"}\NormalTok{, }\StringTok{"every"}\NormalTok{, }\StringTok{"one"}\NormalTok{,}
+           \StringTok{"amp"}\NormalTok{, }\StringTok{"like"}\NormalTok{, }\StringTok{"will"}\NormalTok{, }\StringTok{"got"}\NormalTok{, }\StringTok{"new"}\NormalTok{, }\StringTok{"can"}\NormalTok{, }\StringTok{"still"}\NormalTok{, }\StringTok{"back"}\NormalTok{, }\StringTok{"top"}\NormalTok{, }\StringTok{"much"}\NormalTok{,}
+           \StringTok{"near"}\NormalTok{, }\StringTok{"im"}\NormalTok{, }\StringTok{"see"}\NormalTok{, }\StringTok{"via"}\NormalTok{, }\StringTok{"get"}\NormalTok{, }\StringTok{"now"}\NormalTok{, }\StringTok{"come"}\NormalTok{, }\StringTok{"oil"}\NormalTok{, }\StringTok{"let"}\NormalTok{, }\StringTok{"god"}\NormalTok{, }\StringTok{"want"}\NormalTok{,}
+           \StringTok{"pm"}\NormalTok{, }\StringTok{"last"}\NormalTok{, }\StringTok{"hope"}\NormalTok{, }\StringTok{"since"}\NormalTok{, }\StringTok{"everyone"}\NormalTok{, }\StringTok{"food"}\NormalTok{, }\StringTok{"content"}\NormalTok{, }\StringTok{"always"}\NormalTok{, }\StringTok{"th"}\NormalTok{,}
+           \StringTok{"full"}\NormalTok{, }\StringTok{"found"}\NormalTok{, }\StringTok{"dont"}\NormalTok{, }\StringTok{"look"}\NormalTok{, }\StringTok{"cant"}\NormalTok{, }\StringTok{"mh"}\NormalTok{, }\StringTok{"lol"}\NormalTok{, }\StringTok{"set"}\NormalTok{, }\StringTok{"old"}\NormalTok{, }\StringTok{"service"}\NormalTok{,}
+           \StringTok{"city"}\NormalTok{, }\StringTok{"home"}\NormalTok{, }\StringTok{"live"}\NormalTok{, }\StringTok{"night"}\NormalTok{, }\StringTok{"news"}\NormalTok{, }\StringTok{"say"}\NormalTok{, }\StringTok{"video"}\NormalTok{, }\StringTok{"people"}\NormalTok{, }\StringTok{"ill"}\NormalTok{, }
+           \StringTok{"way"}\NormalTok{,  }\StringTok{"please"}\NormalTok{, }\StringTok{"years"}\NormalTok{, }\StringTok{"take"}\NormalTok{, }\StringTok{"homes"}\NormalTok{, }\StringTok{"read"}\NormalTok{, }\StringTok{"man"}\NormalTok{, }\StringTok{"next"}\NormalTok{, }\StringTok{"cross"}\NormalTok{, }
+           \StringTok{"boy"}\NormalTok{, }\StringTok{"bad"}\NormalTok{, }\StringTok{"ass"}\NormalTok{))}
 
 \NormalTok{myCorpus <-}\StringTok{ }\KeywordTok{tm_map}\NormalTok{(myCorpus, removeWords, myStopWords) }
 \KeywordTok{paste0}\NormalTok{(myCorpus[[}\DecValTok{400}\NormalTok{]])}
@@ -777,7 +769,7 @@ sentimientos más detallado. Usaremos la función
 número de elementos de los conjuntos de datos train y test. Recordamos
 que el conjunto de datos de train contiene 7613 observaciones, y el
 conjunto de datos de test contiene 3263 observaciones. El parámetro
-\textbf{control} evalúa cada texto de la matriz, concretamente se
+\textbf{control} evalúa cada texto de la matriz, específicamente se
 evaluaran todas las palabras de cada texto (no aplicamos ningún filtro).
 
 \begin{Shaded}
@@ -811,5 +803,486 @@ evaluaran todas las palabras de cada texto (no aplicamos ningún filtro).
 ## Maximal term length: 35
 ## Weighting          : term frequency (tf)
 \end{verbatim}
+
+La matriz para los datos de train contiene 14825 palabras y la matriz
+para los datos de test contiene 8966 palabras. Utilizaremos las matrices
+para ver las palabras más utilizadas en los tweets y predecir a partir
+de ellas.
+
+\hypertarget{palabras-muxe1s-frecuentes}{%
+\subsection{Palabras más frecuentes}\label{palabras-muxe1s-frecuentes}}
+
+\begin{itemize}
+\tightlist
+\item
+  Palabras más frecuentes en los datos de train.
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{train.term.freq <-}\StringTok{ }\KeywordTok{rowSums}\NormalTok{(}\KeywordTok{as.matrix}\NormalTok{(train_tdm))}
+\NormalTok{train.term.freq <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(train.term.freq, train.term.freq }\OperatorTok{>}\StringTok{ }\DecValTok{60}\NormalTok{)}
+\NormalTok{freq_train_df <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{term =} \KeywordTok{names}\NormalTok{(train.term.freq), }\DataTypeTok{freq=}\NormalTok{ train.term.freq)}
+\KeywordTok{head}\NormalTok{(freq_train_df[}\KeywordTok{order}\NormalTok{(}\OperatorTok{-}\NormalTok{freq_train_df}\OperatorTok{$}\NormalTok{freq), ])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                term freq
+## fire           fire  250
+## emergency emergency  157
+## disaster   disaster  152
+## police       police  140
+## time           time  125
+## body           body  124
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(freq_train_df, }\KeywordTok{aes}\NormalTok{(}\KeywordTok{reorder}\NormalTok{(term, freq), freq)) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_bw}\NormalTok{() }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{stat =} \StringTok{"identity"}\NormalTok{)  }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{coord_flip}\NormalTok{() }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{axis.text.y =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{size=}\DecValTok{7}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics[width=0.7\linewidth]{document_files/figure-latex/unnamed-chunk-28-1} \end{center}
+
+\begin{itemize}
+\tightlist
+\item
+  Palabras más frecuentes en los datos de test
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{test.term.freq <-}\StringTok{ }\KeywordTok{rowSums}\NormalTok{(}\KeywordTok{as.matrix}\NormalTok{(test_tdm))}
+\NormalTok{test.term.freq <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(test.term.freq, test.term.freq }\OperatorTok{>}\StringTok{ }\DecValTok{60}\NormalTok{)}
+\NormalTok{freq_test_df <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{term =} \KeywordTok{names}\NormalTok{(test.term.freq), }\DataTypeTok{freq=}\NormalTok{ test.term.freq)}
+\NormalTok{freq_test_df[}\KeywordTok{order}\NormalTok{(}\OperatorTok{-}\NormalTok{freq_test_df}\OperatorTok{$}\NormalTok{freq), ]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                term freq
+## fire           fire  107
+## emergency emergency   68
+## attack       attack   63
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(freq_test_df, }\KeywordTok{aes}\NormalTok{(}\KeywordTok{reorder}\NormalTok{(term, freq), freq)) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_bw}\NormalTok{() }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{stat =} \StringTok{"identity"}\NormalTok{)  }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{coord_flip}\NormalTok{() }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{axis.text.y =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{size=}\DecValTok{7}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics[width=0.5\linewidth]{document_files/figure-latex/unnamed-chunk-29-1} \end{center}
+
+Las palabras \emph{``fire''}, \emph{``attack''} y \emph{``emergency''}
+aparecen con alta frecuencia tanto en el conjunto de train como en el
+conjunto de test. Estas palabras son muy útiles para predecir un
+desastre real.
+
+\hypertarget{modelado}{%
+\subsection{Modelado}\label{modelado}}
+
+Para la construcción de modelos, necesitamos construir una \emph{Term
+Document Matrix} donde cada fila represente un texto y cada palabra
+única esté representada por una columna. Comencemos construyendo la
+matriz para nuestro corpus completo.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{complete.tdm <-}\StringTok{ }\KeywordTok{TermDocumentMatrix}\NormalTok{(myCorpus, }\DataTypeTok{control=} \KeywordTok{list}\NormalTok{(}\DataTypeTok{wordLengths=} \KeywordTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{, }\OtherTok{Inf}\NormalTok{)))}
+\NormalTok{complete.term.matrix <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(}\KeywordTok{t}\NormalTok{(complete.tdm))}
+\KeywordTok{dim}\NormalTok{(complete.term.matrix)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 10876 16891
+\end{verbatim}
+
+Podemos ver que es una matriz dispersa con 10876 textos, es decir,
+tweets y 16880 palabras. Además, se generan algunos casos incompletos,
+que necesitaremos manejar antes de continuar con la construcción del
+modelo.
+
+Sin embargo, si intentamos convertir esto para usar esta matriz para la
+construcción del modelo, es posible que no podamos entrenar nuestro
+modelo debido a restricciones computacionales. Necesitamos reducir la
+dimensión/características de la matriz.
+
+Primero tratamos los casos incompletos.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{incomplete.cases <-}\StringTok{ }\KeywordTok{which}\NormalTok{(}\OperatorTok{!}\KeywordTok{complete.cases}\NormalTok{(complete.term.matrix))}
+\NormalTok{complete.term.matrix[incomplete.cases,] <-}\StringTok{ }\KeywordTok{rep}\NormalTok{(}\FloatTok{0.0}\NormalTok{, }\KeywordTok{ncol}\NormalTok{(complete.term.matrix))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{complete_irlba <-}\StringTok{ }\KeywordTok{irlba}\NormalTok{(}\KeywordTok{t}\NormalTok{(complete.term.matrix), }\DataTypeTok{nv =} \DecValTok{150}\NormalTok{, }\DataTypeTok{maxit =} \DecValTok{600}\NormalTok{)}
+\NormalTok{complete_irlba}\OperatorTok{$}\NormalTok{v[}\DecValTok{1}\OperatorTok{:}\DecValTok{10}\NormalTok{, }\DecValTok{1}\OperatorTok{:}\DecValTok{5}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##               [,1]          [,2]          [,3]          [,4]          [,5]
+##  [1,] -0.000462870 -0.0003461531  9.263917e-06  1.074148e-04 -0.0006025571
+##  [2,] -0.039611815  0.0191637843 -4.631903e-03 -4.704284e-03  0.0075975914
+##  [3,] -0.002804300  0.0004191885 -8.592254e-06 -8.570421e-06 -0.0017859899
+##  [4,] -0.006221545 -0.0006966814 -2.384731e-03 -2.622132e-04 -0.0034957244
+##  [5,] -0.002844704  0.0003113251  1.691928e-04  2.684031e-05 -0.0016029824
+##  [6,] -0.043686430  0.0177778044 -6.819700e-03 -4.737299e-03  0.0053901935
+##  [7,] -0.010115221 -0.0248025873 -1.819646e-02 -2.408506e-04 -0.0006175213
+##  [8,] -0.035196096  0.0178217283 -4.374870e-03 -4.425091e-03  0.0100228792
+##  [9,] -0.009139736  0.0007828903 -4.421149e-06  2.046801e-04 -0.0070461856
+## [10,] -0.001539314 -0.0001940795 -9.137939e-06  4.200374e-05 -0.0012366532
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{complete.svd <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{target =}\NormalTok{ complete_df}\OperatorTok{$}\NormalTok{target, complete_irlba}\OperatorTok{$}\NormalTok{v)}
+\NormalTok{train.df <-}\StringTok{ }\NormalTok{complete.svd[}\DecValTok{1}\OperatorTok{:}\DecValTok{7613}\NormalTok{, ]}
+\NormalTok{test.df <-}\StringTok{ }\NormalTok{complete.svd[}\DecValTok{7614}\OperatorTok{:}\DecValTok{10876}\NormalTok{, }\DecValTok{-1}\NormalTok{]}
+\KeywordTok{dim}\NormalTok{(train.df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 7613  151
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{dim}\NormalTok{(test.df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 3263  150
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{names}\NormalTok{(train.df) <-}\StringTok{ }\KeywordTok{make.names}\NormalTok{(}\KeywordTok{names}\NormalTok{(train.df))}
+\KeywordTok{names}\NormalTok{(test.df) <-}\StringTok{ }\KeywordTok{make.names}\NormalTok{(}\KeywordTok{names}\NormalTok{(test.df))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
+\NormalTok{cv.folds <-}\StringTok{ }\KeywordTok{createMultiFolds}\NormalTok{(train.df}\OperatorTok{$}\NormalTok{target, }\DataTypeTok{k=}\DecValTok{5}\NormalTok{, }\DataTypeTok{times=}\DecValTok{3}\NormalTok{)}
+\NormalTok{cv.cntrl <-}\StringTok{ }\KeywordTok{trainControl}\NormalTok{(}\DataTypeTok{method =} \StringTok{"repeatecv"}\NormalTok{, }\DataTypeTok{number =} \DecValTok{5}\NormalTok{,}
+                         \DataTypeTok{index =}\NormalTok{ cv.folds, }\DataTypeTok{allowParallel =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{returnResamp=}\StringTok{"final"}\NormalTok{,}
+                         \DataTypeTok{verboseIter=}\OtherTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{regresiuxf3n-loguxedstica}{%
+\subsubsection{Regresión Logística}\label{regresiuxf3n-loguxedstica}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{model_glmnet <-}\StringTok{ }\KeywordTok{train}\NormalTok{(target }\OperatorTok{~}\StringTok{ }\NormalTok{., }\DataTypeTok{data=}\NormalTok{train.df,}
+                      \DataTypeTok{method=}\StringTok{"glmnet"}\NormalTok{,}
+                      \DataTypeTok{metric=}\StringTok{"Accuracy"}\NormalTok{,}
+                      \DataTypeTok{trControl=}\NormalTok{cv.cntrl,}
+                      \DataTypeTok{tuneLenght=}\DecValTok{15}\NormalTok{)}
+\NormalTok{model_glmnet}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## glmnet 
+## 
+## 7613 samples
+##  150 predictor
+##    2 classes: 'No', 'Yes' 
+## 
+## No pre-processing
+## Resampling: 
+## Summary of sample sizes: 6090, 6090, 6090, 6091, 6091, 6090, ... 
+## Resampling results across tuning parameters:
+## 
+##   alpha  lambda       Accuracy   Kappa    
+##   0.10   0.000214028  0.7790176  0.5386466
+##   0.10   0.002140280  0.7788427  0.5378099
+##   0.10   0.021402805  0.7766971  0.5302009
+##   0.55   0.000214028  0.7791052  0.5387800
+##   0.55   0.002140280  0.7787990  0.5370526
+##   0.55   0.021402805  0.7567752  0.4811028
+##   1.00   0.000214028  0.7790177  0.5385999
+##   1.00   0.002140280  0.7778359  0.5343675
+##   1.00   0.021402805  0.7291026  0.4146283
+## 
+## Accuracy was used to select the optimal model using the largest value.
+## The final values used for the model were alpha = 0.55 and lambda = 0.000214028.
+\end{verbatim}
+
+\hypertarget{random-forest}{%
+\subsubsection{Random Forest}\label{random-forest}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{model_rf <-}\StringTok{ }\KeywordTok{train}\NormalTok{(target }\OperatorTok{~}\StringTok{ }\NormalTok{., }\DataTypeTok{data=}\NormalTok{train.df,}
+                      \DataTypeTok{method=}\StringTok{"rf"}\NormalTok{,}
+                      \DataTypeTok{metric=}\StringTok{"Accuracy"}\NormalTok{,}
+                      \DataTypeTok{trControl=}\NormalTok{cv.cntrl,}
+                      \DataTypeTok{tuneGrid=}\KeywordTok{expand.grid}\NormalTok{(}\DataTypeTok{mtry=}\KeywordTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{7}\NormalTok{)))}
+\NormalTok{model_rf}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Random Forest 
+## 
+## 7613 samples
+##  150 predictor
+##    2 classes: 'No', 'Yes' 
+## 
+## No pre-processing
+## Resampling: 
+## Summary of sample sizes: 6090, 6090, 6090, 6091, 6091, 6090, ... 
+## Resampling results across tuning parameters:
+## 
+##   mtry  Accuracy   Kappa    
+##   3     0.7738498  0.5308840
+##   4     0.7736742  0.5306054
+##   5     0.7741565  0.5320462
+##   7     0.7750317  0.5338612
+## 
+## Accuracy was used to select the optimal model using the largest value.
+## The final value used for the model was mtry = 7.
+\end{verbatim}
+
+\hypertarget{gradient-boosting}{%
+\subsubsection{Gradient Boosting}\label{gradient-boosting}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cv.grid <-}\StringTok{ }\KeywordTok{expand.grid}\NormalTok{(}\DataTypeTok{interaction.depth=}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{),}
+                       \DataTypeTok{n.trees=}\DecValTok{100}\NormalTok{,}
+                       \DataTypeTok{shrinkage=}\KeywordTok{c}\NormalTok{(}\FloatTok{0.001}\NormalTok{, }\FloatTok{0.01}\NormalTok{, }\FloatTok{0.1}\NormalTok{),}
+                       \DataTypeTok{n.minobsinnode=}\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{25}\NormalTok{))}
+
+\NormalTok{model_gbm <-}\StringTok{ }\KeywordTok{train}\NormalTok{(target }\OperatorTok{~}\StringTok{ }\NormalTok{., }\DataTypeTok{data=}\NormalTok{train.df,}
+                  \DataTypeTok{method=}\StringTok{"gbm"}\NormalTok{,}
+                  \DataTypeTok{metric=}\StringTok{"Accuracy"}\NormalTok{,}
+                  \DataTypeTok{trControl=}\NormalTok{cv.cntrl,}
+                  \DataTypeTok{tuneGrid=}\NormalTok{cv.grid,}
+                  \DataTypeTok{distribution=}\StringTok{"adaboost"}\NormalTok{,}
+                  \DataTypeTok{verbose=}\OtherTok{FALSE}\NormalTok{)}
+\NormalTok{model_gbm}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Stochastic Gradient Boosting 
+## 
+## 7613 samples
+##  150 predictor
+##    2 classes: 'No', 'Yes' 
+## 
+## No pre-processing
+## Resampling: 
+## Summary of sample sizes: 6090, 6090, 6090, 6091, 6091, 6090, ... 
+## Resampling results across tuning parameters:
+## 
+##   shrinkage  interaction.depth  n.minobsinnode  Accuracy   Kappa    
+##   0.001      1                   2              0.5703402  0.0000000
+##   0.001      1                   5              0.5703402  0.0000000
+##   0.001      1                  25              0.5703402  0.0000000
+##   0.001      2                   2              0.5703402  0.0000000
+##   0.001      2                   5              0.5703402  0.0000000
+##   0.001      2                  25              0.5703402  0.0000000
+##   0.010      1                   2              0.6862809  0.3167993
+##   0.010      1                   5              0.6856678  0.3152431
+##   0.010      1                  25              0.6864123  0.3171660
+##   0.010      2                   2              0.7105815  0.3835634
+##   0.010      2                   5              0.7115881  0.3857311
+##   0.010      2                  25              0.7118941  0.3865345
+##   0.100      1                   2              0.7428076  0.4629660
+##   0.100      1                   5              0.7437263  0.4649426
+##   0.100      1                  25              0.7432891  0.4641821
+##   0.100      2                   2              0.7558553  0.4936147
+##   0.100      2                   5              0.7560303  0.4941869
+##   0.100      2                  25              0.7574753  0.4969251
+## 
+## Tuning parameter 'n.trees' was held constant at a value of 100
+## Accuracy was used to select the optimal model using the largest value.
+## The final values used for the model were n.trees = 100, interaction.depth =
+##  2, shrinkage = 0.1 and n.minobsinnode = 25.
+\end{verbatim}
+
+\hypertarget{k-nearest-neighbor-knn}{%
+\subsubsection{K-Nearest Neighbor (kNN)}\label{k-nearest-neighbor-knn}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cv.grid <-}\StringTok{ }\KeywordTok{expand.grid}\NormalTok{(}\DataTypeTok{k=}\DecValTok{1}\OperatorTok{:}\DecValTok{3}\NormalTok{)}
+
+\NormalTok{model_knn <-}\StringTok{ }\KeywordTok{train}\NormalTok{(target }\OperatorTok{~}\StringTok{ }\NormalTok{., }\DataTypeTok{data=}\NormalTok{train.df,}
+                   \DataTypeTok{method=}\StringTok{"knn"}\NormalTok{,}
+                   \DataTypeTok{metric=}\StringTok{"Accuracy"}\NormalTok{,}
+                   \DataTypeTok{trControl=}\NormalTok{cv.cntrl,}
+                   \DataTypeTok{tuneGrid=}\NormalTok{cv.grid)}
+\NormalTok{model_knn}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## k-Nearest Neighbors 
+## 
+## 7613 samples
+##  150 predictor
+##    2 classes: 'No', 'Yes' 
+## 
+## No pre-processing
+## Resampling: 
+## Summary of sample sizes: 6090, 6090, 6090, 6091, 6091, 6090, ... 
+## Resampling results across tuning parameters:
+## 
+##   k  Accuracy   Kappa    
+##   1  0.7218769  0.4254800
+##   2  0.7146533  0.4092179
+##   3  0.7417117  0.4585926
+## 
+## Accuracy was used to select the optimal model using the largest value.
+## The final value used for the model was k = 3.
+\end{verbatim}
+
+\hypertarget{svm}{%
+\subsubsection{SVM}\label{svm}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cv.grid <-}\StringTok{ }\KeywordTok{expand.grid}\NormalTok{(}\DataTypeTok{sigma=}\KeywordTok{c}\NormalTok{(}\FloatTok{0.001}\NormalTok{, }\FloatTok{0.01}\NormalTok{, }\FloatTok{0.1}\NormalTok{, }\FloatTok{0.5}\NormalTok{, }\DecValTok{1}\NormalTok{),}
+                       \DataTypeTok{C=}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{20}\NormalTok{, }\DecValTok{50}\NormalTok{, }\DecValTok{100}\NormalTok{))}
+
+\NormalTok{model_svm <-}\StringTok{ }\KeywordTok{train}\NormalTok{(target }\OperatorTok{~}\StringTok{ }\NormalTok{., }\DataTypeTok{data=}\NormalTok{train.df,}
+                      \DataTypeTok{method=}\StringTok{"svmRadial"}\NormalTok{,}
+                      \DataTypeTok{metric=}\StringTok{"Accuracy"}\NormalTok{,}
+                      \DataTypeTok{trControl=}\NormalTok{cv.cntrl,}
+                      \DataTypeTok{tuneLenght=}\DecValTok{15}\NormalTok{)}
+\NormalTok{model_svm}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Support Vector Machines with Radial Basis Function Kernel 
+## 
+## 7613 samples
+##  150 predictor
+##    2 classes: 'No', 'Yes' 
+## 
+## No pre-processing
+## Resampling: 
+## Summary of sample sizes: 6090, 6090, 6090, 6091, 6091, 6090, ... 
+## Resampling results across tuning parameters:
+## 
+##   C     Accuracy   Kappa    
+##   0.25  0.7703040  0.5199771
+##   0.50  0.7760834  0.5314795
+##   1.00  0.7802865  0.5401797
+## 
+## Tuning parameter 'sigma' was held constant at a value of 0.00820416
+## Accuracy was used to select the optimal model using the largest value.
+## The final values used for the model were sigma = 0.00820416 and C = 1.
+\end{verbatim}
+
+\hypertarget{comparaciuxf3n-de-modelos}{%
+\subsection{Comparación de modelos}\label{comparaciuxf3n-de-modelos}}
+
+\hypertarget{muxe9trica-de-validaciuxf3n}{%
+\subsubsection{Métrica de
+validación}\label{muxe9trica-de-validaciuxf3n}}
+
+\hypertarget{evaluaciuxf3n-de-modelos-mediante-resampling}{%
+\subsubsection{Evaluación de modelos mediante
+resampling}\label{evaluaciuxf3n-de-modelos-mediante-resampling}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{models <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{KNN=}\NormalTok{model_knn, }\DataTypeTok{logistic=}\NormalTok{model_glmnet,}
+               \DataTypeTok{RF=}\NormalTok{model_rf, }\DataTypeTok{boosting=}\NormalTok{model_gbm, }\DataTypeTok{SVMRadial=}\NormalTok{model_svm)}
+
+\NormalTok{resamps <-}\StringTok{ }\KeywordTok{resamples}\NormalTok{(models)}
+\KeywordTok{summary}\NormalTok{(resamps)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## summary.resamples(object = resamps)
+## 
+## Models: KNN, logistic, RF, boosting, SVMRadial 
+## Number of resamples: 15 
+## 
+## Accuracy 
+##                Min.   1st Qu.    Median      Mean   3rd Qu.      Max. NA's
+## KNN       0.7220762 0.7327643 0.7385020 0.7417117 0.7490966 0.7715036    0
+## logistic  0.7491793 0.7749671 0.7792378 0.7791052 0.7894911 0.7971110    0
+## RF        0.7582129 0.7674868 0.7713535 0.7750317 0.7829941 0.7938280    0
+## boosting  0.7275115 0.7500813 0.7614980 0.7574753 0.7645321 0.7780696    0
+## SVMRadial 0.7655942 0.7724137 0.7793828 0.7802865 0.7833224 0.8030204    0
+## 
+## Kappa 
+##                Min.   1st Qu.    Median      Mean   3rd Qu.      Max. NA's
+## KNN       0.4154222 0.4389489 0.4549650 0.4585926 0.4742860 0.5255358    0
+## logistic  0.4772822 0.5281988 0.5391470 0.5387800 0.5599009 0.5797503    0
+## RF        0.4989282 0.5169593 0.5258828 0.5338612 0.5492779 0.5765744    0
+## boosting  0.4361559 0.4797778 0.5024020 0.4969251 0.5127961 0.5398718    0
+## SVMRadial 0.5098819 0.5217476 0.5350176 0.5401797 0.5474368 0.5917576    0
+\end{verbatim}
+
+\hypertarget{predicciuxf3n-y-resultados}{%
+\subsection{Predicción y resultados}\label{predicciuxf3n-y-resultados}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pred_svm <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(model_svm, test.df, }\DataTypeTok{type=}\StringTok{"raw"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{submission <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"sample_submission.csv"}\NormalTok{)}
+\NormalTok{submission}\OperatorTok{$}\NormalTok{target <-}\StringTok{ }\KeywordTok{ifelse}\NormalTok{(pred_svm}\OperatorTok{==}\StringTok{"No"}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{)}
+\KeywordTok{head}\NormalTok{(submission)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   id target
+## 1  0      0
+## 2  2      1
+## 3  3      1
+## 4  9      0
+## 5 11      1
+## 6 12      1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{write.csv}\NormalTok{(submission, }\StringTok{"submission.csv"}\NormalTok{, }\DataTypeTok{row.names=}\OtherTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{conclusiones}{%
+\subsection{Conclusiones}\label{conclusiones}}
+
+\hypertarget{bibliografuxeda}{%
+\subsection{Bibliografía}\label{bibliografuxeda}}
+
+\url{https://www.cienciadedatos.net/documentos/41_machine_learning_con_r_y_caret}
 
 \end{document}

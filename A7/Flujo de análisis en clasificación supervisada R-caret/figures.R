@@ -27,6 +27,11 @@ ggplot(complete_df[complete.cases(complete_df), ], aes(x = target, y = TextLengt
   labs(y = "longitud del texto",
        title = "Distribución de longitudes text con target")
 
+ggplot(freq_train_df, aes(reorder(term, freq), freq)) + theme_bw() + 
+  geom_bar(stat = "identity")  + 
+  coord_flip() + 
+  theme(axis.text.y = element_text(size=7))
+
 
 porqué primero intentaremos averiguar la longitud del texto de los tweets agregando una nueva característica (TextLength).
 
