@@ -20,13 +20,17 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Empezamos por cargar a nuestro espacio de trabajo los paquetes que usaremos:
 
-- tidyverse
-- stringi
-- tm, específico para minería de textos.
-- irlba
-- RColorBrewer
-- gridExtra
-- gbm
+- **tidyverse**, engloba otros paquetes (**dplyr**, **tidyr**, **ggplot**, etc.) que facilitan en gran medida el análisis exploratorio de los datos.
+- **stringi**,
+- **tm**, específico para minería de textos.
+- **irlba**,
+- **RColorBrewer**,
+- **gridExtra**,
+- **caret**,
+- **doParallel**, proporciona computación paralela.
+- **syuzhet**, específico para la extracción de sentimientos de textos.
+- **ggcorrplot**, muestra visualizaciones gráficas de matrices de correlación usando *ggplot2*.
+- **gbm**,
 
 ```{r message=FALSE}
 library(tidyverse)
@@ -44,7 +48,11 @@ library(gbm)
 
 ## Análisis Exploratorio de los Datos
 
-Para la realización del ejercicio propuesto se ha elegido la competición en Kaggle: **Real or Not? NLP with Disaster Tweets**. El dataset de la competición se puede encontrar en el siguiente enlace: https://www.kaggle.com/c/nlp-getting-started/data. Este dataset, con 10.876 instancias, contiene 4 variables explicativas: **id**, **keyword**, **location** y **text**, y dos valores en la variable clase **target** (0 y 1). Como podemos observar la variable clase es binaria, así que, durante este ejercicio vamos a aprender un modelo de clasificación binaria. El objetivo de este modelo será predecir si dado un tweet, éste trata sobre un desastre real o no. Si un tweet trata sobre un desastre real, se predice un 1. Si no, se predice un 0.
+Antes de entrenar un modelo predictivo, o incluso antes de realizar cualquier cálculo con un nuevo conjunto de datos, es muy importante realizar una exploración descriptiva de los datos. Este proceso nos permite entender mejor que información contienen cada variable, detectar posibles errores, etc. además, puede dar pistas sobre qué variables no son adecuadas para predecir un modelo. 
+
+Acorde a la realización del ejercicio propuesto se ha elegido la competición en Kaggle: **Real or Not? NLP with Disaster Tweets**. El dataset de la competición se puede encontrar en el siguiente enlace: https://www.kaggle.com/c/nlp-getting-started/data. Este dataset, con 10.876 instancias, contiene 4 variables explicativas: **id**, **keyword**, **location** y **text**, y dos valores en la variable clase **target** (0 y 1). Como podemos observar la variable clase es binaria, así que, durante este ejercicio vamos a aprender un modelo de *clasificación binaria*. El objetivo de este modelo será predecir si dado un tweet, éste trata sobre un desastre real o no. Si un tweet trata sobre un desastre real, se predice un 1. Si no, se predice un 0.
+
+*La clasificación binaria es un tipo de clasificación en el que tan solo se pueden asignar dos clases diferentes (0 o 1).*
 
 La métrica de evaluación esperada por la competición es **F1 score**. Para ver como se calcula consultar el siguiente enlace: https://www.kaggle.com/c/nlp-getting-started/overview/evaluation.
 
@@ -72,120 +80,123 @@ str(train, width = 85, strict.width = "cut")
 str(test, width = 85, strict.width = "cut")
 ```
 
-Analizamos las variables más detenidamente a continuación.
-
 ### Variable *target*
 
-Como ya hemos comentado, la variable **target** es la variable a predecir. Primero la categorizamos, ya que inicialmente es de tipo entero, y observamos su distribución.
+Como ya hemos comentado, la variable **target** es la variable a predecir. Es de tipo cuantitativa (de tipo entero) y conviene convertirla a variable cualitativa, almacenarla con el tipo *factor*. Para evitar errores, se recodifica para que sus dos posibles valores sean "Yes"-"No" y se convierte a *factor*.
 
 ```{r fig.align='center', out.width='70%'}
 train$target <- as.factor(ifelse(train$target == 0, "No", "Yes"))
 ggplot(train, aes(x=target)) + geom_bar(aes(fill=target))
 ```
 
-Su distribución no está muy sesgada y está relativamente equilibrada. Observamos que hay menos tweets que se refieren a desastres reales (clase minoritaria), donde el 43% de las observaciones son desastrosas y el 57% no. 
+Cuando se crea un modelo, es muy importante estudiar la distribución de la variable clase, ya que, a fin de cuentas, es lo que nos interesa predecir. 
+
+Gráficamente observamos que la distribución de la variable a predecir no está muy sesgada y está relativamente equilibrada. Hay menos tweets que se refieren a desastres reales. Además, parece que no presenta un problema notable de *desbalanceo de clase*, porqué contamos con muchas observaciones del caso minoritario.
 
 ```{r}
 sum(train$target == "Yes") / dim(train)[1] * 100
 sum(train$target == "No") / dim(train)[1] * 100
 ```
 
-Parece que no presenta un problema notable de *desbalanceo de clase*, porqué contamos con muchas muestras del caso minoritario.
+Para que un modelo predictivo nos sea útil tendremos que intentar superar el porcentaje mínimo dado que aproximadamente el 57% de los tweets no representan un desastre real (este porcentaje se recalculará únicamente con el conjunto de datos de train).
+
+Como el objetivo del ejercicio es predecir que tweets pertenecen o no a un desastre real, el análisis que haremos a continuación se hace realiza de cada variable explicativa con relación a la variable a predecir **target**. Analizando de esta forma, se pueden extraer ideas sobre que variables están más relacionadas con los desastres reales.
 
 ### Variable *keyword*
 
-La variable explicativa **keyword** representa una palabra clave de cada tweet y a continuación se muestran las 10 primeras del conjunto de datos de train.
+La variable explicativa **keyword** representa una palabra clave en cada tweet. Vemos las 10 primeras del conjunto de datos de train.
 
 ```{r}
 train %>% select(keyword) %>% unique() %>% head(10)
 ```
 
-Nuestro interés ahora es ver si existen correlaciones entre la variable **keyword** con la variable a predecir. Para ello realizaremos un análisis de sentimientos. 
+Nuestro interés en la variable **keyword** dentro del análisis exploratorio de los datos es ver si existen correlaciones entre esta y la variable a predecir **target**. Para ello, y como estamos delante un ejercicio de *Procesamiento del Lenguaje Natural* realizaremos un análisis de sentimientos.
 
-*El análisis de sentimientos es una técnica de [Machine Learning](https://en.wikipedia.org/wiki/Machine_learning), basada en el [procesado del lenguaje natural](https://www.kdnuggets.com/2017/02/natural-language-processing-key-terms-explained.html), que pretende obtener información subjetiva de una serie de textos. Su aplicación es este caso, consiste en resolver si un tweet es real o no en relación a un desastre.*
+*El análisis de sentimientos es una técnica de [Machine Learning](https://en.wikipedia.org/wiki/Machine_learning), basada en el [Procesado del Lenguaje Natural](https://www.kdnuggets.com/2017/02/natural-language-processing-key-terms-explained.html), que pretende obtener información subjetiva de una serie de textos. Su aplicación es este caso, consiste en resolver si un tweet es real o no en relación a un desastre.*
 
-Para el análisis de sentimientos usamos los paquetes de R: **syuzhet**, **ggcorrplot** y **doParallel**.
+En el análisis de sentimientos usamos los paquetes de R: **syuzhet**, **ggcorrplot** y **doParallel**.
 
-- El paquete **syuzhet** cuenta con la función **get_nrc_sentiment** que calcula la presencia de los diferentes sentimientos dado un conjunto de textos. Los parámetros de esta función son:
+- El paquete **syuzhet** cuenta con la función **get_nrc_sentiment** que calculará la presencia de los diferentes sentimientos dado un conjunto de palabras clave. Los parámetros de esta función son:
   - **char_v**. Un vector de caracteres que en este caso contendrá todas las palabras clave.
-  - **language**. Define el lenguaje. Los tweets están en inglés, así que el lenguaje será el inglés.
+  - **language**. Define el lenguaje. Como los tweets están en inglés, el lenguaje será el inglés.
   - **cl**. Para el análisis en paralelo. Es opcional, pero en este caso lo usaremos porqué hay muchas palabras clave.
-- **ggcorrplot** muestra una visualización gráfica de una matriz de correlación usando *ggplot2*.
-- **doParallel** proporciona computación paralela. Los parámetros de esta función son:
+- El paquete **doParallel** cuenta con las funciones:
   - **makePSOCKcluster**. Crea un clúster de sockets paralelos.
   - **registerDoParallel**. Registra el número de *cores* que usará el clúster creado. 
   - **stopCluster**. Detiene la computación paralela.
   
 La computación paralela la usaremos en muchas de las ejecuciones de este ejercicio ya que nos encontramos delante de un problema de *alta dimensionalidad*. Eso es, que la dimensionalidad de nuestros datos es muy elevada y puede reducir drásticamente la eficiencia de los algoritmos de clasificación supervisada que entrenaremos. Una de las técnicas más ampliamente utilizada y conocida para la reducción de la dimensionalidad es Principal Component Analysis (PCA) Esta técnica lleva a cabo la transformación de los datos generando unas nuevas variables.
 
-La reducción de la dimensionalidad que aplicaremos en este ejercicio se realiza más adelante y se calculará teniendo en cuenta las palabras más frecuentes de los tweets del conjunto de datos.
+La reducción de la dimensionalidad que aplicaremos en este ejercicio se realiza más adelante y se calculará teniendo en cuenta las palabras más frecuentes de los tweets en conjunto de datos.
 
-### Análisis de sentimientos entre *keyword* y *target*:
+El análisis de sentimientos de cada palabra clave, usando la función **get_nrc_sentiment**, consiste en extraer los sentimientos de cada palabra clave, guardarlos en un nuevo conjunto de datos (*emotion.df*), con el que calcularemos (paquete **cor**) y visualizaremos la matriz de correlaciones (paquete **ggcorrplot**) entre las palabras clave con relación a la variable a predecir. Es importante volver a transformar la variable a predecir para realizar los cálculos, cuando la variable es cualitativa.
 
-```{r fig.align='center', warning=FALSE, out.width='70%'}
+```{r warning=FALSE, fig.align='center'}
 cl <- makePSOCKcluster(4, setup_strategy="sequential")
 registerDoParallel(cl)
 
-emocion.df <- get_nrc_sentiment(char_v = gsub("_", " ", train$keyword), 
+emotion.df <- get_nrc_sentiment(char_v = gsub("_", " ", train$keyword), 
                                 language = "english", cl=cl)
 
-emocion.df <- emocion.df %>% data.frame(target = train$target)
-emocion.df$target <- as.numeric(emocion.df$target)
+emotion.df <- emotion.df %>% data.frame(target = train$target)
 
-cor(emocion.df) %>% 
+emotion.df$target <- as.numeric(emotion.df$target)
+
+cor(emotion.df) %>% 
   ggcorrplot(lab = TRUE, 
-             title = "Matriz de correlación entre los \nsentimientos de keyword y target",
+             title = "Matriz de correlación entre \nkeyword y target",
              legend.title = "correlation")
 
 stopCluster(cl)
 ```
 
-Al observar la matriz de correlaciones, se observa una correlación nula con cada uno de los sentimientos. Esto hace que esta variable explicativa no sea buena para hacer una predicción. 
+Parece que, al observar la matriz de correlaciones, existe una correlación nula entre las variables **keyword** y **target**. Al revisarlo con mayor detalle, podemos observar que la mayoría de las palabras clave no tienen un sentimiento positivo asociado. Las palabras clave asociadas a un sentimiento se asocian negativamente (miedo o tristeza), lo cual es bastante consistente con el problema, ya que intentemos predecir el desastre. 
+
+Acorde a nuestro criterio esta variable explicativa no es buena para hacer una predicción ya que no está realmente asociada con la variable a predecir. Así que la excluiremos del procesamiento de texto.
 
 ### Variable *location*
 
-La variable **location** representa la ubicación desde donde se generaron los tweets, se muestran las primeras 10.
+La variable explicativa **location** representa las ubicaciones desde donde se generaron los tweets. Vemos las 10 primeras y el número total de ubicaciones diferentes del conjunto de datos de train (3342 ubicaciones).
 
 ```{r}
 train %>% select(location) %>% unique() %>% head(10)
 count(train %>% select(location) %>% unique())
 ```
 
-En total hay 3342 ubicaciones. A continuación, mostramos las ubicaciones más frecuentes:
+A continuación, veremos las ubicaciones que se repiten más de 10 veces en el conjunto de datos de train.
 
 ```{r fig.align='center', out.width='70%'}
 location.freq <- table(unlist(train %>% select(location)))
 location.freq[which(location.freq > 10)]
 barplot(location.freq[which(location.freq>10)], las = 2,  
-        ylab = "Frequency")
+        ylab = "frequency")
 ```
 
-Del total de ubicaciones (3342), la mayoría de ellas cuenta con menos de 10 observaciones. Esto hace que esta variable explicativa tampoco sea buena para hacer una predicción. 
+En el total de ubicaciones, 3342, la mayoría de ellas cuenta con menos de 10 observaciones. Acorde a nuestro criterio esta variable explicativa no es buena para hacer una predicción, ya que la variable tiene muy pocas observaciones, y puede ocurrir que, durante la validación cruzada o *bootstrapping*, algunas de las particiones no contengan ninguna observación de dicha variable, lo que puede dar lugar a errores.
 
-### Variable *text*
- 
-Hemos considerado que las variables explicativas **keyword** y **location** no son buenas para hacer una predicción, así que nos centraremos en la variable **text**. 
+### Variable *id*
 
-Llegados a este punto unimos los conjuntos de train y test (*7613 + 3263 observaciones*) para poder extraer los sentimientos más adelante.
+La variable **id** es solo un identificador único, así que, no la analizaremos y procederemos a eliminarla de los conjuntos de datos de train y test.
+
+```{r}
+train$id <- NULL
+test$id <- NULL
+```
+
+Llegados a este punto, parece que nuestro criterio en la exploración de los datos, el estudio de su distribución y sus posibles relaciones con la variable a predecir nos indica que las variables explicativas **keyword**, **location** y **id** no son buenas para hacer una predicción, así que nos centraremos en la variable **text** para hacer la predicción. 
+
+## Preprocesado de los datos
+
+Combinamos los conjuntos de datos de train y test para ahorrar esfuerzos en el preprocesado de los textos. Para ello, usamos la función **bind_rows**, que nos permitirá enlazar de forma eficiente los conjuntos de datos por fila y columna. Podremos comprobar que la combinación se hace correctamente, sumando los elementos de train (7613) y de test (3263), el nuevo conjunto de datos (**complete_df**) tendrá 10876 observaciones, 3 variables explicativas (**keyword**, **location**, **text**) y la variable de clase **target**.
 
 ```{r}
 complete_df <- bind_rows(train, test)
-dim(complete_df)
+str(complete_df, width = 85, strict.width = "cut")
 ```
 
-Echamos un vistazo más de cerca a las variables del nuevo conjunto de datos **complete_df**.
+El preprocesado de datos englobará las transformaciones de los textos, como, por ejemplo, la imputación de valores ausentes o la reducción de dimensionalidad.
 
-```{r}
-summary(complete_df)
-```
-
-La variable **id** es solo un identificador único y la eliminaremos.
-
-```{r}
-complete_df$id <- NULL
-```
-
-Observamos si existen valores perdidos.
+Primero, miramos cuantos valores perdidos tiene nuestro conjunto de datos **complete_df**. La función **colSums** sumará los valores que la función **sapply** encuentre, en este caso, los valores perdidos.
 
 ```{r}
 colSums(sapply(complete_df, is.na))
@@ -193,9 +204,7 @@ colSums(sapply(complete_df, is.na))
 
 Las variables explicativas **keyword** y **location** contienen valores perdidos. Sobretodo hay una gran cantidad de tweets, para los cuales falta su ubicación. No existen valores perdidos para la variable explicativa **text**, tampoco para la variable a predecir **target**. Los 3263 valores perdidos de la variable a predecir provienen del conjunto de datos de test. Nos ocuparemos de los valores perdidos más adelante.
 
-Parece que la variable explicativa **text** es una buena elección para una buena predicción y basaremos los siguientes pasos en ella.
-
-## Procesamiento de texto
+### Análisis del Corpus
 
 Como en todo procesamiento de lenguaje natural, realizaremos el procesamiento de un conjunto de textos. En este caso realizaremos un procesamiento de los textos de los tweets y los prepararemos para el modelado. Comencemos por crear un corpus de los mensajes de texto de los tweets. Para ello usaremos la función **Corpus** del paquete **tm**, que creará nuestro corpus a partir de un vector de textos. La función **VectorSource** interpretará cada mensaje de texto de los tweets como un elemento del vector de textos.
 
@@ -210,6 +219,9 @@ Durante el procesamiento de texto seguiremos la transformación de un mensaje de
 ```{r}
 paste0(myCorpus[[400]])
 ```
+
+### Limpieza del texto
+
 Dividimos el procesamiento de texto en 7 pasos.
 
 1. Eliminar enlaces.
