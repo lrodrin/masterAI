@@ -4,12 +4,10 @@ author: "Laura Rodríguez Navas"
 date: "Septiembre 2020"
 output:
   pdf_document: 
-    toc: yes
     fig_caption: yes
     fig_crop: no
     keep_tex: yes
-    includes:
-      in_header: preamble.tex
+    toc: yes
   html_document: default
 subtitle: Métodos supervisados
 ---
@@ -24,8 +22,6 @@ Empezamos por cargar a nuestro espacio de trabajo los paquetes que usaremos:
 - **stringi**,
 - **tm**, específico para minería de textos.
 - **irlba**,
-- **RColorBrewer**,
-- **gridExtra**,
 - **caret**,
 - **doParallel**, proporciona computación paralela.
 - **syuzhet**, específico para la extracción de sentimientos de textos.
@@ -46,7 +42,7 @@ library(ggcorrplot)
 library(gbm)
 ```
 
-## Análisis Exploratorio de los Datos
+# Análisis Exploratorio de los Datos
 
 Antes de entrenar un modelo predictivo, o incluso antes de realizar cualquier cálculo con un nuevo conjunto de datos, es muy importante realizar una exploración descriptiva de los datos. Este proceso nos permite entender mejor que información contienen cada variable, detectar posibles errores, etc. además, puede dar pistas sobre qué variables no son adecuadas para predecir un modelo. 
 
@@ -80,7 +76,7 @@ str(train, width = 85, strict.width = "cut")
 str(test, width = 85, strict.width = "cut")
 ```
 
-### Variable *target*
+## Variable *target*
 
 Como ya hemos comentado, la variable **target** es la variable a predecir. Es de tipo cuantitativa (de tipo entero) y conviene convertirla a variable cualitativa, almacenarla con el tipo *factor*. Para evitar errores, se recodifica para que sus dos posibles valores sean "Yes"-"No" y se convierte a *factor*.
 
@@ -102,7 +98,7 @@ Para que un modelo predictivo nos sea útil tendremos que intentar superar el po
 
 Como el objetivo del ejercicio es predecir que tweets pertenecen o no a un desastre real, el análisis que haremos a continuación se hace realiza de cada variable explicativa con relación a la variable a predecir **target**. Analizando de esta forma, se pueden extraer ideas sobre que variables están más relacionadas con los desastres reales.
 
-### Variable *keyword*
+## Variable *keyword*
 
 La variable explicativa **keyword** representa una palabra clave en cada tweet. Vemos las 10 primeras del conjunto de datos de train.
 
@@ -116,7 +112,8 @@ Nuestro interés en la variable **keyword** dentro del análisis exploratorio de
 
 En el análisis de sentimientos usamos los paquetes de R: **syuzhet**, **ggcorrplot** y **doParallel**.
 
-- El paquete **syuzhet** cuenta con la función **get_nrc_sentiment** que calculará la presencia de los diferentes sentimientos dado un conjunto de palabras clave. Los parámetros de esta función son:
+- El paquete **syuzhet** cuenta con la función **get_nrc_sentiment** que calculará la presencia de los diferentes sentimientos dado un conjunto de palabras clave. 
+Los parámetros de esta función son:
   - **char_v**. Un vector de caracteres que en este caso contendrá todas las palabras clave.
   - **language**. Define el lenguaje. Como los tweets están en inglés, el lenguaje será el inglés.
   - **cl**. Para el análisis en paralelo. Es opcional, pero en este caso lo usaremos porqué hay muchas palabras clave.
@@ -154,7 +151,7 @@ Parece que, al observar la matriz de correlaciones, existe una correlación nula
 
 Acorde a nuestro criterio esta variable explicativa no es buena para hacer una predicción ya que no está realmente asociada con la variable a predecir. Así que la excluiremos del procesamiento de texto.
 
-### Variable *location*
+## Variable *location*
 
 La variable explicativa **location** representa las ubicaciones desde donde se generaron los tweets. Vemos las 10 primeras y el número total de ubicaciones diferentes del conjunto de datos de train (3342 ubicaciones).
 
@@ -174,7 +171,7 @@ barplot(location.freq[which(location.freq>10)], las = 2,
 
 En el total de ubicaciones, 3342, la mayoría de ellas cuenta con menos de 10 observaciones. Acorde a nuestro criterio esta variable explicativa no es buena para hacer una predicción, ya que la variable tiene muy pocas observaciones, y puede ocurrir que, durante la validación cruzada o *bootstrapping*, algunas de las particiones no contengan ninguna observación de dicha variable, lo que puede dar lugar a errores.
 
-### Variable *id*
+## Variable *id*
 
 La variable **id** es solo un identificador único, así que, no la analizaremos y procederemos a eliminarla de los conjuntos de datos de train y test.
 
@@ -183,11 +180,13 @@ train$id <- NULL
 test$id <- NULL
 ```
 
+## Conclusión análisis exploratorio
+
 Llegados a este punto, parece que nuestro criterio en la exploración de los datos, el estudio de su distribución y sus posibles relaciones con la variable a predecir nos indica que las variables explicativas **keyword**, **location** y **id** no son buenas para hacer una predicción, así que nos centraremos en la variable **text** para hacer la predicción. 
 
-## Preprocesado de los datos
+# Procesamiento de texto
 
-Combinamos los conjuntos de datos de train y test para ahorrar esfuerzos en el preprocesado de los textos. Para ello, usamos la función **bind_rows**, que nos permitirá enlazar de forma eficiente los conjuntos de datos por fila y columna. Podremos comprobar que la combinación se hace correctamente, sumando los elementos de train (7613) y de test (3263), el nuevo conjunto de datos (**complete_df**) tendrá 10876 observaciones, 3 variables explicativas (**keyword**, **location**, **text**) y la variable de clase **target**.
+Combinamos los conjuntos de datos de train y test para ahorrar esfuerzos en el preprocesado de datos. Para ello, usamos la función **bind_rows**, que nos permitirá enlazar de forma eficiente los conjuntos de datos por fila y columna. Podremos comprobar que la combinación se hace correctamente, sumando los elementos de train (7613) y de test (3263), el nuevo conjunto de datos (**complete_df**) tendrá 10876 observaciones, 3 variables explicativas (**keyword**, **location**, **text**) y la variable de clase **target**.
 
 ```{r}
 complete_df <- bind_rows(train, test)
@@ -202,179 +201,134 @@ Primero, miramos cuantos valores perdidos tiene nuestro conjunto de datos **comp
 colSums(sapply(complete_df, is.na))
 ```
 
-Las variables explicativas **keyword** y **location** contienen valores perdidos. Sobretodo hay una gran cantidad de tweets, para los cuales falta su ubicación. No existen valores perdidos para la variable explicativa **text**, tampoco para la variable a predecir **target**. Los 3263 valores perdidos de la variable a predecir provienen del conjunto de datos de test. Nos ocuparemos de los valores perdidos más adelante.
+Identificamos que las variables explicativas **keyword** y **location** tienen valores perdidos. La variable explicativa **text** no tiene valores perdidos. Sobretodo hay una gran cantidad de tweets, para los cuales falta su ubicación. Los 3263 valores perdidos de la variable a predecir provienen del conjunto de datos de test. Nos ocuparemos de los valores perdidos más adelante.
 
-### Análisis del Corpus
+## Corpus
 
-Como en todo procesamiento de lenguaje natural, realizaremos el procesamiento de un conjunto de textos. En este caso realizaremos un procesamiento de los textos de los tweets y los prepararemos para el modelado. Comencemos por crear un corpus de los mensajes de texto de los tweets. Para ello usaremos la función **Corpus** del paquete **tm**, que creará nuestro corpus a partir de un vector de textos. La función **VectorSource** interpretará cada mensaje de texto de los tweets como un elemento del vector de textos.
+Con nuestro nuevo conjunto de datos preparado (**complete_df**), procedemos a crear nuestro Corpus, es decir, el conjunto de textos de la variable **text** a analizar. En este caso, nuestro Corpus se compone de todos los textos de los tweets y los asignaremos al objeto *myCorpus* usando las funciones **VectorSource** y **Corpus**. La función **Corpus** creará el corpus a partir de un vector de textos. La función **VectorSource** interpretará cada mensaje de texto de los tweets como un elemento de ese vector de textos.
 
-*Un corpus lingüístico se define como “un conjunto de textos de un mismo origen” y que tiene por función recopilar un conjunto de textos. El uso de un corpus lingüístico nos permitirá obtener información de las palabras utilizadas con más o menor frecuencia.*
+*Un corpus lingüístico se define como "un conjunto de textos de un mismo origen" y que tiene por función recopilar un conjunto de textos. El uso de un corpus lingüístico nos permitirá obtener información de las palabras utilizadas con más o menor frecuencia.*
 
 ```{r}
 myCorpus <- Corpus(VectorSource(complete_df$text))
+myCorpus
 ```
 
-Durante el procesamiento de texto seguiremos la transformación de un mensaje de tweet específico para ver como se modifica a medida que avanzamos en el procesamiento de texto. Este mensaje es:
+Como podemos ver, nuestro Corpus está compuesto por 10876 textos.
 
-```{r}
-paste0(myCorpus[[400]])
-```
+## Limpieza del texto
 
-### Limpieza del texto
+Necesitamos limpiar de los 10876 textos caracteres que son de poca utilidad. Empezamos por aseguramos de que no queden enlaces, con un poco de ayuda de las *regular expressions*. Para ello usaremos las funciones **gsub** y **tm_map**. La función **gsub** buscará y reemplazará desde la primera hasta la última de las coincidencias de un patrón (representado por una *regular expression*). La función **tm_map** será la encargada de aplicar las diferentes transformaciones de los textos a nuestro corpus.
 
-Dividimos el procesamiento de texto en 7 pasos.
-
-1. Eliminar enlaces.
+*Una expresión regular (o en inglés regular expression) es una representación, según unas reglas sintácticas de un lenguaje formal, de una porción de texto genérico a buscar dentro de otro texto, como por ejemplo caracteres, palabras o patrones de texto concretos.*
 
 ```{r warning=FALSE}
 removeURL <- function(x) gsub("http[^[:space:]]*", "", x)  
 myCorpus <- tm_map(myCorpus, content_transformer(removeURL))
-paste0(myCorpus[[400]])
 ```
-Hemos eliminado: *http://t.co/Wf8iTK2KVx*.
 
-La función **gsub** busca y reemplaza desde la primera hasta todas las coincidencias de un patrón (que normalmente representa una *regular expression*). La función **tm_map** es la encargada de aplicar las diferentes transformaciones de los textos al corpus creado.
-
-2. Convertir a minúsculas.
+Convertimos todo a minúsculas.
 
 ```{r warning=FALSE}
-myCorpus <- tm_map(myCorpus, content_transformer(stri_trans_tolower))
-paste0(myCorpus[[400]])
+myCorpus <- tm_map(myCorpus, content_transformer(tolower))
 ```
 
-3. Eliminar los nombres de usuario.
+Eliminamos los nombres de usuario.
 
 ```{r warning=FALSE}
 removeUsername <- function(x) gsub("@[^[:space:]]*", "", x)  
 myCorpus <- tm_map(myCorpus, content_transformer(removeUsername))
-paste0(myCorpus[[400]])
 ```
 
-Hemos eliminado: *@huffpostrelig*.
-
-4. Eliminar todo excepto el idioma y el espacio en inglés.
+Nos deshacemos de la puntuación, puesto que por ejemplo "fin" y "fin." son identificadas como palabras diferentes, lo cual no deseamos.
 
 ```{r warning=FALSE}
 removeNumPunct <- function(x) gsub("[^[:alpha:][:space:]]*", "", x)   
 myCorpus <- tm_map(myCorpus, content_transformer(removeNumPunct))
-paste0(myCorpus[[400]])
 ```
 
-No se observan cambios en en ejemplo.
-
-5. Eliminar palabras irrelevantes (eliminación de redundancias).
+Usamos **removeWords** con **stopwords("english")**, recordemos que los textos de los tweets están en inglés y cada idioma tiene sus propias palabras vacías; para eliminar palabras vacías, es decir, aquellas con poco valor para el análisis, que carecen de un significado por si solas, tales como artículos, preposiciones, conjunciones, pronombres, etc. 
 
 ```{r warning=FALSE}
 myStopWords <- c((stopwords('english')), 
-         c("really", "tweets", "saw", "just", "feel", "may", "us", "rt", "every", "one",
-           "amp", "like", "will", "got", "new", "can", "still", "back", "top", "much",
-           "near", "im", "see", "via", "get", "now", "come", "oil", "let", "god", "want",
-           "pm", "last", "hope", "since", "everyone", "food", "content", "always", "th",
-           "full", "found", "dont", "look", "cant", "mh", "lol", "set", "old", "service",
-           "city", "home", "live", "night", "news", "say", "video", "people", "ill", 
-           "way",  "please", "years", "take", "homes", "read", "man", "next", "cross", 
-           "boy", "bad", "ass"))
+    c("really", "tweets", "saw", "just", "feel", "may", "us", "rt", "every", "one",
+     "amp", "like", "will", "got", "new", "can", "still", "back", "top", "much",
+     "near", "im", "see", "via", "get", "now", "come", "oil", "let", "god", "want",
+     "pm", "last", "hope", "since", "everyone", "food", "content", "always", "th",
+     "full", "found", "dont", "look", "cant", "mh", "lol", "set", "old", "service",
+     "city", "home", "live", "night", "news", "say", "video", "people", "ill", 
+     "way",  "please", "years", "take", "homes", "read", "man", "next", "cross", 
+     "boy", "bad", "ass"))
 
+head(myStopWords, 30)
 myCorpus <- tm_map(myCorpus, removeWords, myStopWords) 
-paste0(myCorpus[[400]])
 ```
-Hemos eliminado: at the where a is being after via.
 
-Las palabras irrelevantes que hemos eliminado se denominan *stop words o palabras vacías*. Cada idioma tiene sus propias palabras vacías. Como los textos están en inglés hemos eliminado los *stop words* que pertenecen al inglés usando la función **stopwords**, además hemos añadido aleatóriamente alguna de las palabras vacías más usadas en los mensajes de texto de los tweets (ver https://techland.time.com/2009/06/08/the-500-most-frequently-used-words-on-twitter/).
+Además, podemos ver que se han añadido (aleatoriamente) más palabras vacías ("really", "tweets", "saw", etc.). Estas palabras vacías son de las más usadas en los mensajes de texto de los tweets (ver https://techland.time.com/2009/06/08/the-500-most-frequently-used-words-on-twitter/).
 
-*Las stop words o palabras vacías son todas aquellas palabras que carecen de un significado por si solas. Suelen ser artículos, preposiciones, conjunciones, pronombres, etc.*
-
-6. Eliminar palabras de una sola letra.
+En este caso, removemos las palabras de una sola letra.
 
 ```{r warning=FALSE}
 removeSingle <- function(x) gsub(" . ", " ", x)   
 myCorpus <- tm_map(myCorpus, content_transformer(removeSingle))
-paste0(myCorpus[[400]])
 ```
-No se observan cambios en en ejemplo.
 
-7. Eliminar espacios en blanco adicionales.
+Por último eliminamos los espacios vacíos excesivos, muchos de ellos introducidos por las transformaciones anteriores.
 
 ```{r warning=FALSE}
 myCorpus <- tm_map(myCorpus, stripWhitespace)
-paste0(myCorpus[[400]])
 ```
 
-Terminamos con el procesamiento de texto. A continuación, crearemos dos *Term Document Matrix* (matriz que describe la frecuencia de las palabras que se producen en una colección de textos) para un análisis de sentimientos más detallado. Usaremos la función **TermDocumentMatrix** y dividiremos el corpus en dos, según el número de elementos de los conjuntos de datos train y test. Recordamos que el conjunto de datos de train contiene 7613 observaciones, y el conjunto de datos de test contiene 3263 observaciones. El parámetro **control** evalúa cada texto de la matriz, específicamente se evaluaran todas las palabras de cada texto (no aplicamos ningún filtro).
+# Creación de un modelo predictivo
+
+## Preprocesado de los datos
+
+Para la creación de un modelo predictivo, necesitamos construir una **Term Document Matrix** del conjunto de textos de la variable **text**, donde cada fila representará un texto y cada palabra única estará representada per una columna.
+
+*Una Term Document Matrix es una matriz matemática que describe la frecuencia con la que se repiten una serie de palabras en una colección de documentos.*
+
+Comenzaremos mapeando nuestro Corpus indicando que es una **Term Document Matrix**, de esta manera podremos realizar el preprocesado de datos. Sabemos que el preprocesado de datos engloba aquellas transformaciones de los datos con la finalidad de mejorar los resultados de la clasificación supervisada. Todo preprocesado de datos debe aprenderse de las observaciones de train y luego aplicarse al conjunto de train y de test. Esto es muy importante para no violar la condición de que ninguna información procedente de las observaciones de test influya en el ajuste del modelo.
+
+Utilizaremos la función **TermDocumentMatrix** en nuestro Corpus y asignaremos el resultado al objeto *complete.tdm*. Con el parámetro **control** indicaremos que evaluaremos todos los textos de la matriz, con las características escogidas se evaluarán todas las palabras de los textos. Por defecto la función **TermDocumentMatrix** usa *tf-id*, que mide la importancia relativa de cada palabra en el conjunto de textos. 
 
 ```{r}
-train_tdm <- TermDocumentMatrix(myCorpus[1:7613], 
-                                control= list(wordLengths= c(1, Inf)))
-test_tdm <- TermDocumentMatrix(myCorpus[7614:10876], 
-                               control= list(wordLengths= c(1, Inf)))
-train_tdm
-test_tdm
-```
-La matriz para los datos de train contiene 14825 palabras y la matriz para los datos de test contiene 8966 palabras. Utilizaremos las matrices para ver las palabras más utilizadas en los tweets y predecir a partir de ellas.
-
-## Palabras más frecuentes
-
-- Palabras más frecuentes en los datos de train.
-
-```{r fig.align='center', out.width='70%'}
-train.term.freq <- rowSums(as.matrix(train_tdm))
-train.term.freq <- subset(train.term.freq, train.term.freq > 60)
-freq_train_df <- data.frame(term = names(train.term.freq), freq= train.term.freq)
-head(freq_train_df[order(-freq_train_df$freq), ])
-ggplot(freq_train_df, aes(reorder(term, freq), freq)) + theme_bw() + 
-  geom_bar(stat = "identity")  + 
-  coord_flip() + 
-  theme(axis.text.y = element_text(size=7))
+complete.tdm <- TermDocumentMatrix(myCorpus, control=list(wordLengths= c(4, Inf)))
+complete.tdm
 ```
 
-- Palabras más frecuentes en los datos de test
+Podemos observar que tenemos 16880 *terms*, esto quiere decir que tenemos 16880 palabras diferentes en nuestro Corpus. Lo cual es una cantidad considerable de vocabulario, pero no esperaríamos otra cosa de una red social como [Twitter](https://twitter.com). La palabra más larga contiene 49 caracteres.
 
-```{r fig.align='center', out.width='50%'}
-test.term.freq <- rowSums(as.matrix(test_tdm))
-test.term.freq <- subset(test.term.freq, test.term.freq > 60)
-freq_test_df <- data.frame(term = names(test.term.freq), freq= test.term.freq)
-freq_test_df[order(-freq_test_df$freq), ]
-ggplot(freq_test_df, aes(reorder(term, freq), freq)) + theme_bw() + 
-  geom_bar(stat = "identity")  + 
-  coord_flip() + 
-  theme(axis.text.y = element_text(size=7))
-```
+Usaremos la función **removeSparseItems** para depurar nuestra **Term Document Matrix** de aquellas palabras que aparecen con muy poca frecuencia, es decir, son dispersas. Porqué 16880 palabras son demasiadas palabras y es posible que no podamos entrenar nuestro modelo debido a restricciones computacionales.
 
-Las palabras *"fire"*, *"attack"* y *"emergency"* aparecen con alta frecuencia tanto en el conjunto de train como en el conjunto de test. Estas palabras son muy útiles para predecir un desastre real.
+Esta función requiere que especifiquemos el argumento **sparse**, que puede asumir valores de 0 a 1. Este valor representa la dispersión de las palabras que queremos conservar. Si lo fijamos muy alto (cerca de 1, pero no 1), conservaremos muchas palabras, casi todas, pues estamos indicando que queremos conservar palabras, aunque sean muy dispersas. Naturalmente, ocurre lo opuesto si fijamos este valor muy bajo (cerca de 0, pero no 0), pudiendo incluso quedarnos sin ninguna palabra, si las palabras en nuestros textos son dispersas en general.
 
-## Modelado
-
-Para la construcción de modelos, necesitamos construir una *Term Document Matrix* donde cada fila represente un texto y cada palabra única esté representada por una columna. Comencemos construyendo la matriz para nuestro corpus completo.
+En este caso, se decide fijarlo en *.9975*, conservando las palabras que aparecen en al menos el 0.25% de las observaciones.
 
 ```{r}
-complete.tdm <- TermDocumentMatrix(myCorpus, control= list(wordLengths= c(4, Inf)))
+complete.tdm <- removeSparseTerms(complete.tdm, sparse = .9975)
+complete.tdm
+```
+
+De 16880 palabras que teníamos, nos hemos quedado con 582, lo cual reduce en gran medida la dificultad y complejidad del problema de *alta dimensionalidad*, lo cual es deseable. La palabra más larga contiene 17 caracteres.
+
+Transformamos nuestra **Term Document Matrix** a un objeto de tipo **matrix** para así poder comprobar si nuestros datos aún contienen valores perdidos con la función **which**.
+
+```{r echo=FALSE}
 complete.term.matrix <- as.matrix(t(complete.tdm))
-dim(complete.term.matrix)
+which(!complete.cases(complete.term.matrix))
 ```
-Podemos ver que es una matriz dispersa con 10876 textos, es decir, tweets y 16880 palabras. Además, se generan algunos casos incompletos, que necesitaremos manejar antes de continuar con la construcción del modelo.
 
-Sin embargo, si intentamos convertir esto para usar esta matriz para la construcción del modelo, es posible que no podamos entrenar nuestro modelo debido a restricciones computacionales. Necesitamos reducir la dimensión/características de la matriz.
+Los datos ya no contienen valores perdidos.
 
-Primero tratamos los casos incompletos.
+cómo se puede R para implementar la parte más computacionalmente intensiva de la solución ganadora utilizando el paquete irlba, la descomposición de la matriz de datos en sus componentes singulares (más propiamente, obtener algunas de ellas).
 
 ```{r}
-incomplete.cases <- which(!complete.cases(complete.term.matrix))
-complete.term.matrix[incomplete.cases,] <- rep(0.0, ncol(complete.term.matrix))
-```
-
-```{r include=FALSE}
 cl <- makePSOCKcluster(4, setup_strategy="sequential")
 registerDoParallel(cl)
-```
 
-
-```{r}
 complete_irlba <- irlba(t(complete.term.matrix), nv = 150, maxit = 600)
 complete_irlba$v[1:10, 1:5]
-```
 
-
-```{r include=FALSE}
 stopCluster(cl)
 ```
 
@@ -389,6 +343,8 @@ names(train.df) <- make.names(names(train.df))
 names(test.df) <- make.names(names(test.df))
 ```
 
+
+## Modelado
 ```{r}
 set.seed(123)
 cv.folds <- createMultiFolds(train.df$target, k=5, times=3)

@@ -1,46 +1,39 @@
-% Options for packages loaded elsewhere
-\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{unicode=true}{hyperref} % options for packages loaded elsewhere
 \PassOptionsToPackage{hyphens}{url}
 %
-\documentclass[
-]{article}
+\documentclass[]{article}
 \usepackage{lmodern}
 \usepackage{amssymb,amsmath}
 \usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
 \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
-  \usepackage{textcomp} % provide euro and other symbols
-\else % if luatex or xetex
+  \usepackage{textcomp} % provides euro and other symbols
+\else % if luatex or xelatex
   \usepackage{unicode-math}
-  \defaultfontfeatures{Scale=MatchLowercase}
-  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
 \fi
-% Use upquote if available, for straight quotes in verbatim environments
+% use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
-\IfFileExists{microtype.sty}{% use microtype if available
-  \usepackage[]{microtype}
-  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage[]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
 }{}
-\makeatletter
-\@ifundefined{KOMAClassName}{% if non-KOMA class
-  \IfFileExists{parskip.sty}{%
-    \usepackage{parskip}
-  }{% else
-    \setlength{\parindent}{0pt}
-    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
-}{% if KOMA class
-  \KOMAoptions{parskip=half}}
-\makeatother
-\usepackage{xcolor}
-\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\usepackage{hyperref}
 \hypersetup{
-  pdftitle={Flujo de análisis en clasificación supervisada},
-  pdfauthor={Laura Rodríguez Navas},
-  hidelinks,
-  pdfcreator={LaTeX via pandoc}}
-\urlstyle{same} % disable monospaced font for URLs
+            pdftitle={Flujo de análisis en clasificación supervisada},
+            pdfauthor={Laura Rodríguez Navas},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
 \usepackage[margin=1in]{geometry}
 \usepackage{color}
 \usepackage{fancyvrb}
@@ -91,22 +84,34 @@
 % margins by default, and it is still possible to overwrite the defaults
 % using explicit options in \includegraphics[width, height, ...]{}
 \setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
-% Set default figure placement to htbp
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+% set default figure placement to htbp
 \makeatletter
 \def\fps@figure{htbp}
 \makeatother
-\setlength{\emergencystretch}{3em} % prevent overfull lines
-\providecommand{\tightlist}{%
-  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\setcounter{secnumdepth}{5}
 
-\title{Flujo de análisis en clasificación supervisada}
 \usepackage{etoolbox}
 \makeatletter
 \providecommand{\subtitle}[1]{% add subtitle to \maketitle
   \apptocmd{\@title}{\par {\large #1 \par}}{}{}
 }
 \makeatother
+
+\title{Flujo de análisis en clasificación supervisada}
+\providecommand{\subtitle}[1]{}
 \subtitle{Métodos supervisados}
 \author{Laura Rodríguez Navas}
 \date{Septiembre 2020}
@@ -118,117 +123,97 @@
 \setcounter{tocdepth}{2}
 \tableofcontents
 }
-Comenzamos cargando los paquetes y la base de datos:
+Empezamos por cargar a nuestro espacio de trabajo los paquetes que
+usaremos:
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{library}\NormalTok{(caret)}
-\KeywordTok{library}\NormalTok{(mlbench)}
-\KeywordTok{data}\NormalTok{(Sonar)}
-\KeywordTok{str}\NormalTok{(Sonar, }\DataTypeTok{width =} \DecValTok{85}\NormalTok{, }\DataTypeTok{strict.width =} \StringTok{"cut"}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## 'data.frame':    208 obs. of  61 variables:
-##  $ V1   : num  0.02 0.0453 0.0262 0.01 0.0762 0.0286 0.0317 0.0519 0.0223 0.0164 ...
-##  $ V2   : num  0.0371 0.0523 0.0582 0.0171 0.0666 0.0453 0.0956 0.0548 0.0375 0.017..
-##  $ V3   : num  0.0428 0.0843 0.1099 0.0623 0.0481 ...
-##  $ V4   : num  0.0207 0.0689 0.1083 0.0205 0.0394 ...
-##  $ V5   : num  0.0954 0.1183 0.0974 0.0205 0.059 ...
-##  $ V6   : num  0.0986 0.2583 0.228 0.0368 0.0649 ...
-##  $ V7   : num  0.154 0.216 0.243 0.11 0.121 ...
-##  $ V8   : num  0.16 0.348 0.377 0.128 0.247 ...
-##  $ V9   : num  0.3109 0.3337 0.5598 0.0598 0.3564 ...
-##  $ V10  : num  0.211 0.287 0.619 0.126 0.446 ...
-##  $ V11  : num  0.1609 0.4918 0.6333 0.0881 0.4152 ...
-##  $ V12  : num  0.158 0.655 0.706 0.199 0.395 ...
-##  $ V13  : num  0.2238 0.6919 0.5544 0.0184 0.4256 ...
-##  $ V14  : num  0.0645 0.7797 0.532 0.2261 0.4135 ...
-##  $ V15  : num  0.066 0.746 0.648 0.173 0.453 ...
-##  $ V16  : num  0.227 0.944 0.693 0.213 0.533 ...
-##  $ V17  : num  0.31 1 0.6759 0.0693 0.7306 ...
-##  $ V18  : num  0.3 0.887 0.755 0.228 0.619 ...
-##  $ V19  : num  0.508 0.802 0.893 0.406 0.203 ...
-##  $ V20  : num  0.48 0.782 0.862 0.397 0.464 ...
-##  $ V21  : num  0.578 0.521 0.797 0.274 0.415 ...
-##  $ V22  : num  0.507 0.405 0.674 0.369 0.429 ...
-##  $ V23  : num  0.433 0.396 0.429 0.556 0.573 ...
-##  $ V24  : num  0.555 0.391 0.365 0.485 0.54 ...
-##  $ V25  : num  0.671 0.325 0.533 0.314 0.316 ...
-##  $ V26  : num  0.641 0.32 0.241 0.533 0.229 ...
-##  $ V27  : num  0.71 0.327 0.507 0.526 0.7 ...
-##  $ V28  : num  0.808 0.277 0.853 0.252 1 ...
-##  $ V29  : num  0.679 0.442 0.604 0.209 0.726 ...
-##  $ V30  : num  0.386 0.203 0.851 0.356 0.472 ...
-##  $ V31  : num  0.131 0.379 0.851 0.626 0.51 ...
-##  $ V32  : num  0.26 0.295 0.504 0.734 0.546 ...
-##  $ V33  : num  0.512 0.198 0.186 0.612 0.288 ...
-##  $ V34  : num  0.7547 0.2341 0.2709 0.3497 0.0981 ...
-##  $ V35  : num  0.854 0.131 0.423 0.395 0.195 ...
-##  $ V36  : num  0.851 0.418 0.304 0.301 0.418 ...
-##  $ V37  : num  0.669 0.384 0.612 0.541 0.46 ...
-##  $ V38  : num  0.61 0.106 0.676 0.881 0.322 ...
-##  $ V39  : num  0.494 0.184 0.537 0.986 0.283 ...
-##  $ V40  : num  0.274 0.197 0.472 0.917 0.243 ...
-##  $ V41  : num  0.051 0.167 0.465 0.612 0.198 ...
-##  $ V42  : num  0.2834 0.0583 0.2587 0.5006 0.2444 ...
-##  $ V43  : num  0.282 0.14 0.213 0.321 0.185 ...
-##  $ V44  : num  0.4256 0.1628 0.2222 0.3202 0.0841 ...
-##  $ V45  : num  0.2641 0.0621 0.2111 0.4295 0.0692 ...
-##  $ V46  : num  0.1386 0.0203 0.0176 0.3654 0.0528 ...
-##  $ V47  : num  0.1051 0.053 0.1348 0.2655 0.0357 ...
-##  $ V48  : num  0.1343 0.0742 0.0744 0.1576 0.0085 ...
-##  $ V49  : num  0.0383 0.0409 0.013 0.0681 0.023 0.0264 0.0507 0.0285 0.0777 0.0092 ..
-##  $ V50  : num  0.0324 0.0061 0.0106 0.0294 0.0046 0.0081 0.0159 0.0178 0.0439 0.019..
-##  $ V51  : num  0.0232 0.0125 0.0033 0.0241 0.0156 0.0104 0.0195 0.0052 0.0061 0.011..
-##  $ V52  : num  0.0027 0.0084 0.0232 0.0121 0.0031 0.0045 0.0201 0.0081 0.0145 0.009..
-##  $ V53  : num  0.0065 0.0089 0.0166 0.0036 0.0054 0.0014 0.0248 0.012 0.0128 0.0223..
-##  $ V54  : num  0.0159 0.0048 0.0095 0.015 0.0105 0.0038 0.0131 0.0045 0.0145 0.0179..
-##  $ V55  : num  0.0072 0.0094 0.018 0.0085 0.011 0.0013 0.007 0.0121 0.0058 0.0084 ...
-##  $ V56  : num  0.0167 0.0191 0.0244 0.0073 0.0015 0.0089 0.0138 0.0097 0.0049 0.006..
-##  $ V57  : num  0.018 0.014 0.0316 0.005 0.0072 0.0057 0.0092 0.0085 0.0065 0.0032 ...
-##  $ V58  : num  0.0084 0.0049 0.0164 0.0044 0.0048 0.0027 0.0143 0.0047 0.0093 0.003..
-##  $ V59  : num  0.009 0.0052 0.0095 0.004 0.0107 0.0051 0.0036 0.0048 0.0059 0.0056 ..
-##  $ V60  : num  0.0032 0.0044 0.0078 0.0117 0.0094 0.0062 0.0103 0.0053 0.0022 0.004..
-##  $ Class: Factor w/ 2 levels "M","R": 2 2 2 2 2 2 2 2 2 2 ...
-\end{verbatim}
-
-\hypertarget{ejercicio-propuesto}{%
-\subsection{Ejercicio propuesto}\label{ejercicio-propuesto}}
-
-Cargamos las librerías necesarias:
+\begin{itemize}
+\tightlist
+\item
+  \textbf{tidyverse}, engloba otros paquetes (\textbf{dplyr},
+  \textbf{tidyr}, \textbf{ggplot}, etc.) que facilitan en gran medida el
+  análisis exploratorio de los datos.
+\item
+  \textbf{stringi},
+\item
+  \textbf{tm}, específico para minería de textos.
+\item
+  \textbf{irlba},
+\item
+  \textbf{caret},
+\item
+  \textbf{doParallel}, proporciona computación paralela.
+\item
+  \textbf{syuzhet}, específico para la extracción de sentimientos de
+  textos.
+\item
+  \textbf{ggcorrplot}, muestra visualizaciones gráficas de matrices de
+  correlación usando \emph{ggplot2}.
+\item
+  \textbf{gbm},
+\end{itemize}
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \KeywordTok{library}\NormalTok{(tidyverse)}
+\KeywordTok{library}\NormalTok{(stringi)}
 \KeywordTok{library}\NormalTok{(tm)}
-\KeywordTok{library}\NormalTok{(SnowballC)}
+\KeywordTok{library}\NormalTok{(irlba)}
+\KeywordTok{library}\NormalTok{(RColorBrewer)}
+\KeywordTok{library}\NormalTok{(gridExtra)}
+\KeywordTok{library}\NormalTok{(caret)}
+\KeywordTok{library}\NormalTok{(doParallel)}
+\KeywordTok{library}\NormalTok{(syuzhet)}
+\KeywordTok{library}\NormalTok{(ggcorrplot)}
+\KeywordTok{library}\NormalTok{(gbm)}
 \end{Highlighting}
 \end{Shaded}
 
-El dataset escogido se puede encontrar en
-(\url{https://www.kaggle.com/c/nlp-getting-started/data}). Este dataset,
-con 10.876 instancias, contiene 4 variables explicativas; \emph{id},
-\emph{keyword}, \emph{location} y \emph{test}, y dos valores en la
-variable clase \emph{target} (1 y 0). La variable clase es de tipo
-binaria así que vamos a aprender un modelo de clasificación binaria, y
-vamos a predecir si dado un tweet, este tweet trata sobre un desastre
-real o no. Si es un desastre real, se predice un 1. Si no, se predice un
-0.
+\hypertarget{anuxe1lisis-exploratorio-de-los-datos}{%
+\section{Análisis Exploratorio de los
+Datos}\label{anuxe1lisis-exploratorio-de-los-datos}}
+
+Antes de entrenar un modelo predictivo, o incluso antes de realizar
+cualquier cálculo con un nuevo conjunto de datos, es muy importante
+realizar una exploración descriptiva de los datos. Este proceso nos
+permite entender mejor que información contienen cada variable, detectar
+posibles errores, etc. además, puede dar pistas sobre qué variables no
+son adecuadas para predecir un modelo.
+
+Acorde a la realización del ejercicio propuesto se ha elegido la
+competición en Kaggle: \textbf{Real or Not? NLP with Disaster Tweets}.
+El dataset de la competición se puede encontrar en el siguiente enlace:
+\url{https://www.kaggle.com/c/nlp-getting-started/data}. Este dataset,
+con 10.876 instancias, contiene 4 variables explicativas: \textbf{id},
+\textbf{keyword}, \textbf{location} y \textbf{text}, y dos valores en la
+variable clase \textbf{target} (0 y 1). Como podemos observar la
+variable clase es binaria, así que, durante este ejercicio vamos a
+aprender un modelo de \emph{clasificación binaria}. El objetivo de este
+modelo será predecir si dado un tweet, éste trata sobre un desastre real
+o no. Si un tweet trata sobre un desastre real, se predice un 1. Si no,
+se predice un 0.
+
+\emph{La clasificación binaria es un tipo de clasificación en el que tan
+solo se pueden asignar dos clases diferentes (0 o 1).}
+
+La métrica de evaluación esperada por la competición es \textbf{F1
+score}. Para ver como se calcula consultar el siguiente enlace:
+\url{https://www.kaggle.com/c/nlp-getting-started/overview/evaluation}.
 
 La partición inicial train-test, no se tiene que realizar, ya que las
-instancias de train y test ya vienen definidas en los ficheros
-\emph{train.csv} y \emph{test.csv}, proporcionados por la competición en
-\href{https://www.kaggle.com/c/nlp-getting-started/overview}{Kaggle} que
-se ha elegido. El conjunto de datos de train contiene 7613 instancias y
-el conjunto de datos de test contiene 3262 instancias.
+instancias de train y test ya vienen definidas en el dataset de la
+competición (descargar a nuestro espacio de trabajo los ficheros
+\textbf{train.csv} y \textbf{test.csv} de
+\url{https://www.kaggle.com/c/nlp-getting-started/data}).
 
-Cargamos el dataset:
+Cargamos a nuestro espacio de trabajo los conjuntos de datos de train y
+test descargados, renombrando los valores perdidos como \textbf{NA} para
+que los podamos tratar más adelante. También mostramos las dimensiones
+de los conjuntos de datos usando la función \textbf{dim}.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{train <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"train.csv"}\NormalTok{, }\DataTypeTok{na.strings=}\KeywordTok{c}\NormalTok{(}\StringTok{""}\NormalTok{,}\StringTok{"NA"}\NormalTok{))}
+\NormalTok{train <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"train.csv"}\NormalTok{, }\DataTypeTok{na.strings=}\KeywordTok{c}\NormalTok{(}\StringTok{""}\NormalTok{, }\StringTok{"NA"}\NormalTok{))}
+\NormalTok{test <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"test.csv"}\NormalTok{, }\DataTypeTok{na.strings=}\KeywordTok{c}\NormalTok{(}\StringTok{""}\NormalTok{, }\StringTok{"NA"}\NormalTok{))}
 \KeywordTok{dim}\NormalTok{(train)}
 \end{Highlighting}
 \end{Shaded}
@@ -239,7 +224,6 @@ Cargamos el dataset:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{test <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"test.csv"}\NormalTok{, }\DataTypeTok{na.strings=}\KeywordTok{c}\NormalTok{(}\StringTok{""}\NormalTok{,}\StringTok{"NA"}\NormalTok{))}
 \KeywordTok{dim}\NormalTok{(test)}
 \end{Highlighting}
 \end{Shaded}
@@ -248,102 +232,75 @@ Cargamos el dataset:
 ## [1] 3263    4
 \end{verbatim}
 
-Cada instancia en el conjunto de train y test contiene la siguiente
-información:
+Vemos que el conjunto de datos de train contiene 7613 instancias y el
+conjunto de datos de test contiene 3263 instancias. Cada instancia
+contiene las siguientes variables:
 
 \begin{itemize}
 \tightlist
 \item
   \textbf{id}: un identificador único para cada tweet.
 \item
-  \textbf{keyword}: una palabra clave del tweet (puede estar en blanco).
+  \textbf{keyword}: una palabra clave del tweet.
 \item
-  \textbf{location}: la ubicación desde la que se envió el tweet (puede
-  estar en blanco).
+  \textbf{location}: la ubicación desde la que se envió el tweet.
 \item
   \textbf{text}: el texto del tweet.
 \item
   \textbf{target}: solo en el conjunto de datos de train porqué es la
-  variable clase a predecir. Indica si un tweet es sobre un desastre
-  real (1) o no (0).
+  variable clase a predecir. Indica si un tweet corresponde a un
+  desastre real (1) o no (0).
 \end{itemize}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{str}\NormalTok{(train)}
-\end{Highlighting}
-\end{Shaded}
 
 \begin{verbatim}
 ## 'data.frame':    7613 obs. of  5 variables:
 ##  $ id      : int  1 4 5 6 7 8 10 13 14 15 ...
 ##  $ keyword : chr  NA NA NA NA ...
 ##  $ location: chr  NA NA NA NA ...
-##  $ text    : chr  "Our Deeds are the Reason of this #earthquake May ALLAH Forgive us all" "Forest fire near La Ronge Sask. Canada" "All residents asked to 'shelter in place' are being notified by officers. No other evacuation or shelter in pla"| __truncated__ "13,000 people receive #wildfires evacuation orders in California " ...
+##  $ text    : chr  "Our Deeds are the Reason of this #earthquake May ALLAH Forgive "..
 ##  $ target  : int  1 1 1 1 1 1 1 1 1 1 ...
 \end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{str}\NormalTok{(test)}
-\end{Highlighting}
-\end{Shaded}
 
 \begin{verbatim}
 ## 'data.frame':    3263 obs. of  4 variables:
 ##  $ id      : int  0 2 3 9 11 12 21 22 27 29 ...
 ##  $ keyword : chr  NA NA NA NA ...
 ##  $ location: chr  NA NA NA NA ...
-##  $ text    : chr  "Just happened a terrible car crash" "Heard about #earthquake is different cities, stay safe everyone." "there is a forest fire at spot pond, geese are fleeing across the street, I cannot save them all" "Apocalypse lighting. #Spokane #wildfires" ...
+##  $ text    : chr  "Just happened a terrible car crash" "Heard about #earthquake is"..
 \end{verbatim}
 
-Factorización de la variable clase, que inicialmente es de tipo entero.
+\hypertarget{variable-target}{%
+\subsection{\texorpdfstring{Variable
+\emph{target}}{Variable target}}\label{variable-target}}
+
+Como ya hemos comentado, la variable \textbf{target} es la variable a
+predecir. Es de tipo cuantitativa (de tipo entero) y conviene
+convertirla a variable cualitativa, almacenarla con el tipo
+\emph{factor}. Para evitar errores, se recodifica para que sus dos
+posibles valores sean ``Yes''-``No'' y se convierte a \emph{factor}.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{str}\NormalTok{(train}\OperatorTok{$}\NormalTok{target)}
+\NormalTok{train}\OperatorTok{$}\NormalTok{target <-}\StringTok{ }\KeywordTok{as.factor}\NormalTok{(}\KeywordTok{ifelse}\NormalTok{(train}\OperatorTok{$}\NormalTok{target }\OperatorTok{==}\StringTok{ }\DecValTok{0}\NormalTok{, }\StringTok{"No"}\NormalTok{, }\StringTok{"Yes"}\NormalTok{))}
+\KeywordTok{ggplot}\NormalTok{(train, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{target)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_bar}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{fill=}\NormalTok{target))}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{verbatim}
-##  int [1:7613] 1 1 1 1 1 1 1 1 1 1 ...
-\end{verbatim}
+\begin{center}\includegraphics[width=0.7\linewidth]{exercise_files/figure-latex/unnamed-chunk-4-1} \end{center}
+
+Cuando se crea un modelo, es muy importante estudiar la distribución de
+la variable clase, ya que, a fin de cuentas, es lo que nos interesa
+predecir.
+
+Gráficamente observamos que la distribución de la variable a predecir no
+está muy sesgada y está relativamente equilibrada. Hay menos tweets que
+se refieren a desastres reales. Además, parece que no presenta un
+problema notable de \emph{desbalanceo de clase}, porqué contamos con
+muchas observaciones del caso minoritario.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{train}\OperatorTok{$}\NormalTok{target <-}\StringTok{ }\KeywordTok{as.factor}\NormalTok{(train}\OperatorTok{$}\NormalTok{target)}
-\KeywordTok{str}\NormalTok{(train}\OperatorTok{$}\NormalTok{target)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-##  Factor w/ 2 levels "0","1": 2 2 2 2 2 2 2 2 2 2 ...
-\end{verbatim}
-
-Distribución de la variable clase:
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{ggplot}\NormalTok{(train, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{target)) }\OperatorTok{+}\StringTok{ }
-\StringTok{  }\KeywordTok{geom_bar}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{fill=}\NormalTok{target))}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{center}\includegraphics{exercise_files/figure-latex/unnamed-chunk-6-1} \end{center}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{sum}\NormalTok{(train}\OperatorTok{$}\NormalTok{target }\OperatorTok{==}\StringTok{ "0"}\NormalTok{) }\OperatorTok{/}\StringTok{ }\KeywordTok{dim}\NormalTok{(train)[}\DecValTok{1}\NormalTok{] }\OperatorTok{*}\StringTok{ }\DecValTok{100}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## [1] 57.03402
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{sum}\NormalTok{(train}\OperatorTok{$}\NormalTok{target }\OperatorTok{==}\StringTok{ "1"}\NormalTok{) }\OperatorTok{/}\StringTok{ }\KeywordTok{dim}\NormalTok{(train)[}\DecValTok{1}\NormalTok{] }\OperatorTok{*}\StringTok{ }\DecValTok{100}
+\KeywordTok{sum}\NormalTok{(train}\OperatorTok{$}\NormalTok{target }\OperatorTok{==}\StringTok{ "Yes"}\NormalTok{) }\OperatorTok{/}\StringTok{ }\KeywordTok{dim}\NormalTok{(train)[}\DecValTok{1}\NormalTok{] }\OperatorTok{*}\StringTok{ }\DecValTok{100}
 \end{Highlighting}
 \end{Shaded}
 
@@ -351,51 +308,260 @@ Distribución de la variable clase:
 ## [1] 42.96598
 \end{verbatim}
 
-La distribución de la variable a predecir está relativamente
-equilibrada, donde el 57\% de las instancias de los tweets son sobre un
-desastre no real y el 43\% sobre un desastre real.
-
-\hypertarget{correlaciones-entre-variables-explicativas}{%
-\subsubsection{correlaciones entre variables
-explicativas}\label{correlaciones-entre-variables-explicativas}}
-
-\hypertarget{muxe9tica-de-evaluaciuxf3n}{%
-\subsubsection{mética de evaluación}\label{muxe9tica-de-evaluaciuxf3n}}
-
-\hypertarget{valores-perdidos}{%
-\subsubsection{valores perdidos}\label{valores-perdidos}}
-
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{colSums}\NormalTok{(}\KeywordTok{sapply}\NormalTok{(train, is.na))}
+\KeywordTok{sum}\NormalTok{(train}\OperatorTok{$}\NormalTok{target }\OperatorTok{==}\StringTok{ "No"}\NormalTok{) }\OperatorTok{/}\StringTok{ }\KeywordTok{dim}\NormalTok{(train)[}\DecValTok{1}\NormalTok{] }\OperatorTok{*}\StringTok{ }\DecValTok{100}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-##       id  keyword location     text   target 
-##        0       61     2533        0        0
+## [1] 57.03402
 \end{verbatim}
+
+Para que un modelo predictivo nos sea útil tendremos que intentar
+superar el porcentaje mínimo dado que aproximadamente el 57\% de los
+tweets no representan un desastre real (este porcentaje se recalculará
+únicamente con el conjunto de datos de train).
+
+Como el objetivo del ejercicio es predecir que tweets pertenecen o no a
+un desastre real, el análisis que haremos a continuación se hace realiza
+de cada variable explicativa con relación a la variable a predecir
+\textbf{target}. Analizando de esta forma, se pueden extraer ideas sobre
+que variables están más relacionadas con los desastres reales.
+
+\hypertarget{variable-keyword}{%
+\subsection{\texorpdfstring{Variable
+\emph{keyword}}{Variable keyword}}\label{variable-keyword}}
+
+La variable explicativa \textbf{keyword} representa una palabra clave en
+cada tweet. Vemos las 10 primeras del conjunto de datos de train.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{colSums}\NormalTok{(}\KeywordTok{sapply}\NormalTok{(test, is.na))}
+\NormalTok{train }\OperatorTok{%>%}\StringTok{ }\KeywordTok{select}\NormalTok{(keyword) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{unique}\NormalTok{() }\OperatorTok{%>%}\StringTok{ }\KeywordTok{head}\NormalTok{(}\DecValTok{10}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-##       id  keyword location     text 
-##        0       26     1105        0
+##                 keyword
+## 1                  <NA>
+## 32               ablaze
+## 68             accident
+## 103          aftershock
+## 137 airplane%20accident
+## 172           ambulance
+## 210         annihilated
+## 244        annihilation
+## 273          apocalypse
+## 305          armageddon
 \end{verbatim}
 
-Las variables \emph{keyword} y \emph{location} tienen valores perdidos.
-Sobretodo hay una gran cantidad de tweets, para los cuales falta la
-ubicación. Potencialmente, esto podría ser una buena variable predictiva
-en sí misma. No faltan valores en las variables \emph{target} y
-\emph{text}.
+Nuestro interés en la variable \textbf{keyword} dentro del análisis
+exploratorio de los datos es ver si existen correlaciones entre esta y
+la variable a predecir \textbf{target}. Para ello, y como estamos
+delante un ejercicio de \emph{Procesamiento del Lenguaje Natural}
+realizaremos un análisis de sentimientos.
 
-Nos ocuparemos de los valores perdidos más adelante.
+\emph{El análisis de sentimientos es una técnica de
+\href{https://en.wikipedia.org/wiki/Machine_learning}{Machine Learning},
+basada en el
+\href{https://www.kdnuggets.com/2017/02/natural-language-processing-key-terms-explained.html}{Procesado
+del Lenguaje Natural}, que pretende obtener información subjetiva de una
+serie de textos. Su aplicación es este caso, consiste en resolver si un
+tweet es real o no en relación a un desastre.}
 
-Eliminamos la variable \emph{id}.
+En el análisis de sentimientos usamos los paquetes de R:
+\textbf{syuzhet}, \textbf{ggcorrplot} y \textbf{doParallel}.
+
+\begin{itemize}
+\tightlist
+\item
+  El paquete \textbf{syuzhet} cuenta con la función
+  \textbf{get\_nrc\_sentiment} que calculará la presencia de los
+  diferentes sentimientos dado un conjunto de palabras clave. Los
+  parámetros de esta función son:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \textbf{char\_v}. Un vector de caracteres que en este caso contendrá
+    todas las palabras clave.
+  \item
+    \textbf{language}. Define el lenguaje. Como los tweets están en
+    inglés, el lenguaje será el inglés.
+  \item
+    \textbf{cl}. Para el análisis en paralelo. Es opcional, pero en este
+    caso lo usaremos porqué hay muchas palabras clave.
+  \end{itemize}
+\item
+  El paquete \textbf{doParallel} cuenta con las funciones:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \textbf{makePSOCKcluster}. Crea un clúster de sockets paralelos.
+  \item
+    \textbf{registerDoParallel}. Registra el número de \emph{cores} que
+    usará el clúster creado.
+  \item
+    \textbf{stopCluster}. Detiene la computación paralela.
+  \end{itemize}
+\end{itemize}
+
+La computación paralela la usaremos en muchas de las ejecuciones de este
+ejercicio ya que nos encontramos delante de un problema de \emph{alta
+dimensionalidad}. Eso es, que la dimensionalidad de nuestros datos es
+muy elevada y puede reducir drásticamente la eficiencia de los
+algoritmos de clasificación supervisada que entrenaremos. Una de las
+técnicas más ampliamente utilizada y conocida para la reducción de la
+dimensionalidad es Principal Component Analysis (PCA) Esta técnica lleva
+a cabo la transformación de los datos generando unas nuevas variables.
+
+La reducción de la dimensionalidad que aplicaremos en este ejercicio se
+realiza más adelante y se calculará teniendo en cuenta las palabras más
+frecuentes de los tweets en conjunto de datos.
+
+El análisis de sentimientos de cada palabra clave, usando la función
+\textbf{get\_nrc\_sentiment}, consiste en extraer los sentimientos de
+cada palabra clave, guardarlos en un nuevo conjunto de datos
+(\emph{emotion.df}), con el que calcularemos (paquete \textbf{cor}) y
+visualizaremos la matriz de correlaciones (paquete \textbf{ggcorrplot})
+entre las palabras clave con relación a la variable a predecir. Es
+importante volver a transformar la variable a predecir para realizar los
+cálculos, cuando la variable es cualitativa.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cl <-}\StringTok{ }\KeywordTok{makePSOCKcluster}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DataTypeTok{setup_strategy=}\StringTok{"sequential"}\NormalTok{)}
+\KeywordTok{registerDoParallel}\NormalTok{(cl)}
+
+\NormalTok{emotion.df <-}\StringTok{ }\KeywordTok{get_nrc_sentiment}\NormalTok{(}\DataTypeTok{char_v =} \KeywordTok{gsub}\NormalTok{(}\StringTok{"_"}\NormalTok{, }\StringTok{" "}\NormalTok{, train}\OperatorTok{$}\NormalTok{keyword), }
+                                \DataTypeTok{language =} \StringTok{"english"}\NormalTok{, }\DataTypeTok{cl=}\NormalTok{cl)}
+
+\NormalTok{emotion.df <-}\StringTok{ }\NormalTok{emotion.df }\OperatorTok{%>%}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{target =}\NormalTok{ train}\OperatorTok{$}\NormalTok{target)}
+
+\NormalTok{emotion.df}\OperatorTok{$}\NormalTok{target <-}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(emotion.df}\OperatorTok{$}\NormalTok{target)}
+
+\KeywordTok{cor}\NormalTok{(emotion.df) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{ggcorrplot}\NormalTok{(}\DataTypeTok{lab =} \OtherTok{TRUE}\NormalTok{, }
+             \DataTypeTok{title =} \StringTok{"Matriz de correlación entre }\CharTok{\textbackslash{}n}\StringTok{keyword y target"}\NormalTok{,}
+             \DataTypeTok{legend.title =} \StringTok{"correlation"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{exercise_files/figure-latex/unnamed-chunk-7-1} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{stopCluster}\NormalTok{(cl)}
+\end{Highlighting}
+\end{Shaded}
+
+Parece que, al observar la matriz de correlaciones, existe una
+correlación nula entre las variables \textbf{keyword} y \textbf{target}.
+Al revisarlo con mayor detalle, podemos observar que la mayoría de las
+palabras clave no tienen un sentimiento positivo asociado. Las palabras
+clave asociadas a un sentimiento se asocian negativamente (miedo o
+tristeza), lo cual es bastante consistente con el problema, ya que
+intentemos predecir el desastre.
+
+Acorde a nuestro criterio esta variable explicativa no es buena para
+hacer una predicción ya que no está realmente asociada con la variable a
+predecir. Así que la excluiremos del procesamiento de texto.
+
+\hypertarget{variable-location}{%
+\subsection{\texorpdfstring{Variable
+\emph{location}}{Variable location}}\label{variable-location}}
+
+La variable explicativa \textbf{location} representa las ubicaciones
+desde donde se generaron los tweets. Vemos las 10 primeras y el número
+total de ubicaciones diferentes del conjunto de datos de train (3342
+ubicaciones).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{train }\OperatorTok{%>%}\StringTok{ }\KeywordTok{select}\NormalTok{(location) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{unique}\NormalTok{() }\OperatorTok{%>%}\StringTok{ }\KeywordTok{head}\NormalTok{(}\DecValTok{10}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                         location
+## 1                           <NA>
+## 32                    Birmingham
+## 33 Est. September 2012 - Bristol
+## 34                        AFRICA
+## 35              Philadelphia, PA
+## 36                    London, UK
+## 37                      Pretoria
+## 38                  World Wide!!
+## 40                Paranaque City
+## 41                Live On Webcam
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{count}\NormalTok{(train }\OperatorTok{%>%}\StringTok{ }\KeywordTok{select}\NormalTok{(location) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{unique}\NormalTok{())}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      n
+## 1 3342
+\end{verbatim}
+
+A continuación, veremos las ubicaciones que se repiten más de 10 veces
+en el conjunto de datos de train.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{location.freq <-}\StringTok{ }\KeywordTok{table}\NormalTok{(}\KeywordTok{unlist}\NormalTok{(train }\OperatorTok{%>%}\StringTok{ }\KeywordTok{select}\NormalTok{(location)))}
+\NormalTok{location.freq[}\KeywordTok{which}\NormalTok{(location.freq }\OperatorTok{>}\StringTok{ }\DecValTok{10}\NormalTok{)]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##         Australia        California   California, USA            Canada 
+##                18                17                15                29 
+##           Chicago       Chicago, IL             Earth        Everywhere 
+##                11                18                11                15 
+##           Florida             India         Indonesia           Ireland 
+##                14                24                13                12 
+##             Kenya            London       Los Angeles   Los Angeles, CA 
+##                20                45                13                26 
+##            Mumbai          New York      New York, NY           Nigeria 
+##                22                71                15                28 
+##               NYC     San Francisco San Francisco, CA           Seattle 
+##                12                14                11                11 
+##           Toronto                UK    United Kingdom     United States 
+##                12                27                14                50 
+##               USA  Washington, D.C.    Washington, DC         Worldwide 
+##               104                13                21                19
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{barplot}\NormalTok{(location.freq[}\KeywordTok{which}\NormalTok{(location.freq}\OperatorTok{>}\DecValTok{10}\NormalTok{)], }\DataTypeTok{las =} \DecValTok{2}\NormalTok{,  }
+        \DataTypeTok{ylab =} \StringTok{"frequency"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics[width=0.7\linewidth]{exercise_files/figure-latex/unnamed-chunk-9-1} \end{center}
+
+En el total de ubicaciones, 3342, la mayoría de ellas cuenta con menos
+de 10 observaciones. Acorde a nuestro criterio esta variable explicativa
+no es buena para hacer una predicción, ya que la variable tiene muy
+pocas observaciones, y puede ocurrir que, durante la validación cruzada
+o \emph{bootstrapping}, algunas de las particiones no contengan ninguna
+observación de dicha variable, lo que puede dar lugar a errores.
+
+\hypertarget{variable-id}{%
+\subsection{\texorpdfstring{Variable
+\emph{id}}{Variable id}}\label{variable-id}}
+
+La variable \textbf{id} es solo un identificador único, así que, no la
+analizaremos y procederemos a eliminarla de los conjuntos de datos de
+train y test.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -404,215 +570,318 @@ Eliminamos la variable \emph{id}.
 \end{Highlighting}
 \end{Shaded}
 
-\hypertarget{keyword}{%
-\subsection{keyword}\label{keyword}}
+\hypertarget{conclusiuxf3n-anuxe1lisis-exploratorio}{%
+\subsection{Conclusión análisis
+exploratorio}\label{conclusiuxf3n-anuxe1lisis-exploratorio}}
+
+Llegados a este punto, parece que nuestro criterio en la exploración de
+los datos, el estudio de su distribución y sus posibles relaciones con
+la variable a predecir nos indica que las variables explicativas
+\textbf{keyword}, \textbf{location} y \textbf{id} no son buenas para
+hacer una predicción, así que nos centraremos en la variable
+\textbf{text} para hacer la predicción.
+
+\hypertarget{procesamiento-de-texto}{%
+\section{Procesamiento de texto}\label{procesamiento-de-texto}}
+
+Combinamos los conjuntos de datos de train y test para ahorrar esfuerzos
+en el preprocesado de datos. Para ello, usamos la función
+\textbf{bind\_rows}, que nos permitirá enlazar de forma eficiente los
+conjuntos de datos por fila y columna. Podremos comprobar que la
+combinación se hace correctamente, sumando los elementos de train (7613)
+y de test (3263), el nuevo conjunto de datos (\textbf{complete\_df})
+tendrá 10876 observaciones, 3 variables explicativas (\textbf{keyword},
+\textbf{location}, \textbf{text}) y la variable de clase
+\textbf{target}.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{length}\NormalTok{(}\KeywordTok{unique}\NormalTok{(train}\OperatorTok{$}\NormalTok{keyword))}
+\NormalTok{complete_df <-}\StringTok{ }\KeywordTok{bind_rows}\NormalTok{(train, test)}
+\KeywordTok{str}\NormalTok{(complete_df, }\DataTypeTok{width =} \DecValTok{85}\NormalTok{, }\DataTypeTok{strict.width =} \StringTok{"cut"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 222
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{length}\NormalTok{(}\KeywordTok{unique}\NormalTok{(test}\OperatorTok{$}\NormalTok{keyword))}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## [1] 222
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{train}\OperatorTok{$}\NormalTok{keyword <-}\StringTok{ }\KeywordTok{as.factor}\NormalTok{(train}\OperatorTok{$}\NormalTok{keyword)}
-\KeywordTok{all.equal}\NormalTok{(}\KeywordTok{levels}\NormalTok{(train}\OperatorTok{$}\NormalTok{keyword), }\KeywordTok{levels}\NormalTok{(test}\OperatorTok{$}\NormalTok{keyword))}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## [1] "Modes: character, NULL"              
-## [2] "Lengths: 221, 0"                     
-## [3] "target is character, current is NULL"
-\end{verbatim}
-
-\hypertarget{location}{%
-\subsection{location}\label{location}}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{length}\NormalTok{(}\KeywordTok{unique}\NormalTok{(train}\OperatorTok{$}\NormalTok{location))}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## [1] 3342
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{length}\NormalTok{(}\KeywordTok{unique}\NormalTok{(test}\OperatorTok{$}\NormalTok{location))}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## [1] 1603
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{train_and_test <-}\StringTok{ }\KeywordTok{rbind}\NormalTok{(train[, }\DecValTok{1}\OperatorTok{:}\DecValTok{3}\NormalTok{], test)}
-\KeywordTok{str}\NormalTok{(train_and_test)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## 'data.frame':    10876 obs. of  3 variables:
-##  $ keyword : Factor w/ 221 levels "ablaze","accident",..: NA NA NA NA NA NA NA NA NA NA ...
+## 'data.frame':    10876 obs. of  4 variables:
+##  $ keyword : chr  NA NA NA NA ...
 ##  $ location: chr  NA NA NA NA ...
-##  $ text    : chr  "Our Deeds are the Reason of this #earthquake May ALLAH Forgive us all" "Forest fire near La Ronge Sask. Canada" "All residents asked to 'shelter in place' are being notified by officers. No other evacuation or shelter in pla"| __truncated__ "13,000 people receive #wildfires evacuation orders in California " ...
+##  $ text    : chr  "Our Deeds are the Reason of this #earthquake May ALLAH Forgive "..
+##  $ target  : Factor w/ 2 levels "No","Yes": 2 2 2 2 2 2 2 2 2 2 ...
 \end{verbatim}
 
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Create a corpus
-\item
-  Convert to lowercase
-\item
-  Remove punctuation
-\item
-  Remove stopwords
-\item
-  Stemming (using Porter's stemming algorithm)
-\item
-  Create document term matrix
-\end{enumerate}
+El preprocesado de datos englobará las transformaciones de los textos,
+como, por ejemplo, la imputación de valores ausentes o la reducción de
+dimensionalidad.
+
+Primero, miramos cuantos valores perdidos tiene nuestro conjunto de
+datos \textbf{complete\_df}. La función \textbf{colSums} sumará los
+valores que la función \textbf{sapply} encuentre, en este caso, los
+valores perdidos.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{corpus_location <-}\StringTok{ }\KeywordTok{Corpus}\NormalTok{(}\KeywordTok{VectorSource}\NormalTok{(train_and_test}\OperatorTok{$}\NormalTok{location))}
-\NormalTok{corpus_location[[}\DecValTok{33}\NormalTok{]]}\OperatorTok{$}\NormalTok{content}
+\KeywordTok{colSums}\NormalTok{(}\KeywordTok{sapply}\NormalTok{(complete_df, is.na))}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] "Est. September 2012 - Bristol"
+##  keyword location     text   target 
+##       87     3638        0     3263
 \end{verbatim}
+
+Identificamos que las variables explicativas \textbf{keyword} y
+\textbf{location} tienen valores perdidos. La variable explicativa
+\textbf{text} no tiene valores perdidos. Sobretodo hay una gran cantidad
+de tweets, para los cuales falta su ubicación. Los 3263 valores perdidos
+de la variable a predecir provienen del conjunto de datos de test. Nos
+ocuparemos de los valores perdidos más adelante.
+
+\hypertarget{corpus}{%
+\subsection{Corpus}\label{corpus}}
+
+Con nuestro nuevo conjunto de datos preparado (\textbf{complete\_df}),
+procedemos a crear nuestro Corpus, es decir, el conjunto de textos de la
+variable \textbf{text} a analizar. En este caso, nuestro Corpus se
+compone de todos los textos de los tweets y los asignaremos al objeto
+\emph{myCorpus} usando las funciones \textbf{VectorSource} y
+\textbf{Corpus}. La función \textbf{Corpus} creará el corpus a partir de
+un vector de textos. La función \textbf{VectorSource} interpretará cada
+mensaje de texto de los tweets como un elemento de ese vector de textos.
+
+\emph{Un corpus lingüístico se define como ``un conjunto de textos de un
+mismo origen'' y que tiene por función recopilar un conjunto de textos.
+El uso de un corpus lingüístico nos permitirá obtener información de las
+palabras utilizadas con más o menor frecuencia.}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{corpus_location <-}\StringTok{ }\KeywordTok{tm_map}\NormalTok{(corpus_location, tolower)}
-\NormalTok{corpus_location[[}\DecValTok{33}\NormalTok{]]}\OperatorTok{$}\NormalTok{content}
+\NormalTok{myCorpus <-}\StringTok{ }\KeywordTok{Corpus}\NormalTok{(}\KeywordTok{VectorSource}\NormalTok{(complete_df}\OperatorTok{$}\NormalTok{text))}
+\NormalTok{myCorpus}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] "est. september 2012 - bristol"
+## <<SimpleCorpus>>
+## Metadata:  corpus specific: 1, document level (indexed): 0
+## Content:  documents: 10876
 \end{verbatim}
+
+Como podemos ver, nuestro Corpus está compuesto por 10876 textos.
+
+\hypertarget{limpieza-del-texto}{%
+\subsection{Limpieza del texto}\label{limpieza-del-texto}}
+
+Necesitamos limpiar de los 10876 textos caracteres que son de poca
+utilidad. Empezamos por aseguramos de que no queden enlaces, con un poco
+de ayuda de las \emph{regular expressions}. Para ello usaremos las
+funciones \textbf{gsub} y \textbf{tm\_map}. La función \textbf{gsub}
+buscará y reemplazará desde la primera hasta la última de las
+coincidencias de un patrón (representado por una \emph{regular
+expression}). La función \textbf{tm\_map} será la encargada de aplicar
+las diferentes transformaciones de los textos a nuestro corpus.
+
+\emph{Una expresión regular (o en inglés regular expression) es una
+representación, según unas reglas sintácticas de un lenguaje formal, de
+una porción de texto genérico a buscar dentro de otro texto, como por
+ejemplo caracteres, palabras o patrones de texto concretos.}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{corpus_location <-}\StringTok{ }\KeywordTok{tm_map}\NormalTok{(corpus_location, removePunctuation)}
-\NormalTok{corpus_location[[}\DecValTok{33}\NormalTok{]]}\OperatorTok{$}\NormalTok{content}
+\NormalTok{removeURL <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x) }\KeywordTok{gsub}\NormalTok{(}\StringTok{"http[^[:space:]]*"}\NormalTok{, }\StringTok{""}\NormalTok{, x)  }
+\NormalTok{myCorpus <-}\StringTok{ }\KeywordTok{tm_map}\NormalTok{(myCorpus, }\KeywordTok{content_transformer}\NormalTok{(removeURL))}
+\end{Highlighting}
+\end{Shaded}
+
+Convertimos todo a minúsculas.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{myCorpus <-}\StringTok{ }\KeywordTok{tm_map}\NormalTok{(myCorpus, }\KeywordTok{content_transformer}\NormalTok{(tolower))}
+\end{Highlighting}
+\end{Shaded}
+
+Eliminamos los nombres de usuario.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{removeUsername <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x) }\KeywordTok{gsub}\NormalTok{(}\StringTok{"@[^[:space:]]*"}\NormalTok{, }\StringTok{""}\NormalTok{, x)  }
+\NormalTok{myCorpus <-}\StringTok{ }\KeywordTok{tm_map}\NormalTok{(myCorpus, }\KeywordTok{content_transformer}\NormalTok{(removeUsername))}
+\end{Highlighting}
+\end{Shaded}
+
+Nos deshacemos de la puntuación, puesto que por ejemplo ``fin'' y
+``fin.'' son identificadas como palabras diferentes, lo cual no
+deseamos.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{removeNumPunct <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x) }\KeywordTok{gsub}\NormalTok{(}\StringTok{"[^[:alpha:][:space:]]*"}\NormalTok{, }\StringTok{""}\NormalTok{, x)   }
+\NormalTok{myCorpus <-}\StringTok{ }\KeywordTok{tm_map}\NormalTok{(myCorpus, }\KeywordTok{content_transformer}\NormalTok{(removeNumPunct))}
+\end{Highlighting}
+\end{Shaded}
+
+Usamos \textbf{removeWords} con \textbf{stopwords(``english'')},
+recordemos que los textos de los tweets están en inglés y cada idioma
+tiene sus propias palabras vacías; para eliminar palabras vacías, es
+decir, aquellas con poco valor para el análisis, que carecen de un
+significado por si solas, tales como artículos, preposiciones,
+conjunciones, pronombres, etc.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{myStopWords <-}\StringTok{ }\KeywordTok{c}\NormalTok{((}\KeywordTok{stopwords}\NormalTok{(}\StringTok{'english'}\NormalTok{)), }
+    \KeywordTok{c}\NormalTok{(}\StringTok{"really"}\NormalTok{, }\StringTok{"tweets"}\NormalTok{, }\StringTok{"saw"}\NormalTok{, }\StringTok{"just"}\NormalTok{, }\StringTok{"feel"}\NormalTok{, }\StringTok{"may"}\NormalTok{, }\StringTok{"us"}\NormalTok{, }\StringTok{"rt"}\NormalTok{, }\StringTok{"every"}\NormalTok{, }\StringTok{"one"}\NormalTok{,}
+     \StringTok{"amp"}\NormalTok{, }\StringTok{"like"}\NormalTok{, }\StringTok{"will"}\NormalTok{, }\StringTok{"got"}\NormalTok{, }\StringTok{"new"}\NormalTok{, }\StringTok{"can"}\NormalTok{, }\StringTok{"still"}\NormalTok{, }\StringTok{"back"}\NormalTok{, }\StringTok{"top"}\NormalTok{, }\StringTok{"much"}\NormalTok{,}
+     \StringTok{"near"}\NormalTok{, }\StringTok{"im"}\NormalTok{, }\StringTok{"see"}\NormalTok{, }\StringTok{"via"}\NormalTok{, }\StringTok{"get"}\NormalTok{, }\StringTok{"now"}\NormalTok{, }\StringTok{"come"}\NormalTok{, }\StringTok{"oil"}\NormalTok{, }\StringTok{"let"}\NormalTok{, }\StringTok{"god"}\NormalTok{, }\StringTok{"want"}\NormalTok{,}
+     \StringTok{"pm"}\NormalTok{, }\StringTok{"last"}\NormalTok{, }\StringTok{"hope"}\NormalTok{, }\StringTok{"since"}\NormalTok{, }\StringTok{"everyone"}\NormalTok{, }\StringTok{"food"}\NormalTok{, }\StringTok{"content"}\NormalTok{, }\StringTok{"always"}\NormalTok{, }\StringTok{"th"}\NormalTok{,}
+     \StringTok{"full"}\NormalTok{, }\StringTok{"found"}\NormalTok{, }\StringTok{"dont"}\NormalTok{, }\StringTok{"look"}\NormalTok{, }\StringTok{"cant"}\NormalTok{, }\StringTok{"mh"}\NormalTok{, }\StringTok{"lol"}\NormalTok{, }\StringTok{"set"}\NormalTok{, }\StringTok{"old"}\NormalTok{, }\StringTok{"service"}\NormalTok{,}
+     \StringTok{"city"}\NormalTok{, }\StringTok{"home"}\NormalTok{, }\StringTok{"live"}\NormalTok{, }\StringTok{"night"}\NormalTok{, }\StringTok{"news"}\NormalTok{, }\StringTok{"say"}\NormalTok{, }\StringTok{"video"}\NormalTok{, }\StringTok{"people"}\NormalTok{, }\StringTok{"ill"}\NormalTok{, }
+     \StringTok{"way"}\NormalTok{,  }\StringTok{"please"}\NormalTok{, }\StringTok{"years"}\NormalTok{, }\StringTok{"take"}\NormalTok{, }\StringTok{"homes"}\NormalTok{, }\StringTok{"read"}\NormalTok{, }\StringTok{"man"}\NormalTok{, }\StringTok{"next"}\NormalTok{, }\StringTok{"cross"}\NormalTok{, }
+     \StringTok{"boy"}\NormalTok{, }\StringTok{"bad"}\NormalTok{, }\StringTok{"ass"}\NormalTok{))}
+
+\KeywordTok{head}\NormalTok{(myStopWords, }\DecValTok{30}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] "est september 2012  bristol"
+##  [1] "i"          "me"         "my"         "myself"     "we"        
+##  [6] "our"        "ours"       "ourselves"  "you"        "your"      
+## [11] "yours"      "yourself"   "yourselves" "he"         "him"       
+## [16] "his"        "himself"    "she"        "her"        "hers"      
+## [21] "herself"    "it"         "its"        "itself"     "they"      
+## [26] "them"       "their"      "theirs"     "themselves" "what"
 \end{verbatim}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{corpus_location <-}\StringTok{ }\KeywordTok{tm_map}\NormalTok{(corpus_location, removeWords, }\KeywordTok{stopwords}\NormalTok{(}\StringTok{"english"}\NormalTok{))}
-\NormalTok{corpus_location[[}\DecValTok{33}\NormalTok{]]}\OperatorTok{$}\NormalTok{content}
+\NormalTok{myCorpus <-}\StringTok{ }\KeywordTok{tm_map}\NormalTok{(myCorpus, removeWords, myStopWords) }
 \end{Highlighting}
 \end{Shaded}
 
-\begin{verbatim}
-## [1] "est september 2012  bristol"
-\end{verbatim}
+Además, podemos ver que se han añadido (aleatoriamente) más palabras
+vacías (``really'', ``tweets'', ``saw'', etc.). Estas palabras vacías
+son de las más usadas en los mensajes de texto de los tweets (ver
+\url{https://techland.time.com/2009/06/08/the-500-most-frequently-used-words-on-twitter/}).
+
+En este caso, removemos las palabras de una sola letra.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{corpus_location <-}\StringTok{ }\KeywordTok{tm_map}\NormalTok{(corpus_location, stemDocument)}
-\NormalTok{corpus_location[[}\DecValTok{33}\NormalTok{]]}\OperatorTok{$}\NormalTok{content}
+\NormalTok{removeSingle <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x) }\KeywordTok{gsub}\NormalTok{(}\StringTok{" . "}\NormalTok{, }\StringTok{" "}\NormalTok{, x)   }
+\NormalTok{myCorpus <-}\StringTok{ }\KeywordTok{tm_map}\NormalTok{(myCorpus, }\KeywordTok{content_transformer}\NormalTok{(removeSingle))}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{verbatim}
-## [1] "est septemb 2012 bristol"
-\end{verbatim}
-
-\begin{itemize}
-\tightlist
-\item
-  Create document term matrix
-\item
-  Reduce sparsity
-\item
-  Convert to data frame
-\end{itemize}
+Por último eliminamos los espacios vacíos excesivos, muchos de ellos
+introducidos por las transformaciones anteriores.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{dtm_location <-}\StringTok{ }\KeywordTok{DocumentTermMatrix}\NormalTok{(corpus_location)}
-\NormalTok{dtm_location}
+\NormalTok{myCorpus <-}\StringTok{ }\KeywordTok{tm_map}\NormalTok{(myCorpus, stripWhitespace)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{creaciuxf3n-de-un-modelo-predictivo}{%
+\section{Creación de un modelo
+predictivo}\label{creaciuxf3n-de-un-modelo-predictivo}}
+
+\hypertarget{preprocesado-de-los-datos}{%
+\subsection{Preprocesado de los datos}\label{preprocesado-de-los-datos}}
+
+Para la creación de un modelo predictivo, necesitamos construir una
+\textbf{Term Document Matrix} del conjunto de textos de la variable
+\textbf{text}, donde cada fila representará un texto y cada palabra
+única estará representada per una columna.
+
+\emph{Una Term Document Matrix es una matriz matemática que describe la
+frecuencia con la que se repiten una serie de palabras en una colección
+de documentos.}
+
+Comenzaremos mapeando nuestro Corpus indicando que es una \textbf{Term
+Document Matrix}, de esta manera podremos realizar el preprocesado de
+datos. Sabemos que el preprocesado de datos engloba aquellas
+transformaciones de los datos con la finalidad de mejorar los resultados
+de la clasificación supervisada. Todo preprocesado de datos debe
+aprenderse de las observaciones de train y luego aplicarse al conjunto
+de train y de test. Esto es muy importante para no violar la condición
+de que ninguna información procedente de las observaciones de test
+influya en el ajuste del modelo.
+
+Utilizaremos la función \textbf{TermDocumentMatrix} en nuestro Corpus y
+asignaremos el resultado al objeto \emph{complete.tdm}. Con el parámetro
+\textbf{control} indicaremos que evaluaremos todos los textos de la
+matriz, con las características escogidas se evaluarán todas las
+palabras de los textos. Por defecto la función
+\textbf{TermDocumentMatrix} usa \emph{tf-id}, que mide la importancia
+relativa de cada palabra en el conjunto de textos.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{complete.tdm <-}\StringTok{ }\KeywordTok{TermDocumentMatrix}\NormalTok{(myCorpus, }\DataTypeTok{control=}\KeywordTok{list}\NormalTok{(}\DataTypeTok{wordLengths=} \KeywordTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{, }\OtherTok{Inf}\NormalTok{)))}
+\NormalTok{complete.tdm}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## <<DocumentTermMatrix (documents: 10876, terms: 3840)>>
-## Non-/sparse entries: 11855/41751985
+## <<TermDocumentMatrix (terms: 16880, documents: 10876)>>
+## Non-/sparse entries: 76219/183510661
 ## Sparsity           : 100%
-## Maximal term length: 41
+## Maximal term length: 49
 ## Weighting          : term frequency (tf)
 \end{verbatim}
 
+Podemos observar que tenemos 16880 \emph{terms}, esto quiere decir que
+tenemos 16880 palabras diferentes en nuestro Corpus. Lo cual es una
+cantidad considerable de vocabulario, pero no esperaríamos otra cosa de
+una red social como \href{https://twitter.com}{Twitter}. La palabra más
+larga contiene 49 caracteres.
+
+Usaremos la función \textbf{removeSparseItems} para depurar nuestra
+\textbf{Term Document Matrix} de aquellas palabras que aparecen con muy
+poca frecuencia, es decir, son dispersas. Porqué 16880 palabras son
+demasiadas palabras y es posible que no podamos entrenar nuestro modelo
+debido a restricciones computacionales.
+
+Esta función requiere que especifiquemos el argumento \textbf{sparse},
+que puede asumir valores de 0 a 1. Este valor representa la dispersión
+de las palabras que queremos conservar. Si lo fijamos muy alto (cerca de
+1, pero no 1), conservaremos muchas palabras, casi todas, pues estamos
+indicando que queremos conservar palabras, aunque sean muy dispersas.
+Naturalmente, ocurre lo opuesto si fijamos este valor muy bajo (cerca de
+0, pero no 0), pudiendo incluso quedarnos sin ninguna palabra, si las
+palabras en nuestros textos son dispersas en general.
+
+En este caso, se decide fijarlo en \emph{.9975}, conservando las
+palabras que aparecen en al menos el 0.25\% de las observaciones.
+
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{dtm_location <-}\StringTok{ }\KeywordTok{removeSparseTerms}\NormalTok{(dtm_location, }\FloatTok{0.9975}\NormalTok{)}
-\NormalTok{dtm_location}
+\NormalTok{complete.tdm <-}\StringTok{ }\KeywordTok{removeSparseTerms}\NormalTok{(complete.tdm, }\DataTypeTok{sparse =} \FloatTok{.9975}\NormalTok{)}
+\NormalTok{complete.tdm}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## <<DocumentTermMatrix (documents: 10876, terms: 55)>>
-## Non-/sparse entries: 3967/594213
-## Sparsity           : 99%
-## Maximal term length: 10
+## <<TermDocumentMatrix (terms: 582, documents: 10876)>>
+## Non-/sparse entries: 31214/6298618
+## Sparsity           : 100%
+## Maximal term length: 17
 ## Weighting          : term frequency (tf)
 \end{verbatim}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{bag_of_words_location <-}\StringTok{ }\KeywordTok{as.data.frame}\NormalTok{(}\KeywordTok{as.matrix}\NormalTok{(dtm_location))}
-\KeywordTok{colnames}\NormalTok{(bag_of_words_location) <-}\StringTok{ }\KeywordTok{paste0}\NormalTok{(}\KeywordTok{colnames}\NormalTok{(bag_of_words_location), }\StringTok{"_location"}\NormalTok{)}
-\KeywordTok{str}\NormalTok{(bag_of_words_location, }\DataTypeTok{list.len=}\DecValTok{10}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
+De 16880 palabras que teníamos, nos hemos quedado con 582, lo cual
+reduce en gran medida la dificultad y complejidad del problema de
+\emph{alta dimensionalidad}, lo cual es deseable. La palabra más larga
+contiene 17 caracteres.
+
+Transformamos nuestra \textbf{Term Document Matrix} a un objeto de tipo
+\textbf{matrix} para así poder comprobar si nuestros datos aún contienen
+valores perdidos con la función \textbf{which}.
 
 \begin{verbatim}
-## 'data.frame':    10876 obs. of  55 variables:
-##  $ africa_location    : num  0 0 0 0 0 0 0 0 0 0 ...
-##  $ london_location    : num  0 0 0 0 0 0 0 0 0 0 ...
-##  $ world_location     : num  0 0 0 0 0 0 0 0 0 0 ...
-##  $ citi_location      : num  0 0 0 0 0 0 0 0 0 0 ...
-##  $ carolina_location  : num  0 0 0 0 0 0 0 0 0 0 ...
-##  $ england_location   : num  0 0 0 0 0 0 0 0 0 0 ...
-##  $ ohio_location      : num  0 0 0 0 0 0 0 0 0 0 ...
-##  $ india_location     : num  0 0 0 0 0 0 0 0 0 0 ...
-##  $ usa_location       : num  0 0 0 0 0 0 0 0 0 0 ...
-##  $ south_location     : num  0 0 0 0 0 0 0 0 0 0 ...
-##   [list output truncated]
+## integer(0)
 \end{verbatim}
 
-\hypertarget{text}{%
-\subsection{text}\label{text}}
+Los datos ya no contienen valores perdidos.
 
 \end{document}
