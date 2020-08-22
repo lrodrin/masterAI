@@ -19,10 +19,9 @@ knitr::opts_chunk$set(echo = TRUE)
 Empezamos por cargar a nuestro espacio de trabajo los paquetes que usaremos:
 
 - **tidyverse**, engloba otros paquetes (**dplyr**, **tidyr**, **ggplot**, etc.) que facilitan en gran medida el análisis exploratorio de los datos.
-- **stringi**,
 - **tm**, específico para minería de textos.
-- **irlba**,
-- **caret**,
+- **irlba**, específico para *Descomposición de Valores Singulares (SVD)* de matrices enormes.
+- **caret**, para realizar tareas de clasificación y regresión.
 - **doParallel**, proporciona computación paralela.
 - **syuzhet**, específico para la extracción de sentimientos de textos.
 - **ggcorrplot**, muestra visualizaciones gráficas de matrices de correlación usando *ggplot2*.
@@ -30,11 +29,8 @@ Empezamos por cargar a nuestro espacio de trabajo los paquetes que usaremos:
 
 ```{r message=FALSE}
 library(tidyverse)
-library(stringi)
 library(tm)
 library(irlba)
-library(RColorBrewer)
-library(gridExtra)
 library(caret)
 library(doParallel)
 library(syuzhet)
@@ -122,7 +118,7 @@ Los parámetros de esta función son:
   - **registerDoParallel**. Registra el número de *cores* que usará el clúster creado. 
   - **stopCluster**. Detiene la computación paralela.
   
-La computación paralela la usaremos en muchas de las ejecuciones de este ejercicio ya que nos encontramos delante de un problema de *alta dimensionalidad*. Eso es, que la dimensionalidad de nuestros datos es muy elevada y puede reducir drásticamente la eficiencia de los algoritmos de clasificación supervisada que entrenaremos. Una de las técnicas más ampliamente utilizada y conocida para la reducción de la dimensionalidad es Principal Component Analysis (PCA) Esta técnica lleva a cabo la transformación de los datos generando unas nuevas variables.
+La computación paralela la usaremos en muchas de las ejecuciones de este ejercicio ya que nos encontramos delante de un problema de *alta dimensionalidad*. Eso es, que la dimensionalidad de nuestros datos es muy elevada y puede reducir drásticamente la eficiencia de los algoritmos de clasificación supervisada que entrenaremos.
 
 La reducción de la dimensionalidad que aplicaremos en este ejercicio se realiza más adelante y se calculará teniendo en cuenta las palabras más frecuentes de los tweets en conjunto de datos.
 
@@ -311,16 +307,20 @@ complete.tdm
 
 De 16880 palabras que teníamos, nos hemos quedado con 582, lo cual reduce en gran medida la dificultad y complejidad del problema de *alta dimensionalidad*, lo cual es deseable. La palabra más larga contiene 17 caracteres.
 
-Transformamos nuestra **Term Document Matrix** a un objeto de tipo **matrix** para así poder comprobar si nuestros datos aún contienen valores perdidos con la función **which**.
+### Feature Extraction mediante Singular Value Decomposition (SVD)
+
+La descomposición de los datos originales en un nuevo conjunto, sin necesidad de pérdida de información relevante y sacando a la luz la información latente, es un proceso de vital importancia para implementar la parte más computacionalmente intensa del ejercicio. Buscando una intuitiva separabilidad de las clases de los datos aplicaremos la técnica de *Descomposición en Valores Singulares (SVD)*.
+
+*La Descomposición de Valores Singulares (en inglés Singular Value Decomposition ([SVD] (https://en.wikipedia.org/wiki/Singular-value_decomposition)) es una técnica de reducción de la dimensionalidad, en minería de textos, que puede utilizarse para descubrir las dimensiones latentes (o componentes) que determinan similitudes semánticas entre las palabras (es decir, unidades léxicas) o entre los textos (es decir, unidades de contexto).*
+
+Para aplicar la técnica de *Descomposición en Valores Singulares (SVD)*, primero transformamos nuestra **Term Document Matrix** a un objeto de tipo **matrix** para así poder comprobar si nuestros datos aún contienen valores perdidos con la función **which**.
 
 ```{r echo=FALSE}
 complete.term.matrix <- as.matrix(t(complete.tdm))
 which(!complete.cases(complete.term.matrix))
 ```
 
-Los datos ya no contienen valores perdidos.
-
-cómo se puede R para implementar la parte más computacionalmente intensiva de la solución ganadora utilizando el paquete irlba, la descomposición de la matriz de datos en sus componentes singulares (más propiamente, obtener algunas de ellas).
+Los datos no contienen valores perdidos, podemos proceder con la *Descomposición de Valores Singulares (SVD)*. Para ello utilizamos la función **irlba**, que se encargará de la descomposición de nuestra **Term Document Matrix** y extraerá sus 150 vectores singulares más importantes, después de un máximo de 600 iteraciones, y que guardaremos en el objeto **complete_irlba**. 
 
 ```{r}
 cl <- makePSOCKcluster(4, setup_strategy="sequential")
@@ -331,14 +331,31 @@ complete_irlba$v[1:10, 1:5]
 
 stopCluster(cl)
 ```
+Lo que vemos arriba es una pequeña parte del modelo de espacio vectorial de los 150 vectores singulares más importantes, que usaremos como características para la clasificación supervisada.
 
+## División de los datos en train y test
+
+Evaluar la capacidad predictiva de un modelo consiste en comprobar cómo de próximas son sus predicciones a los verdaderos valores de la variable a predecir. Para poder cuantificar de forma correcta este error, se necesita disponer de un conjunto de observaciones, de las que se conozca la variable a predecir, pero que el modelo no haya "visto", es decir, que no hayan participado en su ajuste. Con esta finalidad, se dividen los datos disponibles en un conjunto de train y un conjunto de test.
+
+Con el conjunto de datos, del que se conoce la variable a predecir (**complete_df$target**) y las características que hemos creado en la sección anterior (**complete_irlba$v**) creamos un nuevo conjunto de datos que a continuación dividiremos en un conjunto de datos de train (**train.df**) y de test (**test.df**), con el mismo tamaño de la partición inicial proporcionada por la competición de Kaggle (7613 instancias en el conjunto de datos de train y 3263 instancias en el conjunto de datos de test).
 
 ```{r}
-complete.svd <- data.frame(target = complete_df$target, complete_irlba$v)
+complete.svd <- data.frame(target=complete_df$target, complete_irlba$v)
 train.df <- complete.svd[1:7613, ]
 test.df <- complete.svd[7614:10876, -1]
 dim(train.df)
 dim(test.df)
+```
+También es importante verificar que la distribución de la variable a predecir del conjunto datos de train no ha cambiado respecto a la partición inicial (**complete_df**).
+
+```{r}
+prop.table(table(complete_df$target))
+prop.table(table(train.df$target))
+```
+
+Vemos que no ha cambiado.
+
+```{r}
 names(train.df) <- make.names(names(train.df))
 names(test.df) <- make.names(names(test.df))
 ```
