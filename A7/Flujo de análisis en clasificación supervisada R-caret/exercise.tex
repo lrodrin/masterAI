@@ -1,39 +1,46 @@
-\PassOptionsToPackage{unicode=true}{hyperref} % options for packages loaded elsewhere
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
 %
-\documentclass[]{article}
+\documentclass[
+]{article}
 \usepackage{lmodern}
 \usepackage{amssymb,amsmath}
 \usepackage{ifxetex,ifluatex}
-\usepackage{fixltx2e} % provides \textsubscript
 \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
-  \usepackage{textcomp} % provides euro and other symbols
-\else % if luatex or xelatex
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
   \usepackage{unicode-math}
-  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
 \fi
-% use upquote if available, for straight quotes in verbatim environments
+% Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
-% use microtype if available
-\IfFileExists{microtype.sty}{%
-\usepackage[]{microtype}
-\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
 }{}
-\IfFileExists{parskip.sty}{%
-\usepackage{parskip}
-}{% else
-\setlength{\parindent}{0pt}
-\setlength{\parskip}{6pt plus 2pt minus 1pt}
-}
-\usepackage{hyperref}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
 \hypersetup{
-            pdftitle={Flujo de análisis en clasificación supervisada},
-            pdfauthor={Laura Rodríguez Navas},
-            pdfborder={0 0 0},
-            breaklinks=true}
-\urlstyle{same}  % don't use monospace font for urls
+  pdftitle={Flujo de análisis en clasificación supervisada},
+  pdfauthor={Laura Rodríguez Navas},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
 \usepackage[margin=1in]{geometry}
 \usepackage{color}
 \usepackage{fancyvrb}
@@ -84,34 +91,22 @@
 % margins by default, and it is still possible to overwrite the defaults
 % using explicit options in \includegraphics[width, height, ...]{}
 \setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
-\setlength{\emergencystretch}{3em}  % prevent overfull lines
-\providecommand{\tightlist}{%
-  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\setcounter{secnumdepth}{0}
-% Redefines (sub)paragraphs to behave more like sections
-\ifx\paragraph\undefined\else
-\let\oldparagraph\paragraph
-\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
-\fi
-\ifx\subparagraph\undefined\else
-\let\oldsubparagraph\subparagraph
-\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
-\fi
-
-% set default figure placement to htbp
+% Set default figure placement to htbp
 \makeatletter
 \def\fps@figure{htbp}
 \makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 
+\title{Flujo de análisis en clasificación supervisada}
 \usepackage{etoolbox}
 \makeatletter
 \providecommand{\subtitle}[1]{% add subtitle to \maketitle
   \apptocmd{\@title}{\par {\large #1 \par}}{}{}
 }
 \makeatother
-
-\title{Flujo de análisis en clasificación supervisada}
-\providecommand{\subtitle}[1]{}
 \subtitle{Métodos supervisados}
 \author{Laura Rodríguez Navas}
 \date{Septiembre 2020}
@@ -133,13 +128,12 @@ usaremos:
   \textbf{tidyr}, \textbf{ggplot}, etc.) que facilitan en gran medida el
   análisis exploratorio de los datos.
 \item
-  \textbf{stringi},
-\item
   \textbf{tm}, específico para minería de textos.
 \item
-  \textbf{irlba},
+  \textbf{irlba}, específico para \emph{Descomposición de Valores
+  Singulares (SVD)} de matrices enormes.
 \item
-  \textbf{caret},
+  \textbf{caret}, para realizar tareas de clasificación y regresión.
 \item
   \textbf{doParallel}, proporciona computación paralela.
 \item
@@ -155,11 +149,8 @@ usaremos:
 \begin{Shaded}
 \begin{Highlighting}[]
 \KeywordTok{library}\NormalTok{(tidyverse)}
-\KeywordTok{library}\NormalTok{(stringi)}
 \KeywordTok{library}\NormalTok{(tm)}
 \KeywordTok{library}\NormalTok{(irlba)}
-\KeywordTok{library}\NormalTok{(RColorBrewer)}
-\KeywordTok{library}\NormalTok{(gridExtra)}
 \KeywordTok{library}\NormalTok{(caret)}
 \KeywordTok{library}\NormalTok{(doParallel)}
 \KeywordTok{library}\NormalTok{(syuzhet)}
@@ -379,7 +370,7 @@ En el análisis de sentimientos usamos los paquetes de R:
   El paquete \textbf{syuzhet} cuenta con la función
   \textbf{get\_nrc\_sentiment} que calculará la presencia de los
   diferentes sentimientos dado un conjunto de palabras clave. Los
-  parámetros de esta función son:
+  argumentos de esta función son:
 
   \begin{itemize}
   \tightlist
@@ -412,10 +403,7 @@ La computación paralela la usaremos en muchas de las ejecuciones de este
 ejercicio ya que nos encontramos delante de un problema de \emph{alta
 dimensionalidad}. Eso es, que la dimensionalidad de nuestros datos es
 muy elevada y puede reducir drásticamente la eficiencia de los
-algoritmos de clasificación supervisada que entrenaremos. Una de las
-técnicas más ampliamente utilizada y conocida para la reducción de la
-dimensionalidad es Principal Component Analysis (PCA) Esta técnica lleva
-a cabo la transformación de los datos generando unas nuevas variables.
+algoritmos de clasificación supervisada que entrenaremos.
 
 La reducción de la dimensionalidad que aplicaremos en este ejercicio se
 realiza más adelante y se calculará teniendo en cuenta las palabras más
@@ -818,17 +806,9 @@ relativa de cada palabra en el conjunto de textos.
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{complete.tdm <-}\StringTok{ }\KeywordTok{TermDocumentMatrix}\NormalTok{(myCorpus, }\DataTypeTok{control=}\KeywordTok{list}\NormalTok{(}\DataTypeTok{wordLengths=} \KeywordTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{, }\OtherTok{Inf}\NormalTok{)))}
-\NormalTok{complete.tdm}
+\CommentTok{# complete.tdm}
 \end{Highlighting}
 \end{Shaded}
-
-\begin{verbatim}
-## <<TermDocumentMatrix (terms: 16880, documents: 10876)>>
-## Non-/sparse entries: 76219/183510661
-## Sparsity           : 100%
-## Maximal term length: 49
-## Weighting          : term frequency (tf)
-\end{verbatim}
 
 Podemos observar que tenemos 16880 \emph{terms}, esto quiere decir que
 tenemos 16880 palabras diferentes en nuestro Corpus. Lo cual es una
@@ -857,31 +837,303 @@ palabras que aparecen en al menos el 0.25\% de las observaciones.
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{complete.tdm <-}\StringTok{ }\KeywordTok{removeSparseTerms}\NormalTok{(complete.tdm, }\DataTypeTok{sparse =} \FloatTok{.9975}\NormalTok{)}
-\NormalTok{complete.tdm}
+\CommentTok{# complete.tdm}
 \end{Highlighting}
 \end{Shaded}
-
-\begin{verbatim}
-## <<TermDocumentMatrix (terms: 582, documents: 10876)>>
-## Non-/sparse entries: 31214/6298618
-## Sparsity           : 100%
-## Maximal term length: 17
-## Weighting          : term frequency (tf)
-\end{verbatim}
 
 De 16880 palabras que teníamos, nos hemos quedado con 582, lo cual
 reduce en gran medida la dificultad y complejidad del problema de
 \emph{alta dimensionalidad}, lo cual es deseable. La palabra más larga
 contiene 17 caracteres.
 
-Transformamos nuestra \textbf{Term Document Matrix} a un objeto de tipo
-\textbf{matrix} para así poder comprobar si nuestros datos aún contienen
-valores perdidos con la función \textbf{which}.
+\hypertarget{feature-extraction-mediante-singular-value-decomposition-svd}{%
+\subsubsection{Feature Extraction mediante Singular Value Decomposition
+(SVD)}\label{feature-extraction-mediante-singular-value-decomposition-svd}}
+
+La descomposición de los datos originales en un nuevo conjunto, sin
+necesidad de pérdida de información relevante y sacando a la luz la
+información latente, es un proceso de vital importancia para implementar
+la parte más computacionalmente intensa del ejercicio. Buscando una
+intuitiva separabilidad de las clases de los datos aplicaremos la
+técnica de \emph{Descomposición en Valores Singulares (SVD)}.
+
+\emph{La Descomposición de Valores Singulares (en inglés Singular Value
+Decomposition ({[}SVD{]}
+(\url{https://en.wikipedia.org/wiki/Singular-value_decomposition})) es
+una técnica de reducción de la dimensionalidad, en minería de textos,
+que puede utilizarse para descubrir las dimensiones latentes (o
+componentes) que determinan similitudes semánticas entre las palabras
+(es decir, unidades léxicas) o entre los textos (es decir, unidades de
+contexto).}
+
+Para aplicar la técnica de \emph{Descomposición en Valores Singulares
+(SVD)}, primero transformamos nuestra \textbf{Term Document Matrix} a un
+objeto de tipo \textbf{matrix} para así poder comprobar si nuestros
+datos aún contienen valores perdidos con la función \textbf{which}.
 
 \begin{verbatim}
 ## integer(0)
 \end{verbatim}
 
-Los datos ya no contienen valores perdidos.
+Los datos no contienen valores perdidos, podemos proceder con la
+\emph{Descomposición de Valores Singulares (SVD)}. Para ello utilizamos
+la función \textbf{irlba}, que se encargará de la descomposición de
+nuestra \textbf{Term Document Matrix} y extraerá sus 150 vectores
+singulares más importantes, después de un máximo de 600 iteraciones, y
+que guardaremos en el objeto \textbf{complete\_irlba}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cl <-}\StringTok{ }\KeywordTok{makePSOCKcluster}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DataTypeTok{setup_strategy=}\StringTok{"sequential"}\NormalTok{)}
+\KeywordTok{registerDoParallel}\NormalTok{(cl)}
+
+\NormalTok{complete_irlba <-}\StringTok{ }\KeywordTok{irlba}\NormalTok{(}\KeywordTok{t}\NormalTok{(complete.term.matrix), }\DataTypeTok{nv =} \DecValTok{150}\NormalTok{, }\DataTypeTok{maxit =} \DecValTok{600}\NormalTok{)}
+\NormalTok{complete_irlba}\OperatorTok{$}\NormalTok{v[}\DecValTok{1}\OperatorTok{:}\DecValTok{10}\NormalTok{, }\DecValTok{1}\OperatorTok{:}\DecValTok{5}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##               [,1]          [,2]          [,3]          [,4]          [,5]
+##  [1,] 0.0003120453  2.106561e-04  3.300853e-04  1.903949e-05  0.0008616213
+##  [2,] 0.0431581232 -1.403879e-02 -5.080915e-03 -3.903218e-03 -0.0019973785
+##  [3,] 0.0020302441 -2.185038e-04  5.413331e-05 -1.010518e-04  0.0008915488
+##  [4,] 0.0054428605 -1.216877e-04  3.447881e-03 -1.656553e-04  0.0095383931
+##  [5,] 0.0021970462 -8.400923e-05 -7.684955e-05  7.778184e-05  0.0017047878
+##  [6,] 0.0449316298 -1.298884e-02 -1.632629e-03 -3.863906e-03 -0.0003830540
+##  [7,] 0.0060227348  8.522772e-03  3.240039e-02 -6.376573e-04 -0.0023781925
+##  [8,] 0.0387633061 -1.293081e-02 -5.097837e-03 -3.743790e-03 -0.0112347412
+##  [9,] 0.0079031970  5.712809e-04  6.692992e-04  4.562214e-04  0.0135827159
+## [10,] 0.0013941253  2.766996e-04  3.420014e-04  4.366600e-05  0.0016171623
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{stopCluster}\NormalTok{(cl)}
+\end{Highlighting}
+\end{Shaded}
+
+Lo que vemos arriba es una pequeña parte del modelo de espacio vectorial
+de los 150 vectores singulares más importantes, que usaremos como
+características para la clasificación supervisada.
+
+\hypertarget{divisiuxf3n-de-los-datos-en-train-y-test}{%
+\subsection{División de los datos en train y
+test}\label{divisiuxf3n-de-los-datos-en-train-y-test}}
+
+Evaluar la capacidad predictiva de un modelo consiste en comprobar cómo
+de próximas son sus predicciones a los verdaderos valores de la variable
+a predecir. Para poder cuantificar de forma correcta este error, se
+necesita disponer de un conjunto de observaciones, de las que se conozca
+la variable a predecir, pero que el modelo no haya ``visto'', es decir,
+que no hayan participado en su ajuste. Con esta finalidad, se dividen
+los datos disponibles en un conjunto de train y un conjunto de test.
+
+Con el conjunto de datos, del que se conoce la variable a predecir
+(\textbf{complete\_df}) y las características que hemos creado en la
+sección anterior (\textbf{complete\_irlba}) creamos un nuevo conjunto de
+datos que a continuación dividiremos en un conjunto de datos de train
+(\textbf{train.df}) y de test (\textbf{test.df}), con el mismo tamaño de
+la partición inicial proporcionada por la competición de Kaggle (7613
+instancias para el conjunto de datos de train y 3263 instancias para el
+conjunto de datos de test).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{complete.svd <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{target=}\NormalTok{complete_df}\OperatorTok{$}\NormalTok{target, complete_irlba}\OperatorTok{$}\NormalTok{v)}
+\NormalTok{train.df <-}\StringTok{ }\NormalTok{complete.svd[}\DecValTok{1}\OperatorTok{:}\DecValTok{7613}\NormalTok{, ]}
+\NormalTok{test.df <-}\StringTok{ }\NormalTok{complete.svd[}\DecValTok{7614}\OperatorTok{:}\DecValTok{10876}\NormalTok{, }\DecValTok{-1}\NormalTok{]}
+\KeywordTok{dim}\NormalTok{(train.df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 7613  151
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{dim}\NormalTok{(test.df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 3263  150
+\end{verbatim}
+
+Un paso importante es verificar que la distribución de la variable a
+predecir del conjunto datos de train no ha cambiado respecto a la
+partición inicial (\textbf{complete\_df}).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{prop.table}\NormalTok{(}\KeywordTok{table}\NormalTok{(complete_df}\OperatorTok{$}\NormalTok{target))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##        No       Yes 
+## 0.5703402 0.4296598
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{prop.table}\NormalTok{(}\KeywordTok{table}\NormalTok{(train.df}\OperatorTok{$}\NormalTok{target))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##        No       Yes 
+## 0.5703402 0.4296598
+\end{verbatim}
+
+\hypertarget{selecciuxf3n-de-variables}{%
+\subsection{Selección de variables}\label{selecciuxf3n-de-variables}}
+
+Cuando se entrena un modelo, es importante incluir como variables para
+la predicción únicamente aquellas variables que están realmente
+relacionadas con la variable a predecir, ya que son estas las que
+contienen información útil para el modelo. Incluir un exceso de
+variables suele conllevar una reducción de la capacidad de predicción
+del modelo. La selección de variables para la predicción puede suponer
+la diferencia entre un modelo normal y uno muy bueno, por lo tanto,
+conviene conocer las herramientas internas de *caret** para la selección
+de variables.
+
+Muchos modelos a los que se puede acceder mediante la función
+\textbf{train} de \textbf{caret} producen ecuaciones de predicción que
+no necesariamente utilizan todas las variables. Estos modelos tienen una
+selección de variables incorporada. El uso de estos modelos con
+selección de variables incorporada será más eficiente que otras
+estrategias, de wrapper y filtrado.
+
+Para este ejercicio, escogemos algoritmos de clasificación supervisada
+de \textbf{caret} que tienen una selección de variables incorporada (ver
+\url{http://topepo.github.io/caret/feature-selection-overview.html})..
+
+\hypertarget{entrenamiento-del-modelo}{%
+\subsection{Entrenamiento del modelo}\label{entrenamiento-del-modelo}}
+
+En esta sección se entrenan diferentes modelos de \emph{clasificación
+supervisada} con el objetivo de compararlos e identificar el que mejor
+resultado obtiene prediciendo. Todos estos modelos incorporados en el
+paquete \textbf{caret} se entrenan con la función \textbf{train}. Entre
+los argumentos de esta función destacan:
+
+\begin{itemize}
+\item
+  \textbf{method}. El nombre del algoritmo que se desea emplear
+  (\href{http://topepo.github.io/caret/available-models.html}{modelos}.
+\item
+  \textbf{metric}. La métrica empleada para evaluar la capacidad
+  predictiva del modelo. Aunque la competición de Kaggle en la que se
+  basa nuestro ejercicio usa \textbf{F1 score} como métrica de
+  evaluación, para cuantificar como de bueno son los modelos
+  utilizaremos la métrica de evaluación \emph{Accuracy}. Porqué la
+  distribución de la clase no presenta un problema notable de
+  desbalanceo de clases y cuando la distribución de la variable clase
+  está bastante equilibrada es una buena medida de evaluación.
+\end{itemize}
+
+\emph{Accuracy representa el porcentaje total de elementos clasificados
+correctamente. Es la medida más directa de la calidad de los
+clasificadores. Es un valor entre 0 y 1. Cuanto más alto, mejor.}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{trControl}. Especificaciones adicionales sobre la forma de
+  llevar a cabo el entrenamiento del modelo.
+\end{itemize}
+
+La función \textbf{train} de \textbf{caret} siempre estima un porcentaje
+de bien clasificados sobre el conjunto de datos de train. La función
+\textbf{trainControl}, que se pasa al argumento \textbf{trControl} de la
+función \textbf{train}, controla la estimación del error: en este caso
+realizaremos una \emph{K-Fold Cross-Validation} usando la función
+\textbf{createMultiFolds}, de 5 hojas (\emph{k}) y repitiéndola 3 veces
+(\emph{times}).
+
+\emph{La Cross-validation se emplea para estimar el test error rate de
+un modelo y así evaluar su capacidad predictiva. Específicamente, el
+método K-Fold Cross-Validation es un proceso iterativo. Consiste en
+dividir los datos de forma aleatoria en k grupos de aproximadamente el
+mismo tamaño. k-1 grupos se emplean para entrenar el modelo y uno de los
+grupos se emplea como test, este proceso se repite k veces utilizando un
+grupo distinto como test en cada iteración. El proceso genera k
+estimaciones del test error cuyo promedio se emplea como estimación
+final.}
+
+Las semillas son necesarias si se quiere asegurar la reproducibilidad de
+los resultados, ya que una validación cruzada implica una selección
+aleatoria.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
+\NormalTok{cv.folds <-}\StringTok{ }\KeywordTok{createMultiFolds}\NormalTok{(train.df}\OperatorTok{$}\NormalTok{target, }\DataTypeTok{k=}\DecValTok{5}\NormalTok{, }\DataTypeTok{times=}\DecValTok{3}\NormalTok{)}
+\NormalTok{cv.cntrl <-}\StringTok{ }\KeywordTok{trainControl}\NormalTok{(}\DataTypeTok{method =} \StringTok{"repeatecv"}\NormalTok{, }\DataTypeTok{number =} \DecValTok{5}\NormalTok{,}
+                         \DataTypeTok{index =}\NormalTok{ cv.folds, }\DataTypeTok{allowParallel =} \OtherTok{TRUE}\NormalTok{, }
+                         \DataTypeTok{returnResamp=}\StringTok{"final"}\NormalTok{,}
+                         \DataTypeTok{verboseIter=}\OtherTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+El argumento \textbf{method} de la función \textbf{trainControl} hace
+posible utilizar distintos tipos de validación. En este caso es
+\emph{repeatecv} (para entrenamiento repetido/división de test). Además
+del tipo de validación, la función \textbf{trainControl} permite fijar
+multitud de argumentos. A continuación, describimos los que se han
+fijado:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{number}. El número de hojas (\emph{5}).
+\item
+  \textbf{index}. Lista con los elementos para cada iteración
+  (\textbf{cv.folds}). Cada elemento de la lista es un vector de números
+  enteros correspondientes a las filas utilizadas para el entrenamiento
+  en esa iteración.
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{str}\NormalTok{(cv.folds)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## List of 15
+##  $ Fold1.Rep1: int [1:6090] 1 2 3 4 5 6 7 8 9 11 ...
+##  $ Fold2.Rep1: int [1:6090] 1 2 3 4 5 7 8 9 10 11 ...
+##  $ Fold3.Rep1: int [1:6090] 1 2 3 5 6 7 8 9 10 11 ...
+##  $ Fold4.Rep1: int [1:6091] 2 3 4 6 10 12 13 14 15 16 ...
+##  $ Fold5.Rep1: int [1:6091] 1 4 5 6 7 8 9 10 11 12 ...
+##  $ Fold1.Rep2: int [1:6090] 1 4 5 6 8 9 10 11 12 13 ...
+##  $ Fold2.Rep2: int [1:6090] 2 3 4 5 6 7 8 9 11 12 ...
+##  $ Fold3.Rep2: int [1:6090] 1 2 3 5 6 7 10 11 12 14 ...
+##  $ Fold4.Rep2: int [1:6091] 1 2 3 4 5 6 7 8 9 10 ...
+##  $ Fold5.Rep2: int [1:6091] 1 2 3 4 7 8 9 10 11 12 ...
+##  $ Fold1.Rep3: int [1:6091] 1 2 3 6 7 8 9 10 11 12 ...
+##  $ Fold2.Rep3: int [1:6090] 1 2 4 5 6 7 9 10 11 13 ...
+##  $ Fold3.Rep3: int [1:6090] 1 3 4 5 8 9 10 11 12 13 ...
+##  $ Fold4.Rep3: int [1:6090] 2 3 4 5 6 7 8 12 13 14 ...
+##  $ Fold5.Rep3: int [1:6091] 1 2 3 4 5 6 7 8 9 10 ...
+\end{verbatim}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{allowParallel}. Habilita la computación paralela
+  (\emph{TRUE}).
+\item
+  \textbf{returnResamp}. Indica la cantidad de métricas de evaluación
+  que se deben guardar. Solo los valores finales (\emph{``final''}).
+\item
+  \textbf{verboseIter}. Para imprimir o no el registro de entrenamiento.
+  No se imprime (\emph{FALSE}).
+\end{itemize}
 
 \end{document}

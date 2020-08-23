@@ -16,6 +16,8 @@ subtitle: Métodos supervisados
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+\newpage
+
 Empezamos por cargar a nuestro espacio de trabajo los paquetes que usaremos:
 
 - **tidyverse**, engloba otros paquetes (**dplyr**, **tidyr**, **ggplot**, etc.) que facilitan en gran medida el análisis exploratorio de los datos.
@@ -25,7 +27,6 @@ Empezamos por cargar a nuestro espacio de trabajo los paquetes que usaremos:
 - **doParallel**, proporciona computación paralela.
 - **syuzhet**, específico para la extracción de sentimientos de textos.
 - **ggcorrplot**, muestra visualizaciones gráficas de matrices de correlación usando *ggplot2*.
-- **gbm**,
 
 ```{r message=FALSE}
 library(tidyverse)
@@ -35,7 +36,6 @@ library(caret)
 library(doParallel)
 library(syuzhet)
 library(ggcorrplot)
-library(gbm)
 ```
 
 # Análisis Exploratorio de los Datos
@@ -109,7 +109,7 @@ Nuestro interés en la variable **keyword** dentro del análisis exploratorio de
 En el análisis de sentimientos usamos los paquetes de R: **syuzhet**, **ggcorrplot** y **doParallel**.
 
 - El paquete **syuzhet** cuenta con la función **get_nrc_sentiment** que calculará la presencia de los diferentes sentimientos dado un conjunto de palabras clave. 
-Los parámetros de esta función son:
+Los argumentos de esta función son:
   - **char_v**. Un vector de caracteres que en este caso contendrá todas las palabras clave.
   - **language**. Define el lenguaje. Como los tweets están en inglés, el lenguaje será el inglés.
   - **cl**. Para el análisis en paralelo. Es opcional, pero en este caso lo usaremos porqué hay muchas palabras clave.
@@ -331,13 +331,14 @@ complete_irlba$v[1:10, 1:5]
 
 stopCluster(cl)
 ```
+
 Lo que vemos arriba es una pequeña parte del modelo de espacio vectorial de los 150 vectores singulares más importantes, que usaremos como características para la clasificación supervisada.
 
 ## División de los datos en train y test
 
 Evaluar la capacidad predictiva de un modelo consiste en comprobar cómo de próximas son sus predicciones a los verdaderos valores de la variable a predecir. Para poder cuantificar de forma correcta este error, se necesita disponer de un conjunto de observaciones, de las que se conozca la variable a predecir, pero que el modelo no haya "visto", es decir, que no hayan participado en su ajuste. Con esta finalidad, se dividen los datos disponibles en un conjunto de train y un conjunto de test.
 
-Con el conjunto de datos, del que se conoce la variable a predecir (**complete_df$target**) y las características que hemos creado en la sección anterior (**complete_irlba$v**) creamos un nuevo conjunto de datos que a continuación dividiremos en un conjunto de datos de train (**train.df**) y de test (**test.df**), con el mismo tamaño de la partición inicial proporcionada por la competición de Kaggle (7613 instancias en el conjunto de datos de train y 3263 instancias en el conjunto de datos de test).
+Con el conjunto de datos, del que se conoce la variable a predecir (**complete_df**) y las características que hemos creado en la sección anterior (**complete_irlba**) creamos un nuevo conjunto de datos que a continuación dividiremos en un conjunto de datos de train (**train.df**) y de test (**test.df**), con el mismo tamaño de la partición inicial proporcionada por la competición de Kaggle (7613 instancias para el conjunto de datos de train y 3263 instancias para el conjunto de datos de test).
 
 ```{r}
 complete.svd <- data.frame(target=complete_df$target, complete_irlba$v)
@@ -346,84 +347,149 @@ test.df <- complete.svd[7614:10876, -1]
 dim(train.df)
 dim(test.df)
 ```
-También es importante verificar que la distribución de la variable a predecir del conjunto datos de train no ha cambiado respecto a la partición inicial (**complete_df**).
+
+Un paso importante es verificar que la distribución de la variable a predecir del conjunto datos de train no ha cambiado respecto a la partición inicial (**complete_df**).
 
 ```{r}
 prop.table(table(complete_df$target))
 prop.table(table(train.df$target))
 ```
 
-Vemos que no ha cambiado.
+## Selección de variables
 
-```{r}
-names(train.df) <- make.names(names(train.df))
-names(test.df) <- make.names(names(test.df))
-```
+Cuando se entrena un modelo, es importante incluir como variables para la predicción únicamente aquellas variables que están realmente relacionadas con la variable a predecir, ya que son estas las que contienen información útil para el modelo. Incluir un exceso de variables suele conllevar una reducción de la capacidad de predicción del modelo. La selección de variables para la predicción puede suponer la diferencia entre un modelo normal y uno muy bueno, por lo tanto, conviene conocer las herramientas internas de *caret** para la selección de variables.
 
+Muchos modelos a los que se puede acceder mediante la función **train** de **caret** producen ecuaciones de predicción que no necesariamente utilizan todas las variables. Estos modelos tienen una selección de variables incorporada. El uso de estos modelos con selección de variables incorporada será más eficiente que otras estrategias, de wrapper y filtrado. 
 
-## Modelado
+Para este ejercicio, escogemos algoritmos de clasificación supervisada de **caret** que tienen una selección de variables incorporada (ver http://topepo.github.io/caret/feature-selection-overview.html)..
+
+## Entrenamiento de modelos
+
+En esta sección se entrenan diferentes modelos de *clasificación supervisada* con el objetivo de compararlos e identificar el que mejor resultado obtiene prediciendo. Todos estos modelos incorporados en el paquete **caret** se entrenan con la función **train**. Entre los argumentos de esta función destacan:
+
+- **method**. El nombre del algoritmo que se desea emplear ([modelos](http://topepo.github.io/caret/available-models.html).
+
+- **metric**. La métrica empleada para evaluar la capacidad predictiva del modelo. Aunque la competición de Kaggle en la que se basa nuestro ejercicio usa **F1 score** como métrica de evaluación, para cuantificar como de bueno son los modelos utilizaremos la métrica de evaluación *Accuracy*. Porqué la distribución de la clase no presenta un problema notable de desbalanceo de clases y cuando la distribución de la variable clase está bastante equilibrada es una buena medida de evaluación.
+
+*Accuracy representa el porcentaje total de elementos clasificados correctamente. Es la medida más directa de la calidad de los clasificadores. Es un valor entre 0 y 1. Cuanto más alto, mejor.*
+
+- **trControl**. Especificaciones adicionales sobre la forma de llevar a cabo el entrenamiento del modelo.
+
+La función **train** de **caret** siempre estima un porcentaje de bien clasificados sobre el conjunto de datos de train. La función **trainControl**, que se pasa al argumento **trControl** de la función **train**, controla la estimación del error: en este caso realizaremos una *K-Fold Cross-Validation* usando la función **createMultiFolds**, de 5 hojas (*k*) y repitiéndola 3 veces (*times*). Una validación cruzada con 5 hojas y 3 repeticiones, implica ajustar y evaluar el modelo 10 * 5 = 50 veces, más un último ajuste con todos los datos de entrenamiento para crear el modelo final.
+
+*La Cross-validation se emplea para estimar el test error rate de un modelo y así evaluar su capacidad predictiva. Específicamente, el método K-Fold Cross-Validation es un proceso iterativo. Consiste en dividir los datos de forma aleatoria en k grupos de aproximadamente el mismo tamaño. k-1 grupos se emplean para entrenar el modelo y uno de los grupos se emplea como test, este proceso se repite k veces utilizando un grupo distinto como test en cada iteración. El proceso genera k estimaciones del test error cuyo promedio se emplea como estimación final.*
+
+Las semillas son necesarias si se quiere asegurar la reproducibilidad de los resultados, ya que una validación cruzada implica una selección aleatoria.
+
 ```{r}
 set.seed(123)
-cv.folds <- createMultiFolds(train.df$target, k=5, times=3)
-cv.cntrl <- trainControl(method = "repeatecv", number = 5,
-                         index = cv.folds, allowParallel = TRUE, returnResamp="final",
+cv.folds <- createMultiFolds(train.df$target, k=10, times=)
+cv.cntrl <- trainControl(method = "repeatecv", number = 10,
+                         index = cv.folds, allowParallel = TRUE, 
+                         returnResamp="final",
                          verboseIter=FALSE)
 ```
 
-### Regresión Logística
+El argumento **method** de la función **trainControl** hace posible utilizar distintos tipos de validación. En este caso es *repeatecv* (para entrenamiento repetido/división de test). Además de fijar el tipo de validación, la función **trainControl** permite fijar multitud de argumentos. A continuación, describimos los que se han fijado:
 
-```{r include=FALSE}
-cl <- makePSOCKcluster(4, setup_strategy="sequential")
-registerDoParallel(cl)
-```
-
+- **number**. El número de hojas (*10*).
+- **index**. Lista con los elementos para cada iteración (**cv.folds**). Cada elemento de la lista es un vector de números enteros correspondientes a las filas utilizadas para el entrenamiento en esa iteración. Vemos las 10 primeras hojas.
 
 ```{r}
+str(cv.folds[1:10])
+```
+
+- **allowParallel**. Habilita la computación paralela (*TRUE*). **caret** permite paralelizar el proceso para que sea más rápido.
+- **returnResamp**. Indica la cantidad de métricas de evaluación que se deben guardar. Solo los valores finales (*"final"*).
+- **verboseIter**. Para imprimir o no el registro de entrenamiento. No se imprime (*FALSE*).
+
+Muchos modelos contienen parámetros que no pueden aprenderse a partir de los datos de entrenamiento y, por lo tanto, deben de ser establecidos por el analista. A estos se les conoce como *hiperparámetros*, argumento **tunning** de **caret**. Con la función **expand.grid** definiremos los valores de los argumentos a tunear.
+
+Los resultados de un modelo pueden depender en gran medida del valor que tomen sus *hiperparámetros*, sin embargo, no se puede conocer de antemano cuáles son los adecuados. La forma más común de encontrar los valores óptimos es probando diferentes posibilidades. Para ello se utiliza el argumento de **caret**: **tuneGrid** en la función **train**. Si no se tiene ninguna idea de qué valores de *hiperparámetros* pueden ser los adecuados, lo mejor es utilizar la aleatoriedad. **caret** también incorpora esta opción mediante el argumento **tuneLength**. 
+
+En la siguiente sección realizaremos pruebas tanto con **tuneGrid** y **tuneLength**. Más con **tuneGrid**, ya que, de esta forma, se evita que se generen automáticamente valores que no tienen sentido o que disparan el tiempo de computación necesario. Además, con *target ~.* denotamos la variable que se quiere predecir e indicando que el resto de las variables del conjunto de datos de **train** son predictoras.
+
+## Modelos
+
+Es a lo largo del proceso posterior donde más destacarán las funcionalidades ofrecidas por **caret**, permitiendo emplear la misma sintaxis para ajustar, optimizar, evaluar y predecir un amplio abanico de modelos variando únicamente el nombre del algoritmo. Aunque **caret** permite todo esto con apenas unas pocas líneas de código son muchos los argumentos que pueden ser adaptados, cada uno con múltiples posibilidades. Con el objetivo de exponer mejor cada una de las opciones, en lugar de crear directamente un modelo final, se muestran ejemplos de menor a mayor complejidad de la lista mostrada anteriormente: http://topepo.github.io/caret/available-models.html.
+
+### Regresión Logística
+
+Información detallada sobre regresión logística en [Regresión logística simple y múltiple](https://www.cienciadedatos.net/documentos/27_regresion_logistica_simple_y_multiple).
+
+**caret** emplea el método **glmnet**. Este algoritmo no tiene ningún *hiperparámetro*, por lo tanto, usamos por ejemplo **tuneLength** igual a 15.
+
+```{r warning=FALSE}
+cl <- makePSOCKcluster(4, setup_strategy="sequential")
+registerDoParallel(cl)
+
 model_glmnet <- train(target ~ ., data=train.df,
                       method="glmnet",
                       metric="Accuracy",
                       trControl=cv.cntrl,
                       tuneLenght=15)
 model_glmnet
-```
-```{r include=FALSE}
 stopCluster(cl)
 ```
 
+El *Accuracy* promedio estimado mediante validación cruzada repetida es de 0.78, el modelo predice correctamente un 78% de las veces.
+
 ### Random Forest
 
-```{r include=FALSE}
+Información detallada sobre Random Forest en [Árboles de predicción: bagging, random forest, boosting y C5.0](https://www.cienciadedatos.net/documentos/33_arboles_de_prediccion_bagging_random_forest_boosting).
+
+**caret** emplea el método **rf*. Este algoritmo tiene un *hiperparámetro*:
+
+- **mtry**. Número de valores seleccionados aleatoriamente en cada árbol. En este caso hemos escogido: 3, 4, 5 y 7.
+
+```{r warning=FALSE}
 cl <- makePSOCKcluster(4, setup_strategy="sequential")
 registerDoParallel(cl)
-```
 
-
-```{r}
+cv.grid <- expand.grid(mtry=c(3, 4, 5, 7))
 model_rf <- train(target ~ ., data=train.df,
                       method="rf",
                       metric="Accuracy",
                       trControl=cv.cntrl,
-                      tuneGrid=expand.grid(mtry=c(3, 4, 5, 7)))
+                      tuneGrid=cv.grid)
 model_rf
-```
-
-```{r include=FALSE}
 stopCluster(cl)
 ```
 
+Empleando un modelo Random Forest con mtry = 7 se consigue un *Accuracy* promedio de validación del 84%. 
+
 ### Gradient Boosting
 
-```{r include=FALSE}
+Información detallada sobre boosting [Árboles de predicción: bagging, random forest, boosting y C5.0](https://www.cienciadedatos.net/documentos/33_arboles_de_prediccion_bagging_random_forest_boosting).
+
+El método **gbm** de **caret** emplea el paquete gbm. Este algoritmo tiene 4 *hiperparámetros*:
+
+- **n.trees**. Número de iteraciones del algoritmo de boosting. Cuanto mayor es este valor, más se reduce el error de entrenamiento.
+
+- **interaction.depth**. El número total de divisiones que tiene el árbol. Emplear árboles con ente 1 y 6 nodos suele dar buenos resultados.
+
+- **shrinkage**. Controla la complejidad que tiene el modelo. Es preferible mejorar un modelo mediante muchos pasos pequeños que mediante unos pocos grandes. Por esta razón, se emplea un valor de **shrinkage** tan pequeño como sea posible, teniendo en cuenta que, cuanto menor sea, mayor el número de iteraciones necesarias. Por defecto es de 0.001.
+
+- **n.minobsinnode**. Número mínimo de observaciones que debe tener cada nodo del árbol para poder ser dividido. Al igual que **interaction.depth**, permite controlar la complejidad que tiene el modelo.
+
+Además de los hiperparámetros que permite controlar **caret**, tiene otros dos más que hay que tener en cuenta:
+
+- **distribution**. Determina la función de coste (*loss function*). Algunas de las más utilizadas son: *gaussian* (squared loss) para regresión, *bernoulli* para clasificaciones binarias, multinomial para clasificaciones con más de dos clases y *adaboost* para clasificaciones binarias y que emplea la función exponencial del algoritmo original [AdaBoost](https://en.wikipedia.org/wiki/AdaBoost).
+
+- **bag.fraction** (subsampling fraction): fracción de observaciones del conjunto de train seleccionadas de forma aleatoria. Si su valor es de 1, se emplea el algoritmo de *Gradient Boosting*, si es menor que 1, se emplea *Stochastic Gradient Boosting*. Por defecto su valor es de 0.5.
+
+En este caso solo añadimos el argumento **distribution** y como el ejercicio se basa en un problema de clasificación binaria usamos *adaboost*.
+
+```{r warning=FALSE}
+library(gbm)
+
 cl <- makePSOCKcluster(4, setup_strategy="sequential")
 registerDoParallel(cl)
-```
 
-
-```{r}
 cv.grid <- expand.grid(interaction.depth=c(1, 2),
                        n.trees=100,
                        shrinkage=c(0.001, 0.01, 0.1),
-                       n.minobsinnode=c(2, 5, 25))
+                       n.minobsinnode=c(2, 5, 15))
 
 model_gbm <- train(target ~ ., data=train.df,
                   method="gbm",
@@ -433,45 +499,27 @@ model_gbm <- train(target ~ ., data=train.df,
                   distribution="adaboost",
                   verbose=FALSE)
 model_gbm
-```
-
-```{r include=FALSE}
 stopCluster(cl)
 ```
 
-### K-Nearest Neighbor (kNN)
-
-```{r include=FALSE}
-cl <- makePSOCKcluster(4, setup_strategy="sequential")
-registerDoParallel(cl)
-```
-
-
-```{r}
-cv.grid <- expand.grid(k=1:3)
-
-model_knn <- train(target ~ ., data=train.df,
-                   method="knn",
-                   metric="Accuracy",
-                   trControl=cv.cntrl,
-                   tuneGrid=cv.grid)
-model_knn
-```
-
-```{r include=FALSE}
-stopCluster(cl)
-```
-
+Empleando un modelo Boosting con n.trees = 100, minobsinnode = 2, interaction.depth = 2 y shrinkage = 0.1 se consigue un *Accuracy* promedio de validación del 83%. 
 
 ### SVM
 
-```{r include=FALSE}
+Información detallada sobre SVM en [Máquinas de Vector Soporte (Support Vector Machines, SVMs)](https://www.cienciadedatos.net/documentos/34_maquinas_de_vector_soporte_support_vector_machines).
+
+El método **svmRadial** de **caret** emplea la función **ksvm** del paquete **kernlab**. Este algoritmo tiene 2 hiperparámetros:
+
+- **sigma**. Coeficiente del kernel radial.
+
+- **C**. Penalización por violaciones del margen del hiperplano.
+
+```{r warning=FALSE}
+library(kernlab)
+
 cl <- makePSOCKcluster(4, setup_strategy="sequential")
 registerDoParallel(cl)
-```
 
-
-```{r}
 cv.grid <- expand.grid(sigma=c(0.001, 0.01, 0.1, 0.5, 1),
                        C=c(1, 20, 50, 100))
 
@@ -479,20 +527,14 @@ model_svm <- train(target ~ ., data=train.df,
                       method="svmRadial",
                       metric="Accuracy",
                       trControl=cv.cntrl,
-                      tuneLenght=15)
+                      tuneGrid=cv.grid)
 model_svm
-```
-
-```{r include=FALSE}
 stopCluster(cl)
 ```
 
+Empleando un modelo SVM Radial con sigma = 0.001 y C = 500, se consigue un *Accuracy* promedio de validación del 83%. 
 
-## Comparación de modelos
-
-### Métrica de validación
-
-### Evaluación de modelos mediante resampling
+## Evaluación de modelos mediante resampling
 
 ```{r}
 models <- list(KNN=model_knn, logistic=model_glmnet,
