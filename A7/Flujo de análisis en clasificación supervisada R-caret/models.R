@@ -15,6 +15,7 @@ gc()
 cl <- makePSOCKcluster(4, setup_strategy="sequential")
 registerDoParallel(cl)
 
+set.seed(123)
 model_glmnet <- train(target ~ ., data=train.df,
                       method="glmnet",
                       metric="Accuracy",
@@ -27,11 +28,13 @@ stopCluster(cl)
 cl <- makePSOCKcluster(4, setup_strategy="sequential")
 registerDoParallel(cl)
 
+set.seed(123)
+cv.grid <- expand.grid(mtry=c(3, 4, 5, 7))
 model_rf <- train(target ~ ., data=train.df,
                       method="rf",
                       metric="Accuracy",
                       trControl=cv.cntrl,
-                      tuneGrid=expand.grid(mtry=c(3, 4, 5, 7)))
+                      tuneGrid=cv.grid)
 model_rf
 stopCluster(cl)
 

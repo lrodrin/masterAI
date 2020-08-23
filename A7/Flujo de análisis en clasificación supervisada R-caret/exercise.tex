@@ -1,46 +1,39 @@
-% Options for packages loaded elsewhere
-\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{unicode=true}{hyperref} % options for packages loaded elsewhere
 \PassOptionsToPackage{hyphens}{url}
 %
-\documentclass[
-]{article}
+\documentclass[]{article}
 \usepackage{lmodern}
 \usepackage{amssymb,amsmath}
 \usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
 \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
-  \usepackage{textcomp} % provide euro and other symbols
-\else % if luatex or xetex
+  \usepackage{textcomp} % provides euro and other symbols
+\else % if luatex or xelatex
   \usepackage{unicode-math}
-  \defaultfontfeatures{Scale=MatchLowercase}
-  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
 \fi
-% Use upquote if available, for straight quotes in verbatim environments
+% use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
-\IfFileExists{microtype.sty}{% use microtype if available
-  \usepackage[]{microtype}
-  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage[]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
 }{}
-\makeatletter
-\@ifundefined{KOMAClassName}{% if non-KOMA class
-  \IfFileExists{parskip.sty}{%
-    \usepackage{parskip}
-  }{% else
-    \setlength{\parindent}{0pt}
-    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
-}{% if KOMA class
-  \KOMAoptions{parskip=half}}
-\makeatother
-\usepackage{xcolor}
-\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\usepackage{hyperref}
 \hypersetup{
-  pdftitle={Flujo de análisis en clasificación supervisada},
-  pdfauthor={Laura Rodríguez Navas},
-  hidelinks,
-  pdfcreator={LaTeX via pandoc}}
-\urlstyle{same} % disable monospaced font for URLs
+            pdftitle={Flujo de análisis en clasificación supervisada},
+            pdfauthor={Laura Rodríguez Navas},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
 \usepackage[margin=1in]{geometry}
 \usepackage{color}
 \usepackage{fancyvrb}
@@ -91,22 +84,34 @@
 % margins by default, and it is still possible to overwrite the defaults
 % using explicit options in \includegraphics[width, height, ...]{}
 \setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
-% Set default figure placement to htbp
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+% set default figure placement to htbp
 \makeatletter
 \def\fps@figure{htbp}
 \makeatother
-\setlength{\emergencystretch}{3em} % prevent overfull lines
-\providecommand{\tightlist}{%
-  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 
-\title{Flujo de análisis en clasificación supervisada}
 \usepackage{etoolbox}
 \makeatletter
 \providecommand{\subtitle}[1]{% add subtitle to \maketitle
   \apptocmd{\@title}{\par {\large #1 \par}}{}{}
 }
 \makeatother
+
+\title{Flujo de análisis en clasificación supervisada}
+\providecommand{\subtitle}[1]{}
 \subtitle{Métodos supervisados}
 \author{Laura Rodríguez Navas}
 \date{Septiembre 2020}
@@ -118,6 +123,8 @@
 \setcounter{tocdepth}{2}
 \tableofcontents
 }
+\newpage
+
 Empezamos por cargar a nuestro espacio de trabajo los paquetes que
 usaremos:
 
@@ -142,8 +149,6 @@ usaremos:
 \item
   \textbf{ggcorrplot}, muestra visualizaciones gráficas de matrices de
   correlación usando \emph{ggplot2}.
-\item
-  \textbf{gbm},
 \end{itemize}
 
 \begin{Shaded}
@@ -155,7 +160,6 @@ usaremos:
 \KeywordTok{library}\NormalTok{(doParallel)}
 \KeywordTok{library}\NormalTok{(syuzhet)}
 \KeywordTok{library}\NormalTok{(ggcorrplot)}
-\KeywordTok{library}\NormalTok{(gbm)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -806,9 +810,17 @@ relativa de cada palabra en el conjunto de textos.
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{complete.tdm <-}\StringTok{ }\KeywordTok{TermDocumentMatrix}\NormalTok{(myCorpus, }\DataTypeTok{control=}\KeywordTok{list}\NormalTok{(}\DataTypeTok{wordLengths=} \KeywordTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{, }\OtherTok{Inf}\NormalTok{)))}
-\CommentTok{# complete.tdm}
+\NormalTok{complete.tdm}
 \end{Highlighting}
 \end{Shaded}
+
+\begin{verbatim}
+## <<TermDocumentMatrix (terms: 16880, documents: 10876)>>
+## Non-/sparse entries: 76219/183510661
+## Sparsity           : 100%
+## Maximal term length: 49
+## Weighting          : term frequency (tf)
+\end{verbatim}
 
 Podemos observar que tenemos 16880 \emph{terms}, esto quiere decir que
 tenemos 16880 palabras diferentes en nuestro Corpus. Lo cual es una
@@ -837,9 +849,17 @@ palabras que aparecen en al menos el 0.25\% de las observaciones.
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{complete.tdm <-}\StringTok{ }\KeywordTok{removeSparseTerms}\NormalTok{(complete.tdm, }\DataTypeTok{sparse =} \FloatTok{.9975}\NormalTok{)}
-\CommentTok{# complete.tdm}
+\NormalTok{complete.tdm}
 \end{Highlighting}
 \end{Shaded}
+
+\begin{verbatim}
+## <<TermDocumentMatrix (terms: 582, documents: 10876)>>
+## Non-/sparse entries: 31214/6298618
+## Sparsity           : 100%
+## Maximal term length: 17
+## Weighting          : term frequency (tf)
+\end{verbatim}
 
 De 16880 palabras que teníamos, nos hemos quedado con 582, lo cual
 reduce en gran medida la dificultad y complejidad del problema de
@@ -893,17 +913,17 @@ que guardaremos en el objeto \textbf{complete\_irlba}.
 \end{Shaded}
 
 \begin{verbatim}
-##               [,1]          [,2]          [,3]          [,4]          [,5]
-##  [1,] 0.0003120453  2.106561e-04  3.300853e-04  1.903949e-05  0.0008616213
-##  [2,] 0.0431581232 -1.403879e-02 -5.080915e-03 -3.903218e-03 -0.0019973785
-##  [3,] 0.0020302441 -2.185038e-04  5.413331e-05 -1.010518e-04  0.0008915488
-##  [4,] 0.0054428605 -1.216877e-04  3.447881e-03 -1.656553e-04  0.0095383931
-##  [5,] 0.0021970462 -8.400923e-05 -7.684955e-05  7.778184e-05  0.0017047878
-##  [6,] 0.0449316298 -1.298884e-02 -1.632629e-03 -3.863906e-03 -0.0003830540
-##  [7,] 0.0060227348  8.522772e-03  3.240039e-02 -6.376573e-04 -0.0023781925
-##  [8,] 0.0387633061 -1.293081e-02 -5.097837e-03 -3.743790e-03 -0.0112347412
-##  [9,] 0.0079031970  5.712809e-04  6.692992e-04  4.562214e-04  0.0135827159
-## [10,] 0.0013941253  2.766996e-04  3.420014e-04  4.366600e-05  0.0016171623
+##                [,1]          [,2]          [,3]          [,4]          [,5]
+##  [1,] -0.0003162281 -2.109638e-04  3.318231e-04  2.035137e-05 -0.0008660149
+##  [2,] -0.0431207327  1.408993e-02 -5.124787e-03 -3.922969e-03  0.0021251369
+##  [3,] -0.0020297768  2.205792e-04  5.231801e-05 -1.014223e-04 -0.0008899277
+##  [4,] -0.0054444920  1.259299e-04  3.441743e-03 -1.669137e-04 -0.0094345444
+##  [5,] -0.0021975777  8.533917e-05 -7.910354e-05  7.809264e-05 -0.0017043646
+##  [6,] -0.0449020384  1.303972e-02 -1.677561e-03 -3.883599e-03  0.0005116573
+##  [7,] -0.0060579030 -8.521515e-03  3.239198e-02 -6.490016e-04  0.0023784289
+##  [8,] -0.0387247287  1.297783e-02 -5.140001e-03 -3.764856e-03  0.0112714576
+##  [9,] -0.0079142623 -5.649745e-04  6.691751e-04  4.606357e-04 -0.0135358450
+## [10,] -0.0014005942 -2.762898e-04  3.440679e-04  4.573951e-05 -0.0016280077
 \end{verbatim}
 
 \begin{Shaded}
@@ -1012,8 +1032,8 @@ Para este ejercicio, escogemos algoritmos de clasificación supervisada
 de \textbf{caret} que tienen una selección de variables incorporada (ver
 \url{http://topepo.github.io/caret/feature-selection-overview.html})..
 
-\hypertarget{entrenamiento-del-modelo}{%
-\subsection{Entrenamiento del modelo}\label{entrenamiento-del-modelo}}
+\hypertarget{entrenamiento-de-modelos}{%
+\subsection{Entrenamiento de modelos}\label{entrenamiento-de-modelos}}
 
 En esta sección se entrenan diferentes modelos de \emph{clasificación
 supervisada} con el objetivo de compararlos e identificar el que mejor
@@ -1053,7 +1073,9 @@ de bien clasificados sobre el conjunto de datos de train. La función
 función \textbf{train}, controla la estimación del error: en este caso
 realizaremos una \emph{K-Fold Cross-Validation} usando la función
 \textbf{createMultiFolds}, de 5 hojas (\emph{k}) y repitiéndola 3 veces
-(\emph{times}).
+(\emph{times}). Una validación cruzada con 5 hojas y 3 repeticiones,
+implica ajustar y evaluar el modelo 5 * 3 = 15 veces, más un último
+ajuste con todos los datos de entrenamiento para crear el modelo final.
 
 \emph{La Cross-validation se emplea para estimar el test error rate de
 un modelo y así evaluar su capacidad predictiva. Específicamente, el
@@ -1073,8 +1095,8 @@ aleatoria.
 \begin{Highlighting}[]
 \KeywordTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
 \NormalTok{cv.folds <-}\StringTok{ }\KeywordTok{createMultiFolds}\NormalTok{(train.df}\OperatorTok{$}\NormalTok{target, }\DataTypeTok{k=}\DecValTok{5}\NormalTok{, }\DataTypeTok{times=}\DecValTok{3}\NormalTok{)}
-\NormalTok{cv.cntrl <-}\StringTok{ }\KeywordTok{trainControl}\NormalTok{(}\DataTypeTok{method =} \StringTok{"repeatecv"}\NormalTok{, }\DataTypeTok{number =} \DecValTok{5}\NormalTok{,}
-                         \DataTypeTok{index =}\NormalTok{ cv.folds, }\DataTypeTok{allowParallel =} \OtherTok{TRUE}\NormalTok{, }
+\NormalTok{cv.cntrl <-}\StringTok{ }\KeywordTok{trainControl}\NormalTok{(}\DataTypeTok{method=}\StringTok{"repeatecv"}\NormalTok{, }\DataTypeTok{number=}\DecValTok{5}\NormalTok{,}
+                         \DataTypeTok{index=}\NormalTok{cv.folds, }\DataTypeTok{allowParallel=}\OtherTok{TRUE}\NormalTok{, }
                          \DataTypeTok{returnResamp=}\StringTok{"final"}\NormalTok{,}
                          \DataTypeTok{verboseIter=}\OtherTok{FALSE}\NormalTok{)}
 \end{Highlighting}
@@ -1083,8 +1105,8 @@ aleatoria.
 El argumento \textbf{method} de la función \textbf{trainControl} hace
 posible utilizar distintos tipos de validación. En este caso es
 \emph{repeatecv} (para entrenamiento repetido/división de test). Además
-del tipo de validación, la función \textbf{trainControl} permite fijar
-multitud de argumentos. A continuación, describimos los que se han
+de fijar el tipo de validación, la función \textbf{trainControl} permite
+fijar multitud de argumentos. A continuación, describimos los que se han
 fijado:
 
 \begin{itemize}
@@ -1127,7 +1149,8 @@ fijado:
 \tightlist
 \item
   \textbf{allowParallel}. Habilita la computación paralela
-  (\emph{TRUE}).
+  (\emph{TRUE}). \textbf{caret} permite paralelizar el proceso para que
+  sea más rápido.
 \item
   \textbf{returnResamp}. Indica la cantidad de métricas de evaluación
   que se deben guardar. Solo los valores finales (\emph{``final''}).
@@ -1135,5 +1158,286 @@ fijado:
   \textbf{verboseIter}. Para imprimir o no el registro de entrenamiento.
   No se imprime (\emph{FALSE}).
 \end{itemize}
+
+Muchos modelos contienen parámetros que no pueden aprenderse a partir de
+los datos de entrenamiento y, por lo tanto, deben de ser establecidos
+por el analista. A estos se les conoce como \emph{hiperparámetros},
+argumento \textbf{tunning} de \textbf{caret}. Con la función
+\textbf{expand.grid} definiremos los valores de los argumentos a tunear.
+
+Los resultados de un modelo pueden depender en gran medida del valor que
+tomen sus \emph{hiperparámetros}, sin embargo, no se puede conocer de
+antemano cuáles son los adecuados. La forma más común de encontrar los
+valores óptimos es probando diferentes posibilidades. Para ello se
+utiliza el argumento de \textbf{caret}: \textbf{tuneGrid} en la función
+\textbf{train}. Si no se tiene ninguna idea de qué valores de
+\emph{hiperparámetros} pueden ser los adecuados, lo mejor es utilizar la
+aleatoriedad. \textbf{caret} también incorpora esta opción mediante el
+argumento \textbf{tuneLength}.
+
+En la siguiente sección realizaremos pruebas tanto con \textbf{tuneGrid}
+y \textbf{tuneLength}. Más con \textbf{tuneGrid}, ya que, de esta forma,
+se evita que se generen automáticamente valores que no tienen sentido o
+que disparan el tiempo de computación necesario. Además, con
+\emph{target \textasciitilde{}.} denotamos la variable que se quiere
+predecir e indicando que el resto de las variables del conjunto de datos
+de \textbf{train} son predictoras.
+
+\hypertarget{modelos}{%
+\subsection{Modelos}\label{modelos}}
+
+Es a lo largo del proceso posterior donde más destacarán las
+funcionalidades ofrecidas por \textbf{caret}, permitiendo emplear la
+misma sintaxis para ajustar, optimizar, evaluar y predecir un amplio
+abanico de modelos variando únicamente el nombre del algoritmo. Aunque
+\textbf{caret} permite todo esto con apenas unas pocas líneas de código
+son muchos los argumentos que pueden ser adaptados, cada uno con
+múltiples posibilidades. Con el objetivo de exponer mejor cada una de
+las opciones, en lugar de crear directamente un modelo final, se
+muestran ejemplos de menor a mayor complejidad de la lista mostrada
+anteriormente:
+\url{http://topepo.github.io/caret/available-models.html}.
+
+\hypertarget{regresiuxf3n-loguxedstica}{%
+\subsubsection{Regresión Logística}\label{regresiuxf3n-loguxedstica}}
+
+Información detallada sobre regresión logística en
+\href{https://www.cienciadedatos.net/documentos/27_regresion_logistica_simple_y_multiple}{Regresión
+logística simple y múltiple}.
+
+\textbf{caret} emplea el método \textbf{glmnet}. Este algoritmo no tiene
+ningún \emph{hiperparámetro}, por lo tanto, usamos por ejemplo
+\textbf{tuneLength} igual a 15.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cl <-}\StringTok{ }\KeywordTok{makePSOCKcluster}\NormalTok{(}\DecValTok{6}\NormalTok{, }\DataTypeTok{setup_strategy=}\StringTok{"sequential"}\NormalTok{)}
+\KeywordTok{registerDoParallel}\NormalTok{(cl)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
+\NormalTok{model_glmnet <-}\StringTok{ }\KeywordTok{train}\NormalTok{(target }\OperatorTok{~}\StringTok{ }\NormalTok{., }\DataTypeTok{data=}\NormalTok{train.df,}
+                      \DataTypeTok{method=}\StringTok{"glmnet"}\NormalTok{,}
+                      \DataTypeTok{metric=}\StringTok{"Accuracy"}\NormalTok{,}
+                      \DataTypeTok{trControl=}\NormalTok{cv.cntrl,}
+                      \DataTypeTok{tuneLenght=}\DecValTok{15}\NormalTok{)}
+\NormalTok{model_glmnet}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{stopCluster}\NormalTok{(cl)}
+\end{Highlighting}
+\end{Shaded}
+
+El \emph{Accuracy} promedio estimado mediante validación cruzada
+repetida es de 0.7650943, el modelo predice correctamente un 76.5\% de
+las veces.
+
+\hypertarget{random-forest}{%
+\subsubsection{Random Forest}\label{random-forest}}
+
+Información detallada sobre Random Forest en
+\href{https://www.cienciadedatos.net/documentos/33_arboles_de_prediccion_bagging_random_forest_boosting}{Árboles
+de predicción: bagging, random forest, boosting y C5.0}.
+
+\textbf{caret} emplea el método **rf\emph{. Este algoritmo tiene un
+}hiperparámetro*:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{mtry}. Número de valores seleccionados aleatoriamente en cada
+  árbol. En este caso hemos escogido: 3, 4, 5 y 7.
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cl <-}\StringTok{ }\KeywordTok{makePSOCKcluster}\NormalTok{(}\DecValTok{6}\NormalTok{, }\DataTypeTok{setup_strategy=}\StringTok{"sequential"}\NormalTok{)}
+\KeywordTok{registerDoParallel}\NormalTok{(cl)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
+\NormalTok{cv.grid <-}\StringTok{ }\KeywordTok{expand.grid}\NormalTok{(}\DataTypeTok{mtry=}\KeywordTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{7}\NormalTok{))}
+\NormalTok{model_rf <-}\StringTok{ }\KeywordTok{train}\NormalTok{(target }\OperatorTok{~}\StringTok{ }\NormalTok{., }\DataTypeTok{data=}\NormalTok{train.df,}
+                      \DataTypeTok{method=}\StringTok{"rf"}\NormalTok{,}
+                      \DataTypeTok{metric=}\StringTok{"Accuracy"}\NormalTok{,}
+                      \DataTypeTok{trControl=}\NormalTok{cv.cntrl,}
+                      \DataTypeTok{tuneGrid=}\NormalTok{cv.grid)}
+\NormalTok{model_rf}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{stopCluster}\NormalTok{(cl)}
+\end{Highlighting}
+\end{Shaded}
+
+Empleando un modelo Random Forest con mtry = 7 se consigue un
+\emph{Accuracy} promedio de validación igual a 0.7618528, el modelo
+predice correctamente un 76.2\% de las veces.
+
+\hypertarget{gradient-boosting}{%
+\subsubsection{Gradient Boosting}\label{gradient-boosting}}
+
+Información detallada sobre boosting
+\href{https://www.cienciadedatos.net/documentos/33_arboles_de_prediccion_bagging_random_forest_boosting}{Árboles
+de predicción: bagging, random forest, boosting y C5.0}.
+
+El método \textbf{gbm} de \textbf{caret} emplea el paquete gbm. Este
+algoritmo tiene 4 \emph{hiperparámetros}:
+
+\begin{itemize}
+\item
+  \textbf{n.trees}. Número de iteraciones del algoritmo de boosting.
+  Cuanto mayor es este valor, más se reduce el error de entrenamiento.
+\item
+  \textbf{interaction.depth}. El número total de divisiones que tiene el
+  árbol. Emplear árboles con ente 1 y 6 nodos suele dar buenos
+  resultados.
+\item
+  \textbf{shrinkage}. Controla la complejidad que tiene el modelo. Es
+  preferible mejorar un modelo mediante muchos pasos pequeños que
+  mediante unos pocos grandes. Por esta razón, se emplea un valor de
+  \textbf{shrinkage} tan pequeño como sea posible, teniendo en cuenta
+  que, cuanto menor sea, mayor el número de iteraciones necesarias. Por
+  defecto es de 0.001.
+\item
+  \textbf{n.minobsinnode}. Número mínimo de observaciones que debe tener
+  cada nodo del árbol para poder ser dividido. Al igual que
+  \textbf{interaction.depth}, permite controlar la complejidad que tiene
+  el modelo.
+\end{itemize}
+
+Además de los hiperparámetros que permite controlar \textbf{caret},
+tiene otros dos más que hay que tener en cuenta:
+
+\begin{itemize}
+\item
+  \textbf{distribution}. Determina la función de coste (\emph{loss
+  function}). Algunas de las más utilizadas son: \emph{gaussian}
+  (squared loss) para regresión, \emph{bernoulli} para clasificaciones
+  binarias, multinomial para clasificaciones con más de dos clases y
+  \emph{adaboost} para clasificaciones binarias y que emplea la función
+  exponencial del algoritmo original
+  \href{https://en.wikipedia.org/wiki/AdaBoost}{AdaBoost}.
+\item
+  \textbf{bag.fraction} (subsampling fraction): fracción de
+  observaciones del conjunto de train seleccionadas de forma aleatoria.
+  Si su valor es de 1, se emplea el algoritmo de \emph{Gradient
+  Boosting}, si es menor que 1, se emplea \emph{Stochastic Gradient
+  Boosting}. Por defecto su valor es de 0.5.
+\end{itemize}
+
+En este caso solo añadimos el argumento \textbf{distribution} y como el
+ejercicio se basa en un problema de clasificación binaria usamos
+\emph{adaboost}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(gbm)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Loaded gbm 2.1.8
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cl <-}\StringTok{ }\KeywordTok{makePSOCKcluster}\NormalTok{(}\DecValTok{6}\NormalTok{, }\DataTypeTok{setup_strategy=}\StringTok{"sequential"}\NormalTok{)}
+\KeywordTok{registerDoParallel}\NormalTok{(cl)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
+\NormalTok{cv.grid <-}\StringTok{ }\KeywordTok{expand.grid}\NormalTok{(}\DataTypeTok{interaction.depth=}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{),}
+                       \DataTypeTok{n.trees=}\DecValTok{100}\NormalTok{,}
+                       \DataTypeTok{shrinkage=}\KeywordTok{c}\NormalTok{(}\FloatTok{0.001}\NormalTok{, }\FloatTok{0.01}\NormalTok{, }\FloatTok{0.1}\NormalTok{),}
+                       \DataTypeTok{n.minobsinnode=}\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{15}\NormalTok{))}
+
+\NormalTok{model_gbm <-}\StringTok{ }\KeywordTok{train}\NormalTok{(target }\OperatorTok{~}\StringTok{ }\NormalTok{., }\DataTypeTok{data=}\NormalTok{train.df,}
+                  \DataTypeTok{method=}\StringTok{"gbm"}\NormalTok{,}
+                  \DataTypeTok{metric=}\StringTok{"Accuracy"}\NormalTok{,}
+                  \DataTypeTok{trControl=}\NormalTok{cv.cntrl,}
+                  \DataTypeTok{tuneGrid=}\NormalTok{cv.grid,}
+                  \DataTypeTok{distribution=}\StringTok{"adaboost"}\NormalTok{,}
+                  \DataTypeTok{verbose=}\OtherTok{FALSE}\NormalTok{)}
+\NormalTok{model_gbm}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{stopCluster}\NormalTok{(cl)}
+\end{Highlighting}
+\end{Shaded}
+
+Empleando un modelo Boosting con n.trees = 100, interaction.depth = 2,
+shrinkage = 0.1 and n.minobsinnode = 2 se consigue un \emph{Accuracy}
+promedio de validación igual a 0.7451281, el modelo predice
+correctamente un 74.5\% de las veces.
+
+\hypertarget{svm}{%
+\subsubsection{SVM}\label{svm}}
+
+Información detallada sobre SVM en
+\href{https://www.cienciadedatos.net/documentos/34_maquinas_de_vector_soporte_support_vector_machines}{Máquinas
+de Vector Soporte (Support Vector Machines, SVMs)}.
+
+El método \textbf{svmRadial} de \textbf{caret} emplea la función
+\textbf{ksvm} del paquete \textbf{kernlab}. Este algoritmo tiene 2
+hiperparámetros:
+
+\begin{itemize}
+\item
+  \textbf{sigma}. Coeficiente del kernel radial.
+\item
+  \textbf{C}. Penalización por violaciones del margen del hiperplano.
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(gbm)}
+
+\NormalTok{cl <-}\StringTok{ }\KeywordTok{makePSOCKcluster}\NormalTok{(}\DecValTok{6}\NormalTok{, }\DataTypeTok{setup_strategy=}\StringTok{"sequential"}\NormalTok{)}
+\KeywordTok{registerDoParallel}\NormalTok{(cl)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
+\NormalTok{cv.grid <-}\StringTok{ }\KeywordTok{expand.grid}\NormalTok{(}\DataTypeTok{sigma=}\KeywordTok{c}\NormalTok{(}\FloatTok{0.001}\NormalTok{, }\FloatTok{0.01}\NormalTok{, }\FloatTok{0.1}\NormalTok{, }\FloatTok{0.5}\NormalTok{, }\DecValTok{1}\NormalTok{),}
+                       \DataTypeTok{C=}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{20}\NormalTok{, }\DecValTok{50}\NormalTok{, }\DecValTok{100}\NormalTok{))}
+
+\NormalTok{model_svm <-}\StringTok{ }\KeywordTok{train}\NormalTok{(target }\OperatorTok{~}\StringTok{ }\NormalTok{., }\DataTypeTok{data=}\NormalTok{train.df,}
+                      \DataTypeTok{method=}\StringTok{"svmRadial"}\NormalTok{,}
+                      \DataTypeTok{metric=}\StringTok{"Accuracy"}\NormalTok{,}
+                      \DataTypeTok{trControl=}\NormalTok{cv.cntrl,}
+                      \DataTypeTok{tuneLenght=}\NormalTok{cv.grid)}
+\NormalTok{model_svm}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{stopCluster}\NormalTok{(cl)}
+\end{Highlighting}
+\end{Shaded}
+
+Empleando un modelo SVM Radial con sigma = 0.006839614 y C = 1, se
+consigue un \emph{Accuracy} promedio de validación igual a 0.7701726, el
+modelo predice correctamente un 77\% de las veces.
 
 \end{document}
