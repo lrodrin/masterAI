@@ -3,13 +3,13 @@ title: "Flujo de análisis en clasificación supervisada"
 author: "Laura Rodríguez Navas"
 date: "Septiembre 2020"
 output:
+  html_document: default
   pdf_document: 
     fig_caption: yes
     fig_crop: no
     keep_tex: yes
     toc: yes
-  html_document: default
-subtitle: Métodos supervisados
+subtitle: "Métodos supervisados"
 ---
 
 ```{r setup, include=FALSE}
@@ -375,7 +375,7 @@ En esta sección se entrenan diferentes modelos de *clasificación supervisada* 
 
 - **trControl**. Especificaciones adicionales sobre la forma de llevar a cabo el entrenamiento del modelo.
 
-La función **train** de **caret** siempre estima un porcentaje de bien clasificados sobre el conjunto de datos de train. La función **trainControl**, que se pasa al argumento **trControl** de la función **train**, controla la estimación del error: en este caso realizaremos una *K-Fold Cross-Validation* usando la función **createMultiFolds**, de 5 hojas (*k*) y repitiéndola 3 veces (*times*). Una validación cruzada con 5 hojas y 3 repeticiones, implica ajustar y evaluar el modelo 10 * 5 = 50 veces, más un último ajuste con todos los datos de entrenamiento para crear el modelo final.
+La función **train** de **caret** siempre estima un porcentaje de bien clasificados sobre el conjunto de datos de train. La función **trainControl**, que se pasa al argumento **trControl** de la función **train**, controla la estimación del error: en este caso realizaremos una *K-Fold Cross-Validation* usando la función **createMultiFolds**, de 5 hojas (*k*) y repitiéndola 3 veces (*times*). Una validación cruzada con 5 hojas y 3 repeticiones, implica ajustar y evaluar el modelo 5 * 3 = 15 veces, más un último ajuste con todos los datos de entrenamiento para crear el modelo final.
 
 *La Cross-validation se emplea para estimar el test error rate de un modelo y así evaluar su capacidad predictiva. Específicamente, el método K-Fold Cross-Validation es un proceso iterativo. Consiste en dividir los datos de forma aleatoria en k grupos de aproximadamente el mismo tamaño. k-1 grupos se emplean para entrenar el modelo y uno de los grupos se emplea como test, este proceso se repite k veces utilizando un grupo distinto como test en cada iteración. El proceso genera k estimaciones del test error cuyo promedio se emplea como estimación final.*
 
@@ -383,20 +383,20 @@ Las semillas son necesarias si se quiere asegurar la reproducibilidad de los res
 
 ```{r}
 set.seed(123)
-cv.folds <- createMultiFolds(train.df$target, k=10, times=)
-cv.cntrl <- trainControl(method = "repeatecv", number = 10,
-                         index = cv.folds, allowParallel = TRUE, 
+cv.folds <- createMultiFolds(train.df$target, k=5, times=3)
+cv.cntrl <- trainControl(method="repeatecv", number=5,
+                         index=cv.folds, allowParallel=TRUE, 
                          returnResamp="final",
                          verboseIter=FALSE)
 ```
 
 El argumento **method** de la función **trainControl** hace posible utilizar distintos tipos de validación. En este caso es *repeatecv* (para entrenamiento repetido/división de test). Además de fijar el tipo de validación, la función **trainControl** permite fijar multitud de argumentos. A continuación, describimos los que se han fijado:
 
-- **number**. El número de hojas (*10*).
-- **index**. Lista con los elementos para cada iteración (**cv.folds**). Cada elemento de la lista es un vector de números enteros correspondientes a las filas utilizadas para el entrenamiento en esa iteración. Vemos las 10 primeras hojas.
+- **number**. El número de hojas (*5*).
+- **index**. Lista con los elementos para cada iteración (**cv.folds**). Cada elemento de la lista es un vector de números enteros correspondientes a las filas utilizadas para el entrenamiento en esa iteración.
 
 ```{r}
-str(cv.folds[1:10])
+str(cv.folds)
 ```
 
 - **allowParallel**. Habilita la computación paralela (*TRUE*). **caret** permite paralelizar el proceso para que sea más rápido.
@@ -419,20 +419,28 @@ Información detallada sobre regresión logística en [Regresión logística sim
 
 **caret** emplea el método **glmnet**. Este algoritmo no tiene ningún *hiperparámetro*, por lo tanto, usamos por ejemplo **tuneLength** igual a 15.
 
-```{r warning=FALSE}
-cl <- makePSOCKcluster(4, setup_strategy="sequential")
+```{r}
+cl <- makePSOCKcluster(6, setup_strategy="sequential")
 registerDoParallel(cl)
+```
 
+
+```{r warning=FALSE, eval=FALSE}
+set.seed(123)
 model_glmnet <- train(target ~ ., data=train.df,
                       method="glmnet",
                       metric="Accuracy",
                       trControl=cv.cntrl,
                       tuneLenght=15)
 model_glmnet
+```
+
+
+```{r}
 stopCluster(cl)
 ```
 
-El *Accuracy* promedio estimado mediante validación cruzada repetida es de 0.78, el modelo predice correctamente un 78% de las veces.
+El *Accuracy* promedio estimado mediante validación cruzada repetida es de 0.7650943, el modelo predice correctamente un 76.5% de las veces.
 
 ### Random Forest
 
@@ -442,10 +450,14 @@ Información detallada sobre Random Forest en [Árboles de predicción: bagging,
 
 - **mtry**. Número de valores seleccionados aleatoriamente en cada árbol. En este caso hemos escogido: 3, 4, 5 y 7.
 
-```{r warning=FALSE}
-cl <- makePSOCKcluster(4, setup_strategy="sequential")
+```{r}
+cl <- makePSOCKcluster(6, setup_strategy="sequential")
 registerDoParallel(cl)
+```
 
+
+```{r warning=FALSE, eval=FALSE}
+set.seed(123)
 cv.grid <- expand.grid(mtry=c(3, 4, 5, 7))
 model_rf <- train(target ~ ., data=train.df,
                       method="rf",
@@ -453,10 +465,15 @@ model_rf <- train(target ~ ., data=train.df,
                       trControl=cv.cntrl,
                       tuneGrid=cv.grid)
 model_rf
+```
+
+
+```{r}
 stopCluster(cl)
 ```
 
-Empleando un modelo Random Forest con mtry = 7 se consigue un *Accuracy* promedio de validación del 84%. 
+
+Empleando un modelo Random Forest con mtry = 7 se consigue un *Accuracy* promedio de validación igual a 0.7618528, el modelo predice correctamente un 76.2% de las veces.
 
 ### Gradient Boosting
 
@@ -483,9 +500,13 @@ En este caso solo añadimos el argumento **distribution** y como el ejercicio se
 ```{r warning=FALSE}
 library(gbm)
 
-cl <- makePSOCKcluster(4, setup_strategy="sequential")
+cl <- makePSOCKcluster(6, setup_strategy="sequential")
 registerDoParallel(cl)
+```
 
+
+```{r warning=FALSE, eval=FALSE}
+set.seed(123)
 cv.grid <- expand.grid(interaction.depth=c(1, 2),
                        n.trees=100,
                        shrinkage=c(0.001, 0.01, 0.1),
@@ -499,10 +520,15 @@ model_gbm <- train(target ~ ., data=train.df,
                   distribution="adaboost",
                   verbose=FALSE)
 model_gbm
+```
+
+
+```{r}
 stopCluster(cl)
 ```
 
-Empleando un modelo Boosting con n.trees = 100, minobsinnode = 2, interaction.depth = 2 y shrinkage = 0.1 se consigue un *Accuracy* promedio de validación del 83%. 
+Empleando un modelo Boosting con n.trees = 100, interaction.depth = 2, shrinkage
+ = 0.1 and n.minobsinnode = 2 se consigue un *Accuracy* promedio de validación igual a 0.7451281, el modelo predice correctamente un 74.5% de las veces.
 
 ### SVM
 
@@ -515,11 +541,15 @@ El método **svmRadial** de **caret** emplea la función **ksvm** del paquete **
 - **C**. Penalización por violaciones del margen del hiperplano.
 
 ```{r warning=FALSE}
-library(kernlab)
+library(gbm)
 
-cl <- makePSOCKcluster(4, setup_strategy="sequential")
+cl <- makePSOCKcluster(6, setup_strategy="sequential")
 registerDoParallel(cl)
+```
 
+
+```{r warning=FALSE, eval=FALSE}
+set.seed(123)
 cv.grid <- expand.grid(sigma=c(0.001, 0.01, 0.1, 0.5, 1),
                        C=c(1, 20, 50, 100))
 
@@ -527,17 +557,21 @@ model_svm <- train(target ~ ., data=train.df,
                       method="svmRadial",
                       metric="Accuracy",
                       trControl=cv.cntrl,
-                      tuneGrid=cv.grid)
+                      tuneLenght=cv.grid)
 model_svm
+```
+
+
+```{r}
 stopCluster(cl)
 ```
 
-Empleando un modelo SVM Radial con sigma = 0.001 y C = 500, se consigue un *Accuracy* promedio de validación del 83%. 
+Empleando un modelo SVM Radial con sigma = 0.006839614 y C = 1, se consigue un *Accuracy* promedio de validación igual a 0.7701726, el modelo predice correctamente un 77% de las veces.
 
 ## Evaluación de modelos mediante resampling
 
 ```{r}
-models <- list(KNN=model_knn, logistic=model_glmnet,
+models <- list(logistic=model_glmnet,
                RF=model_rf, boosting=model_gbm, SVMRadial=model_svm)
 
 resamps <- resamples(models)
