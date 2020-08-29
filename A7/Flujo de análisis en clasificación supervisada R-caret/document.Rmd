@@ -167,6 +167,8 @@ barplot(location.freq[which(location.freq>10)], las = 2,
 
 En el total de ubicaciones, 3342, la mayoría de ellas cuenta con menos de 10 observaciones. Acorde a nuestro criterio esta variable explicativa no es buena para hacer una predicción, ya que la variable tiene muy pocas observaciones, y puede ocurrir que, durante la validación cruzada o *bootstrapping*, algunas de las particiones no contengan ninguna observación de dicha variable, lo que puede dar lugar a errores.
 
+*Una muestra bootstrap es una muestra obtenida a partir de la muestra original por muestreo aleatorio con reposición, y del mismo tamaño que la muestra original. Muestreo aleatorio con reposición (resampling with replacement) significa que, después de que una observación sea extraída, se vuelve a poner a disposición para las siguientes extracciones. Como resultado de este tipo de muestreo, algunas observaciones aparecerán múltiples veces en la muestra bootstrap y otras ninguna.*
+
 ## Variable *id*
 
 La variable **id** es solo un identificador único, así que, no la analizaremos y procederemos a eliminarla de los conjuntos de datos de train y test.
@@ -371,13 +373,15 @@ En esta sección se entrenan diferentes modelos de *clasificación supervisada* 
 
 - **metric**. La métrica empleada para evaluar la capacidad predictiva del modelo. Aunque la competición de Kaggle en la que se basa nuestro ejercicio usa **F1 score** como métrica de evaluación, para cuantificar como de bueno son los modelos utilizaremos la métrica de evaluación *Accuracy*. Porqué la distribución de la clase no presenta un problema notable de desbalanceo de clases y cuando la distribución de la variable clase está bastante equilibrada es una buena medida de evaluación.
 
-*Accuracy representa el porcentaje total de elementos clasificados correctamente. Es la medida más directa de la calidad de los clasificadores. Es un valor entre 0 y 1. Cuanto más alto, mejor.*
+*Accuracy es el porcentaje de observaciones correctamente clasificadas respecto al total de predicciones.*
 
 - **trControl**. Especificaciones adicionales sobre la forma de llevar a cabo el entrenamiento del modelo.
 
 La función **train** de **caret** siempre estima un porcentaje de bien clasificados sobre el conjunto de datos de train. La función **trainControl**, que se pasa al argumento **trControl** de la función **train**, controla la estimación del error: en este caso realizaremos una *K-Fold Cross-Validation* usando la función **createMultiFolds**, de 5 hojas (*k*) y repitiéndola 3 veces (*times*). Una validación cruzada con 5 hojas y 3 repeticiones, implica ajustar y evaluar el modelo 5 * 3 = 15 veces, más un último ajuste con todos los datos de entrenamiento para crear el modelo final.
 
-*La Cross-validation se emplea para estimar el test error rate de un modelo y así evaluar su capacidad predictiva. Específicamente, el método K-Fold Cross-Validation es un proceso iterativo. Consiste en dividir los datos de forma aleatoria en k grupos de aproximadamente el mismo tamaño. k-1 grupos se emplean para entrenar el modelo y uno de los grupos se emplea como test, este proceso se repite k veces utilizando un grupo distinto como test en cada iteración. El proceso genera k estimaciones del test error cuyo promedio se emplea como estimación final.*
+*k-Fold-Cross-Validation (CV). Las observaciones de entrenamiento se reparten en k folds (conjuntos) del mismo tamaño. El modelo se ajusta con todas las observaciones excepto las del primer fold y se evalúa prediciendo las observaciones del fold que ha quedado excluido, obteniendo así la primera métrica. El proceso se repite k veces, excluyendo un fold distinto en cada iteración. Al final, se generan k valores de la métrica, que se agregan (normalmente con la media y la desviación típica) generando la estimación final de validación.*
+
+*Repeated k-Fold-Cross-Validation (repeated CV). Es exactamente igual al método k-Fold-Cross-Validation pero repitiendo el proceso completo n veces. Por ejemplo, 10-Fold-Cross-Validation con 5 repeticiones implica a un total de 50 iteraciones ajuste-validación, pero no equivale a un 50-Fold-Cross-Validation.*
 
 Las semillas son necesarias si se quiere asegurar la reproducibilidad de los resultados, ya que una validación cruzada implica una selección aleatoria.
 
@@ -568,53 +572,63 @@ Empleando un modelo SVM Radial con sigma = 0.006839614 y C = 1, se consigue un *
 
 ## Evaluación de modelos mediante resampling
 
-Una vez que se han entrenado los distintos modelos, se tiene que identificar cuál de ellos consigue mejores resultados para el problema en cuestión. Con los datos disponibles, existen dos formas de comparar los modelos. Si bien las dos no tienen por qué dar los mismos resultados, son complementarias a la hora de tomar una decisión final.
+Una vez que se han entrenado los distintos modelos, se tiene que identificar cuál de ellos consigue mejores resultados para el problema en cuestión. Con los datos disponibles, existen dos formas de comparar los modelos. Si bien las dos no tienen por qué dar los mismos resultados, son complementarias a la hora de tomar una decisión final. Las dos formas de comparar y evaluar los distintos modelos entrenados son: usando las métricas de evaluación obtenidas y/o según el error de test empleando la función **extractPrediction** de **caret**.
 
-Las métricas obtenidas mediante validación cruzada son estimaciones de la capacidad que tiene un modelo al predecir nuevas observaciones.
+La forma que usaremos se basará en las métricas obtenidas. Estas mediante la validación cruzada son estimaciones de la capacidad que tienen los modelos al predecir nuevas observaciones. Como toda estimación, tiene asociada un promedio. Para poder determinar si un método es superior a otro, no es suficiente con comparar los mínimos (o máximos dependiendo de la métrica) que ha conseguido cada uno, sino que hay que tener en cuenta sus promedios para determinar si existen evidencias suficientes de superioridad.
 
-La función resamples() permite extraer, de uno o varios modelos creados con train(), las métricas obtenidas para cada repetición del proceso de validación. Es importante tener en cuenta que esta función recupera todos los resultados, por lo que, si no se especifica en el control de entrenamiento returnResamp = "final", se devuelven los valores para todos los hiperparámetros, no solo los del modelo final.
+La función **resamples** permite extraer, dado los modelos creados con **train**, las métricas obtenidas para cada repetición del proceso de validación. Es importante tener en cuenta que esta función recupera todos los resultados, por lo que, si no se especifica en el control de entrenamiento *returnResamp = "final"*, se devuelven los valores para todos los *hiperparámetros*, no solo los del modelo final. 
 
 ```{r}
 models <- list(logistic=model_glmnet,
-               RF=model_rf, boosting=model_gbm, SVMRadial=model_svm)
+               RF=model_rf, 
+               boosting=model_gbm, 
+               SVMRadial=model_svm)
 
 resamps <- resamples(models)
 summary(resamps)
 ```
-Observaras que junto
-con la estimacion del porcentaje de bien clasicados (\accuracy"), se nos muestra el valor del estadstico Kappa,
-el cual es una medida que compara el \accuracy" observado respecto al \accuracy" esperado (de un predictor
-al azar). Esto es, cuanto mejor estimamos que lo hace nuestro clasicador respecto a otro que predijese al azar
-la clase (siguiendo la probabilidad a priori de estas). Un ameno ejemplo para entenderla mejor se encuentra en
-aqu.
+Observamos que junto con la estimación del porcentaje de bien clasificados (**Accuracy**), se nos muestra el valor de la métrica **Kappa**, el cual es una medida que compara el **Accuracy** observado respecto al **Accuracy** esperado (de una predicción al azar). Esto es, cuanto mejor estima un clasificador respecto a otro que predice al azar. Un ameno ejemplo para entenderla mejor se encuentra en este [enlace](https://stats.stackexchange.com/questions/82162/cohens-kappa-in-plain-english).
 
-Todos los modelos ajustados tienen un acierto en la predicción superior al nivel basal (0.62, línea discontinua). El modelo SVMRadial  consigue el accuracy promedio más alto, seguido muy de cerca por logistic. Para determinar si las diferencias entre ellos son significativas, se recurre a test estadísticos. 
+*Kappa o Cohen’s Kappa es el valor de Accuracy normalizado respecto del porcentaje de acierto esperado por azar. A diferencia de Accuracy, cuyo rango de valores puede ser [0, 1], el de kappa es [-1, 1]. En problemas con clases desbalanceadas, donde el grupo mayoritario supera por mucho a los otros, Kappa es más útil porque evita caer en la ilusión de creer que un modelo es bueno cuando realmente solo supera por poco lo esperado por azar. *
 
-La función diff() del paquete caret recibe como argumento los resultados de validación de dos o más modelos extraídos con resample() y hace comparaciones por pares aplicando un t-test pareado con correcciones por comparaciones múltiples. Esta función no permite mucha flexibilidad en cuanto a las comparaciones, por lo que, una vez extraídos los datos con resample(), suele ser preferible emplear otras funciones disponibles en R.
+Todos los modelos tienen un promedio de acierto en la predicción superior al nivel basal, Accuracy** superior a 0.57. El modelo *SVMRadial* consigue el **Accuracy** promedio más alto, seguido muy de cerca por el modelo *logistic*. Para determinar si las diferencias entre ellos son significativas, se recurre a un *test estadístico*. Al compartir las "folds"-hojas, un *test estadístico* calculará la significancia de las diferencias entre los promedios de error de ambos modelos. Se trata de chequear las diferencias, para cada métrica, comparando entre los pares de clasificadores y de interpretar, mediante el *p-value* asociado, si estas diferencias son estadísticamente significativas o no, https://en.wikipedia.org/wiki/Statistical_significance. Usamos un umbral de *0.05*.
 
+El *test estadístico* que aplicamos es [*Wilcoxon signed-rank test*](https://www.cienciadedatos.net/documentos/18_prueba_de_los_rangos_con_signo_de_wilcoxon), con correcciones por comparaciones múltiples. Este test usa la función **pairwise.wilcox.test** que nos da mucha flexibilidad en cuanto a las comparaciones múltiples.
 
-```{r warning=FALSE}
-# Se trasforma el dataframe devuelto por resamples() para separar el nombre del
-# modelo y las métricas en columnas distintas.
+### Wilcoxon signed-rank test
+
+Primeo se trasforma el dataframe devuelto por **resamples** para separar el nombre del modelo y las métricas en columnas distintas. Se usan las funciones **gather** (junta las columnas en pares clave-valor) y **separate** (separa una columna de caracteres en varias columnas). Para una mejor visualización también se usan las funciones **group_by**. para agrupar los resultados modelo-métrica, **summarise**, **spread**, para distribuir los pares clave-valor en varias columnas, y **arrange** para ordenar los resultados de forma descendente. Todas estas funciones se pueden encontrar en los paquetes **tidyr** y **dplyr** del paquete **tidyverse**.
+
+```{r}
 metricas_resamples <- resamps$values %>%
                          gather(key = "modelo", value = "valor", -Resample) %>%
                          separate(col = "modelo", into = c("modelo", "metrica"),
                                   sep = "~", remove = TRUE)
-metricas_resamples %>% head()
-
 metricas_resamples %>% 
   group_by(modelo, metrica) %>% 
   summarise(media = mean(valor)) %>%
   spread(key = metrica, value = media) %>%
   arrange(desc(Accuracy))
+```
 
+Comparaciones múltiples con el test suma de rangos de *Wilcoxon* usando la función **pairwise.wilcox.test**. Este test es una alternativa al *t-test* de observaciones dependientes cuando las observaciones no siguen una distribución normal. LA función contiene los siguientes argumentos:
+
+- **x**. Vector que contiene todos los valores de **Accuracy** de los modelos entrenados (*metricas_accuracy$valor*).
+- **g**. El vector *metricas_accuracy$valor* agrupado por modelo.
+- **paired**. Indicador de si el test es paredado o no. En este caso sí que lo es.
+- **p.adjust.method**. Método para ajustar los *p-values*. En este se ajusta con el método de [*Holm's*](https://en.wikipedia.org/wiki/Holm%E2%80%93Bonferroni_method), que es de los más utilizados para las comparaciones múltiples.
+
+```{r warning=FALSE}
 metricas_accuracy <- metricas_resamples %>% filter(metrica == "Accuracy")
 comparaciones  <- pairwise.wilcox.test(x = metricas_accuracy$valor, 
                                         g = metricas_accuracy$modelo,
                                         paired = TRUE,
                                         p.adjust.method = "holm")
+```
 
-# Se almacenan los p_values en forma de dataframe
+Finalmente se almacenan los *p-values* en forma de dataframe.
+
+```{r}
 comparaciones <- comparaciones$p.value %>%
   as.data.frame() %>%
   rownames_to_column(var = "modeloA") %>%
@@ -624,36 +638,63 @@ comparaciones <- comparaciones$p.value %>%
 
 comparaciones
 ```
-Acorde a las comparaciones por pares, existen evidencias suficientes para considerar que la capacidad predictiva de los modelos SVM radial y logistic es distinta p-value > 0.05 (0.1801641152).
 
-Para predecir tendremos en cuenta el modelo SVM RAdial.
+### Conclusiones
 
-## Predicción y resultados
+Hemos visto que el modelo basado en *SVM* es el que mejores resultados obtiene (acorde a la métrica **Accuracy**) en el conjunto de train con la validación cruzada ("repeatedcv"). Los modelos basados *random forest* y *regresión logística* consiguen valores un poco similares, sin embargo, acorde a los contrastes de hipótesis con los resultados de la validación, los modelos de *random forest* y *regresión logistica* son inferiores a *SVM*.
 
-Consulta los parametros de la llamada a la funcion predict en este enlace: entre estos, la opcion
-type merece ser estudiada. Con la opcion probs se calcula, por caso de test, la probabilidad a-posteriori para
-cada valor de la clase; con la opcion raw nos quedamos, por caso de test, con el valor de la variable clase con
-mayor probabilidad a-posteriori. A partir de esta segunda opcion podemos calcular la matriz de confusion y
-la coleccion de estadsticos de evaluacion asociados; al n y al cabo esto supone \cruzar", por caso de test, los
-valores clase predichos con los valores clase reales.
+Concretamente en la comparación por pares entre los modelos *SVMRadial* y *logistic* existen evidencias suficientes para considerar que la capacidad predictiva de los modelos es distinta, *p-value* > 0.05 (0.1801641152). 
 
-type raw https://www.rdocumentation.org/packages/caret/versions/6.0-72/topics/extractPrediction
+Antes de la predicción, calcularemos el valor **F1 score**, la métrica que usa la competición de Kaggle escogida para nuestro ejercicio, porqué queremos ver si nos dará buenos resultados en la competición el modelo que acabamos de seleccionado (*SVMRadial*). Para ello tendremos que predecir sobre el conjunto de train, calcular la matriz de confusión y calcular el valor de **F1 score**.
+
+```{r}
+pre_pred <- predict(model_svm, train.df, type="raw")
+confusionMatrix(pre_pred, train.df$target)
+
+true_positives <- 2308
+false_positives <- 250
+false_negatives <- 963
+
+precision <- true_positives / (true_positives + false_positives)
+recall <- true_positives / (true_positives + false_negatives)
+
+F1 <- 2 * (precision * recall) / (precision + recall)
+F1 <- round(F1, digits = 4)
+
+F1
+```
+
+Teniendo en cuenta toda esta información, para predecir la clase de casos futuros vamos a usar el clasificador *SVMRadial* que es el modelo que ha dado mejores resultados durante el entrenamiento.
+
+## Predicción 
+
+En la predicción se usa la función **predict** de **caret**. La opción elegida es *raw*. Porqué con ella nos quedamos con el valor de la variable clase con mayor probabilidad a-posteriori y podemos calcular la matriz de confusión y la colección de métricas de evaluación asociadas.
 
 ```{r}
 pred_svm <- predict(model_svm, test.df, type="raw")
 ```
 
+Finalmente preparamos el archivo que subiremos a Kaggle con los resultados de nuestra predicción. Vemos las 10 primeras líneas.
+
 ```{r}
 submission <- read.csv("sample_submission.csv")
 submission$target <- ifelse(pred_svm=="No", 0, 1)
-head(submission)
 write.csv(submission, "submission.csv", row.names=FALSE)
+head(submission, 10)
 ```
 
-## Conclusión
+## Resultado en Kaggle
 
-SVM RAdial tiene su logica porqué es un SVM y estamos haciendo un problema de NLP.
+![](submission.png){width=80%}
 
-## Referencias
+## Conclusiones
 
-https://www.cienciadedatos.net/documentos/41_machine_learning_con_r_y_caret
+## Citas para fuentes usadas
+
+- Machine Learning con R y caret https://www.cienciadedatos.net/documentos/41_machine_learning_con_r_y_caret
+
+- Notebook en **Kaggle** de barun2104 https://www.kaggle.com/barun2104/nlp-with-disaster-eda-dfm-svd-ensemble
+
+- Notebook en **Kaggle** de sambitmukherjee https://www.kaggle.com/sambitmukherjee/bag-of-words-stack-knn-tree-lasso#test-set-predictions-submission
+
+- Mi repositorio personal en *GitHub* (lrodrin) https://github.com/lrodrin/masterAI/tree/master/A7/Flujo%20de%20an%C3%A1lisis%20en%20clasificaci%C3%B3n%20supervisada%20R-caret
