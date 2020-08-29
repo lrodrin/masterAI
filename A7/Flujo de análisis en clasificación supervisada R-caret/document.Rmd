@@ -3,11 +3,11 @@ title: "Flujo de análisis en clasificación supervisada"
 author: "Laura Rodríguez Navas"
 date: "Septiembre 2020"
 output:
-  html_document: default
   pdf_document: 
-    fig_caption: yes
     fig_crop: no
     keep_tex: yes
+    toc: yes
+  html_document: 
     toc: yes
 subtitle: "Métodos supervisados"
 ---
@@ -38,7 +38,7 @@ library(syuzhet)
 library(ggcorrplot)
 ```
 
-# Análisis Exploratorio de los Datos
+# Análisis exploratorio de los datos
 
 Antes de entrenar un modelo predictivo, o incluso antes de realizar cualquier cálculo con un nuevo conjunto de datos, es muy importante realizar una exploración descriptiva de los datos. Este proceso nos permite entender mejor que información contienen cada variable, detectar posibles errores, etc. además, puede dar pistas sobre qué variables no son adecuadas para predecir un modelo. 
 
@@ -309,7 +309,7 @@ complete.tdm
 
 De 16880 palabras que teníamos, nos hemos quedado con 582, lo cual reduce en gran medida la dificultad y complejidad del problema de *alta dimensionalidad*, lo cual es deseable. La palabra más larga contiene 17 caracteres.
 
-### Feature Extraction mediante Singular Value Decomposition (SVD)
+### Feature Extraction mediante Singular Value Decomposition
 
 La descomposición de los datos originales en un nuevo conjunto, sin necesidad de pérdida de información relevante y sacando a la luz la información latente, es un proceso de vital importancia para implementar la parte más computacionalmente intensa del ejercicio. Buscando una intuitiva separabilidad de las clases de los datos aplicaremos la técnica de *Descomposición en Valores Singulares (SVD)*.
 
@@ -411,11 +411,9 @@ Muchos modelos contienen parámetros que no pueden aprenderse a partir de los da
 
 Los resultados de un modelo pueden depender en gran medida del valor que tomen sus *hiperparámetros*, sin embargo, no se puede conocer de antemano cuáles son los adecuados. La forma más común de encontrar los valores óptimos es probando diferentes posibilidades. Para ello se utiliza el argumento de **caret**: **tuneGrid** en la función **train**. Si no se tiene ninguna idea de qué valores de *hiperparámetros* pueden ser los adecuados, lo mejor es utilizar la aleatoriedad. **caret** también incorpora esta opción mediante el argumento **tuneLength**. 
 
-En la siguiente sección realizaremos pruebas tanto con **tuneGrid** y **tuneLength**. Más con **tuneGrid**, ya que, de esta forma, se evita que se generen automáticamente valores que no tienen sentido o que disparan el tiempo de computación necesario. Además, con *target ~.* denotamos la variable que se quiere predecir e indicando que el resto de las variables del conjunto de datos de **train** son predictoras.
+En el entrenamiento de los modelos realizaremos pruebas tanto con **tuneGrid** y **tuneLength**. Más con **tuneGrid**, ya que, de esta forma, se evita que se generen automáticamente valores que no tienen sentido o que disparan el tiempo de computación necesario. Además, con *target ~.* denotamos la variable que se quiere predecir e indicando que el resto de las variables del conjunto de datos de **train** son predictoras.
 
-## Modelos
-
-Es a lo largo del proceso posterior donde más destacarán las funcionalidades ofrecidas por **caret**, permitiendo emplear la misma sintaxis para ajustar, optimizar, evaluar y predecir un amplio abanico de modelos variando únicamente el nombre del algoritmo. Aunque **caret** permite todo esto con apenas unas pocas líneas de código son muchos los argumentos que pueden ser adaptados, cada uno con múltiples posibilidades. Con el objetivo de exponer mejor cada una de las opciones, en lugar de crear directamente un modelo final, se muestran ejemplos de menor a mayor complejidad de la lista mostrada anteriormente: http://topepo.github.io/caret/available-models.html.
+A lo largo del proceso posterior es donde más destacarán las funcionalidades ofrecidas por **caret**, permitiendo emplear la misma sintaxis para ajustar, optimizar, evaluar y predecir un amplio abanico de modelos variando únicamente el nombre del algoritmo. Aunque **caret** permite todo esto con apenas unas pocas líneas de código son muchos los argumentos que pueden ser adaptados, cada uno con múltiples posibilidades. Con el objetivo de exponer mejor cada una de las opciones, en lugar de crear directamente un modelo final, se muestran ejemplos de menor a mayor complejidad de la lista mostrada anteriormente: http://topepo.github.io/caret/available-models.html.
 
 ### Regresión Logística
 
@@ -429,7 +427,7 @@ registerDoParallel(cl)
 ```
 
 
-```{r warning=FALSE, eval=FALSE}
+```{r warning=FALSE, eval=TRUE}
 set.seed(123)
 model_glmnet <- train(target ~ ., data=train.df,
                       method="glmnet",
@@ -444,7 +442,7 @@ model_glmnet
 stopCluster(cl)
 ```
 
-El *Accuracy* promedio estimado mediante validación cruzada repetida es de 0.7650943, el modelo predice correctamente un 76.5% de las veces.
+El *Accuracy* promedio estimado mediante validación cruzada repetida es de 0.7648316, el modelo predice correctamente un 76.5% de las veces.
 
 ### Random Forest
 
@@ -460,7 +458,7 @@ registerDoParallel(cl)
 ```
 
 
-```{r warning=FALSE, eval=FALSE}
+```{r warning=FALSE, eval=TRUE}
 set.seed(123)
 cv.grid <- expand.grid(mtry=c(3, 4, 5, 7))
 model_rf <- train(target ~ ., data=train.df,
@@ -477,7 +475,7 @@ stopCluster(cl)
 ```
 
 
-Empleando un modelo Random Forest con mtry = 7 se consigue un *Accuracy* promedio de validación igual a 0.7618528, el modelo predice correctamente un 76.2% de las veces.
+Empleando un modelo Random Forest con mtry = 5 se consigue un *Accuracy* promedio de validación igual a 0.7632101, el modelo predice correctamente un 76.3% de las veces.
 
 ### Gradient Boosting
 
@@ -501,15 +499,18 @@ Además de los hiperparámetros que permite controlar **caret**, tiene otros dos
 
 En este caso solo añadimos el argumento **distribution** y como el ejercicio se basa en un problema de clasificación binaria usamos *adaboost*.
 
-```{r warning=FALSE}
+```{r message=FALSE}
 library(gbm)
+```
 
+
+```{r warning=FALSE}
 cl <- makePSOCKcluster(6, setup_strategy="sequential")
 registerDoParallel(cl)
 ```
 
 
-```{r warning=FALSE, eval=FALSE}
+```{r warning=FALSE, eval=TRUE}
 set.seed(123)
 cv.grid <- expand.grid(interaction.depth=c(1, 2),
                        n.trees=100,
@@ -532,7 +533,7 @@ stopCluster(cl)
 ```
 
 Empleando un modelo Boosting con n.trees = 100, interaction.depth = 2, shrinkage
- = 0.1 and n.minobsinnode = 2 se consigue un *Accuracy* promedio de validación igual a 0.7451281, el modelo predice correctamente un 74.5% de las veces.
+ = 0.1 and n.minobsinnode = 2 se consigue un *Accuracy* promedio de validación igual a 0.7444716, el modelo predice correctamente un 74.4% de las veces.
 
 ### SVM
 
@@ -550,7 +551,7 @@ registerDoParallel(cl)
 ```
 
 
-```{r warning=FALSE, eval=FALSE}
+```{r warning=FALSE, eval=TRUE}
 set.seed(123)
 cv.grid <- expand.grid(sigma=c(0.001, 0.01, 0.1, 0.5, 1),
                        C=c(1, 20, 50, 100))
@@ -568,7 +569,7 @@ model_svm
 stopCluster(cl)
 ```
 
-Empleando un modelo SVM Radial con sigma = 0.006839614 y C = 1, se consigue un *Accuracy* promedio de validación igual a 0.7701726, el modelo predice correctamente un 77% de las veces.
+Empleando un modelo SVM Radial con sigma = 0.006839608 y C = 1, se consigue un *Accuracy* promedio de validación igual a 0.7701726, el modelo predice correctamente un 77% de las veces.
 
 ## Evaluación de modelos mediante resampling
 
@@ -639,7 +640,7 @@ comparaciones <- comparaciones$p.value %>%
 comparaciones
 ```
 
-### Conclusiones
+### Conclusión evaluación de modelos
 
 Hemos visto que el modelo basado en *SVM* es el que mejores resultados obtiene (acorde a la métrica **Accuracy**) en el conjunto de train con la validación cruzada ("repeatedcv"). Los modelos basados *random forest* y *regresión logística* consiguen valores un poco similares, sin embargo, acorde a los contrastes de hipótesis con los resultados de la validación, los modelos de *random forest* y *regresión logistica* son inferiores a *SVM*.
 
@@ -664,7 +665,7 @@ F1 <- round(F1, digits = 4)
 F1
 ```
 
-Teniendo en cuenta toda esta información, para predecir la clase de casos futuros vamos a usar el clasificador *SVMRadial* que es el modelo que ha dado mejores resultados durante el entrenamiento.
+Teniendo en cuenta toda esta información, para predecir la clase de casos futuros vamos a usar el clasificador *SVMRadial* que es el modelo que ha dado mejores resultados durante el entrenamiento. Con este modelo obtenemos un **Accuracy** de 0.8407 y un valor de **F1_score** no muy bueno de 0.7919 que intentaremos mejorar.
 
 ## Predicción 
 
@@ -689,12 +690,22 @@ head(submission, 10)
 
 ## Conclusiones
 
-## Citas para fuentes usadas
+En este documento se revisa cómo importar y preparar documentos de texto para realizar distintas operaciones de mineria de textos con ellos, tales como obtener palabras frecuentes, asociaciones de palabras y análisis de sentimientos.
+
+Si comparamos nuestro resultado con los de los otros usuarios de la compatición de Kaggle, vemos que el modelo creado no es muy bueno. La predicción a sido peor de la esperada. Aunque no era la finalidad de este ejercicio, esto nos demuestra que el ejercicio se podría mejorar en algunos expectos.
+
+El problema más importante para la realización de este ejercicio ha sido el coste computacional. Llegado el punto en que la ejecución de todo el flujo tardaba unas cuantas horas en finalizar, se pensó en utilizar la computación paralela. Fue una buena idea, se redujo drásticamente el coste computacional y además aprendí a hacerlo en **R**.
+
+Personalmente escogí esta competición ya que nunca habia combinado la clasificación supervisada con Procesamiento del Lenguaje Natural (PLN). El Procesamiento del Lenguaje Natural dentro de la inteligencia artificial es un campo que encuentro muy interesante.
+
+Durante la asignatura de Procesamiento del Lenguaje Natural del Máster no se realiza ninguna pràctica de programación, y me apreció una buena oportunidad de aprender como aplicar los conocimientos de adquiridos del Procesamiento del Lenguaje Natural con los conocimientos adquiridos durante de esta asignatura.
+
+Por supuesto la minería de textos es un área de análisis extensa. Las siguientes referencias han sido de gran ayuda para realizar este documento y amplían lo aquí presentado.
+
+## Referencias
 
 - Machine Learning con R y caret https://www.cienciadedatos.net/documentos/41_machine_learning_con_r_y_caret
 
-- Notebook en **Kaggle** de barun2104 https://www.kaggle.com/barun2104/nlp-with-disaster-eda-dfm-svd-ensemble
+- Notebook en Kaggle de barun2104 https://www.kaggle.com/barun2104/nlp-with-disaster-eda-dfm-svd-ensemble
 
-- Notebook en **Kaggle** de sambitmukherjee https://www.kaggle.com/sambitmukherjee/bag-of-words-stack-knn-tree-lasso#test-set-predictions-submission
-
-- Mi repositorio personal en *GitHub* (lrodrin) https://github.com/lrodrin/masterAI/tree/master/A7/Flujo%20de%20an%C3%A1lisis%20en%20clasificaci%C3%B3n%20supervisada%20R-caret
+- Notebook en Kaggle de sambitmukherjee https://www.kaggle.com/sambitmukherjee/bag-of-words-stack-knn-tree-lasso#test-set-predictions-submission

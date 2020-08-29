@@ -1,46 +1,39 @@
-% Options for packages loaded elsewhere
-\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{unicode=true}{hyperref} % options for packages loaded elsewhere
 \PassOptionsToPackage{hyphens}{url}
 %
-\documentclass[
-]{article}
+\documentclass[]{article}
 \usepackage{lmodern}
 \usepackage{amssymb,amsmath}
 \usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
 \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
-  \usepackage{textcomp} % provide euro and other symbols
-\else % if luatex or xetex
+  \usepackage{textcomp} % provides euro and other symbols
+\else % if luatex or xelatex
   \usepackage{unicode-math}
-  \defaultfontfeatures{Scale=MatchLowercase}
-  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
 \fi
-% Use upquote if available, for straight quotes in verbatim environments
+% use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
-\IfFileExists{microtype.sty}{% use microtype if available
-  \usepackage[]{microtype}
-  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage[]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
 }{}
-\makeatletter
-\@ifundefined{KOMAClassName}{% if non-KOMA class
-  \IfFileExists{parskip.sty}{%
-    \usepackage{parskip}
-  }{% else
-    \setlength{\parindent}{0pt}
-    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
-}{% if KOMA class
-  \KOMAoptions{parskip=half}}
-\makeatother
-\usepackage{xcolor}
-\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\usepackage{hyperref}
 \hypersetup{
-  pdftitle={Flujo de análisis en clasificación supervisada},
-  pdfauthor={Laura Rodríguez Navas},
-  hidelinks,
-  pdfcreator={LaTeX via pandoc}}
-\urlstyle{same} % disable monospaced font for URLs
+            pdftitle={Flujo de análisis en clasificación supervisada},
+            pdfauthor={Laura Rodríguez Navas},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
 \usepackage[margin=1in]{geometry}
 \usepackage{color}
 \usepackage{fancyvrb}
@@ -91,22 +84,34 @@
 % margins by default, and it is still possible to overwrite the defaults
 % using explicit options in \includegraphics[width, height, ...]{}
 \setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
-% Set default figure placement to htbp
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+% set default figure placement to htbp
 \makeatletter
 \def\fps@figure{htbp}
 \makeatother
-\setlength{\emergencystretch}{3em} % prevent overfull lines
-\providecommand{\tightlist}{%
-  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 
-\title{Flujo de análisis en clasificación supervisada}
 \usepackage{etoolbox}
 \makeatletter
 \providecommand{\subtitle}[1]{% add subtitle to \maketitle
   \apptocmd{\@title}{\par {\large #1 \par}}{}{}
 }
 \makeatother
+
+\title{Flujo de análisis en clasificación supervisada}
+\providecommand{\subtitle}[1]{}
 \subtitle{Métodos supervisados}
 \author{Laura Rodríguez Navas}
 \date{Septiembre 2020}
@@ -118,57 +123,87 @@
 \setcounter{tocdepth}{2}
 \tableofcontents
 }
-Comenzamos cargando los paquetes necesarios.
+\newpage
+
+Empezamos por cargar a nuestro espacio de trabajo los paquetes que
+usaremos:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{tidyverse}, engloba otros paquetes (\textbf{dplyr},
+  \textbf{tidyr}, \textbf{ggplot}, etc.) que facilitan en gran medida el
+  análisis exploratorio de los datos.
+\item
+  \textbf{tm}, específico para minería de textos.
+\item
+  \textbf{irlba}, específico para \emph{Descomposición de Valores
+  Singulares (SVD)} de matrices enormes.
+\item
+  \textbf{caret}, para realizar tareas de clasificación y regresión.
+\item
+  \textbf{doParallel}, proporciona computación paralela.
+\item
+  \textbf{syuzhet}, específico para la extracción de sentimientos de
+  textos.
+\item
+  \textbf{ggcorrplot}, muestra visualizaciones gráficas de matrices de
+  correlación usando \emph{ggplot2}.
+\end{itemize}
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \KeywordTok{library}\NormalTok{(tidyverse)}
-\KeywordTok{library}\NormalTok{(stringi)}
 \KeywordTok{library}\NormalTok{(tm)}
 \KeywordTok{library}\NormalTok{(irlba)}
-\KeywordTok{library}\NormalTok{(RColorBrewer)}
-\KeywordTok{library}\NormalTok{(gridExtra)}
 \KeywordTok{library}\NormalTok{(caret)}
 \KeywordTok{library}\NormalTok{(doParallel)}
 \KeywordTok{library}\NormalTok{(syuzhet)}
 \KeywordTok{library}\NormalTok{(ggcorrplot)}
-\KeywordTok{library}\NormalTok{(gbm)}
 \end{Highlighting}
 \end{Shaded}
 
 \hypertarget{anuxe1lisis-exploratorio-de-los-datos}{%
-\subsection{Análisis Exploratorio de los
-Datos}\label{anuxe1lisis-exploratorio-de-los-datos}}
+\section{Análisis exploratorio de los
+datos}\label{anuxe1lisis-exploratorio-de-los-datos}}
 
-Para la realización del ejercicio propuesto se ha elegido la competición
-en Kaggle: \textbf{Real or Not? NLP with Disaster Tweets}. El dataset de
-la competición se puede encontrar en el siguiente enlace:
+Antes de entrenar un modelo predictivo, o incluso antes de realizar
+cualquier cálculo con un nuevo conjunto de datos, es muy importante
+realizar una exploración descriptiva de los datos. Este proceso nos
+permite entender mejor que información contienen cada variable, detectar
+posibles errores, etc. además, puede dar pistas sobre qué variables no
+son adecuadas para predecir un modelo.
+
+Acorde a la realización del ejercicio propuesto se ha elegido la
+competición en Kaggle: \textbf{Real or Not? NLP with Disaster Tweets}.
+El dataset de la competición se puede encontrar en el siguiente enlace:
 \url{https://www.kaggle.com/c/nlp-getting-started/data}. Este dataset,
 con 10.876 instancias, contiene 4 variables explicativas: \textbf{id},
 \textbf{keyword}, \textbf{location} y \textbf{text}, y dos valores en la
-variable clase \textbf{target} (0 y 1). La variable clase es binaria,
-así que, vamos a aprender un modelo de clasificación binaria. El
-objetivo de este modelo será predecir si dado un tweet, este tweet trata
-sobre un desastre real o no. Si un tweet trata sobre un desastre real,
-se predice un 1. Si no, se predice un 0.
+variable clase \textbf{target} (0 y 1). Como podemos observar la
+variable clase es binaria, así que, durante este ejercicio vamos a
+aprender un modelo de \emph{clasificación binaria}. El objetivo de este
+modelo será predecir si dado un tweet, éste trata sobre un desastre real
+o no. Si un tweet trata sobre un desastre real, se predice un 1. Si no,
+se predice un 0.
 
-La métrica de evaluación esperada por la competición es
-\href{https://www.kaggle.com/c/nlp-getting-started/overview/evaluation}{F1}.
-Y se calcula de la siguiente manera:
+\emph{La clasificación binaria es un tipo de clasificación en el que tan
+solo se pueden asignar dos clases diferentes (0 o 1).}
 
-\begin{center}\includegraphics[width=0.3\linewidth]{F1_score} \end{center}
-
-donde:
-
-\begin{center}\includegraphics[width=0.25\linewidth]{F1_score_2} \end{center}
+La métrica de evaluación esperada por la competición es \textbf{F1
+score}. Para ver como se calcula consultar el siguiente enlace:
+\url{https://www.kaggle.com/c/nlp-getting-started/overview/evaluation}.
 
 La partición inicial train-test, no se tiene que realizar, ya que las
 instancias de train y test ya vienen definidas en el dataset de la
-competición (ficheros \textbf{train.csv} y \textbf{test.csv}).
+competición (descargar a nuestro espacio de trabajo los ficheros
+\textbf{train.csv} y \textbf{test.csv} de
+\url{https://www.kaggle.com/c/nlp-getting-started/data}).
 
-A continuación, cargaremos el conjunto de datos de train y test,
-nombrando los valores perdidos como \textbf{NA} para que los podamos
-tratar más adelante, y mostraremos sus dimensiones.
+Cargamos a nuestro espacio de trabajo los conjuntos de datos de train y
+test descargados, renombrando los valores perdidos como \textbf{NA} para
+que los podamos tratar más adelante. También mostramos las dimensiones
+de los conjuntos de datos usando la función \textbf{dim}.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -192,9 +227,9 @@ tratar más adelante, y mostraremos sus dimensiones.
 ## [1] 3263    4
 \end{verbatim}
 
-El conjunto de datos de train contiene 7613 instancias y el conjunto de
-datos de test contiene 3263 instancias. Cada instancia de estos
-conjuntos contiene la siguiente información:
+Vemos que el conjunto de datos de train contiene 7613 instancias y el
+conjunto de datos de test contiene 3263 instancias. Cada instancia
+contiene las siguientes variables:
 
 \begin{itemize}
 \tightlist
@@ -208,15 +243,9 @@ conjuntos contiene la siguiente información:
   \textbf{text}: el texto del tweet.
 \item
   \textbf{target}: solo en el conjunto de datos de train porqué es la
-  variable clase a predecir. Indica si un tweet es sobre un desastre
-  real (1) o no (0).
+  variable clase a predecir. Indica si un tweet corresponde a un
+  desastre real (1) o no (0).
 \end{itemize}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{str}\NormalTok{(train, }\DataTypeTok{width =} \DecValTok{85}\NormalTok{, }\DataTypeTok{strict.width =} \StringTok{"cut"}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
 
 \begin{verbatim}
 ## 'data.frame':    7613 obs. of  5 variables:
@@ -227,12 +256,6 @@ conjuntos contiene la siguiente información:
 ##  $ target  : int  1 1 1 1 1 1 1 1 1 1 ...
 \end{verbatim}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{str}\NormalTok{(test, }\DataTypeTok{width =} \DecValTok{85}\NormalTok{, }\DataTypeTok{strict.width =} \StringTok{"cut"}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
 \begin{verbatim}
 ## 'data.frame':    3263 obs. of  4 variables:
 ##  $ id      : int  0 2 3 9 11 12 21 22 27 29 ...
@@ -242,11 +265,14 @@ conjuntos contiene la siguiente información:
 \end{verbatim}
 
 \hypertarget{variable-target}{%
-\subsubsection{\texorpdfstring{Variable
+\subsection{\texorpdfstring{Variable
 \emph{target}}{Variable target}}\label{variable-target}}
 
-Categorizamos la variable a predecir, ya que inicialmente es de tipo
-entero, y observamos su distribución.
+Como ya hemos comentado, la variable \textbf{target} es la variable a
+predecir. Es de tipo cuantitativa (de tipo entero) y conviene
+convertirla a variable cualitativa, almacenarla con el tipo
+\emph{factor}. Para evitar errores, se recodifica para que sus dos
+posibles valores sean ``Yes''-``No'' y se convierte a \emph{factor}.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -255,12 +281,17 @@ entero, y observamos su distribución.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{document_files/figure-latex/unnamed-chunk-6-1} \end{center}
+\begin{center}\includegraphics[width=0.7\linewidth]{document_files/figure-latex/unnamed-chunk-4-1} \end{center}
 
-La distribución no está muy sesgada y vemos que hay menos tweets que se
-refieren a desastres reales. La distribución de la variable a predecir
-está relativamente equilibrada, donde el 43\% de las observaciones son
-desastrosas y el 57\% no.
+Cuando se crea un modelo, es muy importante estudiar la distribución de
+la variable clase, ya que, a fin de cuentas, es lo que nos interesa
+predecir.
+
+Gráficamente observamos que la distribución de la variable a predecir no
+está muy sesgada y está relativamente equilibrada. Hay menos tweets que
+se refieren a desastres reales. Además, parece que no presenta un
+problema notable de \emph{desbalanceo de clase}, porqué contamos con
+muchas observaciones del caso minoritario.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -282,15 +313,23 @@ desastrosas y el 57\% no.
 ## [1] 57.03402
 \end{verbatim}
 
-Tampoco presenta un problema notable de \emph{desbalanceo de clase}
-porqué contamos con muchas muestras del caso minoritario.
+Para que un modelo predictivo nos sea útil tendremos que intentar
+superar el porcentaje mínimo dado que aproximadamente el 57\% de los
+tweets no representan un desastre real (este porcentaje se recalculará
+únicamente con el conjunto de datos de train).
+
+Como el objetivo del ejercicio es predecir que tweets pertenecen o no a
+un desastre real, el análisis que haremos a continuación se hace realiza
+de cada variable explicativa con relación a la variable a predecir
+\textbf{target}. Analizando de esta forma, se pueden extraer ideas sobre
+que variables están más relacionadas con los desastres reales.
 
 \hypertarget{variable-keyword}{%
-\subsubsection{\texorpdfstring{Variable
+\subsection{\texorpdfstring{Variable
 \emph{keyword}}{Variable keyword}}\label{variable-keyword}}
 
-La variable \textbf{keyword} representa una palabra representativa de
-cada tweet, se muestran las primeras 10.
+La variable explicativa \textbf{keyword} representa una palabra clave en
+cada tweet. Vemos las 10 primeras del conjunto de datos de train.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -312,44 +351,45 @@ cada tweet, se muestran las primeras 10.
 ## 305          armageddon
 \end{verbatim}
 
-Ahora veremos si la asociación de cada \textbf{keyword} con un
-sentimiento indica una relación con la variable a predecir. Para ello
-realizaremos un análisis de sentimientos de cada palabra clave.
+Nuestro interés en la variable \textbf{keyword} dentro del análisis
+exploratorio de los datos es ver si existen correlaciones entre esta y
+la variable a predecir \textbf{target}. Para ello, y como estamos
+delante un ejercicio de \emph{Procesamiento del Lenguaje Natural}
+realizaremos un análisis de sentimientos.
 
-\emph{El análisis de sentimientos es una técnica de }Machine
-Learning\emph{, basada en el
-\href{https://www.kdnuggets.com/2017/02/natural-language-processing-key-terms-explained.html}{procesado
-del lenguaje natural}, que pretende obtener información subjetiva de una
+\emph{El análisis de sentimientos es una técnica de
+\href{https://en.wikipedia.org/wiki/Machine_learning}{Machine Learning},
+basada en el
+\href{https://www.kdnuggets.com/2017/02/natural-language-processing-key-terms-explained.html}{Procesado
+del Lenguaje Natural}, que pretende obtener información subjetiva de una
 serie de textos. Su aplicación es este caso, consiste en resolver si un
-tweet es real o no real en relación a un desastre.}
+tweet es real o no en relación a un desastre.}
 
-Para ello usaremos los paquetes \textbf{syuzhet}, \textbf{ggcorrplot} y
-\textbf{doParallel}.
+En el análisis de sentimientos usamos los paquetes de R:
+\textbf{syuzhet}, \textbf{ggcorrplot} y \textbf{doParallel}.
 
 \begin{itemize}
 \tightlist
 \item
-  \textbf{syuzhet} cuenta con la función \textbf{get\_nrc\_sentiment}
-  que calcula la presencia de los diferentes sentimientos dado un
-  conjunto de textos. Los parámetros de esta función son:
+  El paquete \textbf{syuzhet} cuenta con la función
+  \textbf{get\_nrc\_sentiment} que calculará la presencia de los
+  diferentes sentimientos dado un conjunto de palabras clave. Los
+  argumentos de esta función son:
 
   \begin{itemize}
   \tightlist
   \item
-    \textbf{char\_v}. Un vector de caracteres que en este caso contiene
+    \textbf{char\_v}. Un vector de caracteres que en este caso contendrá
     todas las palabras clave.
   \item
-    \textbf{language}. Define el lenguaje.
+    \textbf{language}. Define el lenguaje. Como los tweets están en
+    inglés, el lenguaje será el inglés.
   \item
-    \textbf{cl}. Para análisis paralelo. Es opcional, pero en este caso
-    lo usaremos porqué hay muchas palabras clave.
+    \textbf{cl}. Para el análisis en paralelo. Es opcional, pero en este
+    caso lo usaremos porqué hay muchas palabras clave.
   \end{itemize}
 \item
-  \textbf{ggcorrplot} muestra una visualización gráfica de una matriz de
-  correlación usando \emph{ggplot2}.
-\item
-  \textbf{doParallel} proporciona una computación paralela. Los
-  parámetros de esta función son:
+  El paquete \textbf{doParallel} cuenta con las funciones:
 
   \begin{itemize}
   \tightlist
@@ -363,35 +403,72 @@ Para ello usaremos los paquetes \textbf{syuzhet}, \textbf{ggcorrplot} y
   \end{itemize}
 \end{itemize}
 
-Análisis de correlaciones entre \textbf{keyword} y \textbf{target}:
+La computación paralela la usaremos en muchas de las ejecuciones de este
+ejercicio ya que nos encontramos delante de un problema de \emph{alta
+dimensionalidad}. Eso es, que la dimensionalidad de nuestros datos es
+muy elevada y puede reducir drásticamente la eficiencia de los
+algoritmos de clasificación supervisada que entrenaremos.
+
+La reducción de la dimensionalidad que aplicaremos en este ejercicio se
+realiza más adelante y se calculará teniendo en cuenta las palabras más
+frecuentes de los tweets en conjunto de datos.
+
+El análisis de sentimientos de cada palabra clave, usando la función
+\textbf{get\_nrc\_sentiment}, consiste en extraer los sentimientos de
+cada palabra clave, guardarlos en un nuevo conjunto de datos
+(\emph{emotion.df}), con el que calcularemos (paquete \textbf{cor}) y
+visualizaremos la matriz de correlaciones (paquete \textbf{ggcorrplot})
+entre las palabras clave con relación a la variable a predecir. Es
+importante volver a transformar la variable a predecir para realizar los
+cálculos, cuando la variable es cualitativa.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{emocion.df <-}\StringTok{ }\KeywordTok{get_nrc_sentiment}\NormalTok{(}\DataTypeTok{char_v =} \KeywordTok{gsub}\NormalTok{(}\StringTok{"_"}\NormalTok{, }\StringTok{" "}\NormalTok{, train}\OperatorTok{$}\NormalTok{keyword), }
+\NormalTok{cl <-}\StringTok{ }\KeywordTok{makePSOCKcluster}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DataTypeTok{setup_strategy=}\StringTok{"sequential"}\NormalTok{)}
+\KeywordTok{registerDoParallel}\NormalTok{(cl)}
+
+\NormalTok{emotion.df <-}\StringTok{ }\KeywordTok{get_nrc_sentiment}\NormalTok{(}\DataTypeTok{char_v =} \KeywordTok{gsub}\NormalTok{(}\StringTok{"_"}\NormalTok{, }\StringTok{" "}\NormalTok{, train}\OperatorTok{$}\NormalTok{keyword), }
                                 \DataTypeTok{language =} \StringTok{"english"}\NormalTok{, }\DataTypeTok{cl=}\NormalTok{cl)}
 
-\NormalTok{emocion.df <-}\StringTok{ }\NormalTok{emocion.df }\OperatorTok{%>%}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{target =}\NormalTok{ train}\OperatorTok{$}\NormalTok{target)}
-\NormalTok{emocion.df}\OperatorTok{$}\NormalTok{target <-}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(emocion.df}\OperatorTok{$}\NormalTok{target)}
+\NormalTok{emotion.df <-}\StringTok{ }\NormalTok{emotion.df }\OperatorTok{%>%}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{target =}\NormalTok{ train}\OperatorTok{$}\NormalTok{target)}
 
-\KeywordTok{cor}\NormalTok{(emocion.df) }\OperatorTok{%>%}\StringTok{ }
+\NormalTok{emotion.df}\OperatorTok{$}\NormalTok{target <-}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(emotion.df}\OperatorTok{$}\NormalTok{target)}
+
+\KeywordTok{cor}\NormalTok{(emotion.df) }\OperatorTok{%>%}\StringTok{ }
 \StringTok{  }\KeywordTok{ggcorrplot}\NormalTok{(}\DataTypeTok{lab =} \OtherTok{TRUE}\NormalTok{, }
-             \DataTypeTok{title =} \StringTok{"Matriz de correlación entre los }\CharTok{\textbackslash{}n}\StringTok{sentimientos de keyword y target"}\NormalTok{,}
+             \DataTypeTok{title =} \StringTok{"Matriz de correlación entre }\CharTok{\textbackslash{}n}\StringTok{keyword y target"}\NormalTok{,}
              \DataTypeTok{legend.title =} \StringTok{"correlation"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{document_files/figure-latex/unnamed-chunk-10-1} \end{center}
+\begin{center}\includegraphics{document_files/figure-latex/unnamed-chunk-7-1} \end{center}
 
-Al observar la matriz de correlaciones, se observa una correlación nula
-con cada uno de los sentimientos. Esto hace que esta variable
-explicativa no sea buena para hacer una predicción.
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{stopCluster}\NormalTok{(cl)}
+\end{Highlighting}
+\end{Shaded}
+
+Parece que, al observar la matriz de correlaciones, existe una
+correlación nula entre las variables \textbf{keyword} y \textbf{target}.
+Al revisarlo con mayor detalle, podemos observar que la mayoría de las
+palabras clave no tienen un sentimiento positivo asociado. Las palabras
+clave asociadas a un sentimiento se asocian negativamente (miedo o
+tristeza), lo cual es bastante consistente con el problema, ya que
+intentemos predecir el desastre.
+
+Acorde a nuestro criterio esta variable explicativa no es buena para
+hacer una predicción ya que no está realmente asociada con la variable a
+predecir. Así que la excluiremos del procesamiento de texto.
 
 \hypertarget{variable-location}{%
-\subsubsection{\texorpdfstring{Variable
+\subsection{\texorpdfstring{Variable
 \emph{location}}{Variable location}}\label{variable-location}}
 
-La variable \textbf{location} representa la ubicación desde donde se
-generaron los tweets, se muestran las primeras 10.
+La variable explicativa \textbf{location} representa las ubicaciones
+desde donde se generaron los tweets. Vemos las 10 primeras y el número
+total de ubicaciones diferentes del conjunto de datos de train (3342
+ubicaciones).
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -424,8 +501,8 @@ generaron los tweets, se muestran las primeras 10.
 ## 1 3342
 \end{verbatim}
 
-En total hay 3342 ubicaciones. A continuación, mostramos las ubicaciones
-más frecuentes:
+A continuación, veremos las ubicaciones que se repiten más de 10 veces
+en el conjunto de datos de train.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -457,74 +534,90 @@ más frecuentes:
 \begin{Shaded}
 \begin{Highlighting}[]
 \KeywordTok{barplot}\NormalTok{(location.freq[}\KeywordTok{which}\NormalTok{(location.freq}\OperatorTok{>}\DecValTok{10}\NormalTok{)], }\DataTypeTok{las =} \DecValTok{2}\NormalTok{,  }
-        \DataTypeTok{ylab =} \StringTok{"Frequency"}\NormalTok{)}
+        \DataTypeTok{ylab =} \StringTok{"frequency"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{document_files/figure-latex/unnamed-chunk-13-1} \end{center}
+\begin{center}\includegraphics[width=0.7\linewidth]{document_files/figure-latex/unnamed-chunk-9-1} \end{center}
 
-Del total de ubicaciones (3342), la mayoría de ellas cuenta con menos de
-10 observaciones. Esto hace que esta variable explicativa tampoco sea
-buena para hacer una predicción.
+En el total de ubicaciones, 3342, la mayoría de ellas cuenta con menos
+de 10 observaciones. Acorde a nuestro criterio esta variable explicativa
+no es buena para hacer una predicción, ya que la variable tiene muy
+pocas observaciones, y puede ocurrir que, durante la validación cruzada
+o \emph{bootstrapping}, algunas de las particiones no contengan ninguna
+observación de dicha variable, lo que puede dar lugar a errores.
 
-\hypertarget{variable-text}{%
-\subsubsection{\texorpdfstring{Variable
-\emph{text}}{Variable text}}\label{variable-text}}
+\emph{Una muestra bootstrap es una muestra obtenida a partir de la
+muestra original por muestreo aleatorio con reposición, y del mismo
+tamaño que la muestra original. Muestreo aleatorio con reposición
+(resampling with replacement) significa que, después de que una
+observación sea extraída, se vuelve a poner a disposición para las
+siguientes extracciones. Como resultado de este tipo de muestreo,
+algunas observaciones aparecerán múltiples veces en la muestra bootstrap
+y otras ninguna.}
 
-Hemos considerado que las variables explicativas \textbf{keyword} y
-\textbf{location} no son buenas para hacer una predicción, así que nos
-centraremos en la variable \textbf{text}.
+\hypertarget{variable-id}{%
+\subsection{\texorpdfstring{Variable
+\emph{id}}{Variable id}}\label{variable-id}}
 
-Llegados a este punto unimos los conjuntos de train y test (\emph{7613 +
-3263 observaciones}) para poder extraer los sentimientos más adelante.
+La variable \textbf{id} es solo un identificador único, así que, no la
+analizaremos y procederemos a eliminarla de los conjuntos de datos de
+train y test.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{train}\OperatorTok{$}\NormalTok{id <-}\StringTok{ }\OtherTok{NULL}
+\NormalTok{test}\OperatorTok{$}\NormalTok{id <-}\StringTok{ }\OtherTok{NULL}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{conclusiuxf3n-anuxe1lisis-exploratorio}{%
+\subsection{Conclusión análisis
+exploratorio}\label{conclusiuxf3n-anuxe1lisis-exploratorio}}
+
+Llegados a este punto, parece que nuestro criterio en la exploración de
+los datos, el estudio de su distribución y sus posibles relaciones con
+la variable a predecir nos indica que las variables explicativas
+\textbf{keyword}, \textbf{location} y \textbf{id} no son buenas para
+hacer una predicción, así que nos centraremos en la variable
+\textbf{text} para hacer la predicción.
+
+\hypertarget{procesamiento-de-texto}{%
+\section{Procesamiento de texto}\label{procesamiento-de-texto}}
+
+Combinamos los conjuntos de datos de train y test para ahorrar esfuerzos
+en el preprocesado de datos. Para ello, usamos la función
+\textbf{bind\_rows}, que nos permitirá enlazar de forma eficiente los
+conjuntos de datos por fila y columna. Podremos comprobar que la
+combinación se hace correctamente, sumando los elementos de train (7613)
+y de test (3263), el nuevo conjunto de datos (\textbf{complete\_df})
+tendrá 10876 observaciones, 3 variables explicativas (\textbf{keyword},
+\textbf{location}, \textbf{text}) y la variable de clase
+\textbf{target}.
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{complete_df <-}\StringTok{ }\KeywordTok{bind_rows}\NormalTok{(train, test)}
-\KeywordTok{dim}\NormalTok{(complete_df)}
+\KeywordTok{str}\NormalTok{(complete_df, }\DataTypeTok{width =} \DecValTok{85}\NormalTok{, }\DataTypeTok{strict.width =} \StringTok{"cut"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 10876     5
+## 'data.frame':    10876 obs. of  4 variables:
+##  $ keyword : chr  NA NA NA NA ...
+##  $ location: chr  NA NA NA NA ...
+##  $ text    : chr  "Our Deeds are the Reason of this #earthquake May ALLAH Forgive "..
+##  $ target  : Factor w/ 2 levels "No","Yes": 2 2 2 2 2 2 2 2 2 2 ...
 \end{verbatim}
 
-Echamos un vistazo más de cerca a las variables del nuevo conjunto de
-datos \textbf{complete\_df}.
+El preprocesado de datos englobará las transformaciones de los textos,
+como, por ejemplo, la imputación de valores ausentes o la reducción de
+dimensionalidad.
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{summary}\NormalTok{(complete_df)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-##        id          keyword            location             text          
-##  Min.   :    0   Length:10876       Length:10876       Length:10876      
-##  1st Qu.: 2719   Class :character   Class :character   Class :character  
-##  Median : 5438   Mode  :character   Mode  :character   Mode  :character  
-##  Mean   : 5438                                                           
-##  3rd Qu.: 8156                                                           
-##  Max.   :10875                                                           
-##   target    
-##  No  :4342  
-##  Yes :3271  
-##  NA's:3263  
-##             
-##             
-## 
-\end{verbatim}
-
-La variable \textbf{id} es solo un identificador único y la
-eliminaremos.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{complete_df}\OperatorTok{$}\NormalTok{id <-}\StringTok{ }\OtherTok{NULL}
-\end{Highlighting}
-\end{Shaded}
-
-Observamos si existen valores perdidos.
+Primero, miramos cuantos valores perdidos tiene nuestro conjunto de
+datos \textbf{complete\_df}. La función \textbf{colSums} sumará los
+valores que la función \textbf{sapply} encuentre, en este caso, los
+valores perdidos.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -537,28 +630,24 @@ Observamos si existen valores perdidos.
 ##       87     3638        0     3263
 \end{verbatim}
 
-Las variables explicativas \textbf{keyword} y \textbf{location}
-contienen valores perdidos. Sobretodo hay una gran cantidad de tweets,
-para los cuales falta su ubicación. No existen valores perdidos para la
-variable explicativa \textbf{text}, tampoco para la variable a predecir
-\textbf{target}. Los 3263 valores perdidos de la variable a predecir
-provienen del conjunto de datos de test. Nos ocuparemos de los valores
-perdidos más adelante.
+Identificamos que las variables explicativas \textbf{keyword} y
+\textbf{location} tienen valores perdidos. La variable explicativa
+\textbf{text} no tiene valores perdidos. Sobretodo hay una gran cantidad
+de tweets, para los cuales falta su ubicación. Los 3263 valores perdidos
+de la variable a predecir provienen del conjunto de datos de test. Nos
+ocuparemos de los valores perdidos más adelante.
 
-Parece que la variable explicativa \textbf{text} es una buena elección
-para una buena predicción y basaremos los siguientes pasos en ella.
+\hypertarget{corpus}{%
+\subsection{Corpus}\label{corpus}}
 
-\hypertarget{procesamiento-de-texto}{%
-\subsection{Procesamiento de texto}\label{procesamiento-de-texto}}
-
-Como en todo procesamiento de lenguaje natural, realizaremos el
-procesamiento de un conjunto de textos. En este caso realizaremos un
-procesamiento de los textos de los tweets y los prepararemos para el
-modelado. Comencemos por crear un corpus de los mensajes de texto de los
-tweets. Para ello usaremos la función \textbf{Corpus} del paquete
-\textbf{tm}, que creará nuestro corpus a partir de un vector de textos.
-La función \textbf{VectorSource} interpretará cada mensaje de texto de
-los tweets como un elemento del vector de textos.
+Con nuestro nuevo conjunto de datos preparado (\textbf{complete\_df}),
+procedemos a crear nuestro Corpus, es decir, el conjunto de textos de la
+variable \textbf{text} a analizar. En este caso, nuestro Corpus se
+compone de todos los textos de los tweets y los asignaremos al objeto
+\emph{myCorpus} usando las funciones \textbf{VectorSource} y
+\textbf{Corpus}. La función \textbf{Corpus} creará el corpus a partir de
+un vector de textos. La función \textbf{VectorSource} interpretará cada
+mensaje de texto de los tweets como un elemento de ese vector de textos.
 
 \emph{Un corpus lingüístico se define como ``un conjunto de textos de un
 mismo origen'' y que tiene por función recopilar un conjunto de textos.
@@ -568,387 +657,318 @@ palabras utilizadas con más o menor frecuencia.}
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{myCorpus <-}\StringTok{ }\KeywordTok{Corpus}\NormalTok{(}\KeywordTok{VectorSource}\NormalTok{(complete_df}\OperatorTok{$}\NormalTok{text))}
-\end{Highlighting}
-\end{Shaded}
-
-Durante el procesamiento de texto seguiremos la transformación de un
-mensaje de tweet específico para ver como se modifica a medida que
-avanzamos en el procesamiento de texto. Este mensaje es:
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{paste0}\NormalTok{(myCorpus[[}\DecValTok{400}\NormalTok{]])}
+\NormalTok{myCorpus}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] "Jewish leaders prayed at the hospital where a Palestinian family is being treated after arson http://t.co/Wf8iTK2KVx via @HuffPostRelig"
+## <<SimpleCorpus>>
+## Metadata:  corpus specific: 1, document level (indexed): 0
+## Content:  documents: 10876
 \end{verbatim}
 
-Dividimos el procesamiento de texto en 7 pasos.
+Como podemos ver, nuestro Corpus está compuesto por 10876 textos.
 
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Eliminar enlaces.
-\end{enumerate}
+\hypertarget{limpieza-del-texto}{%
+\subsection{Limpieza del texto}\label{limpieza-del-texto}}
+
+Necesitamos limpiar de los 10876 textos caracteres que son de poca
+utilidad. Empezamos por aseguramos de que no queden enlaces, con un poco
+de ayuda de las \emph{regular expressions}. Para ello usaremos las
+funciones \textbf{gsub} y \textbf{tm\_map}. La función \textbf{gsub}
+buscará y reemplazará desde la primera hasta la última de las
+coincidencias de un patrón (representado por una \emph{regular
+expression}). La función \textbf{tm\_map} será la encargada de aplicar
+las diferentes transformaciones de los textos a nuestro corpus.
+
+\emph{Una expresión regular (o en inglés regular expression) es una
+representación, según unas reglas sintácticas de un lenguaje formal, de
+una porción de texto genérico a buscar dentro de otro texto, como por
+ejemplo caracteres, palabras o patrones de texto concretos.}
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{removeURL <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x) }\KeywordTok{gsub}\NormalTok{(}\StringTok{"http[^[:space:]]*"}\NormalTok{, }\StringTok{""}\NormalTok{, x)  }
 \NormalTok{myCorpus <-}\StringTok{ }\KeywordTok{tm_map}\NormalTok{(myCorpus, }\KeywordTok{content_transformer}\NormalTok{(removeURL))}
-\KeywordTok{paste0}\NormalTok{(myCorpus[[}\DecValTok{400}\NormalTok{]])}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{verbatim}
-## [1] "Jewish leaders prayed at the hospital where a Palestinian family is being treated after arson  via @HuffPostRelig"
-\end{verbatim}
-
-Hemos eliminado: \emph{\url{http://t.co/Wf8iTK2KVx}}.
-
-La función \textbf{gsub} busca y reemplaza desde la primera hasta todas
-las coincidencias de un patrón (que normalmente representa una
-\emph{regular expression}). La función \textbf{tm\_map} es la encargada
-de aplicar las diferentes transformaciones de los textos al corpus
-creado.
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\setcounter{enumi}{1}
-\tightlist
-\item
-  Convertir a minúsculas.
-\end{enumerate}
+Convertimos todo a minúsculas.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{myCorpus <-}\StringTok{ }\KeywordTok{tm_map}\NormalTok{(myCorpus, }\KeywordTok{content_transformer}\NormalTok{(stri_trans_tolower))}
-\KeywordTok{paste0}\NormalTok{(myCorpus[[}\DecValTok{400}\NormalTok{]])}
+\NormalTok{myCorpus <-}\StringTok{ }\KeywordTok{tm_map}\NormalTok{(myCorpus, }\KeywordTok{content_transformer}\NormalTok{(tolower))}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{verbatim}
-## [1] "jewish leaders prayed at the hospital where a palestinian family is being treated after arson  via @huffpostrelig"
-\end{verbatim}
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\setcounter{enumi}{2}
-\tightlist
-\item
-  Eliminar los nombres de usuario.
-\end{enumerate}
+Eliminamos los nombres de usuario.
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{removeUsername <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x) }\KeywordTok{gsub}\NormalTok{(}\StringTok{"@[^[:space:]]*"}\NormalTok{, }\StringTok{""}\NormalTok{, x)  }
 \NormalTok{myCorpus <-}\StringTok{ }\KeywordTok{tm_map}\NormalTok{(myCorpus, }\KeywordTok{content_transformer}\NormalTok{(removeUsername))}
-\KeywordTok{paste0}\NormalTok{(myCorpus[[}\DecValTok{400}\NormalTok{]])}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{verbatim}
-## [1] "jewish leaders prayed at the hospital where a palestinian family is being treated after arson  via "
-\end{verbatim}
-
-Hemos eliminado: \emph{@huffpostrelig}.
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\setcounter{enumi}{3}
-\tightlist
-\item
-  Eliminar todo excepto el idioma y el espacio en inglés.
-\end{enumerate}
+Nos deshacemos de la puntuación, puesto que por ejemplo ``fin'' y
+``fin.'' son identificadas como palabras diferentes, lo cual no
+deseamos.
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{removeNumPunct <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x) }\KeywordTok{gsub}\NormalTok{(}\StringTok{"[^[:alpha:][:space:]]*"}\NormalTok{, }\StringTok{""}\NormalTok{, x)   }
 \NormalTok{myCorpus <-}\StringTok{ }\KeywordTok{tm_map}\NormalTok{(myCorpus, }\KeywordTok{content_transformer}\NormalTok{(removeNumPunct))}
-\KeywordTok{paste0}\NormalTok{(myCorpus[[}\DecValTok{400}\NormalTok{]])}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{verbatim}
-## [1] "jewish leaders prayed at the hospital where a palestinian family is being treated after arson  via "
-\end{verbatim}
-
-No se observan cambios en en ejemplo.
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\setcounter{enumi}{4}
-\tightlist
-\item
-  Eliminar palabras irrelevantes (eliminación de redundancias).
-\end{enumerate}
+Usamos \textbf{removeWords} con \textbf{stopwords(``english'')},
+recordemos que los textos de los tweets están en inglés y cada idioma
+tiene sus propias palabras vacías; para eliminar palabras vacías, es
+decir, aquellas con poco valor para el análisis, que carecen de un
+significado por si solas, tales como artículos, preposiciones,
+conjunciones, pronombres, etc.
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{myStopWords <-}\StringTok{ }\KeywordTok{c}\NormalTok{((}\KeywordTok{stopwords}\NormalTok{(}\StringTok{'english'}\NormalTok{)), }
-         \KeywordTok{c}\NormalTok{(}\StringTok{"really"}\NormalTok{, }\StringTok{"tweets"}\NormalTok{, }\StringTok{"saw"}\NormalTok{, }\StringTok{"just"}\NormalTok{, }\StringTok{"feel"}\NormalTok{, }\StringTok{"may"}\NormalTok{, }\StringTok{"us"}\NormalTok{, }\StringTok{"rt"}\NormalTok{, }\StringTok{"every"}\NormalTok{, }\StringTok{"one"}\NormalTok{,}
-           \StringTok{"amp"}\NormalTok{, }\StringTok{"like"}\NormalTok{, }\StringTok{"will"}\NormalTok{, }\StringTok{"got"}\NormalTok{, }\StringTok{"new"}\NormalTok{, }\StringTok{"can"}\NormalTok{, }\StringTok{"still"}\NormalTok{, }\StringTok{"back"}\NormalTok{, }\StringTok{"top"}\NormalTok{, }\StringTok{"much"}\NormalTok{,}
-           \StringTok{"near"}\NormalTok{, }\StringTok{"im"}\NormalTok{, }\StringTok{"see"}\NormalTok{, }\StringTok{"via"}\NormalTok{, }\StringTok{"get"}\NormalTok{, }\StringTok{"now"}\NormalTok{, }\StringTok{"come"}\NormalTok{, }\StringTok{"oil"}\NormalTok{, }\StringTok{"let"}\NormalTok{, }\StringTok{"god"}\NormalTok{, }\StringTok{"want"}\NormalTok{,}
-           \StringTok{"pm"}\NormalTok{, }\StringTok{"last"}\NormalTok{, }\StringTok{"hope"}\NormalTok{, }\StringTok{"since"}\NormalTok{, }\StringTok{"everyone"}\NormalTok{, }\StringTok{"food"}\NormalTok{, }\StringTok{"content"}\NormalTok{, }\StringTok{"always"}\NormalTok{, }\StringTok{"th"}\NormalTok{,}
-           \StringTok{"full"}\NormalTok{, }\StringTok{"found"}\NormalTok{, }\StringTok{"dont"}\NormalTok{, }\StringTok{"look"}\NormalTok{, }\StringTok{"cant"}\NormalTok{, }\StringTok{"mh"}\NormalTok{, }\StringTok{"lol"}\NormalTok{, }\StringTok{"set"}\NormalTok{, }\StringTok{"old"}\NormalTok{, }\StringTok{"service"}\NormalTok{,}
-           \StringTok{"city"}\NormalTok{, }\StringTok{"home"}\NormalTok{, }\StringTok{"live"}\NormalTok{, }\StringTok{"night"}\NormalTok{, }\StringTok{"news"}\NormalTok{, }\StringTok{"say"}\NormalTok{, }\StringTok{"video"}\NormalTok{, }\StringTok{"people"}\NormalTok{, }\StringTok{"ill"}\NormalTok{, }
-           \StringTok{"way"}\NormalTok{,  }\StringTok{"please"}\NormalTok{, }\StringTok{"years"}\NormalTok{, }\StringTok{"take"}\NormalTok{, }\StringTok{"homes"}\NormalTok{, }\StringTok{"read"}\NormalTok{, }\StringTok{"man"}\NormalTok{, }\StringTok{"next"}\NormalTok{, }\StringTok{"cross"}\NormalTok{, }
-           \StringTok{"boy"}\NormalTok{, }\StringTok{"bad"}\NormalTok{, }\StringTok{"ass"}\NormalTok{))}
+    \KeywordTok{c}\NormalTok{(}\StringTok{"really"}\NormalTok{, }\StringTok{"tweets"}\NormalTok{, }\StringTok{"saw"}\NormalTok{, }\StringTok{"just"}\NormalTok{, }\StringTok{"feel"}\NormalTok{, }\StringTok{"may"}\NormalTok{, }\StringTok{"us"}\NormalTok{, }\StringTok{"rt"}\NormalTok{, }\StringTok{"every"}\NormalTok{, }\StringTok{"one"}\NormalTok{,}
+     \StringTok{"amp"}\NormalTok{, }\StringTok{"like"}\NormalTok{, }\StringTok{"will"}\NormalTok{, }\StringTok{"got"}\NormalTok{, }\StringTok{"new"}\NormalTok{, }\StringTok{"can"}\NormalTok{, }\StringTok{"still"}\NormalTok{, }\StringTok{"back"}\NormalTok{, }\StringTok{"top"}\NormalTok{, }\StringTok{"much"}\NormalTok{,}
+     \StringTok{"near"}\NormalTok{, }\StringTok{"im"}\NormalTok{, }\StringTok{"see"}\NormalTok{, }\StringTok{"via"}\NormalTok{, }\StringTok{"get"}\NormalTok{, }\StringTok{"now"}\NormalTok{, }\StringTok{"come"}\NormalTok{, }\StringTok{"oil"}\NormalTok{, }\StringTok{"let"}\NormalTok{, }\StringTok{"god"}\NormalTok{, }\StringTok{"want"}\NormalTok{,}
+     \StringTok{"pm"}\NormalTok{, }\StringTok{"last"}\NormalTok{, }\StringTok{"hope"}\NormalTok{, }\StringTok{"since"}\NormalTok{, }\StringTok{"everyone"}\NormalTok{, }\StringTok{"food"}\NormalTok{, }\StringTok{"content"}\NormalTok{, }\StringTok{"always"}\NormalTok{, }\StringTok{"th"}\NormalTok{,}
+     \StringTok{"full"}\NormalTok{, }\StringTok{"found"}\NormalTok{, }\StringTok{"dont"}\NormalTok{, }\StringTok{"look"}\NormalTok{, }\StringTok{"cant"}\NormalTok{, }\StringTok{"mh"}\NormalTok{, }\StringTok{"lol"}\NormalTok{, }\StringTok{"set"}\NormalTok{, }\StringTok{"old"}\NormalTok{, }\StringTok{"service"}\NormalTok{,}
+     \StringTok{"city"}\NormalTok{, }\StringTok{"home"}\NormalTok{, }\StringTok{"live"}\NormalTok{, }\StringTok{"night"}\NormalTok{, }\StringTok{"news"}\NormalTok{, }\StringTok{"say"}\NormalTok{, }\StringTok{"video"}\NormalTok{, }\StringTok{"people"}\NormalTok{, }\StringTok{"ill"}\NormalTok{, }
+     \StringTok{"way"}\NormalTok{,  }\StringTok{"please"}\NormalTok{, }\StringTok{"years"}\NormalTok{, }\StringTok{"take"}\NormalTok{, }\StringTok{"homes"}\NormalTok{, }\StringTok{"read"}\NormalTok{, }\StringTok{"man"}\NormalTok{, }\StringTok{"next"}\NormalTok{, }\StringTok{"cross"}\NormalTok{, }
+     \StringTok{"boy"}\NormalTok{, }\StringTok{"bad"}\NormalTok{, }\StringTok{"ass"}\NormalTok{))}
 
-\NormalTok{myCorpus <-}\StringTok{ }\KeywordTok{tm_map}\NormalTok{(myCorpus, removeWords, myStopWords) }
-\KeywordTok{paste0}\NormalTok{(myCorpus[[}\DecValTok{400}\NormalTok{]])}
+\KeywordTok{head}\NormalTok{(myStopWords, }\DecValTok{30}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] "jewish leaders prayed   hospital   palestinian family   treated  arson   "
+##  [1] "i"          "me"         "my"         "myself"     "we"        
+##  [6] "our"        "ours"       "ourselves"  "you"        "your"      
+## [11] "yours"      "yourself"   "yourselves" "he"         "him"       
+## [16] "his"        "himself"    "she"        "her"        "hers"      
+## [21] "herself"    "it"         "its"        "itself"     "they"      
+## [26] "them"       "their"      "theirs"     "themselves" "what"
 \end{verbatim}
 
-Hemos eliminado: at the where a is being after via.
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{myCorpus <-}\StringTok{ }\KeywordTok{tm_map}\NormalTok{(myCorpus, removeWords, myStopWords) }
+\end{Highlighting}
+\end{Shaded}
 
-Las palabras irrelevantes que hemos eliminado se denominan \emph{stop
-words o palabras vacías}. Cada idioma tiene sus propias palabras vacías.
-Como los textos están en inglés hemos eliminado los \emph{stop words}
-que pertenecen al inglés usando la función \textbf{stopwords}, además
-hemos añadido aleatóriamente alguna de las palabras vacías más usadas en
-los mensajes de texto de los tweets (ver
+Además, podemos ver que se han añadido (aleatoriamente) más palabras
+vacías (``really'', ``tweets'', ``saw'', etc.). Estas palabras vacías
+son de las más usadas en los mensajes de texto de los tweets (ver
 \url{https://techland.time.com/2009/06/08/the-500-most-frequently-used-words-on-twitter/}).
 
-\emph{Las stop words o palabras vacías son todas aquellas palabras que
-carecen de un significado por si solas. Suelen ser artículos,
-preposiciones, conjunciones, pronombres, etc.}
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\setcounter{enumi}{5}
-\tightlist
-\item
-  Eliminar palabras de una sola letra.
-\end{enumerate}
+En este caso, removemos las palabras de una sola letra.
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{removeSingle <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x) }\KeywordTok{gsub}\NormalTok{(}\StringTok{" . "}\NormalTok{, }\StringTok{" "}\NormalTok{, x)   }
 \NormalTok{myCorpus <-}\StringTok{ }\KeywordTok{tm_map}\NormalTok{(myCorpus, }\KeywordTok{content_transformer}\NormalTok{(removeSingle))}
-\KeywordTok{paste0}\NormalTok{(myCorpus[[}\DecValTok{400}\NormalTok{]])}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{verbatim}
-## [1] "jewish leaders prayed hospital palestinian family treated  arson "
-\end{verbatim}
-
-No se observan cambios en en ejemplo.
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\setcounter{enumi}{6}
-\tightlist
-\item
-  Eliminar espacios en blanco adicionales.
-\end{enumerate}
+Por último eliminamos los espacios vacíos excesivos, muchos de ellos
+introducidos por las transformaciones anteriores.
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{myCorpus <-}\StringTok{ }\KeywordTok{tm_map}\NormalTok{(myCorpus, stripWhitespace)}
-\KeywordTok{paste0}\NormalTok{(myCorpus[[}\DecValTok{400}\NormalTok{]])}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{verbatim}
-## [1] "jewish leaders prayed hospital palestinian family treated arson "
-\end{verbatim}
+\hypertarget{creaciuxf3n-de-un-modelo-predictivo}{%
+\section{Creación de un modelo
+predictivo}\label{creaciuxf3n-de-un-modelo-predictivo}}
 
-Terminamos con el procesamiento de texto. A continuación, crearemos dos
-\emph{Term Document Matrix} (matriz que describe la frecuencia de las
-palabras que se producen en una colección de textos) para un análisis de
-sentimientos más detallado. Usaremos la función
-\textbf{TermDocumentMatrix} y dividiremos el corpus en dos, según el
-número de elementos de los conjuntos de datos train y test. Recordamos
-que el conjunto de datos de train contiene 7613 observaciones, y el
-conjunto de datos de test contiene 3263 observaciones. El parámetro
-\textbf{control} evalúa cada texto de la matriz, específicamente se
-evaluaran todas las palabras de cada texto (no aplicamos ningún filtro).
+\hypertarget{preprocesado-de-los-datos}{%
+\subsection{Preprocesado de los datos}\label{preprocesado-de-los-datos}}
+
+Para la creación de un modelo predictivo, necesitamos construir una
+\textbf{Term Document Matrix} del conjunto de textos de la variable
+\textbf{text}, donde cada fila representará un texto y cada palabra
+única estará representada per una columna.
+
+\emph{Una Term Document Matrix es una matriz matemática que describe la
+frecuencia con la que se repiten una serie de palabras en una colección
+de documentos.}
+
+Comenzaremos mapeando nuestro Corpus indicando que es una \textbf{Term
+Document Matrix}, de esta manera podremos realizar el preprocesado de
+datos. Sabemos que el preprocesado de datos engloba aquellas
+transformaciones de los datos con la finalidad de mejorar los resultados
+de la clasificación supervisada. Todo preprocesado de datos debe
+aprenderse de las observaciones de train y luego aplicarse al conjunto
+de train y de test. Esto es muy importante para no violar la condición
+de que ninguna información procedente de las observaciones de test
+influya en el ajuste del modelo.
+
+Utilizaremos la función \textbf{TermDocumentMatrix} en nuestro Corpus y
+asignaremos el resultado al objeto \emph{complete.tdm}. Con el parámetro
+\textbf{control} indicaremos que evaluaremos todos los textos de la
+matriz, con las características escogidas se evaluarán todas las
+palabras de los textos. Por defecto la función
+\textbf{TermDocumentMatrix} usa \emph{tf-id}, que mide la importancia
+relativa de cada palabra en el conjunto de textos.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{train_tdm <-}\StringTok{ }\KeywordTok{TermDocumentMatrix}\NormalTok{(myCorpus[}\DecValTok{1}\OperatorTok{:}\DecValTok{7613}\NormalTok{], }
-                                \DataTypeTok{control=} \KeywordTok{list}\NormalTok{(}\DataTypeTok{wordLengths=} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\OtherTok{Inf}\NormalTok{)))}
-\NormalTok{test_tdm <-}\StringTok{ }\KeywordTok{TermDocumentMatrix}\NormalTok{(myCorpus[}\DecValTok{7614}\OperatorTok{:}\DecValTok{10876}\NormalTok{], }
-                               \DataTypeTok{control=} \KeywordTok{list}\NormalTok{(}\DataTypeTok{wordLengths=} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\OtherTok{Inf}\NormalTok{)))}
-\NormalTok{train_tdm}
+\NormalTok{complete.tdm <-}\StringTok{ }\KeywordTok{TermDocumentMatrix}\NormalTok{(myCorpus, }\DataTypeTok{control=}\KeywordTok{list}\NormalTok{(}\DataTypeTok{wordLengths=} \KeywordTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{, }\OtherTok{Inf}\NormalTok{)))}
+\NormalTok{complete.tdm}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## <<TermDocumentMatrix (terms: 14825, documents: 7613)>>
-## Non-/sparse entries: 58707/112804018
+## <<TermDocumentMatrix (terms: 16880, documents: 10876)>>
+## Non-/sparse entries: 76219/183510661
 ## Sparsity           : 100%
 ## Maximal term length: 49
 ## Weighting          : term frequency (tf)
 \end{verbatim}
 
+Podemos observar que tenemos 16880 \emph{terms}, esto quiere decir que
+tenemos 16880 palabras diferentes en nuestro Corpus. Lo cual es una
+cantidad considerable de vocabulario, pero no esperaríamos otra cosa de
+una red social como \href{https://twitter.com}{Twitter}. La palabra más
+larga contiene 49 caracteres.
+
+Usaremos la función \textbf{removeSparseItems} para depurar nuestra
+\textbf{Term Document Matrix} de aquellas palabras que aparecen con muy
+poca frecuencia, es decir, son dispersas. Porqué 16880 palabras son
+demasiadas palabras y es posible que no podamos entrenar nuestro modelo
+debido a restricciones computacionales.
+
+Esta función requiere que especifiquemos el argumento \textbf{sparse},
+que puede asumir valores de 0 a 1. Este valor representa la dispersión
+de las palabras que queremos conservar. Si lo fijamos muy alto (cerca de
+1, pero no 1), conservaremos muchas palabras, casi todas, pues estamos
+indicando que queremos conservar palabras, aunque sean muy dispersas.
+Naturalmente, ocurre lo opuesto si fijamos este valor muy bajo (cerca de
+0, pero no 0), pudiendo incluso quedarnos sin ninguna palabra, si las
+palabras en nuestros textos son dispersas en general.
+
+En este caso, se decide fijarlo en \emph{.9975}, conservando las
+palabras que aparecen en al menos el 0.25\% de las observaciones.
+
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{test_tdm}
+\NormalTok{complete.tdm <-}\StringTok{ }\KeywordTok{removeSparseTerms}\NormalTok{(complete.tdm, }\DataTypeTok{sparse =} \FloatTok{.9975}\NormalTok{)}
+\NormalTok{complete.tdm}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## <<TermDocumentMatrix (terms: 8966, documents: 3263)>>
-## Non-/sparse entries: 25434/29230624
+## <<TermDocumentMatrix (terms: 582, documents: 10876)>>
+## Non-/sparse entries: 31214/6298618
 ## Sparsity           : 100%
-## Maximal term length: 35
+## Maximal term length: 17
 ## Weighting          : term frequency (tf)
 \end{verbatim}
 
-La matriz para los datos de train contiene 14825 palabras y la matriz
-para los datos de test contiene 8966 palabras. Utilizaremos las matrices
-para ver las palabras más utilizadas en los tweets y predecir a partir
-de ellas.
+De 16880 palabras que teníamos, nos hemos quedado con 582, lo cual
+reduce en gran medida la dificultad y complejidad del problema de
+\emph{alta dimensionalidad}, lo cual es deseable. La palabra más larga
+contiene 17 caracteres.
 
-\hypertarget{palabras-muxe1s-frecuentes}{%
-\subsection{Palabras más frecuentes}\label{palabras-muxe1s-frecuentes}}
+\hypertarget{feature-extraction-mediante-singular-value-decomposition}{%
+\subsubsection{Feature Extraction mediante Singular Value
+Decomposition}\label{feature-extraction-mediante-singular-value-decomposition}}
 
-\begin{itemize}
-\tightlist
-\item
-  Palabras más frecuentes en los datos de train.
-\end{itemize}
+La descomposición de los datos originales en un nuevo conjunto, sin
+necesidad de pérdida de información relevante y sacando a la luz la
+información latente, es un proceso de vital importancia para implementar
+la parte más computacionalmente intensa del ejercicio. Buscando una
+intuitiva separabilidad de las clases de los datos aplicaremos la
+técnica de \emph{Descomposición en Valores Singulares (SVD)}.
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{train.term.freq <-}\StringTok{ }\KeywordTok{rowSums}\NormalTok{(}\KeywordTok{as.matrix}\NormalTok{(train_tdm))}
-\NormalTok{train.term.freq <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(train.term.freq, train.term.freq }\OperatorTok{>}\StringTok{ }\DecValTok{60}\NormalTok{)}
-\NormalTok{freq_train_df <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{term =} \KeywordTok{names}\NormalTok{(train.term.freq), }\DataTypeTok{freq=}\NormalTok{ train.term.freq)}
-\KeywordTok{head}\NormalTok{(freq_train_df[}\KeywordTok{order}\NormalTok{(}\OperatorTok{-}\NormalTok{freq_train_df}\OperatorTok{$}\NormalTok{freq), ])}
-\end{Highlighting}
-\end{Shaded}
+\emph{La Descomposición de Valores Singulares (en inglés Singular Value
+Decomposition ({[}SVD{]}
+(\url{https://en.wikipedia.org/wiki/Singular-value_decomposition})) es
+una técnica de reducción de la dimensionalidad, en minería de textos,
+que puede utilizarse para descubrir las dimensiones latentes (o
+componentes) que determinan similitudes semánticas entre las palabras
+(es decir, unidades léxicas) o entre los textos (es decir, unidades de
+contexto).}
 
-\begin{verbatim}
-##                term freq
-## fire           fire  250
-## emergency emergency  157
-## disaster   disaster  152
-## police       police  140
-## time           time  125
-## body           body  124
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{ggplot}\NormalTok{(freq_train_df, }\KeywordTok{aes}\NormalTok{(}\KeywordTok{reorder}\NormalTok{(term, freq), freq)) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_bw}\NormalTok{() }\OperatorTok{+}\StringTok{ }
-\StringTok{  }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{stat =} \StringTok{"identity"}\NormalTok{)  }\OperatorTok{+}\StringTok{ }
-\StringTok{  }\KeywordTok{coord_flip}\NormalTok{() }\OperatorTok{+}\StringTok{ }
-\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{axis.text.y =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{size=}\DecValTok{7}\NormalTok{))}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{center}\includegraphics[width=0.7\linewidth]{document_files/figure-latex/unnamed-chunk-28-1} \end{center}
-
-\begin{itemize}
-\tightlist
-\item
-  Palabras más frecuentes en los datos de test
-\end{itemize}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{test.term.freq <-}\StringTok{ }\KeywordTok{rowSums}\NormalTok{(}\KeywordTok{as.matrix}\NormalTok{(test_tdm))}
-\NormalTok{test.term.freq <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(test.term.freq, test.term.freq }\OperatorTok{>}\StringTok{ }\DecValTok{60}\NormalTok{)}
-\NormalTok{freq_test_df <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{term =} \KeywordTok{names}\NormalTok{(test.term.freq), }\DataTypeTok{freq=}\NormalTok{ test.term.freq)}
-\NormalTok{freq_test_df[}\KeywordTok{order}\NormalTok{(}\OperatorTok{-}\NormalTok{freq_test_df}\OperatorTok{$}\NormalTok{freq), ]}
-\end{Highlighting}
-\end{Shaded}
+Para aplicar la técnica de \emph{Descomposición en Valores Singulares
+(SVD)}, primero transformamos nuestra \textbf{Term Document Matrix} a un
+objeto de tipo \textbf{matrix} para así poder comprobar si nuestros
+datos aún contienen valores perdidos con la función \textbf{which}.
 
 \begin{verbatim}
-##                term freq
-## fire           fire  107
-## emergency emergency   68
-## attack       attack   63
+## integer(0)
 \end{verbatim}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{ggplot}\NormalTok{(freq_test_df, }\KeywordTok{aes}\NormalTok{(}\KeywordTok{reorder}\NormalTok{(term, freq), freq)) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_bw}\NormalTok{() }\OperatorTok{+}\StringTok{ }
-\StringTok{  }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{stat =} \StringTok{"identity"}\NormalTok{)  }\OperatorTok{+}\StringTok{ }
-\StringTok{  }\KeywordTok{coord_flip}\NormalTok{() }\OperatorTok{+}\StringTok{ }
-\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{axis.text.y =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{size=}\DecValTok{7}\NormalTok{))}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{center}\includegraphics[width=0.5\linewidth]{document_files/figure-latex/unnamed-chunk-29-1} \end{center}
-
-Las palabras \emph{``fire''}, \emph{``attack''} y \emph{``emergency''}
-aparecen con alta frecuencia tanto en el conjunto de train como en el
-conjunto de test. Estas palabras son muy útiles para predecir un
-desastre real.
-
-\hypertarget{modelado}{%
-\subsection{Modelado}\label{modelado}}
-
-Para la construcción de modelos, necesitamos construir una \emph{Term
-Document Matrix} donde cada fila represente un texto y cada palabra
-única esté representada por una columna. Comencemos construyendo la
-matriz para nuestro corpus completo.
+Los datos no contienen valores perdidos, podemos proceder con la
+\emph{Descomposición de Valores Singulares (SVD)}. Para ello utilizamos
+la función \textbf{irlba}, que se encargará de la descomposición de
+nuestra \textbf{Term Document Matrix} y extraerá sus 150 vectores
+singulares más importantes, después de un máximo de 600 iteraciones, y
+que guardaremos en el objeto \textbf{complete\_irlba}.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{complete.tdm <-}\StringTok{ }\KeywordTok{TermDocumentMatrix}\NormalTok{(myCorpus, }\DataTypeTok{control=} \KeywordTok{list}\NormalTok{(}\DataTypeTok{wordLengths=} \KeywordTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{, }\OtherTok{Inf}\NormalTok{)))}
-\NormalTok{complete.term.matrix <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(}\KeywordTok{t}\NormalTok{(complete.tdm))}
-\KeywordTok{dim}\NormalTok{(complete.term.matrix)}
-\end{Highlighting}
-\end{Shaded}
+\NormalTok{cl <-}\StringTok{ }\KeywordTok{makePSOCKcluster}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DataTypeTok{setup_strategy=}\StringTok{"sequential"}\NormalTok{)}
+\KeywordTok{registerDoParallel}\NormalTok{(cl)}
 
-\begin{verbatim}
-## [1] 10876 16891
-\end{verbatim}
-
-Podemos ver que es una matriz dispersa con 10876 textos, es decir,
-tweets y 16880 palabras. Además, se generan algunos casos incompletos,
-que necesitaremos manejar antes de continuar con la construcción del
-modelo.
-
-Sin embargo, si intentamos convertir esto para usar esta matriz para la
-construcción del modelo, es posible que no podamos entrenar nuestro
-modelo debido a restricciones computacionales. Necesitamos reducir la
-dimensión/características de la matriz.
-
-Primero tratamos los casos incompletos.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{incomplete.cases <-}\StringTok{ }\KeywordTok{which}\NormalTok{(}\OperatorTok{!}\KeywordTok{complete.cases}\NormalTok{(complete.term.matrix))}
-\NormalTok{complete.term.matrix[incomplete.cases,] <-}\StringTok{ }\KeywordTok{rep}\NormalTok{(}\FloatTok{0.0}\NormalTok{, }\KeywordTok{ncol}\NormalTok{(complete.term.matrix))}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{Shaded}
-\begin{Highlighting}[]
 \NormalTok{complete_irlba <-}\StringTok{ }\KeywordTok{irlba}\NormalTok{(}\KeywordTok{t}\NormalTok{(complete.term.matrix), }\DataTypeTok{nv =} \DecValTok{150}\NormalTok{, }\DataTypeTok{maxit =} \DecValTok{600}\NormalTok{)}
 \NormalTok{complete_irlba}\OperatorTok{$}\NormalTok{v[}\DecValTok{1}\OperatorTok{:}\DecValTok{10}\NormalTok{, }\DecValTok{1}\OperatorTok{:}\DecValTok{5}\NormalTok{]}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-##               [,1]          [,2]          [,3]          [,4]          [,5]
-##  [1,] -0.000462870 -0.0003461531  9.263917e-06  1.074148e-04 -0.0006025571
-##  [2,] -0.039611815  0.0191637843 -4.631903e-03 -4.704284e-03  0.0075975914
-##  [3,] -0.002804300  0.0004191885 -8.592254e-06 -8.570421e-06 -0.0017859899
-##  [4,] -0.006221545 -0.0006966814 -2.384731e-03 -2.622132e-04 -0.0034957244
-##  [5,] -0.002844704  0.0003113251  1.691928e-04  2.684031e-05 -0.0016029824
-##  [6,] -0.043686430  0.0177778044 -6.819700e-03 -4.737299e-03  0.0053901935
-##  [7,] -0.010115221 -0.0248025873 -1.819646e-02 -2.408506e-04 -0.0006175213
-##  [8,] -0.035196096  0.0178217283 -4.374870e-03 -4.425091e-03  0.0100228792
-##  [9,] -0.009139736  0.0007828903 -4.421149e-06  2.046801e-04 -0.0070461856
-## [10,] -0.001539314 -0.0001940795 -9.137939e-06  4.200374e-05 -0.0012366532
+##                [,1]          [,2]          [,3]          [,4]          [,5]
+##  [1,] -0.0003162281 -2.109638e-04 -3.318231e-04 -2.035137e-05  0.0008660149
+##  [2,] -0.0431207327  1.408993e-02  5.124787e-03  3.922969e-03 -0.0021251369
+##  [3,] -0.0020297768  2.205792e-04 -5.231801e-05  1.014223e-04  0.0008899277
+##  [4,] -0.0054444920  1.259299e-04 -3.441743e-03  1.669137e-04  0.0094345444
+##  [5,] -0.0021975777  8.533917e-05  7.910354e-05 -7.809264e-05  0.0017043646
+##  [6,] -0.0449020384  1.303972e-02  1.677561e-03  3.883599e-03 -0.0005116573
+##  [7,] -0.0060579030 -8.521515e-03 -3.239198e-02  6.490016e-04 -0.0023784289
+##  [8,] -0.0387247287  1.297783e-02  5.140001e-03  3.764856e-03 -0.0112714576
+##  [9,] -0.0079142623 -5.649745e-04 -6.691751e-04 -4.606357e-04  0.0135358450
+## [10,] -0.0014005942 -2.762898e-04 -3.440679e-04 -4.573951e-05  0.0016280077
 \end{verbatim}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{complete.svd <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{target =}\NormalTok{ complete_df}\OperatorTok{$}\NormalTok{target, complete_irlba}\OperatorTok{$}\NormalTok{v)}
+\KeywordTok{stopCluster}\NormalTok{(cl)}
+\end{Highlighting}
+\end{Shaded}
+
+Lo que vemos arriba es una pequeña parte del modelo de espacio vectorial
+de los 150 vectores singulares más importantes, que usaremos como
+características para la clasificación supervisada.
+
+\hypertarget{divisiuxf3n-de-los-datos-en-train-y-test}{%
+\subsection{División de los datos en train y
+test}\label{divisiuxf3n-de-los-datos-en-train-y-test}}
+
+Evaluar la capacidad predictiva de un modelo consiste en comprobar cómo
+de próximas son sus predicciones a los verdaderos valores de la variable
+a predecir. Para poder cuantificar de forma correcta este error, se
+necesita disponer de un conjunto de observaciones, de las que se conozca
+la variable a predecir, pero que el modelo no haya ``visto'', es decir,
+que no hayan participado en su ajuste. Con esta finalidad, se dividen
+los datos disponibles en un conjunto de train y un conjunto de test.
+
+Con el conjunto de datos, del que se conoce la variable a predecir
+(\textbf{complete\_df}) y las características que hemos creado en la
+sección anterior (\textbf{complete\_irlba}) creamos un nuevo conjunto de
+datos que a continuación dividiremos en un conjunto de datos de train
+(\textbf{train.df}) y de test (\textbf{test.df}), con el mismo tamaño de
+la partición inicial proporcionada por la competición de Kaggle (7613
+instancias para el conjunto de datos de train y 3263 instancias para el
+conjunto de datos de test).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{complete.svd <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{target=}\NormalTok{complete_df}\OperatorTok{$}\NormalTok{target, complete_irlba}\OperatorTok{$}\NormalTok{v)}
 \NormalTok{train.df <-}\StringTok{ }\NormalTok{complete.svd[}\DecValTok{1}\OperatorTok{:}\DecValTok{7613}\NormalTok{, ]}
 \NormalTok{test.df <-}\StringTok{ }\NormalTok{complete.svd[}\DecValTok{7614}\OperatorTok{:}\DecValTok{10876}\NormalTok{, }\DecValTok{-1}\NormalTok{]}
 \KeywordTok{dim}\NormalTok{(train.df)}
@@ -969,28 +989,246 @@ Primero tratamos los casos incompletos.
 ## [1] 3263  150
 \end{verbatim}
 
+Un paso importante es verificar que la distribución de la variable a
+predecir del conjunto datos de train no ha cambiado respecto a la
+partición inicial (\textbf{complete\_df}).
+
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{names}\NormalTok{(train.df) <-}\StringTok{ }\KeywordTok{make.names}\NormalTok{(}\KeywordTok{names}\NormalTok{(train.df))}
-\KeywordTok{names}\NormalTok{(test.df) <-}\StringTok{ }\KeywordTok{make.names}\NormalTok{(}\KeywordTok{names}\NormalTok{(test.df))}
+\KeywordTok{prop.table}\NormalTok{(}\KeywordTok{table}\NormalTok{(complete_df}\OperatorTok{$}\NormalTok{target))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##        No       Yes 
+## 0.5703402 0.4296598
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{prop.table}\NormalTok{(}\KeywordTok{table}\NormalTok{(train.df}\OperatorTok{$}\NormalTok{target))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##        No       Yes 
+## 0.5703402 0.4296598
+\end{verbatim}
+
+\hypertarget{selecciuxf3n-de-variables}{%
+\subsection{Selección de variables}\label{selecciuxf3n-de-variables}}
+
+Cuando se entrena un modelo, es importante incluir como variables para
+la predicción únicamente aquellas variables que están realmente
+relacionadas con la variable a predecir, ya que son estas las que
+contienen información útil para el modelo. Incluir un exceso de
+variables suele conllevar una reducción de la capacidad de predicción
+del modelo. La selección de variables para la predicción puede suponer
+la diferencia entre un modelo normal y uno muy bueno, por lo tanto,
+conviene conocer las herramientas internas de *caret** para la selección
+de variables.
+
+Muchos modelos a los que se puede acceder mediante la función
+\textbf{train} de \textbf{caret} producen ecuaciones de predicción que
+no necesariamente utilizan todas las variables. Estos modelos tienen una
+selección de variables incorporada. El uso de estos modelos con
+selección de variables incorporada será más eficiente que otras
+estrategias, de wrapper y filtrado.
+
+Para este ejercicio, escogemos algoritmos de clasificación supervisada
+de \textbf{caret} que tienen una selección de variables incorporada (ver
+\url{http://topepo.github.io/caret/feature-selection-overview.html})..
+
+\hypertarget{entrenamiento-de-modelos}{%
+\subsection{Entrenamiento de modelos}\label{entrenamiento-de-modelos}}
+
+En esta sección se entrenan diferentes modelos de \emph{clasificación
+supervisada} con el objetivo de compararlos e identificar el que mejor
+resultado obtiene prediciendo. Todos estos modelos incorporados en el
+paquete \textbf{caret} se entrenan con la función \textbf{train}. Entre
+los argumentos de esta función destacan:
+
+\begin{itemize}
+\item
+  \textbf{method}. El nombre del algoritmo que se desea emplear
+  (\href{http://topepo.github.io/caret/available-models.html}{modelos}.
+\item
+  \textbf{metric}. La métrica empleada para evaluar la capacidad
+  predictiva del modelo. Aunque la competición de Kaggle en la que se
+  basa nuestro ejercicio usa \textbf{F1 score} como métrica de
+  evaluación, para cuantificar como de bueno son los modelos
+  utilizaremos la métrica de evaluación \emph{Accuracy}. Porqué la
+  distribución de la clase no presenta un problema notable de
+  desbalanceo de clases y cuando la distribución de la variable clase
+  está bastante equilibrada es una buena medida de evaluación.
+\end{itemize}
+
+\emph{Accuracy es el porcentaje de observaciones correctamente
+clasificadas respecto al total de predicciones.}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{trControl}. Especificaciones adicionales sobre la forma de
+  llevar a cabo el entrenamiento del modelo.
+\end{itemize}
+
+La función \textbf{train} de \textbf{caret} siempre estima un porcentaje
+de bien clasificados sobre el conjunto de datos de train. La función
+\textbf{trainControl}, que se pasa al argumento \textbf{trControl} de la
+función \textbf{train}, controla la estimación del error: en este caso
+realizaremos una \emph{K-Fold Cross-Validation} usando la función
+\textbf{createMultiFolds}, de 5 hojas (\emph{k}) y repitiéndola 3 veces
+(\emph{times}). Una validación cruzada con 5 hojas y 3 repeticiones,
+implica ajustar y evaluar el modelo 5 * 3 = 15 veces, más un último
+ajuste con todos los datos de entrenamiento para crear el modelo final.
+
+\emph{k-Fold-Cross-Validation (CV). Las observaciones de entrenamiento
+se reparten en k folds (conjuntos) del mismo tamaño. El modelo se ajusta
+con todas las observaciones excepto las del primer fold y se evalúa
+prediciendo las observaciones del fold que ha quedado excluido,
+obteniendo así la primera métrica. El proceso se repite k veces,
+excluyendo un fold distinto en cada iteración. Al final, se generan k
+valores de la métrica, que se agregan (normalmente con la media y la
+desviación típica) generando la estimación final de validación.}
+
+\emph{Repeated k-Fold-Cross-Validation (repeated CV). Es exactamente
+igual al método k-Fold-Cross-Validation pero repitiendo el proceso
+completo n veces. Por ejemplo, 10-Fold-Cross-Validation con 5
+repeticiones implica a un total de 50 iteraciones ajuste-validación,
+pero no equivale a un 50-Fold-Cross-Validation.}
+
+Las semillas son necesarias si se quiere asegurar la reproducibilidad de
+los resultados, ya que una validación cruzada implica una selección
+aleatoria.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
+\NormalTok{cv.folds <-}\StringTok{ }\KeywordTok{createMultiFolds}\NormalTok{(train.df}\OperatorTok{$}\NormalTok{target, }\DataTypeTok{k=}\DecValTok{5}\NormalTok{, }\DataTypeTok{times=}\DecValTok{3}\NormalTok{)}
+\NormalTok{cv.cntrl <-}\StringTok{ }\KeywordTok{trainControl}\NormalTok{(}\DataTypeTok{method=}\StringTok{"repeatecv"}\NormalTok{, }\DataTypeTok{number=}\DecValTok{5}\NormalTok{,}
+                         \DataTypeTok{index=}\NormalTok{cv.folds, }\DataTypeTok{allowParallel=}\OtherTok{TRUE}\NormalTok{, }
+                         \DataTypeTok{returnResamp=}\StringTok{"final"}\NormalTok{,}
+                         \DataTypeTok{verboseIter=}\OtherTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+El argumento \textbf{method} de la función \textbf{trainControl} hace
+posible utilizar distintos tipos de validación. En este caso es
+\emph{repeatecv} (para entrenamiento repetido/división de test). Además
+de fijar el tipo de validación, la función \textbf{trainControl} permite
+fijar multitud de argumentos. A continuación, describimos los que se han
+fijado:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{number}. El número de hojas (\emph{5}).
+\item
+  \textbf{index}. Lista con los elementos para cada iteración
+  (\textbf{cv.folds}). Cada elemento de la lista es un vector de números
+  enteros correspondientes a las filas utilizadas para el entrenamiento
+  en esa iteración.
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{str}\NormalTok{(cv.folds)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## List of 15
+##  $ Fold1.Rep1: int [1:6090] 1 2 3 4 5 6 7 8 9 11 ...
+##  $ Fold2.Rep1: int [1:6090] 1 2 3 4 5 7 8 9 10 11 ...
+##  $ Fold3.Rep1: int [1:6090] 1 2 3 5 6 7 8 9 10 11 ...
+##  $ Fold4.Rep1: int [1:6091] 2 3 4 6 10 12 13 14 15 16 ...
+##  $ Fold5.Rep1: int [1:6091] 1 4 5 6 7 8 9 10 11 12 ...
+##  $ Fold1.Rep2: int [1:6090] 1 4 5 6 8 9 10 11 12 13 ...
+##  $ Fold2.Rep2: int [1:6090] 2 3 4 5 6 7 8 9 11 12 ...
+##  $ Fold3.Rep2: int [1:6090] 1 2 3 5 6 7 10 11 12 14 ...
+##  $ Fold4.Rep2: int [1:6091] 1 2 3 4 5 6 7 8 9 10 ...
+##  $ Fold5.Rep2: int [1:6091] 1 2 3 4 7 8 9 10 11 12 ...
+##  $ Fold1.Rep3: int [1:6091] 1 2 3 6 7 8 9 10 11 12 ...
+##  $ Fold2.Rep3: int [1:6090] 1 2 4 5 6 7 9 10 11 13 ...
+##  $ Fold3.Rep3: int [1:6090] 1 3 4 5 8 9 10 11 12 13 ...
+##  $ Fold4.Rep3: int [1:6090] 2 3 4 5 6 7 8 12 13 14 ...
+##  $ Fold5.Rep3: int [1:6091] 1 2 3 4 5 6 7 8 9 10 ...
+\end{verbatim}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{allowParallel}. Habilita la computación paralela
+  (\emph{TRUE}). \textbf{caret} permite paralelizar el proceso para que
+  sea más rápido.
+\item
+  \textbf{returnResamp}. Indica la cantidad de métricas de evaluación
+  que se deben guardar. Solo los valores finales (\emph{``final''}).
+\item
+  \textbf{verboseIter}. Para imprimir o no el registro de entrenamiento.
+  No se imprime (\emph{FALSE}).
+\end{itemize}
+
+Muchos modelos contienen parámetros que no pueden aprenderse a partir de
+los datos de entrenamiento y, por lo tanto, deben de ser establecidos
+por el analista. A estos se les conoce como \emph{hiperparámetros},
+argumento \textbf{tunning} de \textbf{caret}. Con la función
+\textbf{expand.grid} definiremos los valores de los argumentos a tunear.
+
+Los resultados de un modelo pueden depender en gran medida del valor que
+tomen sus \emph{hiperparámetros}, sin embargo, no se puede conocer de
+antemano cuáles son los adecuados. La forma más común de encontrar los
+valores óptimos es probando diferentes posibilidades. Para ello se
+utiliza el argumento de \textbf{caret}: \textbf{tuneGrid} en la función
+\textbf{train}. Si no se tiene ninguna idea de qué valores de
+\emph{hiperparámetros} pueden ser los adecuados, lo mejor es utilizar la
+aleatoriedad. \textbf{caret} también incorpora esta opción mediante el
+argumento \textbf{tuneLength}.
+
+En el entrenamiento de los modelos realizaremos pruebas tanto con
+\textbf{tuneGrid} y \textbf{tuneLength}. Más con \textbf{tuneGrid}, ya
+que, de esta forma, se evita que se generen automáticamente valores que
+no tienen sentido o que disparan el tiempo de computación necesario.
+Además, con \emph{target \textasciitilde{}.} denotamos la variable que
+se quiere predecir e indicando que el resto de las variables del
+conjunto de datos de \textbf{train} son predictoras.
+
+A lo largo del proceso posterior es donde más destacarán las
+funcionalidades ofrecidas por \textbf{caret}, permitiendo emplear la
+misma sintaxis para ajustar, optimizar, evaluar y predecir un amplio
+abanico de modelos variando únicamente el nombre del algoritmo. Aunque
+\textbf{caret} permite todo esto con apenas unas pocas líneas de código
+son muchos los argumentos que pueden ser adaptados, cada uno con
+múltiples posibilidades. Con el objetivo de exponer mejor cada una de
+las opciones, en lugar de crear directamente un modelo final, se
+muestran ejemplos de menor a mayor complejidad de la lista mostrada
+anteriormente:
+\url{http://topepo.github.io/caret/available-models.html}.
+
+\hypertarget{regresiuxf3n-loguxedstica}{%
+\subsubsection{Regresión Logística}\label{regresiuxf3n-loguxedstica}}
+
+Información detallada sobre regresión logística en
+\href{https://www.cienciadedatos.net/documentos/27_regresion_logistica_simple_y_multiple}{Regresión
+logística simple y múltiple}.
+
+\textbf{caret} emplea el método \textbf{glmnet}. Este algoritmo no tiene
+ningún \emph{hiperparámetro}, por lo tanto, usamos por ejemplo
+\textbf{tuneLength} igual a 15.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cl <-}\StringTok{ }\KeywordTok{makePSOCKcluster}\NormalTok{(}\DecValTok{6}\NormalTok{, }\DataTypeTok{setup_strategy=}\StringTok{"sequential"}\NormalTok{)}
+\KeywordTok{registerDoParallel}\NormalTok{(cl)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \KeywordTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
-\NormalTok{cv.folds <-}\StringTok{ }\KeywordTok{createMultiFolds}\NormalTok{(train.df}\OperatorTok{$}\NormalTok{target, }\DataTypeTok{k=}\DecValTok{5}\NormalTok{, }\DataTypeTok{times=}\DecValTok{3}\NormalTok{)}
-\NormalTok{cv.cntrl <-}\StringTok{ }\KeywordTok{trainControl}\NormalTok{(}\DataTypeTok{method =} \StringTok{"repeatecv"}\NormalTok{, }\DataTypeTok{number =} \DecValTok{5}\NormalTok{,}
-                         \DataTypeTok{index =}\NormalTok{ cv.folds, }\DataTypeTok{allowParallel =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{returnResamp=}\StringTok{"final"}\NormalTok{,}
-                         \DataTypeTok{verboseIter=}\OtherTok{FALSE}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\hypertarget{regresiuxf3n-loguxedstica}{%
-\subsubsection{Regresión Logística}\label{regresiuxf3n-loguxedstica}}
-
-\begin{Shaded}
-\begin{Highlighting}[]
 \NormalTok{model_glmnet <-}\StringTok{ }\KeywordTok{train}\NormalTok{(target }\OperatorTok{~}\StringTok{ }\NormalTok{., }\DataTypeTok{data=}\NormalTok{train.df,}
                       \DataTypeTok{method=}\StringTok{"glmnet"}\NormalTok{,}
                       \DataTypeTok{metric=}\StringTok{"Accuracy"}\NormalTok{,}
@@ -1012,31 +1250,64 @@ Primero tratamos los casos incompletos.
 ## Summary of sample sizes: 6090, 6090, 6090, 6091, 6091, 6090, ... 
 ## Resampling results across tuning parameters:
 ## 
-##   alpha  lambda       Accuracy   Kappa    
-##   0.10   0.000214028  0.7790176  0.5386466
-##   0.10   0.002140280  0.7788427  0.5378099
-##   0.10   0.021402805  0.7766971  0.5302009
-##   0.55   0.000214028  0.7791052  0.5387800
-##   0.55   0.002140280  0.7787990  0.5370526
-##   0.55   0.021402805  0.7567752  0.4811028
-##   1.00   0.000214028  0.7790177  0.5385999
-##   1.00   0.002140280  0.7778359  0.5343675
-##   1.00   0.021402805  0.7291026  0.4146283
+##   alpha  lambda        Accuracy   Kappa    
+##   0.10   0.0001850059  0.7648316  0.5085381
+##   0.10   0.0018500586  0.7650941  0.5087571
+##   0.10   0.0185005864  0.7635180  0.5023833
+##   0.55   0.0001850059  0.7648316  0.5084863
+##   0.55   0.0018500586  0.7650943  0.5081484
+##   0.55   0.0185005864  0.7487187  0.4642323
+##   1.00   0.0001850059  0.7649630  0.5087688
+##   1.00   0.0018500586  0.7639123  0.5051295
+##   1.00   0.0185005864  0.7211778  0.3970376
 ## 
 ## Accuracy was used to select the optimal model using the largest value.
-## The final values used for the model were alpha = 0.55 and lambda = 0.000214028.
+## The final values used for the model were alpha = 0.55 and lambda = 0.001850059.
 \end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{stopCluster}\NormalTok{(cl)}
+\end{Highlighting}
+\end{Shaded}
+
+El \emph{Accuracy} promedio estimado mediante validación cruzada
+repetida es de 0.7648316, el modelo predice correctamente un 76.5\% de
+las veces.
 
 \hypertarget{random-forest}{%
 \subsubsection{Random Forest}\label{random-forest}}
 
+Información detallada sobre Random Forest en
+\href{https://www.cienciadedatos.net/documentos/33_arboles_de_prediccion_bagging_random_forest_boosting}{Árboles
+de predicción: bagging, random forest, boosting y C5.0}.
+
+\textbf{caret} emplea el método **rf\emph{. Este algoritmo tiene un
+}hiperparámetro*:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{mtry}. Número de valores seleccionados aleatoriamente en cada
+  árbol. En este caso hemos escogido: 3, 4, 5 y 7.
+\end{itemize}
+
 \begin{Shaded}
 \begin{Highlighting}[]
+\NormalTok{cl <-}\StringTok{ }\KeywordTok{makePSOCKcluster}\NormalTok{(}\DecValTok{6}\NormalTok{, }\DataTypeTok{setup_strategy=}\StringTok{"sequential"}\NormalTok{)}
+\KeywordTok{registerDoParallel}\NormalTok{(cl)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
+\NormalTok{cv.grid <-}\StringTok{ }\KeywordTok{expand.grid}\NormalTok{(}\DataTypeTok{mtry=}\KeywordTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{7}\NormalTok{))}
 \NormalTok{model_rf <-}\StringTok{ }\KeywordTok{train}\NormalTok{(target }\OperatorTok{~}\StringTok{ }\NormalTok{., }\DataTypeTok{data=}\NormalTok{train.df,}
                       \DataTypeTok{method=}\StringTok{"rf"}\NormalTok{,}
                       \DataTypeTok{metric=}\StringTok{"Accuracy"}\NormalTok{,}
                       \DataTypeTok{trControl=}\NormalTok{cv.cntrl,}
-                      \DataTypeTok{tuneGrid=}\KeywordTok{expand.grid}\NormalTok{(}\DataTypeTok{mtry=}\KeywordTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{7}\NormalTok{)))}
+                      \DataTypeTok{tuneGrid=}\NormalTok{cv.grid)}
 \NormalTok{model_rf}
 \end{Highlighting}
 \end{Shaded}
@@ -1054,24 +1325,101 @@ Primero tratamos los casos incompletos.
 ## Resampling results across tuning parameters:
 ## 
 ##   mtry  Accuracy   Kappa    
-##   3     0.7738498  0.5308840
-##   4     0.7736742  0.5306054
-##   5     0.7741565  0.5320462
-##   7     0.7750317  0.5338612
+##   3     0.7618968  0.5068252
+##   4     0.7623348  0.5078468
+##   5     0.7608022  0.5051518
+##   7     0.7587883  0.5010024
 ## 
 ## Accuracy was used to select the optimal model using the largest value.
-## The final value used for the model was mtry = 7.
+## The final value used for the model was mtry = 4.
 \end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{stopCluster}\NormalTok{(cl)}
+\end{Highlighting}
+\end{Shaded}
+
+Empleando un modelo Random Forest con mtry = 5 se consigue un
+\emph{Accuracy} promedio de validación igual a 0.7632101, el modelo
+predice correctamente un 76.3\% de las veces.
 
 \hypertarget{gradient-boosting}{%
 \subsubsection{Gradient Boosting}\label{gradient-boosting}}
 
+Información detallada sobre boosting
+\href{https://www.cienciadedatos.net/documentos/33_arboles_de_prediccion_bagging_random_forest_boosting}{Árboles
+de predicción: bagging, random forest, boosting y C5.0}.
+
+El método \textbf{gbm} de \textbf{caret} emplea el paquete gbm. Este
+algoritmo tiene 4 \emph{hiperparámetros}:
+
+\begin{itemize}
+\item
+  \textbf{n.trees}. Número de iteraciones del algoritmo de boosting.
+  Cuanto mayor es este valor, más se reduce el error de entrenamiento.
+\item
+  \textbf{interaction.depth}. El número total de divisiones que tiene el
+  árbol. Emplear árboles con ente 1 y 6 nodos suele dar buenos
+  resultados.
+\item
+  \textbf{shrinkage}. Controla la complejidad que tiene el modelo. Es
+  preferible mejorar un modelo mediante muchos pasos pequeños que
+  mediante unos pocos grandes. Por esta razón, se emplea un valor de
+  \textbf{shrinkage} tan pequeño como sea posible, teniendo en cuenta
+  que, cuanto menor sea, mayor el número de iteraciones necesarias. Por
+  defecto es de 0.001.
+\item
+  \textbf{n.minobsinnode}. Número mínimo de observaciones que debe tener
+  cada nodo del árbol para poder ser dividido. Al igual que
+  \textbf{interaction.depth}, permite controlar la complejidad que tiene
+  el modelo.
+\end{itemize}
+
+Además de los hiperparámetros que permite controlar \textbf{caret},
+tiene otros dos más que hay que tener en cuenta:
+
+\begin{itemize}
+\item
+  \textbf{distribution}. Determina la función de coste (\emph{loss
+  function}). Algunas de las más utilizadas son: \emph{gaussian}
+  (squared loss) para regresión, \emph{bernoulli} para clasificaciones
+  binarias, multinomial para clasificaciones con más de dos clases y
+  \emph{adaboost} para clasificaciones binarias y que emplea la función
+  exponencial del algoritmo original
+  \href{https://en.wikipedia.org/wiki/AdaBoost}{AdaBoost}.
+\item
+  \textbf{bag.fraction} (subsampling fraction): fracción de
+  observaciones del conjunto de train seleccionadas de forma aleatoria.
+  Si su valor es de 1, se emplea el algoritmo de \emph{Gradient
+  Boosting}, si es menor que 1, se emplea \emph{Stochastic Gradient
+  Boosting}. Por defecto su valor es de 0.5.
+\end{itemize}
+
+En este caso solo añadimos el argumento \textbf{distribution} y como el
+ejercicio se basa en un problema de clasificación binaria usamos
+\emph{adaboost}.
+
 \begin{Shaded}
 \begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(gbm)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cl <-}\StringTok{ }\KeywordTok{makePSOCKcluster}\NormalTok{(}\DecValTok{6}\NormalTok{, }\DataTypeTok{setup_strategy=}\StringTok{"sequential"}\NormalTok{)}
+\KeywordTok{registerDoParallel}\NormalTok{(cl)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
 \NormalTok{cv.grid <-}\StringTok{ }\KeywordTok{expand.grid}\NormalTok{(}\DataTypeTok{interaction.depth=}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{),}
                        \DataTypeTok{n.trees=}\DecValTok{100}\NormalTok{,}
                        \DataTypeTok{shrinkage=}\KeywordTok{c}\NormalTok{(}\FloatTok{0.001}\NormalTok{, }\FloatTok{0.01}\NormalTok{, }\FloatTok{0.1}\NormalTok{),}
-                       \DataTypeTok{n.minobsinnode=}\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{25}\NormalTok{))}
+                       \DataTypeTok{n.minobsinnode=}\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{15}\NormalTok{))}
 
 \NormalTok{model_gbm <-}\StringTok{ }\KeywordTok{train}\NormalTok{(target }\OperatorTok{~}\StringTok{ }\NormalTok{., }\DataTypeTok{data=}\NormalTok{train.df,}
                   \DataTypeTok{method=}\StringTok{"gbm"}\NormalTok{,}
@@ -1099,71 +1447,67 @@ Primero tratamos los casos incompletos.
 ##   shrinkage  interaction.depth  n.minobsinnode  Accuracy   Kappa    
 ##   0.001      1                   2              0.5703402  0.0000000
 ##   0.001      1                   5              0.5703402  0.0000000
-##   0.001      1                  25              0.5703402  0.0000000
+##   0.001      1                  15              0.5703402  0.0000000
 ##   0.001      2                   2              0.5703402  0.0000000
 ##   0.001      2                   5              0.5703402  0.0000000
-##   0.001      2                  25              0.5703402  0.0000000
-##   0.010      1                   2              0.6862809  0.3167993
-##   0.010      1                   5              0.6856678  0.3152431
-##   0.010      1                  25              0.6864123  0.3171660
-##   0.010      2                   2              0.7105815  0.3835634
-##   0.010      2                   5              0.7115881  0.3857311
-##   0.010      2                  25              0.7118941  0.3865345
-##   0.100      1                   2              0.7428076  0.4629660
-##   0.100      1                   5              0.7437263  0.4649426
-##   0.100      1                  25              0.7432891  0.4641821
-##   0.100      2                   2              0.7558553  0.4936147
-##   0.100      2                   5              0.7560303  0.4941869
-##   0.100      2                  25              0.7574753  0.4969251
+##   0.001      2                  15              0.5703402  0.0000000
+##   0.010      1                   2              0.6553692  0.2397333
+##   0.010      1                   5              0.6548878  0.2383772
+##   0.010      1                  15              0.6544059  0.2374328
+##   0.010      2                   2              0.6946872  0.3400736
+##   0.010      2                   5              0.6931547  0.3366365
+##   0.010      2                  15              0.6932867  0.3367455
+##   0.100      1                   2              0.7244616  0.4220042
+##   0.100      1                   5              0.7230157  0.4197413
+##   0.100      1                  15              0.7235418  0.4199881
+##   0.100      2                   2              0.7446022  0.4675017
+##   0.100      2                   5              0.7438146  0.4658317
+##   0.100      2                  15              0.7421065  0.4621889
 ## 
 ## Tuning parameter 'n.trees' was held constant at a value of 100
 ## Accuracy was used to select the optimal model using the largest value.
 ## The final values used for the model were n.trees = 100, interaction.depth =
-##  2, shrinkage = 0.1 and n.minobsinnode = 25.
+##  2, shrinkage = 0.1 and n.minobsinnode = 2.
 \end{verbatim}
-
-\hypertarget{k-nearest-neighbor-knn}{%
-\subsubsection{K-Nearest Neighbor (kNN)}\label{k-nearest-neighbor-knn}}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{cv.grid <-}\StringTok{ }\KeywordTok{expand.grid}\NormalTok{(}\DataTypeTok{k=}\DecValTok{1}\OperatorTok{:}\DecValTok{3}\NormalTok{)}
-
-\NormalTok{model_knn <-}\StringTok{ }\KeywordTok{train}\NormalTok{(target }\OperatorTok{~}\StringTok{ }\NormalTok{., }\DataTypeTok{data=}\NormalTok{train.df,}
-                   \DataTypeTok{method=}\StringTok{"knn"}\NormalTok{,}
-                   \DataTypeTok{metric=}\StringTok{"Accuracy"}\NormalTok{,}
-                   \DataTypeTok{trControl=}\NormalTok{cv.cntrl,}
-                   \DataTypeTok{tuneGrid=}\NormalTok{cv.grid)}
-\NormalTok{model_knn}
+\KeywordTok{stopCluster}\NormalTok{(cl)}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{verbatim}
-## k-Nearest Neighbors 
-## 
-## 7613 samples
-##  150 predictor
-##    2 classes: 'No', 'Yes' 
-## 
-## No pre-processing
-## Resampling: 
-## Summary of sample sizes: 6090, 6090, 6090, 6091, 6091, 6090, ... 
-## Resampling results across tuning parameters:
-## 
-##   k  Accuracy   Kappa    
-##   1  0.7218769  0.4254800
-##   2  0.7146533  0.4092179
-##   3  0.7417117  0.4585926
-## 
-## Accuracy was used to select the optimal model using the largest value.
-## The final value used for the model was k = 3.
-\end{verbatim}
+Empleando un modelo Boosting con n.trees = 100, interaction.depth = 2,
+shrinkage = 0.1 and n.minobsinnode = 2 se consigue un \emph{Accuracy}
+promedio de validación igual a 0.7444716, el modelo predice
+correctamente un 74.4\% de las veces.
 
 \hypertarget{svm}{%
 \subsubsection{SVM}\label{svm}}
 
+Información detallada sobre SVM en
+\href{https://www.cienciadedatos.net/documentos/34_maquinas_de_vector_soporte_support_vector_machines}{Máquinas
+de Vector Soporte (Support Vector Machines, SVMs)}.
+
+\textbf{caret} emplea el método \textbf{svmRadial}. Este algoritmo tiene
+2 hiperparámetros:
+
+\begin{itemize}
+\item
+  \textbf{sigma}. Coeficiente del kernel radial.
+\item
+  \textbf{C}. Penalización por violaciones del margen del hiperplano.
+\end{itemize}
+
 \begin{Shaded}
 \begin{Highlighting}[]
+\NormalTok{cl <-}\StringTok{ }\KeywordTok{makePSOCKcluster}\NormalTok{(}\DecValTok{6}\NormalTok{, }\DataTypeTok{setup_strategy=}\StringTok{"sequential"}\NormalTok{)}
+\KeywordTok{registerDoParallel}\NormalTok{(cl)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
 \NormalTok{cv.grid <-}\StringTok{ }\KeywordTok{expand.grid}\NormalTok{(}\DataTypeTok{sigma=}\KeywordTok{c}\NormalTok{(}\FloatTok{0.001}\NormalTok{, }\FloatTok{0.01}\NormalTok{, }\FloatTok{0.1}\NormalTok{, }\FloatTok{0.5}\NormalTok{, }\DecValTok{1}\NormalTok{),}
                        \DataTypeTok{C=}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{20}\NormalTok{, }\DecValTok{50}\NormalTok{, }\DecValTok{100}\NormalTok{))}
 
@@ -1171,7 +1515,7 @@ Primero tratamos los casos incompletos.
                       \DataTypeTok{method=}\StringTok{"svmRadial"}\NormalTok{,}
                       \DataTypeTok{metric=}\StringTok{"Accuracy"}\NormalTok{,}
                       \DataTypeTok{trControl=}\NormalTok{cv.cntrl,}
-                      \DataTypeTok{tuneLenght=}\DecValTok{15}\NormalTok{)}
+                      \DataTypeTok{tuneLenght=}\NormalTok{cv.grid)}
 \NormalTok{model_svm}
 \end{Highlighting}
 \end{Shaded}
@@ -1189,30 +1533,61 @@ Primero tratamos los casos incompletos.
 ## Resampling results across tuning parameters:
 ## 
 ##   C     Accuracy   Kappa    
-##   0.25  0.7703040  0.5199771
-##   0.50  0.7760834  0.5314795
-##   1.00  0.7802865  0.5401797
+##   0.25  0.7615472  0.5008012
+##   0.50  0.7678960  0.5139026
+##   1.00  0.7701726  0.5185027
 ## 
-## Tuning parameter 'sigma' was held constant at a value of 0.00820416
+## Tuning parameter 'sigma' was held constant at a value of 0.006839611
 ## Accuracy was used to select the optimal model using the largest value.
-## The final values used for the model were sigma = 0.00820416 and C = 1.
+## The final values used for the model were sigma = 0.006839611 and C = 1.
 \end{verbatim}
-
-\hypertarget{comparaciuxf3n-de-modelos}{%
-\subsection{Comparación de modelos}\label{comparaciuxf3n-de-modelos}}
-
-\hypertarget{muxe9trica-de-validaciuxf3n}{%
-\subsubsection{Métrica de
-validación}\label{muxe9trica-de-validaciuxf3n}}
-
-\hypertarget{evaluaciuxf3n-de-modelos-mediante-resampling}{%
-\subsubsection{Evaluación de modelos mediante
-resampling}\label{evaluaciuxf3n-de-modelos-mediante-resampling}}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{models <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{KNN=}\NormalTok{model_knn, }\DataTypeTok{logistic=}\NormalTok{model_glmnet,}
-               \DataTypeTok{RF=}\NormalTok{model_rf, }\DataTypeTok{boosting=}\NormalTok{model_gbm, }\DataTypeTok{SVMRadial=}\NormalTok{model_svm)}
+\KeywordTok{stopCluster}\NormalTok{(cl)}
+\end{Highlighting}
+\end{Shaded}
+
+Empleando un modelo SVM Radial con sigma = 0.006839608 y C = 1, se
+consigue un \emph{Accuracy} promedio de validación igual a 0.7701726, el
+modelo predice correctamente un 77\% de las veces.
+
+\hypertarget{evaluaciuxf3n-de-modelos-mediante-resampling}{%
+\subsection{Evaluación de modelos mediante
+resampling}\label{evaluaciuxf3n-de-modelos-mediante-resampling}}
+
+Una vez que se han entrenado los distintos modelos, se tiene que
+identificar cuál de ellos consigue mejores resultados para el problema
+en cuestión. Con los datos disponibles, existen dos formas de comparar
+los modelos. Si bien las dos no tienen por qué dar los mismos
+resultados, son complementarias a la hora de tomar una decisión final.
+Las dos formas de comparar y evaluar los distintos modelos entrenados
+son: usando las métricas de evaluación obtenidas y/o según el error de
+test empleando la función \textbf{extractPrediction} de \textbf{caret}.
+
+La forma que usaremos se basará en las métricas obtenidas. Estas
+mediante la validación cruzada son estimaciones de la capacidad que
+tienen los modelos al predecir nuevas observaciones. Como toda
+estimación, tiene asociada un promedio. Para poder determinar si un
+método es superior a otro, no es suficiente con comparar los mínimos (o
+máximos dependiendo de la métrica) que ha conseguido cada uno, sino que
+hay que tener en cuenta sus promedios para determinar si existen
+evidencias suficientes de superioridad.
+
+La función \textbf{resamples} permite extraer, dado los modelos creados
+con \textbf{train}, las métricas obtenidas para cada repetición del
+proceso de validación. Es importante tener en cuenta que esta función
+recupera todos los resultados, por lo que, si no se especifica en el
+control de entrenamiento \emph{returnResamp = ``final''}, se devuelven
+los valores para todos los \emph{hiperparámetros}, no solo los del
+modelo final.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{models <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{logistic=}\NormalTok{model_glmnet,}
+               \DataTypeTok{RF=}\NormalTok{model_rf, }
+               \DataTypeTok{boosting=}\NormalTok{model_gbm, }
+               \DataTypeTok{SVMRadial=}\NormalTok{model_svm)}
 
 \NormalTok{resamps <-}\StringTok{ }\KeywordTok{resamples}\NormalTok{(models)}
 \KeywordTok{summary}\NormalTok{(resamps)}
@@ -1224,28 +1599,261 @@ resampling}\label{evaluaciuxf3n-de-modelos-mediante-resampling}}
 ## Call:
 ## summary.resamples(object = resamps)
 ## 
-## Models: KNN, logistic, RF, boosting, SVMRadial 
+## Models: logistic, RF, boosting, SVMRadial 
 ## Number of resamples: 15 
 ## 
 ## Accuracy 
 ##                Min.   1st Qu.    Median      Mean   3rd Qu.      Max. NA's
-## KNN       0.7220762 0.7327643 0.7385020 0.7417117 0.7490966 0.7715036    0
-## logistic  0.7491793 0.7749671 0.7792378 0.7791052 0.7894911 0.7971110    0
-## RF        0.7582129 0.7674868 0.7713535 0.7750317 0.7829941 0.7938280    0
-## boosting  0.7275115 0.7500813 0.7614980 0.7574753 0.7645321 0.7780696    0
-## SVMRadial 0.7655942 0.7724137 0.7793828 0.7802865 0.7833224 0.8030204    0
+## logistic  0.7424442 0.7592784 0.7667543 0.7650943 0.7728168 0.7820092    0
+## RF        0.7399869 0.7545992 0.7608410 0.7623348 0.7669074 0.7944846    0
+## boosting  0.7170059 0.7398160 0.7439265 0.7446022 0.7488510 0.7754432    0
+## SVMRadial 0.7491793 0.7641261 0.7667543 0.7701726 0.7731451 0.7990808    0
 ## 
 ## Kappa 
 ##                Min.   1st Qu.    Median      Mean   3rd Qu.      Max. NA's
-## KNN       0.4154222 0.4389489 0.4549650 0.4585926 0.4742860 0.5255358    0
-## logistic  0.4772822 0.5281988 0.5391470 0.5387800 0.5599009 0.5797503    0
-## RF        0.4989282 0.5169593 0.5258828 0.5338612 0.5492779 0.5765744    0
-## boosting  0.4361559 0.4797778 0.5024020 0.4969251 0.5127961 0.5398718    0
-## SVMRadial 0.5098819 0.5217476 0.5350176 0.5401797 0.5474368 0.5917576    0
+## logistic  0.4573146 0.4949223 0.5129929 0.5081484 0.5257726 0.5456174    0
+## RF        0.4637190 0.4919726 0.5020328 0.5078468 0.5179187 0.5780024    0
+## boosting  0.4089761 0.4589374 0.4640576 0.4675017 0.4759897 0.5330039    0
+## SVMRadial 0.4748475 0.5041853 0.5092062 0.5185027 0.5261318 0.5834342    0
 \end{verbatim}
 
-\hypertarget{predicciuxf3n-y-resultados}{%
-\subsection{Predicción y resultados}\label{predicciuxf3n-y-resultados}}
+Observamos que junto con la estimación del porcentaje de bien
+clasificados (\textbf{Accuracy}), se nos muestra el valor de la métrica
+\textbf{Kappa}, el cual es una medida que compara el \textbf{Accuracy}
+observado respecto al \textbf{Accuracy} esperado (de una predicción al
+azar). Esto es, cuanto mejor estima un clasificador respecto a otro que
+predice al azar. Un ameno ejemplo para entenderla mejor se encuentra en
+este
+\href{https://stats.stackexchange.com/questions/82162/cohens-kappa-in-plain-english}{enlace}.
+
+\emph{Kappa o Cohen's Kappa es el valor de Accuracy normalizado respecto
+del porcentaje de acierto esperado por azar. A diferencia de Accuracy,
+cuyo rango de valores puede ser {[}0, 1{]}, el de kappa es {[}-1, 1{]}.
+En problemas con clases desbalanceadas, donde el grupo mayoritario
+supera por mucho a los otros, Kappa es más útil porque evita caer en la
+ilusión de creer que un modelo es bueno cuando realmente solo supera por
+poco lo esperado por azar. }
+
+Todos los modelos tienen un promedio de acierto en la predicción
+superior al nivel basal, Accuracy** superior a 0.57. El modelo
+\emph{SVMRadial} consigue el \textbf{Accuracy} promedio más alto,
+seguido muy de cerca por el modelo \emph{logistic}. Para determinar si
+las diferencias entre ellos son significativas, se recurre a un
+\emph{test estadístico}. Al compartir las ``folds''-hojas, un \emph{test
+estadístico} calculará la significancia de las diferencias entre los
+promedios de error de ambos modelos. Se trata de chequear las
+diferencias, para cada métrica, comparando entre los pares de
+clasificadores y de interpretar, mediante el \emph{p-value} asociado, si
+estas diferencias son estadísticamente significativas o no,
+\url{https://en.wikipedia.org/wiki/Statistical_significance}. Usamos un
+umbral de \emph{0.05}.
+
+El \emph{test estadístico} que aplicamos es
+\href{https://www.cienciadedatos.net/documentos/18_prueba_de_los_rangos_con_signo_de_wilcoxon}{\emph{Wilcoxon
+signed-rank test}}, con correcciones por comparaciones múltiples. Este
+test usa la función \textbf{pairwise.wilcox.test} que nos da mucha
+flexibilidad en cuanto a las comparaciones múltiples.
+
+\hypertarget{wilcoxon-signed-rank-test}{%
+\subsubsection{Wilcoxon signed-rank
+test}\label{wilcoxon-signed-rank-test}}
+
+Primeo se trasforma el dataframe devuelto por \textbf{resamples} para
+separar el nombre del modelo y las métricas en columnas distintas. Se
+usan las funciones \textbf{gather} (junta las columnas en pares
+clave-valor) y \textbf{separate} (separa una columna de caracteres en
+varias columnas). Para una mejor visualización también se usan las
+funciones \textbf{group\_by}. para agrupar los resultados
+modelo-métrica, \textbf{summarise}, \textbf{spread}, para distribuir los
+pares clave-valor en varias columnas, y \textbf{arrange} para ordenar
+los resultados de forma descendente. Todas estas funciones se pueden
+encontrar en los paquetes \textbf{tidyr} y \textbf{dplyr} del paquete
+\textbf{tidyverse}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{metricas_resamples <-}\StringTok{ }\NormalTok{resamps}\OperatorTok{$}\NormalTok{values }\OperatorTok{%>%}
+\StringTok{                         }\KeywordTok{gather}\NormalTok{(}\DataTypeTok{key =} \StringTok{"modelo"}\NormalTok{, }\DataTypeTok{value =} \StringTok{"valor"}\NormalTok{, }\OperatorTok{-}\NormalTok{Resample) }\OperatorTok{%>%}
+\StringTok{                         }\KeywordTok{separate}\NormalTok{(}\DataTypeTok{col =} \StringTok{"modelo"}\NormalTok{, }\DataTypeTok{into =} \KeywordTok{c}\NormalTok{(}\StringTok{"modelo"}\NormalTok{, }\StringTok{"metrica"}\NormalTok{),}
+                                  \DataTypeTok{sep =} \StringTok{"~"}\NormalTok{, }\DataTypeTok{remove =} \OtherTok{TRUE}\NormalTok{)}
+\NormalTok{metricas_resamples }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{group_by}\NormalTok{(modelo, metrica) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{summarise}\NormalTok{(}\DataTypeTok{media =} \KeywordTok{mean}\NormalTok{(valor)) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{spread}\NormalTok{(}\DataTypeTok{key =}\NormalTok{ metrica, }\DataTypeTok{value =}\NormalTok{ media) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{arrange}\NormalTok{(}\KeywordTok{desc}\NormalTok{(Accuracy))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `summarise()` regrouping output by 'modelo' (override with `.groups` argument)
+\end{verbatim}
+
+\begin{verbatim}
+## # A tibble: 4 x 3
+## # Groups:   modelo [4]
+##   modelo    Accuracy Kappa
+##   <chr>        <dbl> <dbl>
+## 1 SVMRadial    0.770 0.519
+## 2 logistic     0.765 0.508
+## 3 RF           0.762 0.508
+## 4 boosting     0.745 0.468
+\end{verbatim}
+
+Comparaciones múltiples con el test suma de rangos de \emph{Wilcoxon}
+usando la función \textbf{pairwise.wilcox.test}. Este test es una
+alternativa al \emph{t-test} de observaciones dependientes cuando las
+observaciones no siguen una distribución normal. LA función contiene los
+siguientes argumentos:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{x}. Vector que contiene todos los valores de \textbf{Accuracy}
+  de los modelos entrenados (\emph{metricas\_accuracy\$valor}).
+\item
+  \textbf{g}. El vector \emph{metricas\_accuracy\$valor} agrupado por
+  modelo.
+\item
+  \textbf{paired}. Indicador de si el test es paredado o no. En este
+  caso sí que lo es.
+\item
+  \textbf{p.adjust.method}. Método para ajustar los \emph{p-values}. En
+  este se ajusta con el método de
+  \href{https://en.wikipedia.org/wiki/Holm\%E2\%80\%93Bonferroni_method}{\emph{Holm's}},
+  que es de los más utilizados para las comparaciones múltiples.
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{metricas_accuracy <-}\StringTok{ }\NormalTok{metricas_resamples }\OperatorTok{%>%}\StringTok{ }\KeywordTok{filter}\NormalTok{(metrica }\OperatorTok{==}\StringTok{ "Accuracy"}\NormalTok{)}
+\NormalTok{comparaciones  <-}\StringTok{ }\KeywordTok{pairwise.wilcox.test}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ metricas_accuracy}\OperatorTok{$}\NormalTok{valor, }
+                                        \DataTypeTok{g =}\NormalTok{ metricas_accuracy}\OperatorTok{$}\NormalTok{modelo,}
+                                        \DataTypeTok{paired =} \OtherTok{TRUE}\NormalTok{,}
+                                        \DataTypeTok{p.adjust.method =} \StringTok{"holm"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Finalmente se almacenan los \emph{p-values} en forma de dataframe.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{comparaciones <-}\StringTok{ }\NormalTok{comparaciones}\OperatorTok{$}\NormalTok{p.value }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{as.data.frame}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{rownames_to_column}\NormalTok{(}\DataTypeTok{var =} \StringTok{"modeloA"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{gather}\NormalTok{(}\DataTypeTok{key =} \StringTok{"modeloB"}\NormalTok{, }\DataTypeTok{value =} \StringTok{"p_value"}\NormalTok{, }\OperatorTok{-}\NormalTok{modeloA) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{na.omit}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{arrange}\NormalTok{(modeloA) }
+
+\NormalTok{comparaciones}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##     modeloA  modeloB      p_value
+## 1  logistic boosting 0.0007324219
+## 2        RF boosting 0.0036056278
+## 3        RF logistic 0.3894042969
+## 4 SVMRadial boosting 0.0036056278
+## 5 SVMRadial logistic 0.1801641152
+## 6 SVMRadial       RF 0.0036056278
+\end{verbatim}
+
+\hypertarget{conclusiuxf3n-evaluaciuxf3n-de-modelos}{%
+\subsubsection{Conclusión evaluación de
+modelos}\label{conclusiuxf3n-evaluaciuxf3n-de-modelos}}
+
+Hemos visto que el modelo basado en \emph{SVM} es el que mejores
+resultados obtiene (acorde a la métrica \textbf{Accuracy}) en el
+conjunto de train con la validación cruzada (``repeatedcv''). Los
+modelos basados \emph{random forest} y \emph{regresión logística}
+consiguen valores un poco similares, sin embargo, acorde a los
+contrastes de hipótesis con los resultados de la validación, los modelos
+de \emph{random forest} y \emph{regresión logistica} son inferiores a
+\emph{SVM}.
+
+Concretamente en la comparación por pares entre los modelos
+\emph{SVMRadial} y \emph{logistic} existen evidencias suficientes para
+considerar que la capacidad predictiva de los modelos es distinta,
+\emph{p-value} \textgreater{} 0.05 (0.1801641152).
+
+Antes de la predicción, calcularemos el valor \textbf{F1 score}, la
+métrica que usa la competición de Kaggle escogida para nuestro
+ejercicio, porqué queremos ver si nos dará buenos resultados en la
+competición el modelo que acabamos de seleccionado (\emph{SVMRadial}).
+Para ello tendremos que predecir sobre el conjunto de train, calcular la
+matriz de confusión y calcular el valor de \textbf{F1 score}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pre_pred <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(model_svm, train.df, }\DataTypeTok{type=}\StringTok{"raw"}\NormalTok{)}
+\KeywordTok{confusionMatrix}\NormalTok{(pre_pred, train.df}\OperatorTok{$}\NormalTok{target)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction   No  Yes
+##        No  4092  963
+##        Yes  250 2308
+##                                           
+##                Accuracy : 0.8407          
+##                  95% CI : (0.8323, 0.8488)
+##     No Information Rate : 0.5703          
+##     P-Value [Acc > NIR] : < 2.2e-16       
+##                                           
+##                   Kappa : 0.6659          
+##                                           
+##  Mcnemar's Test P-Value : < 2.2e-16       
+##                                           
+##             Sensitivity : 0.9424          
+##             Specificity : 0.7056          
+##          Pos Pred Value : 0.8095          
+##          Neg Pred Value : 0.9023          
+##              Prevalence : 0.5703          
+##          Detection Rate : 0.5375          
+##    Detection Prevalence : 0.6640          
+##       Balanced Accuracy : 0.8240          
+##                                           
+##        'Positive' Class : No              
+## 
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{true_positives <-}\StringTok{ }\DecValTok{2308}
+\NormalTok{false_positives <-}\StringTok{ }\DecValTok{250}
+\NormalTok{false_negatives <-}\StringTok{ }\DecValTok{963}
+
+\NormalTok{precision <-}\StringTok{ }\NormalTok{true_positives }\OperatorTok{/}\StringTok{ }\NormalTok{(true_positives }\OperatorTok{+}\StringTok{ }\NormalTok{false_positives)}
+\NormalTok{recall <-}\StringTok{ }\NormalTok{true_positives }\OperatorTok{/}\StringTok{ }\NormalTok{(true_positives }\OperatorTok{+}\StringTok{ }\NormalTok{false_negatives)}
+
+\NormalTok{F1 <-}\StringTok{ }\DecValTok{2} \OperatorTok{*}\StringTok{ }\NormalTok{(precision }\OperatorTok{*}\StringTok{ }\NormalTok{recall) }\OperatorTok{/}\StringTok{ }\NormalTok{(precision }\OperatorTok{+}\StringTok{ }\NormalTok{recall)}
+\NormalTok{F1 <-}\StringTok{ }\KeywordTok{round}\NormalTok{(F1, }\DataTypeTok{digits =} \DecValTok{4}\NormalTok{)}
+
+\NormalTok{F1}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.7919
+\end{verbatim}
+
+Teniendo en cuenta toda esta información, para predecir la clase de
+casos futuros vamos a usar el clasificador \emph{SVMRadial} que es el
+modelo que ha dado mejores resultados durante el entrenamiento. Con este
+modelo obtenemos un \textbf{Accuracy} de 0.8407 y un valor de
+\textbf{F1\_score} no muy bueno de 0.7919 que intentaremos mejorar.
+
+\hypertarget{predicciuxf3n}{%
+\subsection{Predicción}\label{predicciuxf3n}}
+
+En la predicción se usa la función \textbf{predict} de \textbf{caret}.
+La opción elegida es \emph{raw}. Porqué con ella nos quedamos con el
+valor de la variable clase con mayor probabilidad a-posteriori y podemos
+calcular la matriz de confusión y la colección de métricas de evaluación
+asociadas.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1253,36 +1861,85 @@ resampling}\label{evaluaciuxf3n-de-modelos-mediante-resampling}}
 \end{Highlighting}
 \end{Shaded}
 
+Finalmente preparamos el archivo que subiremos a Kaggle con los
+resultados de nuestra predicción. Vemos las 10 primeras líneas.
+
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{submission <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"sample_submission.csv"}\NormalTok{)}
 \NormalTok{submission}\OperatorTok{$}\NormalTok{target <-}\StringTok{ }\KeywordTok{ifelse}\NormalTok{(pred_svm}\OperatorTok{==}\StringTok{"No"}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{)}
-\KeywordTok{head}\NormalTok{(submission)}
+\KeywordTok{write.csv}\NormalTok{(submission, }\StringTok{"submission.csv"}\NormalTok{, }\DataTypeTok{row.names=}\OtherTok{FALSE}\NormalTok{)}
+\KeywordTok{head}\NormalTok{(submission, }\DecValTok{10}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-##   id target
-## 1  0      0
-## 2  2      1
-## 3  3      1
-## 4  9      0
-## 5 11      1
-## 6 12      1
+##    id target
+## 1   0      0
+## 2   2      1
+## 3   3      1
+## 4   9      0
+## 5  11      1
+## 6  12      1
+## 7  21      0
+## 8  22      0
+## 9  27      0
+## 10 29      0
 \end{verbatim}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{write.csv}\NormalTok{(submission, }\StringTok{"submission.csv"}\NormalTok{, }\DataTypeTok{row.names=}\OtherTok{FALSE}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
+\hypertarget{resultado-en-kaggle}{%
+\subsection{Resultado en Kaggle}\label{resultado-en-kaggle}}
+
+\includegraphics[width=0.8\textwidth,height=\textheight]{submission.png}
 
 \hypertarget{conclusiones}{%
 \subsection{Conclusiones}\label{conclusiones}}
 
-\hypertarget{bibliografuxeda}{%
-\subsection{Bibliografía}\label{bibliografuxeda}}
+En este documento se revisa cómo importar y preparar documentos de texto
+para realizar distintas operaciones de mineria de textos con ellos,
+tales como obtener palabras frecuentes, asociaciones de palabras y
+análisis de sentimientos.
 
-\url{https://www.cienciadedatos.net/documentos/41_machine_learning_con_r_y_caret}
+Si comparamos nuestro resultado con los de los otros usuarios de la
+compatición de Kaggle, vemos que el modelo creado no es muy bueno. La
+predicción a sido peor de la esperada. Aunque no era la finalidad de
+este ejercicio, esto nos demuestra que el ejercicio se podría mejorar en
+algunos expectos.
+
+El problema más importante para la realización de este ejercicio ha sido
+el coste computacional. Llegado el punto en que la ejecución de todo el
+flujo tardaba unas cuantas horas en finalizar, se pensó en utilizar la
+computación paralela. Fue una buena idea, se redujo drásticamente el
+coste computacional y además aprendí a hacerlo en \textbf{R}.
+
+Personalmente escogí esta competición ya que nunca habia combinado la
+clasificación supervisada con Procesamiento del Lenguaje Natural (PLN).
+El Procesamiento del Lenguaje Natural dentro de la inteligencia
+artificial es un campo que encuentro muy interesante.
+
+Durante la asignatura de Procesamiento del Lenguaje Natural del Máster
+no se realiza ninguna pràctica de programación, y me apreció una buena
+oportunidad de aprender como aplicar los conocimientos de adquiridos del
+Procesamiento del Lenguaje Natural con los conocimientos adquiridos
+durante de esta asignatura.
+
+Por supuesto la minería de textos es un área de análisis extensa. Las
+siguientes referencias han sido de gran ayuda para realizar este
+documento y amplían lo aquí presentado.
+
+\hypertarget{referencias}{%
+\subsection{Referencias}\label{referencias}}
+
+\begin{itemize}
+\item
+  Machine Learning con R y caret
+  \url{https://www.cienciadedatos.net/documentos/41_machine_learning_con_r_y_caret}
+\item
+  Notebook en Kaggle de barun2104
+  \url{https://www.kaggle.com/barun2104/nlp-with-disaster-eda-dfm-svd-ensemble}
+\item
+  Notebook en Kaggle de sambitmukherjee
+  \url{https://www.kaggle.com/sambitmukherjee/bag-of-words-stack-knn-tree-lasso\#test-set-predictions-submission}
+\end{itemize}
 
 \end{document}
