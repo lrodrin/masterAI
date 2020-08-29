@@ -36,6 +36,7 @@
 \urlstyle{same}  % don't use monospace font for urls
 \usepackage[margin=1in]{geometry}
 \usepackage{color}
+\usepackage{tcolorbox}
 \usepackage{fancyvrb}
 \newcommand{\VerbBar}{|}
 \newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
@@ -120,7 +121,7 @@
 \maketitle
 
 {
-\setcounter{tocdepth}{2}
+\setcounter{tocdepth}{3}
 \renewcommand{\contentsname}{Contenido}
 \tableofcontents
 }
@@ -138,19 +139,21 @@ usaremos:
 \item
   \textbf{tm}, específico para minería de textos.
 \item
-  \textbf{irlba}, específico para \emph{Descomposición de Valores
-  Singulares (SVD)} de matrices enormes.
+  \textbf{irlba}, específico para la \emph{Descomposición de Valores
+  Singulares (SVD)} de matrices muy grandes.
 \item
   \textbf{caret}, para realizar tareas de clasificación y regresión.
 \item
   \textbf{doParallel}, proporciona computación paralela.
 \item
-  \textbf{syuzhet}, específico para la extracción de sentimientos de
+  \textbf{syuzhet}, específico para la extracción de sentimientos (información subjetiva) de
   textos.
 \item
   \textbf{ggcorrplot}, muestra visualizaciones gráficas de matrices de
-  correlación usando \emph{ggplot2}.
+  correlación usando \textbf{ggplot2}.
 \end{itemize}
+
+\vspace{3mm}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -176,24 +179,44 @@ posibles errores, etc. además, puede dar pistas sobre qué variables no
 son adecuadas para predecir un modelo.
 
 Acorde a la realización del ejercicio propuesto se ha elegido la
-competición en Kaggle: \textbf{Real or Not? NLP with Disaster Tweets}.
-El dataset de la competición se puede encontrar en el siguiente enlace:
-\url{https://www.kaggle.com/c/nlp-getting-started/data}. Este dataset,
+competición en Kaggle: \emph{Real or Not? NLP with Disaster Tweets}.
+El dataset de la competición se puede encontrar en el siguiente \href{https://www.kaggle.com/c/nlp-getting-started/data}{\color{blue}{enlace}}. Este dataset,
 con 10.876 instancias, contiene 4 variables explicativas: \textbf{id},
 \textbf{keyword}, \textbf{location} y \textbf{text}, y dos valores en la
-variable clase \textbf{target} (0 y 1). Como podemos observar la
+variable clase \textbf{target} (0 y 1). Como observaremos la
 variable clase es binaria, así que, durante este ejercicio vamos a
 aprender un modelo de \emph{clasificación binaria}. El objetivo de este
 modelo será predecir si dado un tweet, éste trata sobre un desastre real
 o no. Si un tweet trata sobre un desastre real, se predice un 1. Si no,
 se predice un 0.
 
-\emph{La clasificación binaria es un tipo de clasificación en el que tan
-solo se pueden asignar dos clases diferentes (0 o 1).}
+\begin{tcolorbox}
+La clasificación binaria es un tipo de clasificación en el que tan
+solo se pueden asignar dos clases diferentes (0 o 1).	
+\end{tcolorbox}
 
 La métrica de evaluación esperada por la competición es \textbf{F1
-score}. Para ver como se calcula consultar el siguiente enlace:
-\url{https://www.kaggle.com/c/nlp-getting-started/overview/evaluation}.
+score}. 
+
+Se calcula de la siguiente manera:
+
+\begin{center}
+	F1 = 2 * $\dfrac{precision * recall}{precision + recall}$
+\end{center}
+
+donde:
+
+\begin{center}	
+	precision = $\dfrac{TP}{TP + FP}$
+	
+	recall = $\dfrac{TP}{TP + FN}$
+\end{center}
+
+\begin{itemize}
+	\item True Positive (TP)
+	\item False Positive (FP)
+	\item False Negative (FN)
+\end{itemize}
 
 La partición inicial train-test, no se tiene que realizar, ya que las
 instancias de train y test ya vienen definidas en el dataset de la
@@ -202,7 +225,7 @@ competición (descargar a nuestro espacio de trabajo los ficheros
 \url{https://www.kaggle.com/c/nlp-getting-started/data}).
 
 Cargamos a nuestro espacio de trabajo los conjuntos de datos de train y
-test descargados, renombrando los valores perdidos como \textbf{NA} para
+test descargados, re-nombrando los valores perdidos como \textbf{NA} para
 que los podamos tratar más adelante. También mostramos las dimensiones
 de los conjuntos de datos usando la función \textbf{dim}.
 
@@ -1848,7 +1871,7 @@ modelo obtenemos un \textbf{Accuracy} de 0.8407 y un valor de
 \textbf{F1\_score} no muy bueno de 0.7919 que intentaremos mejorar.
 
 \hypertarget{predicciuxf3n}{%
-\subsection{Predicción}\label{predicciuxf3n}}
+\section{Predicción}\label{predicciuxf3n}}
 
 En la predicción se usa la función \textbf{predict} de \textbf{caret}.
 La opción elegida es \emph{raw}. Porqué con ella nos quedamos con el
@@ -1889,12 +1912,12 @@ resultados de nuestra predicción. Vemos las 10 primeras líneas.
 \end{verbatim}
 
 \hypertarget{resultado-en-kaggle}{%
-\subsection{Resultado en Kaggle}\label{resultado-en-kaggle}}
+\section{Resultado en Kaggle}\label{resultado-en-kaggle}}
 
 \includegraphics[width=0.8\textwidth,height=\textheight]{submission.png}
 
 \hypertarget{conclusiones}{%
-\subsection{Conclusiones}\label{conclusiones}}
+\section{Conclusiones}\label{conclusiones}}
 
 En este documento se revisa cómo importar y preparar documentos de texto
 para realizar distintas operaciones de mineria de textos con ellos,
@@ -1929,7 +1952,7 @@ siguientes referencias han sido de gran ayuda para realizar este
 documento y amplían lo aquí presentado.
 
 \hypertarget{referencias}{%
-\subsection{Referencias}\label{referencias}}
+\section{Referencias}\label{referencias}}
 
 \begin{itemize}
 \item

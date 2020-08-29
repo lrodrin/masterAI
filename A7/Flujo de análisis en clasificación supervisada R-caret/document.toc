@@ -20,7 +20,7 @@
 \contentsline {subsection}{Evaluación de modelos mediante resampling}{19}{section*.21}%
 \contentsline {subsubsection}{Wilcoxon signed-rank test}{20}{section*.22}%
 \contentsline {subsubsection}{Conclusión evaluación de modelos}{21}{section*.23}%
-\contentsline {subsection}{Predicción}{22}{section*.24}%
-\contentsline {subsection}{Resultado en Kaggle}{23}{section*.25}%
-\contentsline {subsection}{Conclusiones}{23}{section*.26}%
-\contentsline {subsection}{Referencias}{24}{section*.27}%
+\contentsline {section}{Predicción}{22}{section*.24}%
+\contentsline {section}{Resultado en Kaggle}{23}{section*.25}%
+\contentsline {section}{Conclusiones}{23}{section*.26}%
+\contentsline {section}{Referencias}{24}{section*.27}%
