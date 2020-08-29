@@ -7,6 +7,7 @@ output:
     fig_crop: no
     keep_tex: yes
     toc: yes
+    toc_depth: 4
   html_document: 
     toc: yes
 subtitle: "Métodos supervisados"
@@ -667,7 +668,7 @@ F1
 
 Teniendo en cuenta toda esta información, para predecir la clase de casos futuros vamos a usar el clasificador *SVMRadial* que es el modelo que ha dado mejores resultados durante el entrenamiento. Con este modelo obtenemos un **Accuracy** de 0.8407 y un valor de **F1_score** no muy bueno de 0.7919 que intentaremos mejorar.
 
-## Predicción 
+# Predicción 
 
 En la predicción se usa la función **predict** de **caret**. La opción elegida es *raw*. Porqué con ella nos quedamos con el valor de la variable clase con mayor probabilidad a-posteriori y podemos calcular la matriz de confusión y la colección de métricas de evaluación asociadas.
 
@@ -684,11 +685,11 @@ write.csv(submission, "submission.csv", row.names=FALSE)
 head(submission, 10)
 ```
 
-## Resultado en Kaggle
+# Resultado en Kaggle
 
 ![](submission.png){width=80%}
 
-## Conclusiones
+# Conclusiones
 
 En este documento se revisa cómo importar y preparar documentos de texto para realizar distintas operaciones de mineria de textos con ellos, tales como obtener palabras frecuentes, asociaciones de palabras y análisis de sentimientos.
 
@@ -702,7 +703,7 @@ Durante la asignatura de Procesamiento del Lenguaje Natural del Máster no se re
 
 Por supuesto la minería de textos es un área de análisis extensa. Las siguientes referencias han sido de gran ayuda para realizar este documento y amplían lo aquí presentado.
 
-## Referencias
+# Referencias
 
 - Machine Learning con R y caret https://www.cienciadedatos.net/documentos/41_machine_learning_con_r_y_caret
 
