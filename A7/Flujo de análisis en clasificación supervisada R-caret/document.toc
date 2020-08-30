@@ -1,26 +1,26 @@
 \contentsline {section}{Análisis exploratorio de los datos}{2}{section*.2}%
 \contentsline {subsection}{Variable \emph {target}}{3}{section*.3}%
-\contentsline {subsection}{Variable \emph {keyword}}{4}{section*.4}%
-\contentsline {subsection}{Variable \emph {location}}{6}{section*.5}%
+\contentsline {subsection}{Variable \emph {keyword}}{5}{section*.4}%
+\contentsline {subsection}{Variable \emph {location}}{7}{section*.5}%
 \contentsline {subsection}{Variable \emph {id}}{8}{section*.6}%
-\contentsline {subsection}{Conclusión análisis exploratorio}{8}{section*.7}%
-\contentsline {section}{Procesamiento de texto}{8}{section*.8}%
-\contentsline {subsection}{Corpus}{8}{section*.9}%
-\contentsline {subsection}{Limpieza del texto}{9}{section*.10}%
-\contentsline {section}{Creación de un modelo predictivo}{10}{section*.11}%
-\contentsline {subsection}{Preprocesado de los datos}{10}{section*.12}%
-\contentsline {subsubsection}{Feature Extraction mediante Singular Value Decomposition}{11}{section*.13}%
-\contentsline {subsection}{División de los datos en train y test}{12}{section*.14}%
-\contentsline {subsection}{Selección de variables}{13}{section*.15}%
-\contentsline {subsection}{Entrenamiento de modelos}{13}{section*.16}%
-\contentsline {subsubsection}{Regresión Logística}{15}{section*.17}%
-\contentsline {subsubsection}{Random Forest}{15}{section*.18}%
-\contentsline {subsubsection}{Gradient Boosting}{16}{section*.19}%
-\contentsline {subsubsection}{SVM}{18}{section*.20}%
-\contentsline {subsection}{Evaluación de modelos mediante resampling}{19}{section*.21}%
-\contentsline {subsubsection}{Wilcoxon signed-rank test}{20}{section*.22}%
-\contentsline {subsubsection}{Conclusión evaluación de modelos}{21}{section*.23}%
-\contentsline {section}{Predicción}{22}{section*.24}%
-\contentsline {section}{Resultado en Kaggle}{23}{section*.25}%
-\contentsline {section}{Conclusiones}{23}{section*.26}%
-\contentsline {section}{Referencias}{24}{section*.27}%
+\contentsline {subsection}{Conclusión análisis exploratorio}{9}{section*.7}%
+\contentsline {section}{Procesamiento de texto}{9}{section*.8}%
+\contentsline {subsection}{Corpus}{9}{section*.9}%
+\contentsline {subsection}{Limpieza del texto}{10}{section*.10}%
+\contentsline {section}{Creación de un modelo predictivo}{11}{section*.11}%
+\contentsline {subsection}{Preprocesado de los datos}{11}{section*.12}%
+\contentsline {subsubsection}{Feature Extraction mediante SVD}{12}{section*.13}%
+\contentsline {subsection}{División de los datos en train y test}{13}{section*.14}%
+\contentsline {subsection}{Selección de variables}{14}{section*.15}%
+\contentsline {subsection}{Entrenamiento de modelos}{14}{section*.16}%
+\contentsline {subsubsection}{Regresión Logística}{16}{section*.17}%
+\contentsline {subsubsection}{Random Forest}{17}{section*.18}%
+\contentsline {subsubsection}{Gradient Boosting}{18}{section*.19}%
+\contentsline {subsubsection}{SVM}{19}{section*.20}%
+\contentsline {subsection}{Evaluación de modelos mediante resampling}{20}{section*.21}%
+\contentsline {subsubsection}{Wilcoxon signed-rank test}{21}{section*.22}%
+\contentsline {subsubsection}{Conclusión evaluación de modelos}{23}{section*.23}%
+\contentsline {section}{Predicción}{24}{section*.24}%
+\contentsline {section}{Resultado en Kaggle}{25}{section*.25}%
+\contentsline {section}{Conclusiones}{25}{section*.26}%
+\contentsline {section}{Referencias}{26}{section*.27}%

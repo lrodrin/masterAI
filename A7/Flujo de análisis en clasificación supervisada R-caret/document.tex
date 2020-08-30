@@ -185,20 +185,18 @@ con 10.876 instancias, contiene 4 variables explicativas: \textbf{id},
 \textbf{keyword}, \textbf{location} y \textbf{text}, y dos valores en la
 variable clase \textbf{target} (0 y 1). Como observaremos la
 variable clase es binaria, así que, durante este ejercicio vamos a
-aprender un modelo de \emph{clasificación binaria}. El objetivo de este
+crear un modelo de \emph{clasificación binaria}. El objetivo de este
 modelo será predecir si dado un tweet, éste trata sobre un desastre real
 o no. Si un tweet trata sobre un desastre real, se predice un 1. Si no,
 se predice un 0.
 
 \begin{tcolorbox}
-La clasificación binaria es un tipo de clasificación en el que tan
-solo se pueden asignar dos clases diferentes (0 o 1).	
+La \textbf{clasificación binaria} es un tipo de clasificación en el que tan solo se pueden asignar dos clases diferentes (0 o 1).	
 \end{tcolorbox}
 
-La métrica de evaluación esperada por la competición es \textbf{F1
-score}. 
+La métrica de evaluación esperada por la competición de Kaggle es \textbf{F1}. Para más información consultar el siguiente \href{https://www.kaggle.com/c/nlp-getting-started/overview/evaluation}{\color{blue}enlace}. Se calcula de la siguiente manera:
 
-Se calcula de la siguiente manera:
+\vspace{3mm}
 
 \begin{center}
 	F1 = 2 * $\dfrac{precision * recall}{precision + recall}$
@@ -220,14 +218,15 @@ donde:
 
 La partición inicial train-test, no se tiene que realizar, ya que las
 instancias de train y test ya vienen definidas en el dataset de la
-competición (descargar a nuestro espacio de trabajo los ficheros
-\textbf{train.csv} y \textbf{test.csv} de
-\url{https://www.kaggle.com/c/nlp-getting-started/data}).
+competición de Kaggle. Solo tendremos que descargar a nuestro espacio de trabajo los ficheros
+\textbf{train.csv} y \textbf{test.csv} des del siguiente 
+\href{https://www.kaggle.com/c/nlp-getting-started/data}{\color{blue}enlace}).
 
-Cargamos a nuestro espacio de trabajo los conjuntos de datos de train y
-test descargados, re-nombrando los valores perdidos como \textbf{NA} para
-que los podamos tratar más adelante. También mostramos las dimensiones
-de los conjuntos de datos usando la función \textbf{dim}.
+Cargamos a nuestro espacio de trabajo los conjuntos de datos de train y test que hemos descargado con la función \textbf{read.csv()}, renombrando los valores perdidos como \textbf{NA} para que los podamos tratar más adelante. 
+
+Además, mostramos las dimensiones de los conjuntos de datos de train y test usando la función \textbf{dim()}. Esta función nos mostrará el número total de observaciones y de variables de cada conjunto de datos.
+
+\vspace{3mm}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -267,9 +266,11 @@ contiene las siguientes variables:
   \textbf{text}: el texto del tweet.
 \item
   \textbf{target}: solo en el conjunto de datos de train porqué es la
-  variable clase a predecir. Indica si un tweet corresponde a un
+  variable clase, la variable a predecir. Indica si un tweet corresponde a un
   desastre real (1) o no (0).
 \end{itemize}
+
+El conjunto de datos de train:
 
 \begin{verbatim}
 ## 'data.frame':    7613 obs. of  5 variables:
@@ -279,6 +280,8 @@ contiene las siguientes variables:
 ##  $ text    : chr  "Our Deeds are the Reason of this #earthquake May ALLAH Forgive "..
 ##  $ target  : int  1 1 1 1 1 1 1 1 1 1 ...
 \end{verbatim}
+
+El conjunto de datos de test:
 
 \begin{verbatim}
 ## 'data.frame':    3263 obs. of  4 variables:
@@ -292,11 +295,13 @@ contiene las siguientes variables:
 \subsection{\texorpdfstring{Variable
 \emph{target}}{Variable target}}\label{variable-target}}
 
-Como ya hemos comentado, la variable \textbf{target} es la variable a
-predecir. Es de tipo cuantitativa (de tipo entero) y conviene
-convertirla a variable cualitativa, almacenarla con el tipo
-\emph{factor}. Para evitar errores, se recodifica para que sus dos
-posibles valores sean ``Yes''-``No'' y se convierte a \emph{factor}.
+Como acabamos de comentar en la sección anterior, la variable \textbf{target} es la variable clase y la variable a
+predecir. La variable es de tipo cuantitativa, concretamente de tipo entero, y conviene
+transformarla para que sea una variable de tipo cualitativa (categórica). 
+
+Para transformar la variable a predecir en una variable categórica usamos la función \textbf{as.factor()}. Esto lo hacemos para evitar errores futuros, y además se re-codifica para que sus dos posibles valores sean ``Yes'' y ``No''.
+
+\vspace{3mm}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -305,17 +310,27 @@ posibles valores sean ``Yes''-``No'' y se convierte a \emph{factor}.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{document_files/figure-latex/unnamed-chunk-4-1} \end{center}
+\renewcommand{\figurename}{Figura}
 
-Cuando se crea un modelo, es muy importante estudiar la distribución de
-la variable clase, ya que, a fin de cuentas, es lo que nos interesa
+\begin{figure}
+	\begin{center}
+		\includegraphics[width=0.7\linewidth]{document_files/figure-latex/unnamed-chunk-4-1} 
+		\caption{distribución de la variable \textbf{target}.}
+		\label{fig: distribución de la variable target}
+	\end{center}
+\end{figure}
+
+Cuando se quiere crear un modelo de predicción, es muy importante estudiar la distribución de
+la variable clase, en este caso la variable a predecir, ya que, a fin de cuentas, es lo que nos interesa
 predecir.
 
-Gráficamente observamos que la distribución de la variable a predecir no
-está muy sesgada y está relativamente equilibrada. Hay menos tweets que
-se refieren a desastres reales. Además, parece que no presenta un
-problema notable de \emph{desbalanceo de clase}, porqué contamos con
-muchas observaciones del caso minoritario.
+Gráficamente (ver Figura \ref{fig: distribución de la variable target}) observamos que la distribución de la variable a predecir no está muy sesgada y que está relativamente equilibrada. Aunque si nos fijamos hay menos tweets que se refieren a desastres reales (columna "Yes"). Así, la clase ``Yes'' representaría a la clase minoritaria y la clase "No", a la clase mayoritaria. Tampoco parece que presente un problema notable de \emph{desequilibrio de clases}, porqué contamos con muchas observaciones de la clase minoritaria.
+
+\begin{tcolorbox}
+	Al enfrentarse a la situación de crear un modelo de clasificación binaria es habitual que las clases no se encuentren balanceadas. Esto es, el número de observaciones para una de las clases es inferior a la otra. Cuando el desequilibrio es pequeño, esto no supone un problema, pero cuando el desequilibrio es grande es un problema para la mayoría de los modelos de clasificación. Esta situación se conoce como el \textbf{problema del desequilibrio de clases}.
+\end{tcolorbox}
+
+\vspace{3mm}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -337,23 +352,17 @@ muchas observaciones del caso minoritario.
 ## [1] 57.03402
 \end{verbatim}
 
-Para que un modelo predictivo nos sea útil tendremos que intentar
-superar el porcentaje mínimo dado que aproximadamente el 57\% de los
-tweets no representan un desastre real (este porcentaje se recalculará
-únicamente con el conjunto de datos de train).
+Concretamente, el 57\% de los tweets corresponden a desastres no reales, y aproximadamente el 43\% corresponden a desastres reales. Para que el modelo predictivo que crearemos nos sea útil, tendremos que intentar superar ese porcentaje mínimo del 57\% de la clase mayoritaria.
 
-Como el objetivo del ejercicio es predecir que tweets pertenecen o no a
-un desastre real, el análisis que haremos a continuación se hace realiza
-de cada variable explicativa con relación a la variable a predecir
-\textbf{target}. Analizando de esta forma, se pueden extraer ideas sobre
-que variables están más relacionadas con los desastres reales.
+Como el objetivo del ejercicio es predecir que tweets pertenecen o no a un desastre real, lo que haremos a continuación, es analizar las variables explicativas del conjunto de datos de train en relación a la variable a predecir \textbf{target}. De este análisis se podrán extraer ideas sobre que variables están más relacionadas con los desastres reales.
 
 \hypertarget{variable-keyword}{%
 \subsection{\texorpdfstring{Variable
 \emph{keyword}}{Variable keyword}}\label{variable-keyword}}
 
-La variable explicativa \textbf{keyword} representa una palabra clave en
-cada tweet. Vemos las 10 primeras del conjunto de datos de train.
+La variable explicativa \textbf{keyword} representa una palabra clave en cada tweet. Vemos las 10 primeras del conjunto de datos de train usando las funciones \textbf{select()}, \textbf{unique()} para no ver las variables repetidas, y \textbf{head()} donde le decimos que cantidad de variables queremos ver.
+
+\vspace{3mm}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -375,76 +384,69 @@ cada tweet. Vemos las 10 primeras del conjunto de datos de train.
 ## 305          armageddon
 \end{verbatim}
 
-Nuestro interés en la variable \textbf{keyword} dentro del análisis
-exploratorio de los datos es ver si existen correlaciones entre esta y
-la variable a predecir \textbf{target}. Para ello, y como estamos
-delante un ejercicio de \emph{Procesamiento del Lenguaje Natural}
-realizaremos un análisis de sentimientos.
+Nuestro interés en la variable \textbf{keyword}, dentro del análisis exploratorio, es ver si existen correlaciones entre ella y la variable a predecir \textbf{target}. Para ello, y como estamos delante un ejercicio de \href{https://es.wikipedia.org/wiki/Procesamiento_de_lenguajes_naturales}{\color{blue}Procesamiento del Lenguaje Natural}, realizaremos un \textbf{análisis de sentimientos}.
 
-\emph{El análisis de sentimientos es una técnica de
-\href{https://en.wikipedia.org/wiki/Machine_learning}{Machine Learning},
-basada en el
-\href{https://www.kdnuggets.com/2017/02/natural-language-processing-key-terms-explained.html}{Procesado
-del Lenguaje Natural}, que pretende obtener información subjetiva de una
-serie de textos. Su aplicación es este caso, consiste en resolver si un
-tweet es real o no en relación a un desastre.}
+\begin{tcolorbox}
+	El \textbf{análisis de sentimientos} es una técnica de \href{https://en.wikipedia.org/wiki/Machine_learning}{\color{blue}Machine Learning},
+	basada en el Procesamiento del Lenguaje Natural, que pretende obtener información subjetiva de una
+	serie de textos.
+\end{tcolorbox}
 
-En el análisis de sentimientos usamos los paquetes de R:
-\textbf{syuzhet}, \textbf{ggcorrplot} y \textbf{doParallel}.
+Para el análisis de sentimientos usamos los paquetes: \textbf{syuzhet}, \textbf{ggcorrplot} y \textbf{doParallel}.
 
 \begin{itemize}
 \tightlist
 \item
-  El paquete \textbf{syuzhet} cuenta con la función
-  \textbf{get\_nrc\_sentiment} que calculará la presencia de los
-  diferentes sentimientos dado un conjunto de palabras clave. Los
-  argumentos de esta función son:
+  \textbf{syuzhet} cuenta con la función
+  \textbf{get\_nrc\_sentiment()} que calculará la presencia de los
+  diferentes sentimientos dado un conjunto de palabras clave (variable \textbf{keyword}). 
+  
+  Los argumentos de esta función son:
+  
+  \vspace{2mm}
 
   \begin{itemize}
   \tightlist
   \item
-    \textbf{char\_v}. Un vector de caracteres que en este caso contendrá
+    \textbf{char\_v}: un vector de caracteres que en este caso contendrá
     todas las palabras clave.
   \item
-    \textbf{language}. Define el lenguaje. Como los tweets están en
-    inglés, el lenguaje será el inglés.
+    \textbf{language}: define el lenguaje. Como los tweets están en
+    inglés, el lenguaje será inglés.
   \item
-    \textbf{cl}. Para el análisis en paralelo. Es opcional, pero en este
-    caso lo usaremos porqué hay muchas palabras clave.
+    \textbf{cl}: para el análisis en paralelo. Es un argumento opcional, pero en este
+    caso se usará porqué hay muchas palabras clave.
   \end{itemize}
+
+\vspace{3mm}
+
 \item
-  El paquete \textbf{doParallel} cuenta con las funciones:
+  \textbf{doParallel} cuenta con las funciones:
+  
+  \vspace{2mm}
 
   \begin{itemize}
   \tightlist
   \item
-    \textbf{makePSOCKcluster}. Crea un clúster de sockets paralelos.
+    \textbf{makePSOCKcluster()}: crea un clúster de sockets paralelos y inicia la computación paralela con estrategia secuencial.
   \item
-    \textbf{registerDoParallel}. Registra el número de \emph{cores} que
+    \textbf{registerDoParallel()}: registra el número de \emph{cores} que
     usará el clúster creado.
   \item
-    \textbf{stopCluster}. Detiene la computación paralela.
+    \textbf{stopCluster()}: detiene la computación paralela.
   \end{itemize}
 \end{itemize}
 
-La computación paralela la usaremos en muchas de las ejecuciones de este
-ejercicio ya que nos encontramos delante de un problema de \emph{alta
-dimensionalidad}. Eso es, que la dimensionalidad de nuestros datos es
-muy elevada y puede reducir drásticamente la eficiencia de los
-algoritmos de clasificación supervisada que entrenaremos.
+La computación paralela la usaremos en muchas de las ejecuciones de este ejercicio ya que nos encontramos delante de un problema de \textbf{alta dimensionalidad}. Eso es, que la dimensionalidad de nuestro dataset es tan elevada que puede reducir drásticamente la eficiencia de los modelos de clasificación supervisada que entrenaremos, además de producir un alto coste computacional.
 
-La reducción de la dimensionalidad que aplicaremos en este ejercicio se
-realiza más adelante y se calculará teniendo en cuenta las palabras más
-frecuentes de los tweets en conjunto de datos.
+Para solucionar el problema de la alta dimensionalidad de los datos, se realiza una \textbf{reducción de la dimensionalidad} (reducción del número de variables). La aplicaremos en este ejercicio, pero más adelante. Durante este proceso usaremos técnicas de \textbf{selección de variables} y \textbf{extracción de características}.
 
-El análisis de sentimientos de cada palabra clave, usando la función
-\textbf{get\_nrc\_sentiment}, consiste en extraer los sentimientos de
-cada palabra clave, guardarlos en un nuevo conjunto de datos
-(\emph{emotion.df}), con el que calcularemos (paquete \textbf{cor}) y
-visualizaremos la matriz de correlaciones (paquete \textbf{ggcorrplot})
-entre las palabras clave con relación a la variable a predecir. Es
-importante volver a transformar la variable a predecir para realizar los
-cálculos, cuando la variable es cualitativa.
+El análisis de sentimientos de nuestro ejercicio, consiste en extraer los sentimientos de cada palabra clave, con la función \textbf{get\_nrc\_sentiment()}. Guardar los sentimientos en un nuevo conjunto de datos (\textbf{emotion.df}). Y finalmente calcular la matriz de correlaciones (ver Figura \ref{fig: matriz de correlaciones}). Para calcular i visualizar la matriz de correlaciones usamos los paquetes \textbf{cor} y \textbf{ggcorrplot}. Es muy importante volver a transformar la variable a predecir \textbf{target}, a variable de tipo cuantitativa, porqué sino no podremos crear la matriz.
+
+Veremos que se usa la función \textbf{gsub()} para eliminar los guiones bajos de las palabras clave y el argumento \textbf{lab} en la función \textbf{ggcorrplot()} para visualizar los coeficientes de correlación.
+
+\vspace{3mm}
+
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -465,7 +467,13 @@ cálculos, cuando la variable es cualitativa.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{document_files/figure-latex/unnamed-chunk-7-1} \end{center}
+\begin{figure}
+	\begin{center}
+		\includegraphics[width=1\linewidth]{document_files/figure-latex/unnamed-chunk-7-1} 
+		\caption{matriz de correlaciones.}
+		\label{fig: matriz de correlaciones}
+	\end{center}
+\end{figure}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -473,26 +481,21 @@ cálculos, cuando la variable es cualitativa.
 \end{Highlighting}
 \end{Shaded}
 
-Parece que, al observar la matriz de correlaciones, existe una
-correlación nula entre las variables \textbf{keyword} y \textbf{target}.
-Al revisarlo con mayor detalle, podemos observar que la mayoría de las
-palabras clave no tienen un sentimiento positivo asociado. Las palabras
-clave asociadas a un sentimiento se asocian negativamente (miedo o
-tristeza), lo cual es bastante consistente con el problema, ya que
-intentemos predecir el desastre.
+\newpage
 
-Acorde a nuestro criterio esta variable explicativa no es buena para
-hacer una predicción ya que no está realmente asociada con la variable a
-predecir. Así que la excluiremos del procesamiento de texto.
+Parece que al observar la matriz de correlaciones, existe una correlación nula entre las variables \textbf{keyword} y \textbf{target}. Si lo revisamos con mayor detalle, podemos observar que la mayoría de las
+palabras clave no tienen un sentimiento positivo asociado, muchos de sus coeficientes se encuentran dentro del umbral: (-1.0, 0.5). Las palabras clave asociadas a un sentimiento se asocian negativamente (p. ej. miedo o
+tristeza), lo cual es bastante consistente con el ejercicio, ya que intentemos predecir desastres reales. Teniendo en cuenta el análisis exploratorio de la variable \textbf{keyword} y acorde a nuestro criterio, no se considera buena para hacer predicciones ya que no está realmente asociada con la variable a
+predecir. Así que la excluiremos en el \ref{preprocesado-de-los-datos}{procesamiento de texto}.
 
 \hypertarget{variable-location}{%
 \subsection{\texorpdfstring{Variable
 \emph{location}}{Variable location}}\label{variable-location}}
 
-La variable explicativa \textbf{location} representa las ubicaciones
-desde donde se generaron los tweets. Vemos las 10 primeras y el número
-total de ubicaciones diferentes del conjunto de datos de train (3342
-ubicaciones).
+La variable explicativa \textbf{location} representa a las ubicaciones donde se generaron los tweets. Vemos las 8 primeras y el número total de ubicaciones diferentes del conjunto de datos de train (3342
+ubicaciones sin repeticiones).
+
+\vspace{2mm}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -510,8 +513,6 @@ ubicaciones).
 ## 36                    London, UK
 ## 37                      Pretoria
 ## 38                  World Wide!!
-## 40                Paranaque City
-## 41                Live On Webcam
 \end{verbatim}
 
 \begin{Shaded}
@@ -525,8 +526,9 @@ ubicaciones).
 ## 1 3342
 \end{verbatim}
 
-A continuación, veremos las ubicaciones que se repiten más de 10 veces
-en el conjunto de datos de train.
+A continuación, vemos las ubicaciones que se repiten más de 10 veces en el conjunto de datos de train. Con las funciones \textbf{table}, \textbf{unlist} y \textbf{select} creamos una tabla a partir de una lista única de ubicaciones. Con la función \textbf{which} seleccionamos las que se repiten más de 10 veces y con la función \textbf{barplot} las visualizamos.
+
+\vspace{2mm}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -562,23 +564,30 @@ en el conjunto de datos de train.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.7\linewidth]{document_files/figure-latex/unnamed-chunk-9-1} \end{center}
+\begin{figure}
+	\begin{center}
+		\includegraphics[width=0.8\linewidth]{document_files/figure-latex/unnamed-chunk-9-1} 
+		\caption{ubicaciones que se repiten más de 10 veces.}
+		\label{fig: ubicaciones que se repiten más de 10 veces}
+	\end{center}
+\end{figure}
 
-En el total de ubicaciones, 3342, la mayoría de ellas cuenta con menos
-de 10 observaciones. Acorde a nuestro criterio esta variable explicativa
-no es buena para hacer una predicción, ya que la variable tiene muy
-pocas observaciones, y puede ocurrir que, durante la validación cruzada
-o \emph{bootstrapping}, algunas de las particiones no contengan ninguna
-observación de dicha variable, lo que puede dar lugar a errores.
+El argumento \textbf{las} de la función \textbf{barplot} se usa para poner horizontalmente los nombres de las ubicaciones en el \textit{eje-x} de la Figura \ref{fig: ubicaciones que se repiten más de 10 veces}.
 
-\emph{Una muestra bootstrap es una muestra obtenida a partir de la
-muestra original por muestreo aleatorio con reposición, y del mismo
-tamaño que la muestra original. Muestreo aleatorio con reposición
-(resampling with replacement) significa que, después de que una
-observación sea extraída, se vuelve a poner a disposición para las
-siguientes extracciones. Como resultado de este tipo de muestreo,
-algunas observaciones aparecerán múltiples veces en la muestra bootstrap
-y otras ninguna.}
+Del total de ubicaciones, 3342, la mayoría de ellas cuenta con menos de 10 observaciones. Teniendo en cuenta el análisis exploratorio de la variable \textbf{location} y acorde a nuestro criterio, no se considera buena para hacer predicciones, ya que la variable consta de muy pocas observaciones dentro del conjunto de datos (no es representativa), y puede ocurrir que, durante la realización de la validación cruzada o \emph{bootstrapping}, algunas de las muestras no contengan ninguna observación de dicha variable, lo que puede dar lugar a errores.
+
+\begin{tcolorbox}
+	Una muestra \emph{bootstrap} es una muestra obtenida a partir de la
+	muestra original por muestreo aleatorio con reposición, y del mismo
+	tamaño que la muestra original. Muestreo aleatorio con reposición
+	(resampling with replacement) significa que, después de que una
+	observación sea extraída, se vuelve a poner a disposición para las
+	siguientes extracciones. Como resultado de este tipo de muestreo,
+	algunas observaciones aparecerán múltiples veces en la muestra \emph{bootstrap} 
+	y en otras ninguna.
+\end{tcolorbox}
+
+La variable \textbf{location} también la excluiremos en el \ref{preprocesado-de-los-datos}{procesamiento de texto}.
 
 \hypertarget{variable-id}{%
 \subsection{\texorpdfstring{Variable
@@ -587,6 +596,8 @@ y otras ninguna.}
 La variable \textbf{id} es solo un identificador único, así que, no la
 analizaremos y procederemos a eliminarla de los conjuntos de datos de
 train y test.
+
+\vspace{3mm}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -599,25 +610,22 @@ train y test.
 \subsection{Conclusión análisis
 exploratorio}\label{conclusiuxf3n-anuxe1lisis-exploratorio}}
 
-Llegados a este punto, parece que nuestro criterio en la exploración de
-los datos, el estudio de su distribución y sus posibles relaciones con
-la variable a predecir nos indica que las variables explicativas
-\textbf{keyword}, \textbf{location} y \textbf{id} no son buenas para
-hacer una predicción, así que nos centraremos en la variable
-\textbf{text} para hacer la predicción.
+Llegados a este punto, después de un análisis exploratorio de las variables explicativas \textbf{keyword}, \textbf{location} y \textbf{id}, y el estudio de la distribución de la variable a predecir con sus posibles relaciones con estas variables, nuestro criterio es descartar-las para las futuras predicciones y el \ref{preprocesado-de-los-datos}{procesamiento de texto}. Consecuentemente nos centraremos en la variable \textbf{text} en la siguiente sección.
 
 \hypertarget{procesamiento-de-texto}{%
 \section{Procesamiento de texto}\label{procesamiento-de-texto}}
 
 Combinamos los conjuntos de datos de train y test para ahorrar esfuerzos
-en el preprocesado de datos. Para ello, usamos la función
-\textbf{bind\_rows}, que nos permitirá enlazar de forma eficiente los
+en el \ref{preprocesado-de-los-datos}{preprocesado de datos}. Para ello, usamos la función
+\textbf{bind\_rows()} del paquete \textbf{dplyr}, que nos permitirá enlazar de forma eficiente los dos
 conjuntos de datos por fila y columna. Podremos comprobar que la
-combinación se hace correctamente, sumando los elementos de train (7613)
-y de test (3263), el nuevo conjunto de datos (\textbf{complete\_df})
+combinación se hace correctamente, sumando los elementos del conjunto de datos de train (7613)
+y los elementos del conjunto de datos de test (3263), el nuevo conjunto de datos (\textbf{complete\_df})
 tendrá 10876 observaciones, 3 variables explicativas (\textbf{keyword},
 \textbf{location}, \textbf{text}) y la variable de clase
 \textbf{target}.
+
+\vspace{3mm}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -634,14 +642,15 @@ tendrá 10876 observaciones, 3 variables explicativas (\textbf{keyword},
 ##  $ target  : Factor w/ 2 levels "No","Yes": 2 2 2 2 2 2 2 2 2 2 ...
 \end{verbatim}
 
-El preprocesado de datos englobará las transformaciones de los textos,
-como, por ejemplo, la imputación de valores ausentes o la reducción de
-dimensionalidad.
+El \ref{preprocesado-de-los-datos}{preprocesado de datos} englobará las transformaciones de los textos de la variable \textbf{text}, como, por ejemplo la imputación de los valores ausentes o la reducción de
+dimensionalidad del conjunto de datos \textbf{complete\_df}.
 
-Primero, miramos cuantos valores perdidos tiene nuestro conjunto de
-datos \textbf{complete\_df}. La función \textbf{colSums} sumará los
-valores que la función \textbf{sapply} encuentre, en este caso, los
+Ahora, vamos a mirar cuantos valores perdidos contiene nuestro conjunto de
+datos \textbf{complete\_df}. La función \textbf{colSums()} sumará los
+valores que la función \textbf{sapply()} del paquete \textbf{base} encuentre, en este caso, los
 valores perdidos.
+
+\vspace{3mm}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -655,28 +664,30 @@ valores perdidos.
 \end{verbatim}
 
 Identificamos que las variables explicativas \textbf{keyword} y
-\textbf{location} tienen valores perdidos. La variable explicativa
-\textbf{text} no tiene valores perdidos. Sobretodo hay una gran cantidad
-de tweets, para los cuales falta su ubicación. Los 3263 valores perdidos
-de la variable a predecir provienen del conjunto de datos de test. Nos
-ocuparemos de los valores perdidos más adelante.
+\textbf{location} contienen valores perdidos. La variable explicativa
+\textbf{text} no contienen valores perdidos. Sobretodo hay una gran cantidad
+de tweets para los cuales falta su ubicación. Los 3263 valores perdidos
+de la variable a predecir provienen del conjunto de datos de test. 
+
+Nos ocuparemos de los valores perdidos más adelante.
 
 \hypertarget{corpus}{%
 \subsection{Corpus}\label{corpus}}
 
-Con nuestro nuevo conjunto de datos preparado (\textbf{complete\_df}),
-procedemos a crear nuestro Corpus, es decir, el conjunto de textos de la
-variable \textbf{text} a analizar. En este caso, nuestro Corpus se
-compone de todos los textos de los tweets y los asignaremos al objeto
-\emph{myCorpus} usando las funciones \textbf{VectorSource} y
-\textbf{Corpus}. La función \textbf{Corpus} creará el corpus a partir de
-un vector de textos. La función \textbf{VectorSource} interpretará cada
-mensaje de texto de los tweets como un elemento de ese vector de textos.
+\begin{tcolorbox}
+	Un corpus lingüístico se define como ``un conjunto de textos de un
+	mismo origen'' y que tiene por función recopilar conjuntos de textos.
+	El uso de un corpus lingüístico nos permitirá obtener información de las
+	palabras utilizadas con más o menor frecuencia dentro del conjunto de datos.
+\end{tcolorbox}
 
-\emph{Un corpus lingüístico se define como ``un conjunto de textos de un
-mismo origen'' y que tiene por función recopilar un conjunto de textos.
-El uso de un corpus lingüístico nos permitirá obtener información de las
-palabras utilizadas con más o menor frecuencia.}
+Con el nuevo conjunto de datos, \textbf{complete\_df},
+procedemos a crear nuestro Corpus, es decir, un conjunto de textos a partir de los textos de la
+variable \textbf{text}. El Corpus que se
+compondrá de todos los textos de los tweets, lo asignaremos al objeto
+\emph{myCorpus} usando las funciones \textbf{VectorSource()} y
+\textbf{Corpus()}. La función \textbf{Corpus()} creará el Corpus a partir de un vector de textos que contiene los textos de todos los tweets. La función \textbf{VectorSource()} interpretará cada
+mensaje de texto de los tweets como un elemento de ese vector de textos.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -691,24 +702,22 @@ palabras utilizadas con más o menor frecuencia.}
 ## Content:  documents: 10876
 \end{verbatim}
 
-Como podemos ver, nuestro Corpus está compuesto por 10876 textos.
+Nuestro Corpus está compuesto por 10876 conjuntos de textos.
 
 \hypertarget{limpieza-del-texto}{%
 \subsection{Limpieza del texto}\label{limpieza-del-texto}}
 
-Necesitamos limpiar de los 10876 textos caracteres que son de poca
-utilidad. Empezamos por aseguramos de que no queden enlaces, con un poco
-de ayuda de las \emph{regular expressions}. Para ello usaremos las
-funciones \textbf{gsub} y \textbf{tm\_map}. La función \textbf{gsub}
-buscará y reemplazará desde la primera hasta la última de las
-coincidencias de un patrón (representado por una \emph{regular
-expression}). La función \textbf{tm\_map} será la encargada de aplicar
-las diferentes transformaciones de los textos a nuestro corpus.
+Como tenemos 10876 conjuntos de textos, necesitamos limpiarlos de caracteres que son de poca
+utilidad. Eso nos ayudará a reducir su dimensionalidad. Para ello, mayoritariamente usaremos las funciones \textbf{gsub()} y \textbf{tm\_map()} del paquete \textbf{tm}. La función \textbf{gsub()} buscará y reemplazará desde la primera hasta la última de las coincidencias de un patrón (representado por una \emph{regular expression}). La función \textbf{tm\_map()} será la encargada de aplicar las diferentes transformaciones en los conjuntos de textos.
 
-\emph{Una expresión regular (o en inglés regular expression) es una
-representación, según unas reglas sintácticas de un lenguaje formal, de
-una porción de texto genérico a buscar dentro de otro texto, como por
-ejemplo caracteres, palabras o patrones de texto concretos.}
+\begin{tcolorbox}
+	Una expresión regular (o en inglés \emph{regular expression}) es una
+	representación, según unas reglas sintácticas de un lenguaje formal, de
+	una porción de texto genérico a buscar dentro de otro texto, como por
+	ejemplo caracteres, palabras o patrones de texto concretos.
+\end{tcolorbox}
+
+Empezamos la limpieza eliminando los enlaces.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -745,10 +754,10 @@ deseamos.
 \end{Highlighting}
 \end{Shaded}
 
-Usamos \textbf{removeWords} con \textbf{stopwords(``english'')},
-recordemos que los textos de los tweets están en inglés y cada idioma
-tiene sus propias palabras vacías; para eliminar palabras vacías, es
-decir, aquellas con poco valor para el análisis, que carecen de un
+Usamos la función \textbf{stopwords(``english'')},
+recordemos que los textos de los tweets están en inglés, y cada idioma
+tiene sus propias palabras vacías; para eliminar las palabras vacías, es
+decir, aquellas que consideramos que tienen poco valor de análisis para nuestro ejercicio, que carecen de un
 significado por si solas, tales como artículos, preposiciones,
 conjunciones, pronombres, etc.
 
@@ -783,12 +792,9 @@ conjunciones, pronombres, etc.
 \end{Highlighting}
 \end{Shaded}
 
-Además, podemos ver que se han añadido (aleatoriamente) más palabras
-vacías (``really'', ``tweets'', ``saw'', etc.). Estas palabras vacías
-son de las más usadas en los mensajes de texto de los tweets (ver
-\url{https://techland.time.com/2009/06/08/the-500-most-frequently-used-words-on-twitter/}).
+Podemos observar que se han añadido (de manera aleatoria) algunas palabras vacías de más como: ``really'', ``tweets'' y ``saw''. Porqué son de las más usadas en los mensajes de texto de los tweets en Twitter (ver el siguiente \href{https://techland.time.com/2009/06/08/the-500-most-frequently-used-words-on-twitter/}{\color{blue}enlace} para ver las 500 palabras más usadas en esta red social). Si son palabras muy utilizadas contendrán poco valor de análisis para nuestro ejercicio.
 
-En este caso, removemos las palabras de una sola letra.
+Eliminamos las palabras de una sola letra.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -797,48 +803,42 @@ En este caso, removemos las palabras de una sola letra.
 \end{Highlighting}
 \end{Shaded}
 
-Por último eliminamos los espacios vacíos excesivos, muchos de ellos
+Por último, eliminamos los espacios vacíos excesivos. Muchos de ellos son
 introducidos por las transformaciones anteriores.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{myCorpus <-}\StringTok{ }\KeywordTok{tm_map}\NormalTok{(myCorpus, stripWhitespace)}
+\NormalTok{myCorpus <-}\StringTok{ }\KeywordTok{tm_map}\NormalTok{(myCorpus, }\KeywordTok{content_transformer}\NormalTok{(stripWhitespace))}
 \end{Highlighting}
 \end{Shaded}
+
+La limpieza del texto, és un proceso básico dentro del Procesamiento del Lenguaje Natural (PLN), que reduce de manera significativa la longitud del conjunto de textos del Corpus. 
 
 \hypertarget{creaciuxf3n-de-un-modelo-predictivo}{%
 \section{Creación de un modelo
 predictivo}\label{creaciuxf3n-de-un-modelo-predictivo}}
 
+Para la creación de un modelo predictivo necesitamos construir una \textbf{Term Document Matrix} del conjunto de textos de nuestro Corpus, donde cada fila representará un texto y cada palabra (única) de un texto estará representada por una columna. Con esta matriz podremos empezar el preprocesado de datos y crear nuestro modelo predictivo más adelante.
+
+\begin{tcolorbox}
+	Una \textbf{Term Document Matrix} es una matriz matemática que describe la
+	frecuencia con la que se repiten una serie de palabras en una colección
+	de textos.
+\end{tcolorbox}
+
 \hypertarget{preprocesado-de-los-datos}{%
 \subsection{Preprocesado de los datos}\label{preprocesado-de-los-datos}}
 
-Para la creación de un modelo predictivo, necesitamos construir una
-\textbf{Term Document Matrix} del conjunto de textos de la variable
-\textbf{text}, donde cada fila representará un texto y cada palabra
-única estará representada per una columna.
+Sabemos que el preprocesado de datos engloba aquellas transformaciones de los datos con la finalidad de mejorar los resultados de la clasificación supervisada. Todo preprocesado de datos debe
+aprenderse de las observaciones del conjunto de datos de train y luego aplicarse a los conjuntos de datos de train y de test. Esto es muy importante para no violar la condición
+de que ninguna información procedente de las observaciones del conjunto de datos de test
+influya en el ajuste del modelo predictivo.
 
-\emph{Una Term Document Matrix es una matriz matemática que describe la
-frecuencia con la que se repiten una serie de palabras en una colección
-de documentos.}
+Comenzaremos mapeando nuestro Corpus, indicando que es una Term
+Document Matrix. Para ello, utilizamos la función \textbf{TermDocumentMatrix()} del paquete \textbf{tm} y
+asignaremos el resultado al objeto \textbf{complete.tdm}. 
 
-Comenzaremos mapeando nuestro Corpus indicando que es una \textbf{Term
-Document Matrix}, de esta manera podremos realizar el preprocesado de
-datos. Sabemos que el preprocesado de datos engloba aquellas
-transformaciones de los datos con la finalidad de mejorar los resultados
-de la clasificación supervisada. Todo preprocesado de datos debe
-aprenderse de las observaciones de train y luego aplicarse al conjunto
-de train y de test. Esto es muy importante para no violar la condición
-de que ninguna información procedente de las observaciones de test
-influya en el ajuste del modelo.
-
-Utilizaremos la función \textbf{TermDocumentMatrix} en nuestro Corpus y
-asignaremos el resultado al objeto \emph{complete.tdm}. Con el parámetro
-\textbf{control} indicaremos que evaluaremos todos los textos de la
-matriz, con las características escogidas se evaluarán todas las
-palabras de los textos. Por defecto la función
-\textbf{TermDocumentMatrix} usa \emph{tf-id}, que mide la importancia
-relativa de cada palabra en el conjunto de textos.
+Con el argumento \textbf{control} de la función \textbf{TermDocumentMatrix()}, indicamos que evaluamos y incluimos todos los textos que tengan una longitud superior a 4 caracteres hasta \emph{Inf}, donde \emph{Inf} es el valor Infinito. De esta manera, conseguimos incluir la mayoría de los textos  del Corpus en la Term Document Matrix. Por defecto la función \textbf{TermDocumentMatrix()} usa el valor numérico \emph{tf-id}, que mide la importancia relativa de cada palabra de los textos, es decir, mide su frecuencia de ocurrencia. El valor \emph{tf-id} aumenta según el número de veces que una palabra aparece en un texto y no en otros, lo que permite averiguar qué palabras son más comunes en este texto respecto a los otros.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -855,29 +855,20 @@ relativa de cada palabra en el conjunto de textos.
 ## Weighting          : term frequency (tf)
 \end{verbatim}
 
-Podemos observar que tenemos 16880 \emph{terms}, esto quiere decir que
-tenemos 16880 palabras diferentes en nuestro Corpus. Lo cual es una
-cantidad considerable de vocabulario, pero no esperaríamos otra cosa de
-una red social como \href{https://twitter.com}{Twitter}. La palabra más
-larga contiene 49 caracteres.
+Podemos observar que tenemos 16880 \emph{terms} en 10876 textos, esto quiere decir que
+tenemos 16880 palabras diferentes en 10876 textos. Lo cual es una
+cantidad considerable de palabras de la Term Document Matrix, pero no esperaríamos otra cosa de
+una red social como Twitter. La palabra más larga contiene 49 caracteres.
 
-Usaremos la función \textbf{removeSparseItems} para depurar nuestra
-\textbf{Term Document Matrix} de aquellas palabras que aparecen con muy
-poca frecuencia, es decir, son dispersas. Porqué 16880 palabras son
-demasiadas palabras y es posible que no podamos entrenar nuestro modelo
-debido a restricciones computacionales.
+Por ese motivo, usaremos la función \textbf{removeSparseItems()} del paquete \textbf{tm} para depurar nuestra
+Term Document Matrix de aquellas palabras que aparecen con muy poca frecuencia, es decir, que son dispersas. Con demasiadas palabras seria posible que no podamos entrenar nuestro modelo debido a grandes restricciones computacionales.
 
-Esta función requiere que especifiquemos el argumento \textbf{sparse},
-que puede asumir valores de 0 a 1. Este valor representa la dispersión
-de las palabras que queremos conservar. Si lo fijamos muy alto (cerca de
-1, pero no 1), conservaremos muchas palabras, casi todas, pues estamos
-indicando que queremos conservar palabras, aunque sean muy dispersas.
-Naturalmente, ocurre lo opuesto si fijamos este valor muy bajo (cerca de
-0, pero no 0), pudiendo incluso quedarnos sin ninguna palabra, si las
-palabras en nuestros textos son dispersas en general.
+La función \textbf{removeSparseItems()} requiere que especifiquemos el argumento \textbf{sparse}, que puede asumir valores de 0 a 1. Este valor representa la dispersión de las palabras que queremos conservar. Si lo fijamos muy alto (cerca de 1, pero no 1), conservaremos muchas palabras, casi todas, pues estamos
+indicando que queremos conservar palabras, aunque sean muy dispersas. Naturalmente, ocurre lo opuesto si fijamos este valor muy bajo (cerca de 0, pero no 0), pudiendo incluso quedarnos sin ninguna palabra, si las palabras en nuestros textos son bastante dispersas en general.
 
-En este caso, se decide fijarlo en \emph{.9975}, conservando las
-palabras que aparecen en al menos el 0.25\% de las observaciones.
+Para nuestro ejercicio, se decide fijar el valor del argumento \textbf{sparse} a \emph{.9975}, con la intención de conservar las palabras que aparecen al menos en el 0.25\% de las observaciones. Lo vemos a continuación.
+
+\vspace{3mm}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -894,46 +885,43 @@ palabras que aparecen en al menos el 0.25\% de las observaciones.
 ## Weighting          : term frequency (tf)
 \end{verbatim}
 
-De 16880 palabras que teníamos, nos hemos quedado con 582, lo cual
+De las 16880 palabras que teníamos, nos hemos quedado con 582, lo cual
 reduce en gran medida la dificultad y complejidad del problema de
-\emph{alta dimensionalidad}, lo cual es deseable. La palabra más larga
+\emph{alta dimensionalidad}, lo cual es muy deseable. La palabra más larga ahora
 contiene 17 caracteres.
 
 \hypertarget{feature-extraction-mediante-singular-value-decomposition}{%
-\subsubsection{Feature Extraction mediante Singular Value
-Decomposition}\label{feature-extraction-mediante-singular-value-decomposition}}
+\subsubsection{Feature Extraction mediante SVD}\label{feature-extraction-mediante-singular-value-decomposition}}
 
-La descomposición de los datos originales en un nuevo conjunto, sin
+La descomposición de los datos originales en un nuevo conjunto de datos, sin
 necesidad de pérdida de información relevante y sacando a la luz la
-información latente, es un proceso de vital importancia para implementar
-la parte más computacionalmente intensa del ejercicio. Buscando una
-intuitiva separabilidad de las clases de los datos aplicaremos la
-técnica de \emph{Descomposición en Valores Singulares (SVD)}.
+información existente, es un proceso de vital importancia para implementar
+la parte más computacionalmente intensa correspondiente a la minería de textos del ejercicio. 
 
-\emph{La Descomposición de Valores Singulares (en inglés Singular Value
-Decomposition ({[}SVD{]}
-(\url{https://en.wikipedia.org/wiki/Singular-value_decomposition})) es
-una técnica de reducción de la dimensionalidad, en minería de textos,
-que puede utilizarse para descubrir las dimensiones latentes (o
-componentes) que determinan similitudes semánticas entre las palabras
-(es decir, unidades léxicas) o entre los textos (es decir, unidades de
-contexto).}
+Buscando una intuitiva separabilidad de las clases de los datos aplicaremos la
+técnica denominada como \emph{Descomposición en Valores Singulares (SVD)}, en nuestra Term Document Matrix.
 
-Para aplicar la técnica de \emph{Descomposición en Valores Singulares
-(SVD)}, primero transformamos nuestra \textbf{Term Document Matrix} a un
-objeto de tipo \textbf{matrix} para así poder comprobar si nuestros
-datos aún contienen valores perdidos con la función \textbf{which}.
+\begin{tcolorbox}
+	La \href{https://es.wikipedia.org/wiki/Descomposici\%C3\%B3n_en_valores_singulares}{\color{blue}Descomposición de Valores Singulares} (en inglés Singular Value Decomposition (SVD) es una técnica de reducción de la dimensionalidad en minería de textos, que puede utilizarse para descubrir las dimensiones existentes que determinan similitudes semánticas entre las palabras (unidades léxicas) o entre los textos (unidades de	contexto).
+\end{tcolorbox}
+
+Para aplicar la técnica denominada como \emph{Descomposición en Valores Singulares
+(SVD)} tenemos que transformar nuestra Term Document Matrix en una \href{https://es.wikipedia.org/wiki/Matriz_transpuesta}{\color{blue}matriz transpuesta} que llamaremos \textbf{complete.term.matrix} para la factorización de la misma. 
+
+Para crear la matriz transpuesta usamos la función \textbf{t()} del paquete \textbf{base} y la convertimos en un objeto de tipo \textbf{matrix}. Nos aseguraremos que la matriz transpuesta no contiene valores perdidos, usando la función \textbf{which()}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{complete.term.matrix <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(t(complete.tdm))}
+\KeywordTok{which}\NormalTok{(!complete.cases(complete.term.matrix))}
+\end{Highlighting}
+\end{Shaded}
 
 \begin{verbatim}
 ## integer(0)
 \end{verbatim}
 
-Los datos no contienen valores perdidos, podemos proceder con la
-\emph{Descomposición de Valores Singulares (SVD)}. Para ello utilizamos
-la función \textbf{irlba}, que se encargará de la descomposición de
-nuestra \textbf{Term Document Matrix} y extraerá sus 150 vectores
-singulares más importantes, después de un máximo de 600 iteraciones, y
-que guardaremos en el objeto \textbf{complete\_irlba}.
+La matriz transpuesta no contiene valores perdidos, podemos comenzar con la factorización de ésta. Para ello usaremos la función \textbf{irlba()}, que descompondrá la matriz transpuesta en los 150 vectores singulares más importantes, después de buscar un máximo de 600 iteraciones. El resultado se almacenará en el objeto \textbf{complete\_irlba}.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -965,9 +953,8 @@ que guardaremos en el objeto \textbf{complete\_irlba}.
 \end{Highlighting}
 \end{Shaded}
 
-Lo que vemos arriba es una pequeña parte del modelo de espacio vectorial
-de los 150 vectores singulares más importantes, que usaremos como
-características para la clasificación supervisada.
+Lo que vemos arriba es una pequeña parte de la matriz transpuesta factorizada, que usaremos como
+característica principal para la clasificación supervisada. Porqué con el rango de factorización, que indica las similitudes de las palabras en los textos, nos permitirá agrupar las palabras para su clasificación.
 
 \hypertarget{divisiuxf3n-de-los-datos-en-train-y-test}{%
 \subsection{División de los datos en train y
@@ -1081,7 +1068,7 @@ los argumentos de esta función destacan:
 \item
   \textbf{metric}. La métrica empleada para evaluar la capacidad
   predictiva del modelo. Aunque la competición de Kaggle en la que se
-  basa nuestro ejercicio usa \textbf{F1 score} como métrica de
+  basa nuestro ejercicio usa \textbf{F1} como métrica de
   evaluación, para cuantificar como de bueno son los modelos
   utilizaremos la métrica de evaluación \emph{Accuracy}. Porqué la
   distribución de la clase no presenta un problema notable de
@@ -1800,12 +1787,12 @@ Concretamente en la comparación por pares entre los modelos
 considerar que la capacidad predictiva de los modelos es distinta,
 \emph{p-value} \textgreater{} 0.05 (0.1801641152).
 
-Antes de la predicción, calcularemos el valor \textbf{F1 score}, la
+Antes de la predicción, calcularemos el valor \textbf{F1}, la
 métrica que usa la competición de Kaggle escogida para nuestro
 ejercicio, porqué queremos ver si nos dará buenos resultados en la
 competición el modelo que acabamos de seleccionado (\emph{SVMRadial}).
 Para ello tendremos que predecir sobre el conjunto de train, calcular la
-matriz de confusión y calcular el valor de \textbf{F1 score}.
+matriz de confusión y calcular el valor de \textbf{F1}.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1868,7 +1855,7 @@ Teniendo en cuenta toda esta información, para predecir la clase de
 casos futuros vamos a usar el clasificador \emph{SVMRadial} que es el
 modelo que ha dado mejores resultados durante el entrenamiento. Con este
 modelo obtenemos un \textbf{Accuracy} de 0.8407 y un valor de
-\textbf{F1\_score} no muy bueno de 0.7919 que intentaremos mejorar.
+\textbf{F1} no muy bueno de 0.7919 que intentaremos mejorar.
 
 \hypertarget{predicciuxf3n}{%
 \section{Predicción}\label{predicciuxf3n}}
