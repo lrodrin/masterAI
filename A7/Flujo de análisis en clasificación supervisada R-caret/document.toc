@@ -12,15 +12,15 @@
 \contentsline {subsubsection}{Feature Extraction mediante SVD}{12}{section*.13}%
 \contentsline {subsection}{División de los datos en train y test}{13}{section*.14}%
 \contentsline {subsection}{Selección de variables}{14}{section*.15}%
-\contentsline {subsection}{Entrenamiento de modelos}{14}{section*.16}%
-\contentsline {subsubsection}{Regresión Logística}{16}{section*.17}%
-\contentsline {subsubsection}{Random Forest}{17}{section*.18}%
-\contentsline {subsubsection}{Gradient Boosting}{18}{section*.19}%
-\contentsline {subsubsection}{SVM}{19}{section*.20}%
-\contentsline {subsection}{Evaluación de modelos mediante resampling}{20}{section*.21}%
-\contentsline {subsubsection}{Wilcoxon signed-rank test}{21}{section*.22}%
-\contentsline {subsubsection}{Conclusión evaluación de modelos}{23}{section*.23}%
-\contentsline {section}{Predicción}{24}{section*.24}%
-\contentsline {section}{Resultado en Kaggle}{25}{section*.25}%
-\contentsline {section}{Conclusiones}{25}{section*.26}%
-\contentsline {section}{Referencias}{26}{section*.27}%
+\contentsline {subsection}{Entrenamiento de modelos}{15}{section*.16}%
+\contentsline {subsubsection}{Regresión Logística}{17}{section*.17}%
+\contentsline {subsubsection}{Random Forest}{18}{section*.18}%
+\contentsline {subsubsection}{Gradient Boosting}{19}{section*.19}%
+\contentsline {subsubsection}{SVM}{20}{section*.20}%
+\contentsline {subsection}{Evaluación de modelos mediante resampling}{21}{section*.21}%
+\contentsline {subsubsection}{Wilcoxon signed-rank test}{23}{section*.22}%
+\contentsline {subsubsection}{Conclusión evaluación de modelos}{24}{section*.23}%
+\contentsline {section}{Predicción}{25}{section*.24}%
+\contentsline {section}{Resultado en Kaggle}{26}{section*.25}%
+\contentsline {section}{Conclusiones}{26}{section*.26}%
+\contentsline {section}{Referencias}{27}{section*.27}%

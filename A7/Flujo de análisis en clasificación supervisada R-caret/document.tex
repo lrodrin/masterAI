@@ -896,7 +896,7 @@ contiene 17 caracteres.
 La descomposición de los datos originales en un nuevo conjunto de datos, sin
 necesidad de pérdida de información relevante y sacando a la luz la
 información existente, es un proceso de vital importancia para implementar
-la parte más computacionalmente intensa correspondiente a la minería de textos del ejercicio. 
+la parte más computacionalmente intensa correspondiente a la \href{https://es.wikipedia.org/wiki/Miner\%C3\%ADa_de_textos}{\color{blue}minería de textos} del ejercicio. 
 
 Buscando una intuitiva separabilidad de las clases de los datos aplicaremos la
 técnica denominada como \emph{Descomposición en Valores Singulares (SVD)}, en nuestra Term Document Matrix.
@@ -962,20 +962,15 @@ test}\label{divisiuxf3n-de-los-datos-en-train-y-test}}
 
 Evaluar la capacidad predictiva de un modelo consiste en comprobar cómo
 de próximas son sus predicciones a los verdaderos valores de la variable
-a predecir. Para poder cuantificar de forma correcta este error, se
+a predecir. Para poder cuantificar lo de forma correcta, se
 necesita disponer de un conjunto de observaciones, de las que se conozca
 la variable a predecir, pero que el modelo no haya ``visto'', es decir,
 que no hayan participado en su ajuste. Con esta finalidad, se dividen
-los datos disponibles en un conjunto de train y un conjunto de test.
+los datos que tenemos en \textbf{complete\_df} en un conjunto de datos de 
+train y un conjunto de datos de test.
 
-Con el conjunto de datos, del que se conoce la variable a predecir
-(\textbf{complete\_df}) y las características que hemos creado en la
-sección anterior (\textbf{complete\_irlba}) creamos un nuevo conjunto de
-datos que a continuación dividiremos en un conjunto de datos de train
-(\textbf{train.df}) y de test (\textbf{test.df}), con el mismo tamaño de
-la partición inicial proporcionada por la competición de Kaggle (7613
-instancias para el conjunto de datos de train y 3263 instancias para el
-conjunto de datos de test).
+Con el conjunto de datos, del que se conoce la variable a predecir (\textbf{complete\_df}) y la matriz transpuesta que hemos creado y factorizado en la sección anterior (\textbf{complete\_irlba}) creamos un nuevo objeto de tipo dataframe (\textbf{complete.svd}) que a continuación dividiremos en un conjunto de datos de train (\textbf{train.df}) y en un conjunto de datos de test (\textbf{test.df}), con el mismo tamaño de la partición inicial proporcionada por la competición de Kaggle que hemos elegido para nuestro ejercicio. En esta partición inicial el conjunto de datos de train cuenta con 7613
+instancias y el conjunto de datos de test con 3263 instancias. Ver sección del \ref{anuxe1lisis-exploratorio-de-los-datos}{análisis exploratorio de los datos} para comprobarlo.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1000,9 +995,11 @@ conjunto de datos de test).
 ## [1] 3263  150
 \end{verbatim}
 
-Un paso importante es verificar que la distribución de la variable a
-predecir del conjunto datos de train no ha cambiado respecto a la
-partición inicial (\textbf{complete\_df}).
+Vemos que usando la función \textbf{dim()}, los nuevos conjuntos de datos de train (\textbf{train.df}) y de test (\textbf{test.df}) tienen el mismo número de observaciones que la partición inicial.
+
+Otra comprobación importante, es verificar que la distribución de la variable a predecir \textbf{target}, del nuevo conjunto datos de train \textbf{train.df}, no ha cambiado respecto a la partición inicial \textbf{complete\_df}. Si transformamos las variables \textbf{complete\_df\$target} y \textbf{train.df\$target} en un objeto de tipo \textbf{table} podremos usar la función \textbf{prop.table()} para ver las proporciones de cada clase y compararlas.
+
+\vspace{2mm}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1028,56 +1025,67 @@ partición inicial (\textbf{complete\_df}).
 ## 0.5703402 0.4296598
 \end{verbatim}
 
+La distribución de la variable a predecir no ha cambiado.
+
 \hypertarget{selecciuxf3n-de-variables}{%
 \subsection{Selección de variables}\label{selecciuxf3n-de-variables}}
 
-Cuando se entrena un modelo, es importante incluir como variables para
-la predicción únicamente aquellas variables que están realmente
-relacionadas con la variable a predecir, ya que son estas las que
-contienen información útil para el modelo. Incluir un exceso de
-variables suele conllevar una reducción de la capacidad de predicción
-del modelo. La selección de variables para la predicción puede suponer
-la diferencia entre un modelo normal y uno muy bueno, por lo tanto,
-conviene conocer las herramientas internas de *caret** para la selección
-de variables.
+Cuando se entrena un modelo de clasificación supervisada, es importante incluir como variables únicamente aquellas variables que están realmente relacionadas con la variable a predecir, ya que son estas las que contienen información útil para el modelo. Incluir un exceso de variables suele conllevar una reducción de la capacidad de predicción de los modelos. En este punto, es donde la selección de variables para puede suponer la diferencia entre un modelo normal y uno muy bueno.
 
-Muchos modelos a los que se puede acceder mediante la función
-\textbf{train} de \textbf{caret} producen ecuaciones de predicción que
-no necesariamente utilizan todas las variables. Estos modelos tienen una
-selección de variables incorporada. El uso de estos modelos con
-selección de variables incorporada será más eficiente que otras
-estrategias, de wrapper y filtrado.
+\textbf{caret} posee una colección de herramientas internas para la selección de variables. Estas herramientas contienen sus propias estrategias de selección de variables. Por este motivo los modelos de \textbf{caret} como \textit{random forest, lasso o boosting} son tan versátiles.
 
-Para este ejercicio, escogemos algoritmos de clasificación supervisada
-de \textbf{caret} que tienen una selección de variables incorporada (ver
-\url{http://topepo.github.io/caret/feature-selection-overview.html})..
+Muchos de los modelos a los que se puede acceder mediante la función \textbf{train()} de \textbf{caret} producen ecuaciones de predicción que no necesariamente utilizan todas las variables, ya que, estos modelos tienen una selección de variables incorporada. El uso de estos modelos con selección de variables incorporada siempre será más eficiente que otras estrategias de selección de variables, como los métodos \textit{wrapper} y los métodos de filtrado.
+
+Suponiendo que la selección de variables incorporada en los modelos de \textbf{caret} es la mejor para cada modelo, para este ejercicio escogemos y entrenaremos en la siguiente sección los siguientes algoritmos:
+
+\begin{itemize}
+	\item \textbf{glmnet}. Generalized Linear Model with Stepwise Feature Selection.
+	\item \textbf{rf}. Random Forest.
+	\item \textbf{gbm}. Stochastic Gradient Boosting.
+\end{itemize}
+
+Todos los algoritmos con selección de variables incorporada se encuentran disponibles en el siguiente \href{http://topepo.github.io/caret/feature-selection-overview.html}{\color{blue}enlace}.
+
+Sabemos que hacer una buena selección de variables puede suponer la diferencia entre un modelo normal y uno muy bueno, pero ninguno de los algoritmos que se han seleccionado se utilizan específicamente en minería de textos. Así que, también entrenaremos el modelo \textbf{svmRadial} de \textbf{caret}. \textbf{svmRadial} es un algoritmo de clasificación supervisada utilizado en minería de textos. La finalidad de esta elección es poner de manifiesto que esto  también puede ser un elemento muy relevante para nuestro ejercicio.
+
+Con el modelo \textbf{svmRadial} de \textbf{caret} no podemos incorporar la selección de variables usando la función \textbf{train()}. En este caso tendríamos que utilizar alguno de los métodos de selección de variables que nos ofrece \textbf{caret}, como el denominado \textit{recursive feature elimination} con la función \textbf{rfe()}, mediante un \textit{algoritmo genético} con la función \textbf{gafs.default()}, etc. Pero no utilizaremos ningún método de selección de variables, porqué queremos probar si \textbf{svmRadial} es mejor clasificador en comparación con los modelos que sí incorporan la selección de variables mediante la función \textbf{train()}. 
+
+\begin{tcolorbox}
+	Más información sobre las funciones de \textbf{caret} \textbf{rfe()} i \textbf{gafs.default()}:
+	\begin{itemize}
+		\item \url{https://www.rdocumentation.org/packages/caret/versions/6.0-86/topics/rfe} 
+		\item \url{https://www.rdocumentation.org/packages/caret/versions/6.0-86/topics/gafs.default}
+	\end{itemize}
+\end{tcolorbox}
 
 \hypertarget{entrenamiento-de-modelos}{%
 \subsection{Entrenamiento de modelos}\label{entrenamiento-de-modelos}}
 
-En esta sección se entrenan diferentes modelos de \emph{clasificación
-supervisada} con el objetivo de compararlos e identificar el que mejor
+En esta sección se entrenan los diferentes modelos elegidos de clasificación
+supervisada con el objetivo de compararlos e identificar el que mejor
 resultado obtiene prediciendo. Todos estos modelos incorporados en el
-paquete \textbf{caret} se entrenan con la función \textbf{train}. Entre
+paquete \textbf{caret} se entrenan con la función \textbf{train()}. Entre
 los argumentos de esta función destacan:
 
 \begin{itemize}
 \item
   \textbf{method}. El nombre del algoritmo que se desea emplear
-  (\href{http://topepo.github.io/caret/available-models.html}{modelos}.
+  (\href{http://topepo.github.io/caret/available-models.html}{\color{blue}modelos disponibles}).
 \item
-  \textbf{metric}. La métrica empleada para evaluar la capacidad
-  predictiva del modelo. Aunque la competición de Kaggle en la que se
-  basa nuestro ejercicio usa \textbf{F1} como métrica de
-  evaluación, para cuantificar como de bueno son los modelos
-  utilizaremos la métrica de evaluación \emph{Accuracy}. Porqué la
-  distribución de la clase no presenta un problema notable de
+  \textbf{metric}. La métrica que se usa para evaluar la capacidad
+  predictiva del modelo. Aunque en la competición de Kaggle en la que se
+  basa nuestro ejercicio se espera \textbf{F1} como métrica de
+  evaluación, para cuantificar como de bueno son nuestros modelos
+  utilizaremos la métrica de evaluación \textbf{Accuracy}. Porqué la
+  distribución de la variable clase no presenta un problema notable de
   desbalanceo de clases y cuando la distribución de la variable clase
-  está bastante equilibrada es una buena medida de evaluación.
+  está bastante equilibrada se considera una buena medida de evaluación.
 \end{itemize}
 
-\emph{Accuracy es el porcentaje de observaciones correctamente
-clasificadas respecto al total de predicciones.}
+\begin{tcolorbox}
+	La métrica de evaluación \textbf{Accuracy} representa el porcentaje de observaciones correctamente
+	clasificadas respecto al total de predicciones.
+\end{tcolorbox}
 
 \begin{itemize}
 \tightlist
@@ -1086,34 +1094,13 @@ clasificadas respecto al total de predicciones.}
   llevar a cabo el entrenamiento del modelo.
 \end{itemize}
 
-La función \textbf{train} de \textbf{caret} siempre estima un porcentaje
-de bien clasificados sobre el conjunto de datos de train. La función
-\textbf{trainControl}, que se pasa al argumento \textbf{trControl} de la
-función \textbf{train}, controla la estimación del error: en este caso
-realizaremos una \emph{K-Fold Cross-Validation} usando la función
-\textbf{createMultiFolds}, de 5 hojas (\emph{k}) y repitiéndola 3 veces
-(\emph{times}). Una validación cruzada con 5 hojas y 3 repeticiones,
-implica ajustar y evaluar el modelo 5 * 3 = 15 veces, más un último
-ajuste con todos los datos de entrenamiento para crear el modelo final.
+Para especificar el tipo de validación que se usará durante el entrenamiento, se crea un control de entrenamiento mediante la función \textbf{trainControl()}, donde se pasa al argumento \textbf{trControl} de la función \textbf{train()}. Para nuestro ejercicio, el tipo de validación que se desarrolla es una \textbf{repeated K-Fold Cross-Validation}. 
 
-\emph{k-Fold-Cross-Validation (CV). Las observaciones de entrenamiento
-se reparten en k folds (conjuntos) del mismo tamaño. El modelo se ajusta
-con todas las observaciones excepto las del primer fold y se evalúa
-prediciendo las observaciones del fold que ha quedado excluido,
-obteniendo así la primera métrica. El proceso se repite k veces,
-excluyendo un fold distinto en cada iteración. Al final, se generan k
-valores de la métrica, que se agregan (normalmente con la media y la
-desviación típica) generando la estimación final de validación.}
+Con la función \textbf{createMultiFolds()} repartimos las observaciones del conjunto de datos de train en 5 folds (conjuntos) del mismo tamaño (\emph{k=5}), y los repetiremos 3 veces (\emph{times=3}). En total tendremos 5 * 3 = 15 folds en el objeto \textbf{cv.folds}.
 
-\emph{Repeated k-Fold-Cross-Validation (repeated CV). Es exactamente
-igual al método k-Fold-Cross-Validation pero repitiendo el proceso
-completo n veces. Por ejemplo, 10-Fold-Cross-Validation con 5
-repeticiones implica a un total de 50 iteraciones ajuste-validación,
-pero no equivale a un 50-Fold-Cross-Validation.}
+Veremos que durante el entrenamiento de los modelos se usan semillas con \textbf{set.seed(123)}. Las semillas son necesarias si se quiere asegurar la reproducibilidad de los resultados finales, ya que la validación cruzada implican selección aleatoria.
 
-Las semillas son necesarias si se quiere asegurar la reproducibilidad de
-los resultados, ya que una validación cruzada implica una selección
-aleatoria.
+\vspace{3mm}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1126,23 +1113,24 @@ aleatoria.
 \end{Highlighting}
 \end{Shaded}
 
-El argumento \textbf{method} de la función \textbf{trainControl} hace
-posible utilizar distintos tipos de validación. En este caso es
-\emph{repeatecv} (para entrenamiento repetido/división de test). Además
-de fijar el tipo de validación, la función \textbf{trainControl} permite
-fijar multitud de argumentos. A continuación, describimos los que se han
-fijado:
+El argumento \textbf{method} de la función \textbf{trainControl()} hace
+posible utilizar distintos tipos de validación. La \textbf{repeated K-Fold Cross-Validation} se denomina
+``repeatecv''. Además de fijar el tipo de validación, la función \textbf{trainControl()} permite
+fijar multitud de argumentos. 
+
+A continuación, describimos los argumentos que se han fijado:
 
 \begin{itemize}
 \tightlist
 \item
-  \textbf{number}. El número de hojas (\emph{5}).
+  \textbf{number}. El número de folds. 
+  
+  Tiene que coincidir con el argumento \textit{k} de la función \textbf{createMultiFolds()}. 
 \item
-  \textbf{index}. Lista con los elementos para cada iteración
-  (\textbf{cv.folds}). Cada elemento de la lista es un vector de números
-  enteros correspondientes a las filas utilizadas para el entrenamiento
-  en esa iteración.
+  \textbf{index}. Lista de los elementos de (\textbf{cv.folds}). Cada elemento de la lista es un vector que contiene el fold correspondiente a cada repetición. 
 \end{itemize}
+
+\vspace{2mm}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1169,45 +1157,62 @@ fijado:
 ##  $ Fold5.Rep3: int [1:6091] 1 2 3 4 5 6 7 8 9 10 ...
 \end{verbatim}
 
+\vspace{2mm}
+
 \begin{itemize}
 \tightlist
 \item
-  \textbf{allowParallel}. Habilita la computación paralela
-  (\emph{TRUE}). \textbf{caret} permite paralelizar el proceso para que
-  sea más rápido.
+  \textbf{allowParallel}. Habilita la computación paralela. 
+
 \item
-  \textbf{returnResamp}. Indica la cantidad de métricas de evaluación
-  que se deben guardar. Solo los valores finales (\emph{``final''}).
+  \textbf{returnResamp}. Indica la cantidad de métricas de evaluación que se deben guardar por cada repetición. Se especifica que se almacene la información ``final'' de los modelos generados en todas las repeticiones. 
+  
 \item
-  \textbf{verboseIter}. Para imprimir o no el registro de entrenamiento.
-  No se imprime (\emph{FALSE}).
+  \textbf{verboseIter}. Para mostrar o no el registro del entrenamiento. En nuestro caso no se mostrará.
 \end{itemize}
 
 Muchos modelos contienen parámetros que no pueden aprenderse a partir de
-los datos de entrenamiento y, por lo tanto, deben de ser establecidos
-por el analista. A estos se les conoce como \emph{hiperparámetros},
+los datos de entrenamiento y por lo tanto, deben de ser establecidos
+por nosotros. A estos se les conoce como \emph{hiperparámetros},
 argumento \textbf{tunning} de \textbf{caret}. Con la función
-\textbf{expand.grid} definiremos los valores de los argumentos a tunear.
+\textbf{expand.grid()} definiremos los valores de los parámetros a tunear.
 
 Los resultados de un modelo pueden depender en gran medida del valor que
-tomen sus \emph{hiperparámetros}, sin embargo, no se puede conocer de
-antemano cuáles son los adecuados. La forma más común de encontrar los
-valores óptimos es probando diferentes posibilidades. Para ello se
-utiliza el argumento de \textbf{caret}: \textbf{tuneGrid} en la función
-\textbf{train}. Si no se tiene ninguna idea de qué valores de
-\emph{hiperparámetros} pueden ser los adecuados, lo mejor es utilizar la
+tomen estos \emph{hiperparámetros}, sin embargo, no se pueden conocer de
+antemano cuáles son los más adecuados. La forma más común de encontrarlos 
+es probando diferentes posibilidades. Para ello se
+utiliza el argumento de \textbf{caret} \textbf{tuneGrid} como argumento de la función
+\textbf{train()}. Si no se tiene ninguna idea de qué 
+\emph{hiperparámetros} pueden ser los más adecuados, lo mejor es utilizar la
 aleatoriedad. \textbf{caret} también incorpora esta opción mediante el
-argumento \textbf{tuneLength}.
+argumento \textbf{tuneLength}, también se lo pasamos a la función
+\textbf{train()}.
 
-En el entrenamiento de los modelos realizaremos pruebas tanto con
-\textbf{tuneGrid} y \textbf{tuneLength}. Más con \textbf{tuneGrid}, ya
+Durante el entrenamiento de los modelos usaremos \textbf{tuneGrid} 
+y \textbf{tuneLength} según nuestro criterio. El uso de \textbf{tuneGrid} será mayor, ya
 que, de esta forma, se evita que se generen automáticamente valores que
 no tienen sentido o que disparan el tiempo de computación necesario.
-Además, con \emph{target \textasciitilde{}.} denotamos la variable que
-se quiere predecir e indicando que el resto de las variables del
-conjunto de datos de \textbf{train} son predictoras.
 
-A lo largo del proceso posterior es donde más destacarán las
+\begin{tcolorbox}
+	\textbf{k-Fold-Cross-Validation}. Las observaciones de entrenamiento
+	se reparten en k folds (conjuntos) del mismo tamaño. El modelo se ajusta
+	con todas las observaciones excepto las del primer fold y se evalúa
+	prediciendo las observaciones del fold que ha quedado excluido,
+	obteniendo así la primera métrica. El proceso se repite k veces,
+	excluyendo un fold distinto en cada iteración. Al final, se generan k
+	valores de la métrica, que se agregan (normalmente con la media y la
+	desviación típica) generando la estimación final de validación.	
+\end{tcolorbox}
+
+\begin{tcolorbox}
+	\textbf{repeated k-Fold-Cross-Validation}. Es exactamente
+	igual al método k-Fold-Cross-Validation pero repitiendo el proceso
+	completo n veces. Por ejemplo, 10-Fold-Cross-Validation con 5
+	repeticiones implica a un total de 50 iteraciones,
+	pero no equivale a un 50-Fold-Cross-Validation.
+\end{tcolorbox}
+
+A lo largo del proceso de entrenamiento de los modelos es donde más destacarán las
 funcionalidades ofrecidas por \textbf{caret}, permitiendo emplear la
 misma sintaxis para ajustar, optimizar, evaluar y predecir un amplio
 abanico de modelos variando únicamente el nombre del algoritmo. Aunque
@@ -1215,20 +1220,21 @@ abanico de modelos variando únicamente el nombre del algoritmo. Aunque
 son muchos los argumentos que pueden ser adaptados, cada uno con
 múltiples posibilidades. Con el objetivo de exponer mejor cada una de
 las opciones, en lugar de crear directamente un modelo final, se
-muestran ejemplos de menor a mayor complejidad de la lista mostrada
-anteriormente:
-\url{http://topepo.github.io/caret/available-models.html}.
+entrenaran los modelos que hemos seleccionado en la sección de 
+\ref{selecciuxf3n-de-variables}{selección de variables}.
+
 
 \hypertarget{regresiuxf3n-loguxedstica}{%
 \subsubsection{Regresión Logística}\label{regresiuxf3n-loguxedstica}}
 
 Información detallada sobre regresión logística en
-\href{https://www.cienciadedatos.net/documentos/27_regresion_logistica_simple_y_multiple}{Regresión
+\href{https://www.cienciadedatos.net/documentos/27_regresion_logistica_simple_y_multiple}{\color{blue}Regresión
 logística simple y múltiple}.
 
-\textbf{caret} emplea el método \textbf{glmnet}. Este algoritmo no tiene
-ningún \emph{hiperparámetro}, por lo tanto, usamos por ejemplo
-\textbf{tuneLength} igual a 15.
+Entrenamos el modelo \textbf{glmnet} de \textbf{caret}. Este algoritmo no tiene
+ningún \emph{hiperparámetro}, por lo tanto, usamos \textbf{tuneLength} igual a 15.
+
+\vspace{3mm}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1282,19 +1288,18 @@ ningún \emph{hiperparámetro}, por lo tanto, usamos por ejemplo
 \end{Highlighting}
 \end{Shaded}
 
-El \emph{Accuracy} promedio estimado mediante validación cruzada
-repetida es de 0.7648316, el modelo predice correctamente un 76.5\% de
+El valor de \emph{Accuracy} promedio estimado mediante validación cruzada
+repetida es de 0.7648316, el modelo predice correctamente el 76.5\% de
 las veces.
 
 \hypertarget{random-forest}{%
 \subsubsection{Random Forest}\label{random-forest}}
 
 Información detallada sobre Random Forest en
-\href{https://www.cienciadedatos.net/documentos/33_arboles_de_prediccion_bagging_random_forest_boosting}{Árboles
-de predicción: bagging, random forest, boosting y C5.0}.
+\href{https://www.cienciadedatos.net/documentos/33_arboles_de_prediccion_bagging_random_forest_boosting}{\color{blue}Árboles
+de predicción}.
 
-\textbf{caret} emplea el método **rf\emph{. Este algoritmo tiene un
-}hiperparámetro*:
+Entrenamos el modelo \textbf{rf} de \textbf{caret}. Este algoritmo tiene un \textit{hiperparámetro}:
 
 \begin{itemize}
 \tightlist
@@ -1302,6 +1307,8 @@ de predicción: bagging, random forest, boosting y C5.0}.
   \textbf{mtry}. Número de valores seleccionados aleatoriamente en cada
   árbol. En este caso hemos escogido: 3, 4, 5 y 7.
 \end{itemize}
+
+\vspace{3mm}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1351,65 +1358,66 @@ de predicción: bagging, random forest, boosting y C5.0}.
 \end{Highlighting}
 \end{Shaded}
 
-Empleando un modelo Random Forest con mtry = 5 se consigue un
-\emph{Accuracy} promedio de validación igual a 0.7632101, el modelo
-predice correctamente un 76.3\% de las veces.
+Empleando un modelo Random Forest con mtry = 4, se consigue un
+valor de \emph{Accuracy} promedio de validación igual a 0.7623348, el modelo
+predice correctamente el 76.2\% de las veces.
+
+\newpage
 
 \hypertarget{gradient-boosting}{%
 \subsubsection{Gradient Boosting}\label{gradient-boosting}}
 
 Información detallada sobre boosting
-\href{https://www.cienciadedatos.net/documentos/33_arboles_de_prediccion_bagging_random_forest_boosting}{Árboles
-de predicción: bagging, random forest, boosting y C5.0}.
+\href{https://www.cienciadedatos.net/documentos/33_arboles_de_prediccion_bagging_random_forest_boosting}{\color{blue}Árboles
+de predicción}.
 
-El método \textbf{gbm} de \textbf{caret} emplea el paquete gbm. Este
+Entrenamos el modelo \textbf{gbm}. El modelo \textbf{gbm} de \textbf{caret} emplea el paquete \textbf{gbm} que tendremos que cargar antes de entrenar el modelo. Este
 algoritmo tiene 4 \emph{hiperparámetros}:
 
 \begin{itemize}
 \item
   \textbf{n.trees}. Número de iteraciones del algoritmo de boosting.
-  Cuanto mayor es este valor, más se reduce el error de entrenamiento.
+  Cuanto mayor es este valor, más se reduce el error de entrenamiento pero mayor es el coste computacional.
 \item
   \textbf{interaction.depth}. El número total de divisiones que tiene el
-  árbol. Emplear árboles con ente 1 y 6 nodos suele dar buenos
+  árbol. Emplear árboles que tienen ente 1 y 6 nodos suele dar buenos
   resultados.
 \item
-  \textbf{shrinkage}. Controla la complejidad que tiene el modelo. Es
+  \textbf{shrinkage}. Controla la complejidad del modelo. Es
   preferible mejorar un modelo mediante muchos pasos pequeños que
-  mediante unos pocos grandes. Por esta razón, se emplea un valor de
+  mediante unos pocos pasos muy grandes. Por esta razón, se emplea un valor de
   \textbf{shrinkage} tan pequeño como sea posible, teniendo en cuenta
-  que, cuanto menor sea, mayor el número de iteraciones necesarias. Por
-  defecto es de 0.001.
+  que, cuanto menor sea, mayor el número de iteraciones necesarias. 
 \item
   \textbf{n.minobsinnode}. Número mínimo de observaciones que debe tener
   cada nodo del árbol para poder ser dividido. Al igual que
-  \textbf{interaction.depth}, permite controlar la complejidad que tiene
-  el modelo.
+  \textbf{interaction.depth}, permite controlar la complejidad del modelo.
 \end{itemize}
 
-Además de los hiperparámetros que permite controlar \textbf{caret},
-tiene otros dos más que hay que tener en cuenta:
+Además de los \emph{hiperparámetros}, este modelo nos permite controlar 
+otros dos valores más a tener en cuenta. Estos valores son:
 
 \begin{itemize}
 \item
   \textbf{distribution}. Determina la función de coste (\emph{loss
-  function}). Algunas de las más utilizadas son: \emph{gaussian}
-  (squared loss) para regresión, \emph{bernoulli} para clasificaciones
-  binarias, multinomial para clasificaciones con más de dos clases y
-  \emph{adaboost} para clasificaciones binarias y que emplea la función
+  function}). Algunas de las más utilizadas son: \emph{gaussian
+  (squared loss)} para regresión, \emph{bernoulli} para clasificaciones
+  binarias, \emph{multinomial} para clasificaciones con más de dos clases y
+  \emph{adaboost} también para clasificaciones binarias, ya que emplea la función
   exponencial del algoritmo original
-  \href{https://en.wikipedia.org/wiki/AdaBoost}{AdaBoost}.
+  \href{https://en.wikipedia.org/wiki/AdaBoost}{\color{blue}AdaBoost}.
 \item
-  \textbf{bag.fraction} (subsampling fraction): fracción de
-  observaciones del conjunto de train seleccionadas de forma aleatoria.
-  Si su valor es de 1, se emplea el algoritmo de \emph{Gradient
+  \textbf{bag.fraction} (subsampling fraction). Fracción de
+  observaciones del conjunto de datos train seleccionadas de forma aleatoria.
+  Si su valor es 1, se emplea el algoritmo de \emph{Gradient
   Boosting}, si es menor que 1, se emplea \emph{Stochastic Gradient
-  Boosting}. Por defecto su valor es de 0.5.
+  Boosting}. Por defecto su valor es 0.5.
 \end{itemize}
 
-En este caso solo añadimos el argumento \textbf{distribution} y como el
-ejercicio se basa en un problema de clasificación binaria usamos
-\emph{adaboost}.
+En este caso, solo añadimos de más el valor de \textbf{distribution}. Como nuestro
+ejercicio se basa en un problema de clasificación binaria elegimos \emph{adaboost}.
+
+\vspace{3mm}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1442,6 +1450,8 @@ ejercicio se basa en un problema de clasificación binaria usamos
 \NormalTok{model_gbm}
 \end{Highlighting}
 \end{Shaded}
+
+\newpage
 
 \begin{verbatim}
 ## Stochastic Gradient Boosting 
@@ -1488,19 +1498,17 @@ ejercicio se basa en un problema de clasificación binaria usamos
 \end{Shaded}
 
 Empleando un modelo Boosting con n.trees = 100, interaction.depth = 2,
-shrinkage = 0.1 and n.minobsinnode = 2 se consigue un \emph{Accuracy}
-promedio de validación igual a 0.7444716, el modelo predice
-correctamente un 74.4\% de las veces.
+shrinkage = 0.1 y n.minobsinnode = 2 se consigue un valor de \emph{Accuracy}
+promedio de validación igual a 0.7446022, el modelo predice
+correctamente el 74.4\% de las veces.
 
 \hypertarget{svm}{%
 \subsubsection{SVM}\label{svm}}
 
 Información detallada sobre SVM en
-\href{https://www.cienciadedatos.net/documentos/34_maquinas_de_vector_soporte_support_vector_machines}{Máquinas
-de Vector Soporte (Support Vector Machines, SVMs)}.
+\href{https://www.cienciadedatos.net/documentos/34_maquinas_de_vector_soporte_support_vector_machines}{\color{blue}Support Vector Machines}.
 
-\textbf{caret} emplea el método \textbf{svmRadial}. Este algoritmo tiene
-2 hiperparámetros:
+Entrenamos el modelo \textbf{svmRadial} de \textbf{caret}. Este algoritmo tiene 2 \emph{hiperparámetros}:
 
 \begin{itemize}
 \item
@@ -1508,6 +1516,8 @@ de Vector Soporte (Support Vector Machines, SVMs)}.
 \item
   \textbf{C}. Penalización por violaciones del margen del hiperplano.
 \end{itemize}
+
+\vspace{3mm}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1559,9 +1569,9 @@ de Vector Soporte (Support Vector Machines, SVMs)}.
 \end{Highlighting}
 \end{Shaded}
 
-Empleando un modelo SVM Radial con sigma = 0.006839608 y C = 1, se
-consigue un \emph{Accuracy} promedio de validación igual a 0.7701726, el
-modelo predice correctamente un 77\% de las veces.
+Empleando un modelo SVM con sigma = 0.006839611 y C = 1, se
+consigue un valor de \emph{Accuracy} promedio de validación igual a 0.7701726, el
+modelo predice correctamente el 77\% de las veces.
 
 \hypertarget{evaluaciuxf3n-de-modelos-mediante-resampling}{%
 \subsection{Evaluación de modelos mediante
@@ -1573,25 +1583,20 @@ en cuestión. Con los datos disponibles, existen dos formas de comparar
 los modelos. Si bien las dos no tienen por qué dar los mismos
 resultados, son complementarias a la hora de tomar una decisión final.
 Las dos formas de comparar y evaluar los distintos modelos entrenados
-son: usando las métricas de evaluación obtenidas y/o según el error de
-test empleando la función \textbf{extractPrediction} de \textbf{caret}.
+son: usando las métricas de evaluación obtenidas y/o con un test estadístico
+ empleando la función \textbf{extractPrediction()} de \textbf{caret}.
 
-La forma que usaremos se basará en las métricas obtenidas. Estas
-mediante la validación cruzada son estimaciones de la capacidad que
-tienen los modelos al predecir nuevas observaciones. Como toda
-estimación, tiene asociada un promedio. Para poder determinar si un
-método es superior a otro, no es suficiente con comparar los mínimos (o
+La forma que usaremos se basará en las métricas obtenidas. Para poder determinar si un
+método es mejor que otro, no será suficiente comparar los mínimos (o
 máximos dependiendo de la métrica) que ha conseguido cada uno, sino que
 hay que tener en cuenta sus promedios para determinar si existen
 evidencias suficientes de superioridad.
 
-La función \textbf{resamples} permite extraer, dado los modelos creados
-con \textbf{train}, las métricas obtenidas para cada repetición del
-proceso de validación. Es importante tener en cuenta que esta función
-recupera todos los resultados, por lo que, si no se especifica en el
-control de entrenamiento \emph{returnResamp = ``final''}, se devuelven
-los valores para todos los \emph{hiperparámetros}, no solo los del
-modelo final.
+La función \textbf{resamples()} nos permitirá extraer, dado los modelos creados
+con \textbf{train()}, las métricas que hemos obtenido. Es importante tener en cuenta que esta función
+recupera todos los resultados, por lo que, si no se ha especificado en el
+control de entrenamiento (en la función \textbf{trainControl()}) \emph{returnResamp = ``final''}, se devolverán
+todas las métricas, no solo las del modelo final.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1629,57 +1634,49 @@ modelo final.
 \end{verbatim}
 
 Observamos que junto con la estimación del porcentaje de bien
-clasificados (\textbf{Accuracy}), se nos muestra el valor de la métrica
-\textbf{Kappa}, el cual es una medida que compara el \textbf{Accuracy}
-observado respecto al \textbf{Accuracy} esperado (de una predicción al
+clasificados (\emph{Accuracy}), se nos muestra el valor de la métrica
+\textbf{Kappa}, el cual es una medida que compara el \emph{Accuracy}
+observado respecto al \emph{Accuracy} esperado (de una predicción al
 azar). Esto es, cuanto mejor estima un clasificador respecto a otro que
 predice al azar. Un ameno ejemplo para entenderla mejor se encuentra en
 este
-\href{https://stats.stackexchange.com/questions/82162/cohens-kappa-in-plain-english}{enlace}.
+\href{https://stats.stackexchange.com/questions/82162/cohens-kappa-in-plain-english}{\color{blue}enlace}.
 
-\emph{Kappa o Cohen's Kappa es el valor de Accuracy normalizado respecto
-del porcentaje de acierto esperado por azar. A diferencia de Accuracy,
-cuyo rango de valores puede ser {[}0, 1{]}, el de kappa es {[}-1, 1{]}.
-En problemas con clases desbalanceadas, donde el grupo mayoritario
-supera por mucho a los otros, Kappa es más útil porque evita caer en la
-ilusión de creer que un modelo es bueno cuando realmente solo supera por
-poco lo esperado por azar. }
+\begin{tcolorbox}
+	\textbf{Kappa} o Cohen's Kappa es el valor de Accuracy normalizado respecto
+	del porcentaje de acierto esperado por azar. A diferencia de Accuracy,
+	cuyo rango de valores puede ser {[}0, 1{]}, el de Kappa es {[}-1, 1{]}.
+	En problemas con clases desbalanceadas, donde el grupo mayoritario
+	supera por mucho al minoritario, Kappa es más útil porque evita caer en la
+	ilusión de creer que un modelo es bueno cuando realmente solo supera por
+	poco lo esperado por azar.
+\end{tcolorbox}
 
 Todos los modelos tienen un promedio de acierto en la predicción
-superior al nivel basal, Accuracy** superior a 0.57. El modelo
-\emph{SVMRadial} consigue el \textbf{Accuracy} promedio más alto,
-seguido muy de cerca por el modelo \emph{logistic}. Para determinar si
+superior al nivel basal, \emph{Accuracy} superior a 0.57 (distribución de la clase mayoritaria). El modelo
+\textbf{SVMRadial} consigue el valor de \emph{Accuracy} promedio más alto,
+seguido muy de cerca por el modelo \textbf{logistic}. Para determinar si
 las diferencias entre ellos son significativas, se recurre a un
-\emph{test estadístico}. Al compartir las ``folds''-hojas, un \emph{test
-estadístico} calculará la significancia de las diferencias entre los
-promedios de error de ambos modelos. Se trata de chequear las
-diferencias, para cada métrica, comparando entre los pares de
-clasificadores y de interpretar, mediante el \emph{p-value} asociado, si
+\emph{test estadístico}. El \emph{test
+estadístico} chequeará las
+diferencias de cada métrica, comparando entre todos los pares de
+modelos y interpretará mediante el \emph{p-value} asociado, si
 estas diferencias son estadísticamente significativas o no,
-\url{https://en.wikipedia.org/wiki/Statistical_significance}. Usamos un
-umbral de \emph{0.05}.
+\url{https://en.wikipedia.org/wiki/Statistical_significance}, usando el clásico umbral de 0.05.
 
-El \emph{test estadístico} que aplicamos es
-\href{https://www.cienciadedatos.net/documentos/18_prueba_de_los_rangos_con_signo_de_wilcoxon}{\emph{Wilcoxon
-signed-rank test}}, con correcciones por comparaciones múltiples. Este
-test usa la función \textbf{pairwise.wilcox.test} que nos da mucha
-flexibilidad en cuanto a las comparaciones múltiples.
+El \emph{test estadístico} que desarrollaremos es el
+\href{https://www.cienciadedatos.net/documentos/18_prueba_de_los_rangos_con_signo_de_wilcoxon}{\color{blue}Wilcoxon
+signed-rank test}. Este tipo de test usa la función \textbf{pairwise.wilcox.test()} del paquete \textbf{stats}.
 
 \hypertarget{wilcoxon-signed-rank-test}{%
 \subsubsection{Wilcoxon signed-rank
 test}\label{wilcoxon-signed-rank-test}}
 
-Primeo se trasforma el dataframe devuelto por \textbf{resamples} para
-separar el nombre del modelo y las métricas en columnas distintas. Se
-usan las funciones \textbf{gather} (junta las columnas en pares
-clave-valor) y \textbf{separate} (separa una columna de caracteres en
-varias columnas). Para una mejor visualización también se usan las
-funciones \textbf{group\_by}. para agrupar los resultados
-modelo-métrica, \textbf{summarise}, \textbf{spread}, para distribuir los
-pares clave-valor en varias columnas, y \textbf{arrange} para ordenar
-los resultados de forma descendente. Todas estas funciones se pueden
-encontrar en los paquetes \textbf{tidyr} y \textbf{dplyr} del paquete
-\textbf{tidyverse}.
+Para desarrollar este test, primero tenemos que trasformar los valores de las métricas devueltos por la función \textbf{resamples()}, para separar el nombre de cada modelo con sus métricas. Para ello, se usan las funciones \textbf{gather()}, para juntar las columnas en pares modelo-valor y \textbf{separate()}, que separa la columna modelo en las columnas modelo-métrica. Para mejorar la separación también se usan las funciones \textbf{group\_by()}, para agrupar los resultados modelo-métrica; \textbf{summarise()}, para resumir el promedio de los valores de las métricas; \textbf{spread()}, para distribuir los pares métrica-media en varias columnas; y \textbf{arrange()} para ordenarlo todo de forma descendente. Todas estas funciones se pueden encontrar en los paquetes \textbf{tidyr} y \textbf{dplyr} del paquete \textbf{tidyverse}.
+
+Se recomienda visualizar el valor de la variable \textbf{metricas\_resamples} durante las diferentes transformaciones.
+
+\vspace{2mm}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1695,43 +1692,23 @@ encontrar en los paquetes \textbf{tidyr} y \textbf{dplyr} del paquete
 \end{Highlighting}
 \end{Shaded}
 
-\begin{verbatim}
-## `summarise()` regrouping output by 'modelo' (override with `.groups` argument)
-\end{verbatim}
-
-\begin{verbatim}
-## # A tibble: 4 x 3
-## # Groups:   modelo [4]
-##   modelo    Accuracy Kappa
-##   <chr>        <dbl> <dbl>
-## 1 SVMRadial    0.770 0.519
-## 2 logistic     0.765 0.508
-## 3 RF           0.762 0.508
-## 4 boosting     0.745 0.468
-\end{verbatim}
-
-Comparaciones múltiples con el test suma de rangos de \emph{Wilcoxon}
-usando la función \textbf{pairwise.wilcox.test}. Este test es una
-alternativa al \emph{t-test} de observaciones dependientes cuando las
-observaciones no siguen una distribución normal. LA función contiene los
+Una vez tenemos los valores de las métricas separados por modelo, seleccionamos solo los valores de la métrica \emph{Accuracy}. El test comparará los múltiples valores de la métrica \emph{Accuracy} entre los pares de modelos y calculará el \emph{p-value} entre ellos. La función \textbf{pairwise.wilcox.test()} calculará estas comparaciones múltiples y los \emph{p-values}. La función contiene los
 siguientes argumentos:
 
 \begin{itemize}
 \tightlist
 \item
-  \textbf{x}. Vector que contiene todos los valores de \textbf{Accuracy}
-  de los modelos entrenados (\emph{metricas\_accuracy\$valor}).
+  \textbf{x}. Vector que contiene todos los valores de la métrica \emph{Accuracy}.
 \item
-  \textbf{g}. El vector \emph{metricas\_accuracy\$valor} agrupado por
-  modelo.
+  \textbf{g}. El vector en \emph{x} agrupado por modelo.
 \item
-  \textbf{paired}. Indicador de si el test es paredado o no. En este
+  \textbf{paired}. Indicador de si el test será paredado o no. En este
   caso sí que lo es.
 \item
   \textbf{p.adjust.method}. Método para ajustar los \emph{p-values}. En
-  este se ajusta con el método de
-  \href{https://en.wikipedia.org/wiki/Holm\%E2\%80\%93Bonferroni_method}{\emph{Holm's}},
-  que es de los más utilizados para las comparaciones múltiples.
+  este caso se ajusta con el método de
+  \href{https://en.wikipedia.org/wiki/Holm\%E2\%80\%93Bonferroni_method}{\color{blue}{Holm's}},
+  que es de los más utilizados para este tipo de test.
 \end{itemize}
 
 \begin{Shaded}
@@ -1744,7 +1721,11 @@ siguientes argumentos:
 \end{Highlighting}
 \end{Shaded}
 
-Finalmente se almacenan los \emph{p-values} en forma de dataframe.
+\begin{tcolorbox}
+	El \emph{p-value} ayuda a diferenciar resultados que son producto del azar del muestreo, de resultados que son estadísticamente significativos. 
+\end{tcolorbox}
+
+Finalmente se almacenan los \emph{p-values} en forma de dataframe para cada par de modelos comparados y aplicamos una serie de transformaciones sobre el dataframe para mejorar su interpretación. Además de las funciones que ya hemos usado anteriormente como \textbf{gather()} y \textbf{arrange()}, añadimos otras dos: \textbf{rownames\_to\_column()}; que agrega una columna al inicio del dataframe; y la función \textbf{na.omit()}. 
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1769,23 +1750,21 @@ Finalmente se almacenan los \emph{p-values} en forma de dataframe.
 ## 6 SVMRadial       RF 0.0036056278
 \end{verbatim}
 
+También se recomienda visualizar el valor de la variable \textbf{comparaciones} durante las diferentes transformaciones.
+
 \hypertarget{conclusiuxf3n-evaluaciuxf3n-de-modelos}{%
 \subsubsection{Conclusión evaluación de
 modelos}\label{conclusiuxf3n-evaluaciuxf3n-de-modelos}}
 
-Hemos visto que el modelo basado en \emph{SVM} es el que mejores
-resultados obtiene (acorde a la métrica \textbf{Accuracy}) en el
-conjunto de train con la validación cruzada (``repeatedcv''). Los
-modelos basados \emph{random forest} y \emph{regresión logística}
-consiguen valores un poco similares, sin embargo, acorde a los
-contrastes de hipótesis con los resultados de la validación, los modelos
-de \emph{random forest} y \emph{regresión logistica} son inferiores a
-\emph{SVM}.
-
-Concretamente en la comparación por pares entre los modelos
-\emph{SVMRadial} y \emph{logistic} existen evidencias suficientes para
-considerar que la capacidad predictiva de los modelos es distinta,
-\emph{p-value} \textgreater{} 0.05 (0.1801641152).
+Hemos visto que el modelo basado en SVM es el que mejores
+resultados obtiene, acorde a la métrica \emph{Accuracy}, en el
+conjunto de datos de train con la validación cruzada de tipo ``repeatedcv''. Los
+modelos basados en random forest y regresión logística
+consiguen valores un poco similares, sin embargo, acorde a los resultados del test estadístico con los resultados de la validación, los modelos de random forest y regresión logística son significativamente inferiores a
+SVM. Concretamente si nos fijamos en la comparación por pares entre los modelos
+SVMRadial y logistic existen evidencias suficientes para
+considerar que la capacidad predictiva de los modelos es distinta, 
+\emph{p-value} \textgreater{} 0.05 (el umbral clásico anteriormente fijado).
 
 Antes de la predicción, calcularemos el valor \textbf{F1}, la
 métrica que usa la competición de Kaggle escogida para nuestro
