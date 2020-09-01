@@ -299,7 +299,7 @@ Como acabamos de comentar en la sección anterior, la variable \textbf{target} e
 predecir. La variable es de tipo cuantitativa, concretamente de tipo entero, y conviene
 transformarla para que sea una variable de tipo cualitativa (categórica). 
 
-Para transformar la variable a predecir en una variable categórica usamos la función \textbf{as.factor()}. Esto lo hacemos para evitar errores futuros, y además se re-codifica para que sus dos posibles valores sean ``Yes'' y ``No''.
+Para transformar la variable a predecir en una variable categórica usamos la función \textbf{as.factor()}. Esto lo hacemos para evitar errores futuros, y además se recodifica para que sus dos posibles valores sean ``Yes'' y ``No''.
 
 \vspace{3mm}
 
@@ -354,7 +354,7 @@ Gráficamente (ver Figura \ref{fig: distribución de la variable target}) observ
 
 Concretamente, el 57\% de los tweets corresponden a desastres no reales, y aproximadamente el 43\% corresponden a desastres reales. Para que el modelo predictivo que crearemos nos sea útil, tendremos que intentar superar ese porcentaje mínimo del 57\% de la clase mayoritaria.
 
-Como el objetivo del ejercicio es predecir que tweets pertenecen o no a un desastre real, lo que haremos a continuación, es analizar las variables explicativas del conjunto de datos de train en relación a la variable a predecir \textbf{target}. De este análisis se podrán extraer ideas sobre que variables están más relacionadas con los desastres reales.
+Como el objetivo del ejercicio es predecir que tweets pertenecen o no a un desastre real, lo que haremos a continuación, es analizar las variables explicativas del conjunto de datos de train en relación con a la variable a predecir \textbf{target}. De este análisis se podrán extraer ideas sobre que variables están más relacionadas con los desastres reales.
 
 \hypertarget{variable-keyword}{%
 \subsection{\texorpdfstring{Variable
@@ -483,7 +483,7 @@ Veremos que se usa la función \textbf{gsub()} para eliminar los guiones bajos d
 
 \newpage
 
-Parece que al observar la matriz de correlaciones, existe una correlación nula entre las variables \textbf{keyword} y \textbf{target}. Si lo revisamos con mayor detalle, podemos observar que la mayoría de las
+Parece que, al observar la matriz de correlaciones, existe una correlación nula entre las variables \textbf{keyword} y \textbf{target}. Si lo revisamos con mayor detalle, podemos observar que la mayoría de las
 palabras clave no tienen un sentimiento positivo asociado, muchos de sus coeficientes se encuentran dentro del umbral: (-1.0, 0.5). Las palabras clave asociadas a un sentimiento se asocian negativamente (p. ej. miedo o
 tristeza), lo cual es bastante consistente con el ejercicio, ya que intentemos predecir desastres reales. Teniendo en cuenta el análisis exploratorio de la variable \textbf{keyword} y acorde a nuestro criterio, no se considera buena para hacer predicciones ya que no está realmente asociada con la variable a
 predecir. Así que la excluiremos en el \ref{preprocesado-de-los-datos}{procesamiento de texto}.
@@ -665,7 +665,7 @@ valores perdidos.
 
 Identificamos que las variables explicativas \textbf{keyword} y
 \textbf{location} contienen valores perdidos. La variable explicativa
-\textbf{text} no contienen valores perdidos. Sobretodo hay una gran cantidad
+\textbf{text} no contienen valores perdidos. Además, hay una gran cantidad
 de tweets para los cuales falta su ubicación. Los 3263 valores perdidos
 de la variable a predecir provienen del conjunto de datos de test. 
 
@@ -758,7 +758,7 @@ Usamos la función \textbf{stopwords(``english'')},
 recordemos que los textos de los tweets están en inglés, y cada idioma
 tiene sus propias palabras vacías; para eliminar las palabras vacías, es
 decir, aquellas que consideramos que tienen poco valor de análisis para nuestro ejercicio, que carecen de un
-significado por si solas, tales como artículos, preposiciones,
+significado por sí solas, tales como artículos, preposiciones,
 conjunciones, pronombres, etc.
 
 \begin{Shaded}
@@ -812,7 +812,7 @@ introducidos por las transformaciones anteriores.
 \end{Highlighting}
 \end{Shaded}
 
-La limpieza del texto, és un proceso básico dentro del Procesamiento del Lenguaje Natural (PLN), que reduce de manera significativa la longitud del conjunto de textos del Corpus. 
+La limpieza del texto, es un proceso básico dentro del Procesamiento del Lenguaje Natural (PLN), que reduce de manera significativa la longitud del conjunto de textos del Corpus. 
 
 \hypertarget{creaciuxf3n-de-un-modelo-predictivo}{%
 \section{Creación de un modelo
@@ -838,7 +838,7 @@ Comenzaremos mapeando nuestro Corpus, indicando que es una Term
 Document Matrix. Para ello, utilizamos la función \textbf{TermDocumentMatrix()} del paquete \textbf{tm} y
 asignaremos el resultado al objeto \textbf{complete.tdm}. 
 
-Con el argumento \textbf{control} de la función \textbf{TermDocumentMatrix()}, indicamos que evaluamos y incluimos todos los textos que tengan una longitud superior a 4 caracteres hasta \emph{Inf}, donde \emph{Inf} es el valor Infinito. De esta manera, conseguimos incluir la mayoría de los textos  del Corpus en la Term Document Matrix. Por defecto la función \textbf{TermDocumentMatrix()} usa el valor numérico \emph{tf-id}, que mide la importancia relativa de cada palabra de los textos, es decir, mide su frecuencia de ocurrencia. El valor \emph{tf-id} aumenta según el número de veces que una palabra aparece en un texto y no en otros, lo que permite averiguar qué palabras son más comunes en este texto respecto a los otros.
+Con el argumento \textbf{control} de la función \textbf{TermDocumentMatrix()}, indicamos que evaluamos y incluimos todos los textos que tengan una longitud superior a 4 caracteres hasta \emph{Inf}, donde \emph{Inf} es el valor Infinito. De esta manera, conseguimos incluir la mayoría de los textos del Corpus en la Term Document Matrix. Por defecto la función \textbf{TermDocumentMatrix()} usa el valor numérico \emph{tf-id}, que mide la importancia relativa de cada palabra de los textos, es decir, mide su frecuencia de ocurrencia. El valor \emph{tf-id} aumenta según el número de veces que una palabra aparece en un texto y no en otros, lo que permite averiguar qué palabras son más comunes en este texto respecto a los otros.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1046,7 +1046,7 @@ Suponiendo que la selección de variables incorporada en los modelos de \textbf{
 
 Todos los algoritmos con selección de variables incorporada se encuentran disponibles en el siguiente \href{http://topepo.github.io/caret/feature-selection-overview.html}{\color{blue}enlace}.
 
-Sabemos que hacer una buena selección de variables puede suponer la diferencia entre un modelo normal y uno muy bueno, pero ninguno de los algoritmos que se han seleccionado se utilizan específicamente en minería de textos. Así que, también entrenaremos el modelo \textbf{svmRadial} de \textbf{caret}. \textbf{svmRadial} es un algoritmo de clasificación supervisada utilizado en minería de textos. La finalidad de esta elección es poner de manifiesto que esto  también puede ser un elemento muy relevante para nuestro ejercicio.
+Sabemos que hacer una buena selección de variables puede suponer la diferencia entre un modelo normal y uno muy bueno, pero ninguno de los algoritmos que se han seleccionado se utilizan específicamente en minería de textos. Así que, también entrenaremos el modelo \textbf{svmRadial} de \textbf{caret}. \textbf{svmRadial} es un algoritmo de clasificación supervisada utilizado en minería de textos. La finalidad de esta elección es poner de manifiesto que esto también puede ser un elemento muy relevante para nuestro ejercicio.
 
 Con el modelo \textbf{svmRadial} de \textbf{caret} no podemos incorporar la selección de variables usando la función \textbf{train()}. En este caso tendríamos que utilizar alguno de los métodos de selección de variables que nos ofrece \textbf{caret}, como el denominado \textit{recursive feature elimination} con la función \textbf{rfe()}, mediante un \textit{algoritmo genético} con la función \textbf{gafs.default()}, etc. Pero no utilizaremos ningún método de selección de variables, porqué queremos probar si \textbf{svmRadial} es mejor clasificador en comparación con los modelos que sí incorporan la selección de variables mediante la función \textbf{train()}. 
 
@@ -1098,7 +1098,7 @@ Para especificar el tipo de validación que se usará durante el entrenamiento, 
 
 Con la función \textbf{createMultiFolds()} repartimos las observaciones del conjunto de datos de train en 5 folds (conjuntos) del mismo tamaño (\emph{k=5}), y los repetiremos 3 veces (\emph{times=3}). En total tendremos 5 * 3 = 15 folds en el objeto \textbf{cv.folds}.
 
-Veremos que durante el entrenamiento de los modelos se usan semillas con \textbf{set.seed(123)}. Las semillas son necesarias si se quiere asegurar la reproducibilidad de los resultados finales, ya que la validación cruzada implican selección aleatoria.
+Veremos que durante el entrenamiento de los modelos se usan semillas con \textbf{set.seed(123)}. Las semillas son necesarias si se quiere asegurar la reproducibilidad de los resultados finales, ya que la validación cruzada implica selección aleatoria.
 
 \vspace{3mm}
 
@@ -1172,10 +1172,11 @@ A continuación, describimos los argumentos que se han fijado:
 \end{itemize}
 
 Muchos modelos contienen parámetros que no pueden aprenderse a partir de
-los datos de entrenamiento y por lo tanto, deben de ser establecidos
+los datos de entrenamiento y, por lo tanto, deben de ser establecidos
 por nosotros. A estos se les conoce como \emph{hiperparámetros},
 argumento \textbf{tunning} de \textbf{caret}. Con la función
-\textbf{expand.grid()} definiremos los valores de los parámetros a tunear.
+\textbf{expand.grid()} definiremos los valores de los parámetros a tunear
+
 
 Los resultados de un modelo pueden depender en gran medida del valor que
 tomen estos \emph{hiperparámetros}, sin embargo, no se pueden conocer de
@@ -1376,9 +1377,10 @@ algoritmo tiene 4 \emph{hiperparámetros}:
 
 \begin{itemize}
 \item
-  \textbf{n.trees}. Número de iteraciones del algoritmo de boosting.
-  Cuanto mayor es este valor, más se reduce el error de entrenamiento pero mayor es el coste computacional.
+\textbf{n.trees}. Número de iteraciones del algoritmo de boosting.
+Cuanto mayor es este valor, más se reduce el error de entrenamiento, pero mayor es el coste computacional.
 \item
+
   \textbf{interaction.depth}. El número total de divisiones que tiene el
   árbol. Emplear árboles que tienen ente 1 y 6 nodos suele dar buenos
   resultados.
@@ -1583,20 +1585,13 @@ en cuestión. Con los datos disponibles, existen dos formas de comparar
 los modelos. Si bien las dos no tienen por qué dar los mismos
 resultados, son complementarias a la hora de tomar una decisión final.
 Las dos formas de comparar y evaluar los distintos modelos entrenados
-son: usando las métricas de evaluación obtenidas y/o con un test estadístico
+son: usando las métricas de evaluación obtenidas y/o con un \textbf{test estadístico}
  empleando la función \textbf{extractPrediction()} de \textbf{caret}.
 
-La forma que usaremos se basará en las métricas obtenidas. Para poder determinar si un
-método es mejor que otro, no será suficiente comparar los mínimos (o
-máximos dependiendo de la métrica) que ha conseguido cada uno, sino que
-hay que tener en cuenta sus promedios para determinar si existen
-evidencias suficientes de superioridad.
+El test estadístico se usaría para determinar si un método es mejor que otro, cuando no sea suficiente la comparación de los valores mínimos (o máximos dependiendo de la métrica) que ha conseguido cada uno. Si ese fuera el caso, con el uso de los promedios podríamos determinar si existen evidencias suficientes de superioridad entre los modelos.
 
-La función \textbf{resamples()} nos permitirá extraer, dado los modelos creados
-con \textbf{train()}, las métricas que hemos obtenido. Es importante tener en cuenta que esta función
-recupera todos los resultados, por lo que, si no se ha especificado en el
-control de entrenamiento (en la función \textbf{trainControl()}) \emph{returnResamp = ``final''}, se devolverán
-todas las métricas, no solo las del modelo final.
+La función \textbf{resamples()} nos permitirá extraer, dado los modelos entrenados
+con \textbf{train()}, las métricas de evaluación obtenidas para cada repetición del proceso de validación. Es importante tener en cuenta que la función \textbf{resamples()} recupera todos los resultados de un entrenamiento, por lo que, si no se ha especificado en el control del entrenamiento, en la función \textbf{trainControl()} el argumento returnResamp = ``final'', se devolverán todas las métricas, no solo las del modelo final.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1634,10 +1629,10 @@ todas las métricas, no solo las del modelo final.
 \end{verbatim}
 
 Observamos que junto con la estimación del porcentaje de bien
-clasificados (\emph{Accuracy}), se nos muestra el valor de la métrica
-\textbf{Kappa}, el cual es una medida que compara el \emph{Accuracy}
-observado respecto al \emph{Accuracy} esperado (de una predicción al
-azar). Esto es, cuanto mejor estima un clasificador respecto a otro que
+clasificados (Accuracy), se nos muestra el valor de la métrica
+\textbf{Kappa}, el cual es una medida que compara el Accuracy
+observado respecto al Accuracy esperado (de una predicción al
+azar). Esto es, cuanto mejor estima un modelo respecto a otro que
 predice al azar. Un ameno ejemplo para entenderla mejor se encuentra en
 este
 \href{https://stats.stackexchange.com/questions/82162/cohens-kappa-in-plain-english}{\color{blue}enlace}.
@@ -1647,36 +1642,45 @@ este
 	del porcentaje de acierto esperado por azar. A diferencia de Accuracy,
 	cuyo rango de valores puede ser {[}0, 1{]}, el de Kappa es {[}-1, 1{]}.
 	En problemas con clases desbalanceadas, donde el grupo mayoritario
-	supera por mucho al minoritario, Kappa es más útil porque evita caer en la
+	supera por mucho al grupo minoritario, Kappa es más útil porque evita caer en la
 	ilusión de creer que un modelo es bueno cuando realmente solo supera por
 	poco lo esperado por azar.
 \end{tcolorbox}
 
-Todos los modelos tienen un promedio de acierto en la predicción
-superior al nivel basal, \emph{Accuracy} superior a 0.57 (distribución de la clase mayoritaria). El modelo
-\textbf{SVMRadial} consigue el valor de \emph{Accuracy} promedio más alto,
-seguido muy de cerca por el modelo \textbf{logistic}. Para determinar si
-las diferencias entre ellos son significativas, se recurre a un
-\emph{test estadístico}. El \emph{test
-estadístico} chequeará las
-diferencias de cada métrica, comparando entre todos los pares de
-modelos y interpretará mediante el \emph{p-value} asociado, si
-estas diferencias son estadísticamente significativas o no,
-\url{https://en.wikipedia.org/wiki/Statistical_significance}, usando el clásico umbral de 0.05.
+Todos los modelos tienen un promedio de aciertos en la predicción
+superior al nivel basal, Accuracy superior a 0.57 (distribución de la clase mayoritaria, ver Figura \ref{fig: distribución de la variable target}). El modelo \textbf{SVMRadial} es el modelo que consigue el valor de Accuracy promedio más alto, seguido muy de cerca por el modelo \textbf{logistic}. Para determinar si
+las diferencias entre ellos son significativas, se recurre al {test estadístico}. 
 
-El \emph{test estadístico} que desarrollaremos es el
-\href{https://www.cienciadedatos.net/documentos/18_prueba_de_los_rangos_con_signo_de_wilcoxon}{\color{blue}Wilcoxon
-signed-rank test}. Este tipo de test usa la función \textbf{pairwise.wilcox.test()} del paquete \textbf{stats}.
+El test estadístico chequeará las diferencias de los valores de la métrica Accuracy, entre todos los pares de
+modelos y interpretará mediante el \emph{p-value} asociado, si estas diferencias son \href{https://en.wikipedia.org/wiki/Statistical_significance}{\color{blue}estadísticamente significativas} o no, usando el clásico umbral de 0.05. Si las diferencias de los modelos \textbf{SVMRadial} y \textbf{logistic} son estadísticamente diferentes, el mejor modelo será \textbf{SVMRadial} porqué su valor de Accuracy es mayor.
+
+El test estadístico en \textbf{R} que se ha elegido es el
+\href{https://www.cienciadedatos.net/documentos/18_prueba_de_los_rangos_con_signo_de_wilcoxon}{\color{blue}Wilcoxon signed-rank test}. Para lanzar-lo usaremos la función \textbf{pairwise.wilcox.test()} del paquete \textbf{stats}. 
 
 \hypertarget{wilcoxon-signed-rank-test}{%
 \subsubsection{Wilcoxon signed-rank
 test}\label{wilcoxon-signed-rank-test}}
 
-Para desarrollar este test, primero tenemos que trasformar los valores de las métricas devueltos por la función \textbf{resamples()}, para separar el nombre de cada modelo con sus métricas. Para ello, se usan las funciones \textbf{gather()}, para juntar las columnas en pares modelo-valor y \textbf{separate()}, que separa la columna modelo en las columnas modelo-métrica. Para mejorar la separación también se usan las funciones \textbf{group\_by()}, para agrupar los resultados modelo-métrica; \textbf{summarise()}, para resumir el promedio de los valores de las métricas; \textbf{spread()}, para distribuir los pares métrica-media en varias columnas; y \textbf{arrange()} para ordenarlo todo de forma descendente. Todas estas funciones se pueden encontrar en los paquetes \textbf{tidyr} y \textbf{dplyr} del paquete \textbf{tidyverse}.
+Para desarrollar el test, primero tenemos que trasformar los valores de las métricas devueltos por la función \textbf{resamples()}, para separar cada modelo con sus métricas. Para ello, se usan las funciones:
 
-Se recomienda visualizar el valor de la variable \textbf{metricas\_resamples} durante las diferentes transformaciones.
+\begin{itemize}
+	\item \textbf{gather()} para juntar las columnas en pares modelo-valor.
+	\item \textbf{separate()} para separar la columna modelo en las columnas modelo-métrica.
+\end{itemize}
 
-\vspace{2mm}
+Para mejorar la separación, se usan las funciones: 
+
+
+\begin{itemize}
+	\item \textbf{group\_by()} para agrupar los resultados modelo-métrica.
+	\item \textbf{summarise()} para resumir el promedio de los valores de las métricas.
+	\item \textbf{spread()} para distribuir los pares métrica-media en varias columnas.
+	\item \textbf{arrange()} para ordenar los resultados de forma descendente.
+\end{itemize}
+
+Todas estas funciones se pueden encontrar en los paquetes \textbf{tidyr} y \textbf{dplyr} del paquete \textbf{tidyverse}. Y se recomienda visualizar el valor de la variable \textbf{metricas\_resamples} durante las diferentes transformaciones para entender que hace cada función.
+
+\vspace{1mm}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1692,24 +1696,24 @@ Se recomienda visualizar el valor de la variable \textbf{metricas\_resamples} du
 \end{Highlighting}
 \end{Shaded}
 
-Una vez tenemos los valores de las métricas separados por modelo, seleccionamos solo los valores de la métrica \emph{Accuracy}. El test comparará los múltiples valores de la métrica \emph{Accuracy} entre los pares de modelos y calculará el \emph{p-value} entre ellos. La función \textbf{pairwise.wilcox.test()} calculará estas comparaciones múltiples y los \emph{p-values}. La función contiene los
-siguientes argumentos:
+Una vez tenemos los valores de las métricas separados por modelo, seleccionamos solo los valores de la métrica Accuracy. El test comparará estos valores entre todos los pares de modelos y calculará el \emph{p-value} resultante de la comparación. La función \textbf{pairwise.wilcox.test()} es la que calculará estas comparaciones múltiples y su \emph{p-values} resultantes. Esta función contiene los siguientes argumentos:
 
 \begin{itemize}
 \tightlist
 \item
   \textbf{x}. Vector que contiene todos los valores de la métrica \emph{Accuracy}.
 \item
-  \textbf{g}. El vector en \emph{x} agrupado por modelo.
+  \textbf{g}. Vector en \emph{x} agrupado por modelo.
 \item
-  \textbf{paired}. Indicador de si el test será paredado o no. En este
-  caso sí que lo es.
+  \textbf{paired}. Indicador de si el test será paredado o no. En nuestro caso, sí que lo es.
 \item
   \textbf{p.adjust.method}. Método para ajustar los \emph{p-values}. En
   este caso se ajusta con el método de
   \href{https://en.wikipedia.org/wiki/Holm\%E2\%80\%93Bonferroni_method}{\color{blue}{Holm's}},
-  que es de los más utilizados para este tipo de test.
+  que es de los más utilizados para este tipo de test estadístico.
 \end{itemize}
+
+\vspace{2mm}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1722,10 +1726,14 @@ siguientes argumentos:
 \end{Shaded}
 
 \begin{tcolorbox}
-	El \emph{p-value} ayuda a diferenciar resultados que son producto del azar del muestreo, de resultados que son estadísticamente significativos. 
+	El \emph{p-value} ayuda a diferenciar resultados que son producto del azar en el muestreo, de resultados que son estadísticamente significativos. 
 \end{tcolorbox}
 
-Finalmente se almacenan los \emph{p-values} en forma de dataframe para cada par de modelos comparados y aplicamos una serie de transformaciones sobre el dataframe para mejorar su interpretación. Además de las funciones que ya hemos usado anteriormente como \textbf{gather()} y \textbf{arrange()}, añadimos otras dos: \textbf{rownames\_to\_column()}; que agrega una columna al inicio del dataframe; y la función \textbf{na.omit()}. 
+Se almacenan los \emph{p-values} en forma de dataframe y aplicamos otra serie de transformaciones sobre este para mejorar su interpretación. Además de las funciones que ya hemos usado anteriormente como \textbf{gather()} y \textbf{arrange()}, añadimos otras dos: 
+
+- \textbf{rownames\_to\_column()} que nos agrega una columna al inicio del dataframe.
+
+- \textbf{na.omit()} que excluye los valores perdidos, en el caso de que existieran en el dataframe.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1750,28 +1758,30 @@ Finalmente se almacenan los \emph{p-values} en forma de dataframe para cada par 
 ## 6 SVMRadial       RF 0.0036056278
 \end{verbatim}
 
-También se recomienda visualizar el valor de la variable \textbf{comparaciones} durante las diferentes transformaciones.
+\vspace{3mm}
+
+Acorde a las comparaciones por pares, existen evidencias suficientes para considerar que la capacidad predictiva de los modelos \textbf{SVMRadial} y \textbf{logistic} es distinta. Ya que el \emph{p-value} es superior 0.05, el umbral fijado inicialmente. Lo mismo ocurre entre los modelos \textbf{Random Forest} y \textbf{logistic}, pero no interesa el resultado, porqué el modelo \textbf{Random Forest} ya ha sido descartado para hacer la predicción.
+
+También es recomendable visualizar el valor de la variable \textbf{comparaciones} durante las diferentes transformaciones para entender que hace cada función. 
 
 \hypertarget{conclusiuxf3n-evaluaciuxf3n-de-modelos}{%
 \subsubsection{Conclusión evaluación de
 modelos}\label{conclusiuxf3n-evaluaciuxf3n-de-modelos}}
 
-Hemos visto que el modelo basado en SVM es el que mejores
-resultados obtiene, acorde a la métrica \emph{Accuracy}, en el
-conjunto de datos de train con la validación cruzada de tipo ``repeatedcv''. Los
-modelos basados en random forest y regresión logística
-consiguen valores un poco similares, sin embargo, acorde a los resultados del test estadístico con los resultados de la validación, los modelos de random forest y regresión logística son significativamente inferiores a
-SVM. Concretamente si nos fijamos en la comparación por pares entre los modelos
-SVMRadial y logistic existen evidencias suficientes para
-considerar que la capacidad predictiva de los modelos es distinta, 
-\emph{p-value} \textgreater{} 0.05 (el umbral clásico anteriormente fijado).
+Hemos podido ver que el modelo basado en \textbf{SVM} es el que mejores resultados obtiene, y el modelo basado en \textbf{Boosting} es el que peores resultados obtiene, acorde a la métrica Accuracy. 
 
-Antes de la predicción, calcularemos el valor \textbf{F1}, la
-métrica que usa la competición de Kaggle escogida para nuestro
-ejercicio, porqué queremos ver si nos dará buenos resultados en la
-competición el modelo que acabamos de seleccionado (\emph{SVMRadial}).
-Para ello tendremos que predecir sobre el conjunto de train, calcular la
-matriz de confusión y calcular el valor de \textbf{F1}.
+Los modelos basados en \textbf{Random Forest} y \textbf{Regresión Logística} consiguen valores un poco similares con los resultados de la validación, sin embargo, acorde a los resultados del test estadístico, el modelo basado en \textbf{Regresión Logística} es significativamente inferior a \textbf{SVMRadial}. Recordemos que en la comparación por pares entre los modelos \textbf{SVMRadial} y \textbf{logistic} existen evidencias suficientes para considerar que la capacidad predictiva de los modelos es distinta (\emph{p-value} = 0.1801641152 \textgreater{} 0.05).
+
+Llegados a este punto, sabemos que la predicción sobre el conjunto de datos de test la haremos con el modelo \textbf{SVMRadial}. Pero antes de esa predicción, vamos a realizar una predicción, con la función \textbf{predict()} de \textbf{caret}, sobre el conjunto de datos de train, y calcularemos el valor de la métrica \textbf{F1}, la métrica que usa la competición de Kaggle escogida para nuestro ejercicio.
+
+Con eso queremos averiguar si tendremos un buen resultado en la competición de Kaggle. También nos servirá para ver si la predicción sobre el conjunto de test contendrá algunos errores, siendo la predicción peor de la esperada en comparación a la predicción sobre el conjunto de datos de train (valor de \textbf{F1} mayor); o que no contendrá errores porqué la predicción sobre el conjunto de test será mejor de la esperada en comparación a la predicción sobre el conjunto de datos de train (valor de \textbf{F1} menor). Cuanto más próximo a 1 se encuentre el valor de \textbf{F1}, mejor resultado obtendremos en Kaggle.
+
+Así pues, empezaremos con predecir sobre el conjunto de datos de train usando la función \textbf{predict()}. Nos quedamos con la opción probs = ``raw'' para poder calcular la matriz de confusión.
+
+
+Con los resultados de la predicción calcularemos la matriz de confusión y finalmente calcularemos el valor de \textbf{F1} a partir de la matriz de confusión, porqué la matriz de confusión nos devolverá los valores necesarios para el cálculo del valor de \textbf{F1}: true positives (TP), false positives (FP) y false negatives (FN). Ir a la sección \ref{anuxe1lisis-exploratorio-de-los-datos}{análisis exploratorio} de los datos para ver cómo se calcula.
+
+
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1810,6 +1820,8 @@ matriz de confusión y calcular el valor de \textbf{F1}.
 ## 
 \end{verbatim}
 
+\vspace{3mm}
+
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{true_positives <-}\StringTok{ }\DecValTok{2308}
@@ -1830,20 +1842,23 @@ matriz de confusión y calcular el valor de \textbf{F1}.
 ## [1] 0.7919
 \end{verbatim}
 
-Teniendo en cuenta toda esta información, para predecir la clase de
-casos futuros vamos a usar el clasificador \emph{SVMRadial} que es el
-modelo que ha dado mejores resultados durante el entrenamiento. Con este
-modelo obtenemos un \textbf{Accuracy} de 0.8407 y un valor de
-\textbf{F1} no muy bueno de 0.7919 que intentaremos mejorar.
+El valor de \textbf{Accuracy} es 0.8407 y el valor de \textbf{F1} es 0.7919. No son valores muy buenos, pero tampoco son muy malos. El error de entrenamiento (\emph{training error}) es 1 - 0.8407 = 0.1593. Este error se corresponde con el error que comete el modelo al predecir, un 15.93\% en este caso. En la sección posterior veremos si estos valores mejoran o no en la predicción sobre el conjunto de datos de test. 
 
 \hypertarget{predicciuxf3n}{%
 \section{Predicción}\label{predicciuxf3n}}
 
-En la predicción se usa la función \textbf{predict} de \textbf{caret}.
-La opción elegida es \emph{raw}. Porqué con ella nos quedamos con el
-valor de la variable clase con mayor probabilidad a-posteriori y podemos
-calcular la matriz de confusión y la colección de métricas de evaluación
-asociadas.
+Una vez que el modelo ha sido ajustado, se pueden predecir nuevos datos, sobre el conjunto de datos de test. Usaremos la función \textbf{predict()} de \textbf{caret}. 
+
+Los argumentos de la función \textbf{predict()}  son:
+
+
+\begin{itemize}
+	\item \textbf{models}: el modelo o lista de modelos creados mediante la función \textbf{train()}.
+	\item \textbf{newdata}: el dateframe con nuevas observaciones (conjunto de datos de test).
+	\item \textbf{type}: tipo de predicción. En modelos de clasificación puede ser “raw” para obtener directamente la clase predicha o “prob” para obtener la probabilidad de cada clase. Algunos algoritmos no incorporan de forma nativa un cálculo de probabilidades, para asegurar que textbf{caret} las calcula, se debe indicar en el control de entrenamiento classProbs = TRUE.
+\end{itemize}
+
+\vspace{2mm}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1851,8 +1866,10 @@ asociadas.
 \end{Highlighting}
 \end{Shaded}
 
-Finalmente preparamos el archivo que subiremos a Kaggle con los
-resultados de nuestra predicción. Vemos las 10 primeras líneas.
+Finalmente preparamos el archivo que subiremos a la plataforma de Kaggle con los resultados de nuestra predicción. Veremos las 7 primeras líneas del archivo.
+
+\vspace{2mm}
+
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1872,50 +1889,53 @@ resultados de nuestra predicción. Vemos las 10 primeras líneas.
 ## 5  11      1
 ## 6  12      1
 ## 7  21      0
-## 8  22      0
-## 9  27      0
-## 10 29      0
 \end{verbatim}
 
 \hypertarget{resultado-en-kaggle}{%
 \section{Resultado en Kaggle}\label{resultado-en-kaggle}}
 
-\includegraphics[width=0.8\textwidth,height=\textheight]{submission.png}
+\begin{center}
+	\includegraphics[width=0.7\textwidth,height=\textheight]{submission.png}
+\end{center}
 
 \hypertarget{conclusiones}{%
 \section{Conclusiones}\label{conclusiones}}
 
 En este documento se revisa cómo importar y preparar documentos de texto
-para realizar distintas operaciones de mineria de textos con ellos,
+para realizar distintas operaciones de minería de textos con ellos,
 tales como obtener palabras frecuentes, asociaciones de palabras y
 análisis de sentimientos.
 
 Si comparamos nuestro resultado con los de los otros usuarios de la
-compatición de Kaggle, vemos que el modelo creado no es muy bueno. La
-predicción a sido peor de la esperada. Aunque no era la finalidad de
+competición de Kaggle, vemos que el modelo creado no es muy bueno. La
+predicción ha sido peor de la esperada. Aunque esa no era la finalidad de
 este ejercicio, esto nos demuestra que el ejercicio se podría mejorar en
-algunos expectos.
+algunos aspectos. Pero sí que hemos podido comprobar una de las hipótesis 
+que se ha planteado durante este ejercicio. Un modelo sin selección de variables 
+incorporada puede predecir mejor que un modelo que sí que incorpora selección de 
+variables, porqué el modelo es un modelo específico de clasificación supervisada 
+en minería de textos? La respuesta es sí. Es una conclusión muy interesante que 
+se extrae de este ejercicio.
+
+Personalmente escogí esta competición ya que nunca había combinado la
+clasificación supervisada con Procesamiento del Lenguaje Natural (PLN).
+El Procesamiento del Lenguaje Natural dentro de la Inteligencia
+Artificial es un campo que encuentro muy interesante.
 
 El problema más importante para la realización de este ejercicio ha sido
 el coste computacional. Llegado el punto en que la ejecución de todo el
-flujo tardaba unas cuantas horas en finalizar, se pensó en utilizar la
+flujo de trabajo tardaba unas cuantas horas en finalizar, se pensó en utilizar la
 computación paralela. Fue una buena idea, se redujo drásticamente el
 coste computacional y además aprendí a hacerlo en \textbf{R}.
 
-Personalmente escogí esta competición ya que nunca habia combinado la
-clasificación supervisada con Procesamiento del Lenguaje Natural (PLN).
-El Procesamiento del Lenguaje Natural dentro de la inteligencia
-artificial es un campo que encuentro muy interesante.
-
 Durante la asignatura de Procesamiento del Lenguaje Natural del Máster
-no se realiza ninguna pràctica de programación, y me apreció una buena
-oportunidad de aprender como aplicar los conocimientos de adquiridos del
-Procesamiento del Lenguaje Natural con los conocimientos adquiridos
-durante de esta asignatura.
+no se realiza ninguna práctica o trabajo de programación, y me pareció una buena
+oportunidad de aprender cómo aplicar los conocimientos adquiridos de ella con los conocimientos adquiridos
+durante esta asignatura.
 
 Por supuesto la minería de textos es un área de análisis extensa. Las
 siguientes referencias han sido de gran ayuda para realizar este
-documento y amplían lo aquí presentado.
+documento.
 
 \hypertarget{referencias}{%
 \section{Referencias}\label{referencias}}
