@@ -1,0 +1,89 @@
+\documentclass{uimppracticas}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                   Plantilla Prácticas UIMP                               %%%
+%%%                Universidad Internacional Menéndez Pelayo                 %%%
+%%%                   Laura Rodríguez Navas                                  %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%Permitir cabeceras y pie de páginas personalizados
+\pagestyle{fancy}
+
+%Path por defecto de las imágenes
+\graphicspath{ {./images/} }
+
+%Declarar formato de encabezado y pie de página de las páginas del documento
+\fancypagestyle{doc}{
+  %Cabecera
+  \headerpr[1]{}{}{Asignatura}
+  %Pie de Página
+  \footerpr{}{}{{\thepage} de \pageref{LastPage}}
+}
+
+%Declarar formato de encabezado y pie del título e indice
+\fancypagestyle{titu}{%
+  %Cabecera
+  \headerpr{}{}{}
+  %Pie de Página
+  \footerpr{}{}{}
+}
+
+
+\appto\frontmatter{\pagestyle{titu}}
+\appto\mainmatter{\pagestyle{doc}}
+
+
+\begin{document}
+	
+%Comienzo formato título
+\frontmatter
+
+%Portada (Centrado todo)
+\centeredtitle{./images/LogoUIMP.png}{Máster Universitario en Investigación en Inteligencia Artificial}{Curso 2020-2021}{Recuperación y extracción de información, \\ grafos y redes sociales}{Análisis y Visualización Básica de una Red Social con Gephi}
+
+\begin{center}
+\large Día/Mes/Año
+\end{center}
+
+\vspace{40mm}
+
+\begin{flushright}
+ 	{\bf Laura Rodríguez Navas}\\
+ 	\textbf{DNI:} 43630508-Z\\
+ 	\textbf{e-mail:} \href{rodrigueznavas@posgrado.uimp.es}{rodrigueznavas@posgrado.uimp.es}
+\end{flushright}
+
+\newpage
+
+%Índice
+\tableofcontents
+
+\newpage
+
+%Comienzo formato documento general
+\mainmatter
+
+\section{La Red}
+
+\begin{itemize}
+	\item Una imagen de la red completa y otra de la componente gigante con una visualización lo más estética posible.
+	\item La tabla Excel con los valores de las medidas estudiadas incrustada.
+	\item Los gráficos de las distribuciones de grado, distancia, etc.
+\end{itemize}
+
+\section{Análisis Básico de la Red}
+
+\section{Estudio de la Centralidad de los Actores}
+
+\section{Visualizaciones y Gráficos adicionales}
+
+Bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla\cite{wiki:exo}.
+
+\newpage
+
+\bibliographystyle{plain}
+\bibliography{biblio}
+
+\end{document}
