@@ -1,0 +1,143 @@
+\documentclass{uimppracticas}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                   Plantilla Prácticas UIMP                               %%%
+%%%                Universidad Internacional Menéndez Pelayo                 %%%
+%%%                   Laura Rodríguez Navas                                  %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%Permitir cabeceras y pie de páginas personalizados
+\pagestyle{fancy}
+
+%Path por defecto de las imágenes
+\graphicspath{ {./images/} }
+
+%Declarar formato de encabezado y pie de página de las páginas del documento
+\fancypagestyle{doc}{
+  %Cabecera
+  \headerpr[1]{}{}{Asignatura}
+  %Pie de Página
+  \footerpr{}{}{{\thepage} de \pageref{LastPage}}
+}
+
+%Declarar formato de encabezado y pie del título e indice
+\fancypagestyle{titu}{%
+  %Cabecera
+  \headerpr{}{}{}
+  %Pie de Página
+  \footerpr{}{}{}
+}
+
+
+\appto\frontmatter{\pagestyle{titu}}
+\appto\mainmatter{\pagestyle{doc}}
+
+
+\begin{document}
+	
+%Comienzo formato título
+\frontmatter
+
+%Portada (Centrado todo)
+\centeredtitle{./images/LogoUIMP.png}{Máster Universitario en Investigación en Inteligencia Artificial}{Curso 2020-2021}{Nombre Asignatura}{Nombre Práctica}
+
+\begin{center}
+\large Día/Mes/Año
+\end{center}
+
+\vspace{40mm}
+
+\begin{flushright}
+ 	{\bf Laura Rodríguez Navas}\\
+ 	\textbf{DNI:} 43630508-Z\\
+ 	\textbf{e-mail:} \href{rodrigueznavas@posgrado.uimp.es}{rodrigueznavas@posgrado.uimp.es}
+\end{flushright}
+
+\newpage
+
+%Índice
+\tableofcontents
+
+\newpage
+
+%Comienzo formato documento general
+\mainmatter
+
+\section{Title}
+\subsection{Subtitle}
+\subsubsection{Subsubtitle}
+
+Bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla\cite{wiki:exo}.
+
+\section{Title2}
+\subsection{Subtitle2}
+
+\imgcenter[150]{./images/FuturamaLogo.png}
+
+\section{Title3}
+\subsection{Subtitle3.1}
+
+\subsection{Subtitle3.2}
+
+  %Tabla con bordes
+  \begin{center}
+    \begin{tabular}{ | c | c | c | }
+      \hline
+     cell1 & cell2 & cell3 \\
+     \hline
+     cell4 & cell5 & cell6 \\
+     \hline
+     cell7 & cell8 & cell9 \\
+     \hline
+    \end{tabular}
+  \end{center}
+
+\subsection{Subtitle3.2}
+
+  %Tabla con algunos bordes
+  \begin{center}
+    \begin{tabular}{  c | c | c  }
+
+     cell1 & cell2 & cell3 \\
+     \hline
+     \hline
+     cell4 & cell5 & cell6 \\
+     cell7 & cell8 & cell9 \\
+    \end{tabular}
+  \end{center}
+
+
+\section{Title4}
+\subsection{Subtitle4.1}
+
+  \begin{itemize}
+    \item One entry in the list
+    \item Another entry in the list
+  \end{itemize}
+
+\subsection{Subtitle4.2}
+
+  \begin{enumerate}
+    \item One entry in the list
+    \item Another entry in the list
+  \end{enumerate}
+
+\subsection{Subtitle4.3}
+
+  \begin{enumerate}
+    \item One entry in the list
+    \begin{enumerate}
+      \item One entry in the list
+      \item Another entry in the list
+    \end{enumerate}
+    \item Another entry in the list
+  \end{enumerate}
+
+\newpage
+
+\bibliographystyle{plain}
+\bibliography{practicasuimp}
+
+\end{document}
