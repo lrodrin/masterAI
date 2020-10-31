@@ -1,0 +1,66 @@
+graph ""
+   {
+   subgraph cluster01
+   {
+   label="TID 7"
+   n002 [label="NULL"] ;
+   n002 -- n003 ;
+   n003 [label="A:6"] ;
+   n003 -- n004 ;
+   n004 [label="B:4"] ;
+   n004 -- n005 ;
+   n005 [label="C:2"] ;
+   n005 -- n006 ;
+   n006 [label="D:1"] ;
+   n007 [label="C:1"] ;
+   n003 -- n007 ;
+   n014 [label="D:1"] ;
+   n004 -- n014 ;	
+   n008 [label="E:1"] ;
+   n004 -- n008 ;
+   n009 [label="D:1"] ;
+   n003 -- n009 ;
+   n010 [label="D:1"] ;
+   n007 -- n010
+   n011 [label="B:1"] ;
+   n002 -- n011 ;
+   n012 [label="C:1"] ;
+   n011 -- n012 ;
+   n015 [label="E:1"] ;
+   n014 -- n015 ;
+   n013 [label="E:1"] ;
+   n012 -- n013 ;
+   }
+   subgraph cluster02
+   {
+   label="TID 8"
+   n022 [label="NULL"] ;
+   n022 -- n033 ;
+   n033 [label="A:6"] ;
+   n033 -- n044 ;
+   n044 [label="B:4"] ;
+   n044 -- n055 ;
+   n055 [label="C:2"] ;
+   n055 -- n066 ;
+   n066 [label="D:1"] ;
+   n077 [label="C:1"] ;
+   n033 -- n077 ;
+   n140 [label="D:1"] ;
+   n044 -- n140 ;
+   n088 [label="E:1"] ;
+   n044 -- n088 ;
+   n099 [label="D:1"] ;
+   n033 -- n099 ;
+   n100 [label="D:1"] ;
+   n077 -- n100
+   n110  [label="B:2"] ;
+   n022 -- n110 ;
+   n120 [label="C:2"] ;
+   n110 -- n120 ;
+   n150 [label="E:1"] ;
+   n140 -- n150 ;
+   n130 [label="E:2"] ;
+   n120 -- n130 ;
+   }
+   }
+   

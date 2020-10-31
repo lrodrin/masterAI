@@ -1,0 +1,53 @@
+graph "01"
+   {
+   subgraph cluster01
+   {
+   label="TID 5"
+   n002 [label="NULL"] ;
+   n002 -- n003 ;
+   n003 [label="A:5"] ;
+   n003 -- n004 ;
+   n004 [label="B:3"] ;
+   n004 -- n005 ;
+   n005 [label="C:2"] ;
+   n005 -- n006 ;
+   n006 [label="D:1"] ;
+   n007 [label="C:1"] ;
+   n003 -- n007 ;
+   n008 [label="E:1"] ;
+   n004 -- n008 ;
+   n009 [label="D:1"] ;
+   n003 -- n009 ;
+   n010 [label="D:1"] ;
+   n007 -- n010
+   }
+
+   subgraph cluster02
+   {
+   label="TID 6"
+   n022 [label="NULL"] ;
+   n022 -- n033 ;
+   n033 [label="A:5"] ;
+   n033 -- n044 ;
+   n044 [label="B:3"] ;
+   n044 -- n055 ;
+   n055 [label="C:2"] ;
+   n055 -- n066 ;
+   n066 [label="D:1"] ;
+   n077 [label="C:1"] ;
+   n033 -- n077 ;
+   n088 [label="E:1"] ;
+   n044 -- n088 ;
+   n099 [label="D:1"] ;
+   n033 -- n099 ;
+   n100 [label="D:1"] ;
+   n077 -- n100
+   n011 [label="B:1"] ;
+   n022 -- n011 ;
+   n012 [label="C:1"] ;
+   n011 -- n012 ;
+   n013 [label="E:1"] ;
+   n012 -- n013 ;
+   }
+   }
+   
