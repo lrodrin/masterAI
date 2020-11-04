@@ -1,0 +1,108 @@
+\documentclass{uimppracticas}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                   Plantilla Prácticas UIMP                               %%%
+%%%                Universidad Internacional Menéndez Pelayo                 %%%
+%%%                   Laura Rodríguez Navas                                  %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%Permitir cabeceras y pie de páginas personalizados
+\pagestyle{fancy}
+
+%Path por defecto de las imágenes
+\graphicspath{ {./images/} }
+
+%Declarar formato de encabezado y pie de página de las páginas del documento
+\fancypagestyle{doc}{
+	%Cabecera
+	\headerpr[1]{}{}{Datos temporales y complejos}
+	%Pie de Página
+	\footerpr{}{}{{\thepage} de \pageref{LastPage}}
+}
+
+%Declarar formato de encabezado y pie del título e indice
+\fancypagestyle{titu}{%
+	%Cabecera
+	\headerpr{}{}{}
+	%Pie de Página
+	\footerpr{}{}{}
+}
+
+
+\appto\frontmatter{\pagestyle{titu}}
+\appto\mainmatter{\pagestyle{doc}}
+
+
+\begin{document}
+	
+%Comienzo formato título
+\frontmatter
+
+%Portada (Centrado todo)
+\centeredtitle{./images/LogoUIMP.png}{Máster Universitario en Investigación en Inteligencia Artificial}{Curso 2020-2021}{Datos temporales y complejos}{Evaluación Data Streams: Metodologías}
+
+\begin{center}
+	\large Día/Mes/Año
+\end{center}
+
+\vspace{30mm}
+
+\begin{flushright}
+	{\bf Laura Rodríguez Navas}\\
+	\textbf{DNI:} 43630508-Z\\
+	\textbf{e-mail:} \href{rodrigueznavas@posgrado.uimp.es}{rodrigueznavas@posgrado.uimp.es}
+\end{flushright}
+
+\newpage
+
+%Índice
+\tableofcontents
+
+\newpage
+
+%Comienzo formato documento general
+\mainmatter
+
+\section{Ejercicio 1}
+
+Sea un fichero de texto que contiene una secuencia desordenada de valores enteros del 1 al N, pero al que le falta uno de los valores. Escriba un programa en cualquier lenguaje de programación tal que lea un fichero como el anterior y dé en el menor tiempo posible y con el menor uso de memoria respuesta a cuál es el número que falta en la secuencia. Pruébelo para N suficientemente grande. Haga una tabla con el tiempo de computación necesario y la memoria usada para al menos 10 ejecuciones con distintos valores de N.
+
+Nota: Genere los datos del fichero de entrada con otro programa que lo escriba, esto es dado dos enteros x y N (x entre 1 y N) construya un programa que escriba en un fichero los números del 1 al N excepto x de manera desordenada.
+
+
+\section{Ejercicio 2}
+
+Sea una secuencia desordenada de N números (N suficientemente grande). Queremos encontrar mediante muestreo un número en ella que sea mayor que el tercer cuartil, esto es, que esté en el 25\% superior de los valores de la secuencia. Para ello una posibilidad es escoger aleatoriamente k valores y quedarnos con el mayor de esos k. ¿Cuál es el menor k posible para que el error sea menor que 0,3? Es decir, que en media de cada 10 veces que repitamos el experimento nos equivoquemos en menos de 3. ¿Y si queremos que la tasa de error baje al 0,1, cuánto debe valer k?
+
+Haga un programa similar al mostrado en el vídeo que demuestre experimentalmente los valores de k calculados de forma teórica.
+
+
+\section{Ejercicio 3}
+
+Supongamos tenemos una secuencia de valores con la frecuencia que se indica:
+
+Valor: 1 Frecuencia: 7\\
+Valor: 2 Frecuencia: 3\\
+Valor: 3 Frecuencia: 4\\
+Valor: 4 Frecuencia: 5\\
+Valor: 5 Frecuencia: 9\\
+Valor: 6 Frecuencia: 10\\
+Valor: 7 Frecuencia: 8\\
+Valor: 8 Frecuencia: 1\\
+Valor: 9 Frecuencia: 9\\
+Valor: 10 Frecuencia: 4\\
+
+Si agrupamos en un histograma de 6 intervalos o bloques de igual frecuencia la salida sería:
+
+Si agrupamos en un histograma de 4 intervalos o bloques de igual frecuencia la salida sería:
+
+Si agrupamos en un histograma de 6 intervalos o bloques minimizando la varianza sería:
+
+\section{Ejercicio 4}
+
+Calcula en el ejemplo de Count-Min Sketch que se puede ver en el vídeo los conjuntos sobre los que habría que hallar el mínimo para calcular la frecuencia de D, E y F. ¿En cuál se está cometiendo un error sobre el valor real?
+
+
+\end{document}
