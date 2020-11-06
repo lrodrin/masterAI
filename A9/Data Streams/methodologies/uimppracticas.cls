@@ -55,7 +55,6 @@
     urlcolor=cyan,
 }
 
-
 %Comando para insertar la cabecera
 %1 -> Tamaño línea separación
 %2 -> Cabecera izquierda
@@ -111,7 +110,6 @@
   \normalsize
 }
 
-
 %Imágenes centradas
 %1 -> Tamaño imagen (Opcional)
 %2 -> Path Imagen
@@ -120,3 +118,27 @@
     \includegraphics[width=#1mm]{#2}
   \end{center}
 }
+
+%Code
+\RequirePackage{listings}
+\RequirePackage{xcolor}
+
+%New colors defined below
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+%Code listing style named "mystyle"
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{white},   % choose the background color
+	basicstyle=\small,        		 % size of fonts used for the code
+	breaklines=true,                 % automatic line breaking only at whitespace
+	captionpos=b,                    % sets the caption-position to bottom
+	commentstyle=\color{mygreen},    % comment style
+	escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+	keywordstyle=\color{blue},       % keyword style
+	stringstyle=\color{mymauve},     % string literal style
+	showstringspaces=false,          % space between strings
+}
+
+

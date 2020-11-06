@@ -2,19 +2,16 @@ import random
 
 
 def createInputFile(N, x):
-    """
-    Create TXT input file
-
-    :param N: total number of elements in a sequence
-    :param x: element to delete in a sequence
-    :type N: int
-    :type x: int
-    """
-    if isinstance(N, int) and isinstance(x, int):  # check if N and x are integers
-        if 1 <= x <= N:  # check if 1 <= x <= N
+    # check if N and x are integers
+    if isinstance(N, int) and isinstance(x, int):
+        # check if 1 <= x <= N
+        if 1 <= x <= N:
             try:
-                permutations = random.sample(range(1, N + 1), N)  # generate permutations from 1 to N
-                permutations.remove(x)  # remove x from permutations
+                # generate permutations from 1 to N
+                permutations = random.sample(range(1, N + 1), N)
+
+                # remove x from permutations
+                permutations.remove(x)
 
                 # write permutations to TXT file
                 with open('data.txt', 'w') as outfile:
