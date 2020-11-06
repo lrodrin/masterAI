@@ -1,6 +1,6 @@
 import random
 
-from generate_data import createInputFile
+from code.exercise_one.generate_data import createInputFile
 
 N = 5000
 # unordered sequence P from 1 to N
