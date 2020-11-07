@@ -19,8 +19,6 @@ def main(k):
         elif k == 4:
             if ls[0] >= mitad or ls[1] >= mitad or ls[2] >= mitad or ls[4] >= mitad:
                 acierto += 1
-        else:
-            raise Exception("k no tiene el valor esperado!")
 
         print("intentos: {}, aciertos: {}".format(j, acierto))
 
