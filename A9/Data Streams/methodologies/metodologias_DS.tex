@@ -34,8 +34,8 @@
 
 %"mystyle" code listing set
 \lstset{style=mystyle}
-\renewcommand{\lstlistingname}{Código}% Listing -> Código
-\renewcommand{\lstlistlistingname}{Lista de \lstlistingname s}% List of Listings -> List of Códigos
+\renewcommand{\lstlistingname}{Algoritmo}% Listing -> Algoritmo
+\renewcommand{\lstlistlistingname}{Lista de \lstlistingname s}% List of Listings -> List of Algoritmos
 
 \begin{document}
 	
@@ -100,27 +100,29 @@ Nota: Genere los datos del fichero de entrada con otro programa que lo escriba, 
 
 \section{Ejercicio 2}
 
-Sea una secuencia desordenada de N números (N suficientemente grande). Queremos encontrar mediante muestreo un número en ella que sea mayor que el tercer cuartil, esto es, que esté en el 25\% superior de los valores de la secuencia. Para ello una posibilidad es escoger aleatoriamente k valores y quedarnos con el mayor de esos k. ¿Cuál es el menor k posible para que el error sea menor que 0.3? Es decir, que en media de cada 10 veces que repitamos el experimento nos equivoquemos en menos de 3. ¿Y si queremos que la tasa de error baje al 0.1, cuánto debe valer k?
+Sea una secuencia desordenada de N números (N suficientemente grande). Queremos encontrar mediante muestreo un número en ella que sea mayor que el tercer cuartil, esto es, que esté en el 25\% superior de los valores de la secuencia. Para ello una posibilidad es escoger aleatoriamente k valores y quedarnos con el mayor de esos k. ¿Cuál es el menor k posible para que el error sea menor que 0.3? Es decir, que en media de cada 10 veces que repitamos el experimento nos equivoquemos en menos de 3. ¿Y si queremos que la tasa de error baje al 0.1, cuánto debe valer k? 
 
 El menor k posible para que el error sea menor que 0.3:
 
 \begin{center}
-	$ k = \log_2(1/0.3) = 1.73697... \approx 2 $
+	$ k = \log_2(1/0.3) \approx 2 $
 \end{center}
 
 El menor k posible para que el error sea menor que 0.1:
 
 \begin{center}
-	$ k = \log_2(1/0.1) = 3.32193... \approx 4 $
+	$ k = \log_2(1/0.1) \approx 4 $
 \end{center}
 
 Haga un programa similar al mostrado en el vídeo que demuestre experimentalmente los valores de k calculados de forma teórica.
 
 \lstinputlisting[language=Python, caption=Demostración experimental de los valores de k calculados de manera teórica.]{code/exercise_two/cota_del_error.py}
 
-Siendo k = 2, el resultado obtenido es 0.236167. Se demuestra que la probabilidad del error es menor a 0.3.
+\newpage
 
-Siendo k = 4, el resultado obtenido es 0.043217. Se demuestra que la probabilidad del error es menor a 0.1.
+Con k = 2, el resultado obtenido de la ejecución del algoritmo anterior es 0.236167, y de esta manera se demuestra que la probabilidad del error es menor a 0.3.
+
+Con k = 4, el resultado obtenido de la ejecución del algoritmo anterior es 0.043217 y se demuestra que la probabilidad del error es menor a 0.1.
 
 \section{Ejercicio 3}
 
@@ -139,14 +141,28 @@ Valor: 10 Frecuencia: 4\\
 
 Si agrupamos en un histograma de 6 intervalos o bloques de igual frecuencia la salida sería:
 
+\begin{center}
+	\includegraphics[scale=0.7]{code/exercise_three/hist_1}
+\end{center}
+
 Si agrupamos en un histograma de 4 intervalos o bloques de igual frecuencia la salida sería:
 
+\begin{center}
+	\includegraphics[scale=0.6]{code/exercise_three/hist_2}
+\end{center}
+
 Si agrupamos en un histograma de 6 intervalos o bloques minimizando la varianza sería:
+
+\begin{center}
+	\includegraphics[scale=0.7]{code/exercise_three/hist_3}
+\end{center}
 
 \section{Ejercicio 4}
 
 Calcula en el ejemplo de Count-Min Sketch que se puede ver en el vídeo los conjuntos sobre los que habría que hallar el mínimo para calcular la frecuencia de D, E y F. ¿En cuál se está cometiendo un error sobre el valor real?
 
 \lstlistoflistings
+
+Para esta actividad se han realizado una serie de desarrollos en Python, R y Java que se pueden encontrar \href{https://github.com/lrodrin/masterAI/tree/master/A9/Data\%20Streams/methodologies}{\textbf{AQUÍ}}.
 
 \end{document}
