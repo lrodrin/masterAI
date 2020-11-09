@@ -1,19 +1,45 @@
-import random
+import os
+import psutil
+
+from time import time
 
 from code.exercise_one.generate_data import createInputFile
 
-N = 5000
-# unordered sequence P from 1 to N
-P = [n for n in random.sample(range(1, N + 1), N)]
 
-x = 221
-# create input TXT file without x
-createInputFile(N, x)
+def get_process_memory():
+    # return the memory usage in MB
+    process = psutil.Process(os.getpid())
+    return process.memory_info().rss / float(2 ** 20)
 
-# find missing x in Q
-Q = open('data.txt', 'r').read().splitlines()
-for n in Q:  # for each number inside Q sequence
-    if int(n) in P:  # if number is in P
-        P.remove(int(n))  # n is removed from P
 
-print("Missing number: {}".format(P[0]))
+def findMissingNumber(ds):
+    # data stream length
+    n = len(ds)
+
+    # sum of the first N natural numbers, that is, the sum of the natural numbers from 1 to N
+    sum_total = (n + 1) * (n + 2) // 2
+
+    # sum of all the elements of the data stream specified by ds
+    sum_de_ds = sum(ds)
+
+    # subtract the first N natural numbers from the sum of all the elements of the data stream,
+    # the result of the subtraction will be the value of the missing element
+    return sum_total - sum_de_ds
+
+
+if __name__ == '__main__':
+    start_time = time()
+    start_mem = get_process_memory()
+    N = 100000
+    x = 99
+
+    # create sequence from 1 to N without x
+    createInputFile(N, x)
+
+    # find missing number
+    input_ds = list(map(int, open('data.txt', 'r').read().splitlines()))
+    print("Missing number: {}".format(findMissingNumber(input_ds)))
+
+    end_time = time() - start_time
+    end_mem = get_process_memory()
+    print("Memory used in MB: {} \nExecution time in seconds: {:.10f}".format(end_mem - start_mem, end_time))
