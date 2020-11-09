@@ -71,25 +71,25 @@
 
 Sea un fichero de texto que contiene una secuencia desordenada de valores enteros del 1 al N, pero al que le falta uno de los valores. Escriba un programa en cualquier lenguaje de programación tal que lea un fichero como el anterior y dé en el menor tiempo posible y con el menor uso de memoria respuesta a cuál es el número que falta en la secuencia. Pruébelo para N suficientemente grande. Haga una tabla con el tiempo de computación necesario y la memoria usada para al menos 10 ejecuciones con distintos valores de N.
 
-%\lstinputlisting[language=Python, caption=Búsqueda del número que falta en la secuencia.]{code/exercise_one/find_number.py}
+\lstinputlisting[language=Python, caption=Búsqueda del número que falta en la secuencia.]{code/exercise_one/find_number.py}
 
-A continuación, podemos ver la tabla con el tiempo de computación (tCompu) necesario y la memoria usada (uMem) para 10 ejecuciones con distintos valores de N.
+A continuación, podemos ver la tabla con el tiempo de computación (tCompu) necesario y la memoria usada (uMem) de 10 ejecuciones con distintos valores de N. El tiempo de computación se obtiene en segundos y la memoria usada en MB. 
 
 \begin{center}
 	\begin{tabular}{ |c|c|c|c|c| } 
 		\hline
 		id & N & tCompu & uMem \\
 		\hline
-		1 & 1 & 1 & 1 \\ 
-		2 & 2 & 2 & 2 \\ 
-		3 & 1 & 1 & 1 \\ 
-		4 & 2 & 2 & 2 \\ 
-		5 & 1 & 1 & 1 \\ 
-		6 & 2 & 2 & 2 \\ 
-		7 & 2 & 2 & 2 \\ 
-		8 & 2 & 2 & 2 \\ 
-		9 & 2 & 2 & 2 \\ 
-		10 & 2 & 2 & 2 \\ 
+		1 &  100 &      0.0010001659 &    0.0234375 \\ 
+		2 &  1000 &     0.0030002594 &    0.0546875 \\
+		3 &  10000 &    0.0190010071 &    0.74609375 \\ 
+		4 &  50000 &    0.1000056267 &    1.46875 \\ 
+		5 &  100000 &   0.2060117722 &    3.11328125 \\ 
+		6 &  500000 &   1.1400651932 &    9.69921875 \\ 
+		7 &  1000000 &  2.2931311131 &   19.5625 \\ 
+		8 &  5000000 &  12.1846969128 &  97.375 \\ 
+		9 &  10000000 & 24.5054016113 & 193.1328125 \\ 
+		10 & 15000000 & 37.9671714306 & 289.20703125 \\ 
 		\hline
 	\end{tabular}
 \end{center}
@@ -163,6 +163,6 @@ Calcula en el ejemplo de Count-Min Sketch que se puede ver en el vídeo los conj
 
 \lstlistoflistings
 
-Para esta actividad se han realizado una serie de desarrollos en Python, R y Java que se pueden encontrar \href{https://github.com/lrodrin/masterAI/tree/master/A9/Data\%20Streams/methodologies}{\textbf{AQUÍ}}.
+Para esta actividad se han realizado una serie de desarrollos en Python y R que se pueden encontrar \href{https://github.com/lrodrin/masterAI/tree/master/A9/Data\%20Streams/methodologies}{\textbf{AQUÍ}}.
 
 \end{document}
