@@ -1,0 +1,161 @@
+---
+documentclass: book
+principal: yes
+forprint: false
+fontsize: 11pt
+geometry: margin = 2.5cm
+bibliography: bib/library.bib
+metodobib: yes
+biblio-style: plainnat
+csl: methods-in-ecology-and-evolution.csl
+link-citations: yes
+output:
+  pdf_document:
+    keep_tex: no
+    number_sections: yes
+    citation_package: natbib
+    fig_caption: yes
+    template: latex/template.tex
+    includes:
+      before_body: portada/latex_paginatitulo_modTFMDS.tex
+  html_document: 
+    toc: yes
+    fig_caption: yes
+---
+
+```{r global_options, include=FALSE}
+# Sys.setlocale('LC_ALL','C') # corrige problema con (ocasionaba problemas con acentos en fig.cap)
+options(kableExtra.latex.load_packages = FALSE)
+# options(tinytex.latexmk.emulation = FALSE)
+knitr::opts_chunk$set(fig.path = 'figurasR/',
+                      echo = TRUE, warning = FALSE, message = FALSE,
+                      fig.pos = "H",fig.align = "center", out.width = "95%",
+                      cache=FALSE) 
+```
+
+
+<!-- Indentar el texto al inicio de cada nuevo párrafo -->
+\setlength{\parindent}{1em}
+
+\pagestyle{fancy}
+\ifdefined\ifdoblecara
+\fancyhead[LE,RO]{}
+\fancyhead[LO,RE]{}
+\else
+\fancyhead[RO]{}
+\fancyhead[LO]{}
+\fi
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\pagenumbering{roman}
+
+\setcounter{tocdepth}{4}
+\subpdfbookmark{Índice General}{indice}
+\tableofcontents
+
+
+\cleardoublepage   
+\listoffigures
+\addcontentsline{toc}{section}{Índice de Figuras}
+
+\cleardoublepage   
+
+\listoftables
+<!-- \addcontentsline{toc}{section}{Índice de Cuadros} -->
+\addcontentsline{toc}{section}{Índice de Tablas}
+
+\cleardoublepage   
+
+\pagenumbering{arabic}
+
+\ifdefined\ifdoblecara
+\fancyhead[LE,RO]{\scriptsize\rightmark}
+\fancyfoot[LO,RE]{\scriptsize\slshape \leftmark}
+\fancyfoot[C]{}
+\fancyfoot[LE,RO]{\footnotesize\thepage}
+\else
+\fancyhead[RO]{\scriptsize\rightmark}
+\fancyfoot[LO]{\scriptsize\slshape \leftmark}
+\fancyfoot[C]{}
+\fancyfoot[RO]{\footnotesize\thepage}
+\fi
+
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+```{r child = 'capitulo01.Rmd'}
+```
+
+\FloatBarrier
+
+```{r child = 'capitulo02.Rmd'}
+```
+
+\FloatBarrier
+
+```{r child = 'capitulo03.Rmd'}
+```
+
+\FloatBarrier
+
+```{r child = 'capitulo04.Rmd'}
+```
+
+
+<!-- 
+Descomentarlo para incluir el capítulo 5 el cual contiene utilidades de ejemplo
+para copiar y pegar.
+Atención: necesitará la instalación de algunos paquetes R 
+que puede no tener instalados. Son:
+install.packages(c("ggplot2","kableExtra","dplyr"))
+-->
+
+
+<!-- \FloatBarrier -->
+
+<!-- ```{r child = 'capitulo05.Rmd'} -->
+<!-- ``` -->
+
+
+
+
+\FloatBarrier
+
+\appendix
+
+```{r child = 'apendice01.Rmd'}
+```
+
+
+
+```{r child = 'apendice02.Rmd'}
+```
+
+
+\FloatBarrier
+\cleardoublepage
+
+\ifdefined\ifdoblecara
+  \fancyhead[LE,RO]{}
+  \fancyfoot[LO,RE]{}
+  \fancyhead[CO,CE]{Bibliografía}
+\else
+  \fancyhead[RO]{}
+  \fancyfoot[LO]{}
+  \fancyhead[CO]{Bibliografía}
+\fi
+
+
+\ifdefined\ifcitapandoc
+
+\hypertarget{bibliografuxeda}{%
+\chapter*{Bibliografía}\label{bibliografuxeda}}
+\addcontentsline{toc}{chapter}{Bibliografía}
+
+
+\else
+
+<!-- \nocite{*} -->
+\nocite{Luque2017}
+
+\fi 

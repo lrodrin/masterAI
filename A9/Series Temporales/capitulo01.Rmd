@@ -1,0 +1,90 @@
+---
+author: "Laura Rodríguez Navas"
+date: "`r format(Sys.time(), '%B, %Y')`"
+documentclass: book
+principal: yes
+forprint: false
+fontsize: 11pt
+geometry: margin = 2.5cm
+bibliography: bib/library.bib
+metodobib: yes
+biblio-style: plainnat
+csl: methods-in-ecology-and-evolution.csl
+link-citations: yes
+output:
+  html_document: 
+    toc: yes
+    fig_caption: yes
+  pdf_document:
+    keep_tex: no
+    number_sections: yes
+    citation_package: natbib
+    fig_caption: yes
+    template: latex/template.tex
+---
+
+
+```{r include=FALSE}
+knitr::opts_chunk$set(fig.path = 'figurasR/',
+                      echo = TRUE, warning = FALSE, message = FALSE,
+                      fig.pos = "H",fig.align = "center", out.width = "95%",
+                      cache=FALSE)
+```
+
+<!-- \setcounter{chapter}{2} -->
+<!-- \setcounter{chapter}{2} escribir 2 para capítulo 3  -->
+<!-- \pagenumbering{arabic} -->
+
+\ifdefined\ifprincipal
+\else
+\setlength{\parindent}{1em}
+\pagestyle{fancy}
+\setcounter{tocdepth}{4}
+\tableofcontents
+<!-- \nocite{*} -->
+\fi
+
+\ifdefined\ifdoblecara
+\fancyhead{}{}
+\fancyhead[LE,RO]{\scriptsize\rightmark}
+\fancyfoot[LO,RE]{\scriptsize\slshape \leftmark}
+\fancyfoot[C]{}
+\fancyfoot[LE,RO]{\footnotesize\thepage}
+\else
+\fancyhead{}{}
+\fancyhead[RO]{\scriptsize\rightmark}
+\fancyfoot[LO]{\scriptsize\slshape \leftmark}
+\fancyfoot[C]{}
+\fancyfoot[RO]{\footnotesize\thepage}
+\fi
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+
+# Análisis de la serie temporal
+
+Una empresa tecnológica cuya área de negocio es la inteligencia artificial es contratada por una empresa eléctrica para que diseñe un sistema de recomendación que haga ofertas personalizadas a sus clientes sobre los paquetes energéticos más adecuados a sus consumos. Para ello, la empresa primero debe llevar a cabo un análisis exhaustivo de los consumos energéticos y diseñar una técnica de predicción que sea capaz de predecir dichos consumos con un horizonte temporal dado. La empresa eléctrica suministra a la empresa tecnológica para dicho cometido los consumos eléctricos desde el 01 de enero de 2015 hasta el 31 de diciembre de 2015 medidos con una frecuencia temporal de 10 minutos.
+
+## Definición de la serie temporal
+
+En esta primera parte vamos a trabajar con el fichero *Demanda_2015.csv* que contiene los datos de los consumos eléctricos desde el 01 de enero de 2015 hasta el 31 de diciembre de 2015 medidos con una frecuencia temporal de 10 minutos.
+
+```{r}
+# Se cargan las librerías necesarias
+library(tseries)
+```
+
+
+```{r}
+# Cargamos los datos Demanda
+data <- read.csv("Demanda_2015.csv", header = FALSE, sep = ",")
+colnames(data) <- c("date", "time", "electricity")
+data$date <- as.Date(data$date) 
+# Transformamos los datos en una serie temporal 
+```
+
+
+
+
+
+
