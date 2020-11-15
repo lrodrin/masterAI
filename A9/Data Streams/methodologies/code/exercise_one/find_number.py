@@ -16,13 +16,14 @@ def findMissingNumber(ds):
     # data stream length
     n = len(ds)
 
-    # sum of the first N natural numbers, that is, the sum of the natural numbers from 1 to N
+    # sum of the first N natural numbers, 
+    # that is, the sum of the natural numbers from 1 to N
     sum_total = (n + 1) * (n + 2) // 2
 
-    # sum of all the elements of the data stream specified by ds
+    # sum of all the elements of the data stream
     sum_de_ds = sum(ds)
 
-    # subtract the first N natural numbers from the sum of all the elements of the data stream,
+    # subtract first N natural numbers from sum of all the elements of the data stream,
     # the result of the subtraction will be the value of the missing element
     return sum_total - sum_de_ds
 

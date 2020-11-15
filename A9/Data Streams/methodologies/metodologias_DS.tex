@@ -46,7 +46,7 @@
 \centeredtitle{./images/LogoUIMP.png}{Máster Universitario en Investigación en Inteligencia Artificial}{Curso 2020-2021}{Datos temporales y complejos}{Evaluación Data Streams: Metodologías}
 
 \begin{center}
-	\large Día/Mes/Año
+	\large Noviembre 2020
 \end{center}
 
 \vspace{30mm}
@@ -93,6 +93,8 @@ A continuación, podemos ver la tabla con el tiempo de computación (tCompu) nec
 		\hline
 	\end{tabular}
 \end{center}
+
+Se puede observar que cuanto mayor sea el data stream, mayor tiempo de computación y mayor memoria se usará durante la ejecución del programa.
 
 Nota: Genere los datos del fichero de entrada con otro programa que lo escriba, esto es dado dos enteros x y N (x entre 1 y N) construya un programa que escriba en un fichero los números del 1 al N excepto x de manera desordenada.
 
@@ -159,8 +161,66 @@ Si agrupamos en un histograma de 6 intervalos o bloques minimizando la varianza 
 
 \section{Ejercicio 4}
 
-Calcula en el ejemplo de Count-Min Sketch que se puede ver en el vídeo los conjuntos sobre los que habría que hallar el mínimo para calcular la frecuencia de D, E y F. ¿En cuál se está cometiendo un error sobre el valor real?
+Calcula en el ejemplo de Count-Min Sketch que se puede ver en el vídeo los conjuntos sobre los que habría que hallar el mínimo para calcular la frecuencia de D, E y F. 
 
+Dado el data stream:
+
+\begin{center}
+	(A, 1), (B, 2), (C, 5), (B, 4), (E, 8), (D, 7), (C, 8), (F, 5), (G, 10), (C, 5), (H, 3)
+\end{center}
+
+Dada la tabla:
+
+\begin{center}
+	\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+		\hline
+		h$_{1}$(A)=5 & h$_{1}$(B)=1 & h$_{1}$(C)=2 & h$_{1}$(D)=1 & h$_{1}$(E)=2 & h$_{1}$(F)=6 & h$_{1}$(G)=2 & h$_{1}$(H)=3 & ... \\ \hline
+		h$_{2}$(A)=6 & h$_{2}$(B)=3 & h$_{2}$(C)=4 & h$_{2}$(D)=3 & h$_{2}$(E)=4 & h$_{2}$(F)=1 & h$_{2}$(G)=5 & h$_{2}$(H)=4 & ... \\ \hline
+		h$_{3}$(A)=1 & h$_{3}$(B)=4 & h$_{3}$(C)=5 & h$_{3}$(D)=2 & h$_{3}$(E)=6 & h$_{3}$(F)=3 & h$_{3}$(G)=3 & h$_{3}$(H)=6 & ... \\ \hline
+	\end{tabular}
+\end{center}
+
+Obtenemos,
+
+\begin{center}
+	\begin{tabular}{|c|c|c|c|c|c|}
+		\hline
+		7+4+2 & 8+8+5+10 & +3 &  & +1 & +5 \\ \hline
+		+5 &  & 7+4+2 & 3+8+8+5 & +10 & +1 \\ \hline
+		+1 & +7 & 10+5 & 4+2 & 5+8+5 & 3+8 \\ \hline
+	\end{tabular}
+\end{center}
+
+Donde el mínimo para calcular la frecuencia de A, B y C es:
+
+\begin{itemize}
+	\item \#(A) = min\{CM[1, h$_{1}$(A)], CM[2, h$_{2}$(A)], CM[3, h$_{3}$(A)\} = min\{1, 1, 1\} = 1 
+	\item \#(B) = min\{CM[1, h$_{1}$(B)], CM[2, h$_{2}$(B)], CM[3, h$_{3}$(B)\} = min\{13, 13, 6\} = 6 
+	\item \#(C) = min\{CM[1, h$_{1}$(C)], CM[2, h$_{2}$(C)], CM[3, h$_{3}$(C)\} = min\{31, 24, 18\} = 18
+\end{itemize}
+
+y el mínimo para calcular la frecuencia de D, E y F es:
+
+\begin{itemize}
+	\item \#(D) = min\{CM[1, h$_{1}$(D)], CM[2, h$_{2}$(D)], CM[3, h$_{3}$(D)\} = min\{13, 13, 7\} = 7 
+	\item \#(E) = min\{CM[1, h$_{1}$(E)], CM[2, h$_{2}$(E)], CM[3, h$_{3}$(E)\} = min\{31, 24, 11\} = 11 
+	\item \#(F) = min\{CM[1, h$_{1}$(F)], CM[2, h$_{2}$(F)], CM[3, h$_{3}$(D)\} = min\{5, 5, 15\} = 5
+\end{itemize}
+
+y el mínimo para calcular la frecuencia de G y H es:
+
+\begin{itemize}
+	\item \#(G) = min\{CM[1, h$_{1}$(G)], CM[2, h$_{2}$(G)], CM[3, h$_{3}$(G)\} = min\{31, 10, 15\} = 10 
+	\item \#(H) = min\{CM[1, h$_{1}$(H)], CM[2, h$_{2}$(H)], CM[3, h$_{3}$(H)\} = min\{3, 24, 11\} = 3 
+\end{itemize}
+
+\newpage
+
+¿En cuál se está cometiendo un error sobre el valor real?
+
+En E. El valor mínimo para calcular la frecuencia de E es 11, mientras que el valor real de E es 8.
+
+\addcontentsline{toc}{section}{Lista de Algoritmos}
 \lstlistoflistings
 
 Para esta actividad se han realizado una serie de desarrollos en Python y R que se pueden encontrar \href{https://github.com/lrodrin/masterAI/tree/master/A9/Data\%20Streams/methodologies}{\textbf{AQUÍ}}.
