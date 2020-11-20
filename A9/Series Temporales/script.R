@@ -2,6 +2,7 @@ library(xts)
 library(ggplot2)
 library(forecast)
 library(lubridate)
+library(scales) 
 
 data <- read.csv("Demanda_2015.csv", header = FALSE, sep = ",")
 colnames(data) <- c("date", "time", "demand")
@@ -18,10 +19,40 @@ data$time <- NULL
 # data$yearday <- as.factor(strftime(data$datetime, format = "%m%d", tz = "UTC"))
 
 ggplot(data = data, aes(x = datetime, y = demand)) +
-  geom_line(color = "black", size = 0.5) + 
-  ggtitle("Consumption, 2015") +
-  xlab("Date") +
-  ylab("Consumption in MWh")
+  geom_line() + 
+  scale_x_datetime(date_labels = "%b", breaks = "1 month", 
+                   expand = c(0, 0)) +
+  ggtitle("Consumo eléctrico, 2015") +
+  xlab("Mes") +
+  ylab("Demanda en MW")
+
+ggplot(data = data, aes(x = datetime, y = demand)) +
+  geom_line() + 
+  geom_smooth(method = "loess", se = FALSE, span = 0.6) +
+  scale_x_datetime(date_labels = "%b", breaks = "1 month", 
+                   expand = c(0, 0)) +
+  ggtitle("Consumo eléctrico, 2015") +
+  xlab("Mes") +
+  ylab("Demanda en MW")
+
+data$month <- format(data$datetime, format = "%B")
+ggplot(data, aes(x = datetime, y = demand)) +
+  geom_line(aes(colour = month)) +
+  geom_smooth(method = "loess", se = FALSE, span = 0.6) +
+  scale_x_datetime(date_labels = "%b", breaks = "1 month", 
+                   expand = c(0, 0)) +
+  ggtitle("Consumo eléctrico, 2015") +
+  xlab("Mes") +
+  ylab("Demanda en MW") +
+  theme(legend.position = "none")
+
+data$month <- NULL
+
+# time serie
+ts <- ts(data$demand, frequency = 24*60/10)
+acf(ts)
+pacf(ts)
+mstl(ts, lambda = "auto") %>% autoplot(facet = TRUE)
 
 train <- data[data$datetime <= as.POSIXct("2015-08-31 23:50:00",
                                           tz = "UTC"), ]
@@ -31,18 +62,10 @@ sum(is.na(data))
 sum(complete.cases(data))
 sum(complete.cases(train)) + sum(complete.cases(test))
 
-ggplot(data, aes(x = datetime, y = demand)) +
-    geom_line() +
-    scale_x_datetime(date_labels = "%B", 
-                     breaks = date_breaks("1 month"), 
-                     expand = c(0, 0)) +
-    theme_classic()
-
-
-prevision_demanda_ts <- data %>% filter(as.Date(datetime) >= "2015-01-01 00:00:00	",
-                                                     as.Date(datetime) <= "2015-12-31 23:50:00") %>%
+prevision_demanda_ts <- data %>% filter(as.Date(data$datetime) >= "2015-01-01 00:00:00	",
+                                as.Date(data$datetime) <= "2015-12-31 23:50:00") %>%
   select(demand) %>%
-  msts(c(24,168))
+  msts(c(24, 168))
 Acf(prevision_demanda_ts)
 
 demanda_ts <- msts(data$demand, seasonal.periods = c(24, 169, 24*365.25),
