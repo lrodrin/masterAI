@@ -65,23 +65,18 @@ knitr::opts_chunk$set(fig.path = 'figurasR/',
 
 Una empresa tecnológica cuya área de negocio es la inteligencia artificial es contratada por una empresa eléctrica para que diseñe un sistema de recomendación que haga ofertas personalizadas a sus clientes sobre los paquetes energéticos más adecuados a sus consumos. Para ello, la empresa primero debe llevar a cabo un análisis exhaustivo de los consumos energéticos y diseñar una técnica de predicción que sea capaz de predecir dichos consumos con un horizonte temporal dado. La empresa eléctrica suministra a la empresa tecnológica para dicho cometido los consumos eléctricos desde el 01 de enero de 2015 hasta el 31 de diciembre de 2015 medidos con una frecuencia temporal de 10 minutos.
 
-En esta primera parte trabajamos con el fichero *Demanda_2015.csv* que contiene los datos de los consumos eléctricos desde el 01 de enero de 2015 hasta el 31 de diciembre de 2015 medidos con una frecuencia temporal de 10 minutos.
-
 ```{r warning=FALSE}
 # Se cargan las librerías necesarias
 library(xts)
 library(ggplot2)
+library(forecast)
+library(lubridate)
 ```
-
 
 # WORKING HERE NOW
 
-## Visualización de la serie temporal
-
-Para empezar, leeré los datos, los manipularé un poco y visualizaré la serie temporal.
-
 ```{r}
-# Cargamos los datos Demanda
+#
 data <- read.csv("Demanda_2015.csv", header = FALSE, sep = ",")
 
 # 
@@ -91,50 +86,39 @@ colnames(data) <- c("date", "time", "demand")
 sum(is.na(data))
 
 #
-data$date <- as.Date(data$date, format = "%d/%m/%Y")
+summary(data)
 
 #
-str(data)
-summary(data)
 head(data, 10)
 ```
+
+Tenemos la variable *date* como *character*, la variable *time* como *character*, y la variable *demand* como *integer.*
 
 ```{r}
 #
 data <- cbind(datetime = paste(data$date, data$time), data)
-data$datetime <- as.Date(data$datetime, format = "%Y-%m-%d %H:%M")
+data$datetime <- parse_date_time(data$datetime, "dmY HMS", truncated = 3, tz = "UTC")
 
 #
 data$date <- NULL
 data$time <- NULL
+
+#
+summary(data)
 head(data, 10)
 ```
 
+
+
 ```{r warning=FALSE}
-ggplot(data = data[data$datetime >= "2015-01-01 00:00:00" & data$datetime <= "2015-12-31 23:50:00", ], 
-       aes(x = datetime, y = demand)) +
-  geom_line(color = "#00AFBB", size = 0.5) + 
+ggplot(data = data, aes(x = datetime, y = demand)) +
+  geom_line(color = "black", size = 0.5) + 
   ggtitle("Consumo eléctrico, 2015") +
-  xlab("Mes") +
+  xlab("") +
   ylab("Consumo en MW")
 ```
 
-Es importante tener en cuenta cómo aumenta el consumo de energía tanto en los meses de verano, de mayo a septiembre, como en los días de invierno, desde noviembre hasta febrero. Esto probablemente se debe a que las personas usan la electricidad para enfriar y calentar respectivamente.
+Es importante tener en cuenta cómo aumenta el consumo de energía tanto en los meses de verano como en los meses de invierno. Esto se debe a que las personas usan la electricidad para enfriar y calentar sus viviendas respectivamente.
 
-
-```{r}
-train <- data[data$datetime <= "2015-08-31 23:50:00", ]
-test <- data[data$datetime >= "2015-09-01 00:00:00", ]
-
-sum(complete.cases(data))
-sum(complete.cases(train))
-sum(complete.cases(test))
-sum(is.na(data))
-```
-
-```{r}
-ts <- ts(train$demand, frequency = 12)
-head(ts, 500)
-```
 
 
