@@ -52,7 +52,7 @@ data$month <- NULL
 ts <- ts(data$demand, frequency = 24*60/10)
 acf(ts)
 pacf(ts)
-mstl(ts, lambda = "auto") %>% autoplot(facet = TRUE)
+mstl(ts, lambda = "auto") %>% autoplot()
 
 train <- data[data$datetime <= as.POSIXct("2015-08-31 23:50:00",
                                           tz = "UTC"), ]

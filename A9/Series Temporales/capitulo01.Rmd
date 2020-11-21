@@ -25,10 +25,16 @@ output:
 
 
 ```{r include=FALSE}
-knitr::opts_chunk$set(fig.path = 'figurasR/',
-                      echo = TRUE, warning = FALSE, message = FALSE,
-                      fig.pos = "H",fig.align = "center", out.width = "95%",
-                      cache=FALSE)
+knitr::opts_chunk$set(
+  fig.path = 'figurasR/',
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.pos = "H",
+  fig.align = "center",
+  out.width = "95%",
+  cache = FALSE
+)
 ```
 
 <!-- \setcounter{chapter}{2} -->
@@ -76,8 +82,9 @@ Se pide:
 
 4. Aplicar el método seleccionado en el apartado anterior para obtener una predicción del consumo eléctrico con un horizonte temporal de 4 horas para los días de la semana desde el lunes 8 de junio hasta el domingo 14 de junio. Para ello, se debe implementar un método de predicción en el lenguaje de programación que se estime oportuno o bien usar software libre disponible como WEKA, R, KEEL, etc. Una vez obtenidas las predicciones del periodo indicado, visualizar los resultados (predicciones, errores, etc.).
 
-Se utilizarán los siguientes paquetes adicionales, para los apartados de a continuación.
+El trabajo de investigación se realiza utilizando el lenguaje de programación **R** y todos los datos y el código necesarios para reproducir el estudio se proporcionan dentro de este documento para garantizar que éste sea completamente reproducible.
 
+Se han utilizado los siguientes paquetes para el análisis:
 
 ```{r warning=FALSE}
 library(tidyverse)
@@ -87,14 +94,20 @@ library(xts)
 library(forecast)
 ```
 
+## Datos de la serie temporal
 
-## Formatear la serie temporal
-
+Los datos están disponibles para descargar [aquí](https://github.com/lrodrin/masterAI/raw/master/A9/Series%20Temporales/Demanda_2015.csv). Una vez descargados, los cargamos en nuestro espacio de trabajo.
 
 ```{r}
 data <- read.csv("Demanda_2015.csv", header = FALSE, sep = ",")
+```
 
-# 
+Para su uso posterior, el marco de datos de la serie temporal se formatea. 
+
+TODO
+
+```{r}
+#
 colnames(data) <- c("date", "time", "demand")
 
 #
@@ -106,7 +119,6 @@ summary(data)
 
 Tenemos la variable *date* como *character*, la variable *time* como *character* y la variable *demand* como *integer.*
 
-
 ```{r}
 sum(is.na(data))
 ```
@@ -115,7 +127,7 @@ sum(is.na(data))
 ```{r warning=FALSE}
 #
 data <- cbind(datetime = paste(data$date, data$time), data)
-data$datetime <- parse_date_time(data$datetime, "dmY HMS", 
+data$datetime <- parse_date_time(data$datetime, "dmY HMS",
                                  truncated = 3, tz = "UTC")
 #
 data$date <- NULL
@@ -125,50 +137,86 @@ data$time <- NULL
 head(data, 10)
 ```
 
+## Características de la serie temporal
 
-## Tipo de serie temporal
-
+La siguiente figura ayuda a visualizar la evolución de la demanda a lo largo del año 2015.
 
 ```{r warning=FALSE}
 ggplot(data = data, aes(x = datetime, y = demand)) +
-  geom_line() + 
+  geom_line() +
   geom_smooth(method = "loess", se = FALSE, span = 0.6) +
-  scale_x_datetime(date_labels = "%b", breaks = "1 month", 
+  scale_x_datetime(date_labels = "%b",
+                   breaks = "1 month",
                    expand = c(0, 0)) +
   ggtitle("Consumo eléctrico, 2015") +
   xlab("Mes") +
   ylab("Demanda en MW")
 ```
 
-Como podemos observar, el consumo de energía eléctrica aumenta tanto en los meses de verano como en los meses de invierno. Esto se debe a que las personas usan la electricidad para enfriar y calentar sus viviendas respectivamente.
+Observando la figura se puede detectar una dependencia estacional de la demanda, aunque pueden existir otros factores que pueden afectarla, como los días festivos, los fines de semana, etc.
 
-```{r}
-#
+```{r include=FALSE}
 data$month <- format(data$datetime, format = "%B")
+```
 
-#
+Si queremos comparar mejor la distribución de la demanda de energía para cada mes, la siguiente figura es muy útil.
+
+```{r warning=FALSE}
 ggplot(data, aes(x = datetime, y = demand)) +
   geom_line(aes(colour = month)) +
   geom_smooth(method = "loess", se = FALSE, span = 0.6) +
-  scale_x_datetime(date_labels = "%b", breaks = "1 month", 
+  scale_x_datetime(date_labels = "%b",
+                   breaks = "1 month",
                    expand = c(0, 0)) +
   ggtitle("Consumo eléctrico, 2015") +
   xlab("Mes") +
   ylab("Demanda en MW") +
   theme(legend.position = "none")
+```
 
-#
+Durante el invierno y el verano la demanda es de manera clara mayor salvo, probablemente, en los períodos vacacionales. Como se puede observar en el mes de agosto. Podemos deducir de la figura que en sí mismos los datos siguen un patrón de subidas y caídas en una tendencia que varia sumo en los meses de invierno. Esto se debe a que las personas usan la electricidad para enfriar y calentar sus viviendas respectivamente.
+
+```{r include=FALSE}
 data$month <- NULL
 ```
 
-
 ## Componentes de la serie temporal
 
+Es frecuente analizar las series temporales desde el punto de vista de sus componentes estructurales: *Serie observada = Tendencia + Efecto estacional + Residuos*.
+
+Si queremos que **R** trate un objeto como una serie temporal, tenemos que determinar apropiadamente sus características con el comando *ts*. Para definir la serie correctamente escribimos:
+
 ```{r}
-#
 ts <- ts(data$demand, frequency = 24*60/10)
-acf(ts)
-pacf(ts)
-mstl(ts, lambda = "auto") %>% autoplot(facet = TRUE)
 ```
 
+El argumento *frequency* se utiliza para indicar la periodicidad de la serie (en este caso de 10 minutos).
+
+### Análisis de autocorrelación y autocorrelación parcial
+
+El análisis de correlación y autocorrelación parcial se usa para examinar la dependencia de la serie. 
+
+```{r}
+acf(ts, main = "Autocorrelación")
+pacf(ts, main = "Autocorrelación parcial")
+```
+
+La función de autocorrelación muestra un proceso no estacionario altamente autocorrelacionado, y destaca la estacionalidad. La función de autocorrelación parical es más diffícil de interpretar, pero debido a la forma de *tail-off*, donde los valores cada vez se van haciendo más pequeños, parece un comportamiento típico de los modelos **ARIMA**.
+
+### Descomposición de la serie
+
+En **R** es muy sencillo y existen diferentes opciones para obtener la descomposición estructural de la serie temporal. Por ejemplo, se puede usar la combinación de los paquetes *mstl* y *autoplot*.
+
+A continuación se representa la descomposición de la serie temporal:
+
+```{r}
+# Múltiple estacionalidad
+mstl(ts, lambda = "auto") %>% 
+  autoplot(main = "Descomposición de la serie temporal")
+```
+
+Como puede verse, los datos de la serie temporal *Data* son descompuestos en:
+
+- **Trend** o tendencia, se calcula con una media móvil. En la figura, la tendencia general de los datos varia suavemente.
+- **Seasonal144**, es el efecto estacional fijado.
+- **Remainder**, son los residuos de la serie, se obtienen restando a la serie temporal observada *Data* las dos componentes anteriores. En la figura, parece que existen bastantes residuos, será difícil que un modelo estacionario pueda modelar bien si no se transforma la serie temporal de manera que el modelo estacionario sea apropiado para la serie transformada.
