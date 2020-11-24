@@ -77,8 +77,12 @@ library(tsoutliers) #Cargamos la librería
 outliers <- tso(demanda_ts) 
 plot(outliers)
 
-ggplot(data, aes(month, demand)) + 
+data$day <- format(data$datetime, format = "%A")
+ggplot(data, aes(day, demand)) + 
   geom_boxplot() + 
-  xlab("Month") + 
+  xlab("Day") + 
   ylab("Demand (MWh)") + 
-  ggtitle("Demand per month")
+  ggtitle("Demand per day of the week")
+
+
+boxplot(data$demand)

@@ -10,6 +10,9 @@ biblio-style: plainnat
 csl: methods-in-ecology-and-evolution.csl
 link-citations: yes
 output:
+  html_document: 
+    toc: yes
+    fig_caption: yes
   pdf_document:
     keep_tex: no
     number_sections: yes
@@ -18,9 +21,6 @@ output:
     template: latex/template.tex
     includes:
       before_body: portada/latex_paginatitulo_modTFMDS.tex
-  html_document: 
-    toc: yes
-    fig_caption: yes
 ---
 
 ```{r global_options, include=FALSE}
@@ -52,17 +52,6 @@ knitr::opts_chunk$set(fig.path = 'figurasR/',
 \setcounter{tocdepth}{4}
 \subpdfbookmark{Índice General}{indice}
 \tableofcontents
-
-
-\cleardoublepage   
-\listoffigures
-\addcontentsline{toc}{section}{Índice de Figuras}
-
-\cleardoublepage   
-
-\listoftables
-<!-- \addcontentsline{toc}{section}{Índice de Cuadros} -->
-\addcontentsline{toc}{section}{Índice de Tablas}
 
 \cleardoublepage   
 

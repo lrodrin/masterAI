@@ -63,4 +63,32 @@ knitr::opts_chunk$set(fig.path = 'figurasR/',
 
 # Búsqueda de outliers
 
+Se han utilizado los siguientes paquetes para la búsqueda de outliers:
+
+```{r}
+library(tidyverse)
+library(tsoutliers)
+```
+
+Durante los fines de semana, la demanda disminuye considerablemente en comparación con el resto de días de la semana, además observamos la presencia de *outliers*.
+
+```{r eval=TRUE, include=FALSE}
+data$day <- format(data$datetime, format = "%A")
+data$yearday <- format(data$datetime, format = "%m%d")
+```
+
+
+```{r}
+ggplot(data, aes(day, demand)) +
+  geom_boxplot() +
+  ggtitle("Consumo eléctrico por día de la semana, 2015") +
+  xlab("Día") +
+  ylab("Demanda en MW")
+```
+
+```{r}
+outliers <- tso(ts, types = c("TC", "AO", "LS", "IO", "SLS"))
+```
+
+
 ## Conclusiones

@@ -142,15 +142,15 @@ head(data, 10)
 La siguiente figura ayuda a visualizar la evolución de la demanda a lo largo del año 2015.
 
 ```{r warning=FALSE}
-ggplot(data = data, aes(x = datetime, y = demand)) +
-  geom_line() +
-  geom_smooth(method = "loess", se = FALSE, span = 0.6) +
-  scale_x_datetime(date_labels = "%b",
-                   breaks = "1 month",
-                   expand = c(0, 0)) +
-  ggtitle("Consumo eléctrico, 2015") +
-  xlab("Mes") +
-  ylab("Demanda en MW")
+# ggplot(data = data, aes(x = datetime, y = demand)) +
+#   geom_line() +
+#   geom_smooth(method = "loess", se = FALSE, span = 0.6) +
+#   scale_x_datetime(date_labels = "%b",
+#                    breaks = "1 month",
+#                    expand = c(0, 0)) +
+#   ggtitle("Consumo eléctrico, 2015") +
+#   xlab("Mes") +
+#   ylab("Demanda en MW")
 ```
 
 Observando la figura se puede detectar una dependencia estacional de la demanda, aunque pueden existir otros factores que pueden afectarla, como los días festivos, los fines de semana, etc.
@@ -162,16 +162,16 @@ data$month <- format(data$datetime, format = "%B")
 Si queremos comparar mejor la distribución de la demanda de energía para cada mes, la siguiente figura es muy útil.
 
 ```{r warning=FALSE}
-ggplot(data, aes(x = datetime, y = demand)) +
-  geom_line(aes(colour = month)) +
-  geom_smooth(method = "loess", se = FALSE, span = 0.6) +
-  scale_x_datetime(date_labels = "%b",
-                   breaks = "1 month",
-                   expand = c(0, 0)) +
-  ggtitle("Consumo eléctrico, 2015") +
-  xlab("Mes") +
-  ylab("Demanda en MW") +
-  theme(legend.position = "none")
+# ggplot(data, aes(x = datetime, y = demand)) +
+#   geom_line(aes(colour = month)) +
+#   geom_smooth(method = "loess", se = FALSE, span = 0.6) +
+#   scale_x_datetime(date_labels = "%b",
+#                    breaks = "1 month",
+#                    expand = c(0, 0)) +
+#   ggtitle("Consumo eléctrico, 2015") +
+#   xlab("Mes") +
+#   ylab("Demanda en MW") +
+#   theme(legend.position = "none")
 ```
 
 Durante el invierno y el verano la demanda es de manera clara mayor salvo, probablemente, en los períodos vacacionales. Como se puede observar en el mes de agosto. Podemos deducir de la figura que en sí mismos los datos siguen un patrón de subidas y caídas en una tendencia que varia sumo en los meses de invierno. Esto se debe a que las personas usan la electricidad para enfriar y calentar sus viviendas respectivamente.
