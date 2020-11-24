@@ -87,8 +87,16 @@ ggplot(data, aes(day, demand)) +
 ```
 
 ```{r}
-outliers <- tso(ts, types = c("TC", "AO", "LS", "IO", "SLS"))
+hist(data$demand, main="Frecuencia de la demanda")
+breakPoints <- c(0, 22000, 33000, Inf)
+categories <- c("Low", "Medium", "High")
+data$demand.F <- cut(data$demand, breaks = breakPoints, labels = categories)
+demand_low <- data[data$demand.F == "Low", ] 
+demand_low2 <- demand_low[demand_low$day != "dissabte" & demand_low$day != "diumenge", ] 
+dates <- as.Date(demand_low2$date, format = '%d/%m/%Y')
+dates_unique <- unique(dates)
+dates_unique
+
 ```
-
-
-## Conclusiones
+los high pasamos de explicar que date son. ya hay suficientes ejemplos.
+explicar quartiles y reemplazo de outliers en R.

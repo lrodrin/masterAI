@@ -104,7 +104,6 @@ data <- read.csv("Demanda_2015.csv", header = FALSE, sep = ",")
 
 Para su uso posterior, el marco de datos de la serie temporal se formatea. 
 
-TODO
 
 ```{r}
 #
@@ -130,7 +129,7 @@ data <- cbind(datetime = paste(data$date, data$time), data)
 data$datetime <- parse_date_time(data$datetime, "dmY HMS",
                                  truncated = 3, tz = "UTC")
 #
-data$date <- NULL
+# data$date <- NULL
 data$time <- NULL
 
 #
@@ -142,18 +141,17 @@ head(data, 10)
 La siguiente figura ayuda a visualizar la evolución de la demanda a lo largo del año 2015.
 
 ```{r warning=FALSE}
-# ggplot(data = data, aes(x = datetime, y = demand)) +
-#   geom_line() +
-#   geom_smooth(method = "loess", se = FALSE, span = 0.6) +
-#   scale_x_datetime(date_labels = "%b",
-#                    breaks = "1 month",
-#                    expand = c(0, 0)) +
-#   ggtitle("Consumo eléctrico, 2015") +
-#   xlab("Mes") +
-#   ylab("Demanda en MW")
+ggplot(data = data, aes(x = datetime, y = demand)) +
+  geom_line() +
+  scale_x_datetime(date_labels = "%b",
+                   breaks = "1 month",
+                   expand = c(0, 0)) +
+  ggtitle("Consumo eléctrico, 2015") +
+  xlab("Mes") +
+  ylab("Demanda en MW")
 ```
 
-Observando la figura se puede detectar una dependencia estacional de la demanda, aunque pueden existir otros factores que pueden afectarla, como los días festivos, los fines de semana, etc.
+Observando la figura se puede detectar una dependencia estacional de la demanda, aunque pueden existir otros factores que pueden afectarla, como los días festivos, los fines de semana, ...
 
 ```{r include=FALSE}
 data$month <- format(data$datetime, format = "%B")
@@ -162,27 +160,27 @@ data$month <- format(data$datetime, format = "%B")
 Si queremos comparar mejor la distribución de la demanda de energía para cada mes, la siguiente figura es muy útil.
 
 ```{r warning=FALSE}
-# ggplot(data, aes(x = datetime, y = demand)) +
-#   geom_line(aes(colour = month)) +
-#   geom_smooth(method = "loess", se = FALSE, span = 0.6) +
-#   scale_x_datetime(date_labels = "%b",
-#                    breaks = "1 month",
-#                    expand = c(0, 0)) +
-#   ggtitle("Consumo eléctrico, 2015") +
-#   xlab("Mes") +
-#   ylab("Demanda en MW") +
-#   theme(legend.position = "none")
+ggplot(data, aes(x = datetime, y = demand)) +
+  geom_line(aes(colour = month)) +
+  scale_x_datetime(date_labels = "%b",
+                   breaks = "1 month",
+                   expand = c(0, 0)) +
+  ggtitle("Consumo eléctrico, 2015") +
+  xlab("Mes") +
+  ylab("Demanda en MW") +
+  theme(legend.position = "none")
 ```
 
 Durante el invierno y el verano la demanda es de manera clara mayor salvo, probablemente, en los períodos vacacionales. Como se puede observar en el mes de agosto. Podemos deducir de la figura que en sí mismos los datos siguen un patrón de subidas y caídas en una tendencia que varia sumo en los meses de invierno. Esto se debe a que las personas usan la electricidad para enfriar y calentar sus viviendas respectivamente.
+
+Los meses de menor demanda son abril y octubre.
+Los meses de mayor demanda son enero-febrero y julio.
 
 ```{r include=FALSE}
 data$month <- NULL
 ```
 
 ## Componentes de la serie temporal
-
-Es frecuente analizar las series temporales desde el punto de vista de sus componentes estructurales: *Serie observada = Tendencia + Efecto estacional + Residuos*.
 
 Si queremos que **R** trate un objeto como una serie temporal, tenemos que determinar apropiadamente sus características con el comando *ts*. Para definir la serie correctamente escribimos:
 
@@ -191,6 +189,12 @@ ts <- ts(data$demand, frequency = 24*60/10)
 ```
 
 El argumento *frequency* se utiliza para indicar la periodicidad de la serie (en este caso de 10 minutos).
+
+WORKING HERE
+
+seguir guión de https://www.diegocalvo.es/analisis-de-series-temporales-en-r-arima/
+
+Es frecuente analizar las series temporales desde el punto de vista de sus componentes estructurales: *Serie observada = Tendencia + Efecto estacional + Residuos*.
 
 ### Análisis de autocorrelación y autocorrelación parcial
 
@@ -201,22 +205,30 @@ acf(ts, main = "Autocorrelación")
 pacf(ts, main = "Autocorrelación parcial")
 ```
 
-La función de autocorrelación muestra un proceso no estacionario altamente autocorrelacionado, y destaca la estacionalidad. La función de autocorrelación parical es más diffícil de interpretar, pero debido a la forma de *tail-off*, donde los valores cada vez se van haciendo más pequeños, parece un comportamiento típico de los modelos **ARIMA**.
+La función de autocorrelación muestra un proceso no estacionario altamente autocorrelacionado, y destaca la estacionalidad. La función de autocorrelación parical es más difícil de interpretar, pero debido a la forma de *tail-off*, donde los valores cada vez se van haciendo más pequeños, parece un comportamiento típico de los modelos **ARIMA**.
 
 ### Descomposición de la serie
 
-En **R** es muy sencillo y existen diferentes opciones para obtener la descomposición estructural de la serie temporal. Por ejemplo, se puede usar la combinación de los paquetes *mstl* y *autoplot*.
-
-A continuación se representa la descomposición de la serie temporal:
-
 ```{r}
-# Múltiple estacionalidad
-mstl(ts, lambda = "auto") %>% 
-  autoplot(main = "Descomposición de la serie temporal")
+componentes.ts <- decompose(ts)
+plot(componentes.ts)
 ```
 
-Como puede verse, los datos de la serie temporal *Data* son descompuestos en:
+```{r}
+library("fUnitRoots")
+urkpssTest(ts, type = c("tau"), lags = c("short"),use.lag = NULL, doplot = TRUE)
+```
 
-- **Trend** o tendencia, se calcula con una media móvil. En la figura, la tendencia general de los datos varia suavemente.
-- **Seasonal144**, es el efecto estacional fijado.
-- **Remainder**, son los residuos de la serie, se obtienen restando a la serie temporal observada *Data* las dos componentes anteriores. En la figura, parece que existen bastantes residuos, será difícil que un modelo estacionario pueda modelar bien si no se transforma la serie temporal de manera que el modelo estacionario sea apropiado para la serie transformada.
+
+
+```{r}
+tsstationary = diff(ts, differences=1)
+```
+
+```{r}
+plot(ts)
+plot(tsstationary)
+acf(tsstationary, main = "Autocorrelación")
+pacf(tsstationary, main = "Autocorrelación parcial")
+```
+
