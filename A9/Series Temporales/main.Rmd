@@ -24,17 +24,19 @@ output:
 ---
 
 ```{r global_options, include=FALSE}
-# Sys.setlocale('LC_ALL','C') # corrige problema con (ocasionaba problemas con acentos en fig.cap)
 options(kableExtra.latex.load_packages = FALSE)
-# options(tinytex.latexmk.emulation = FALSE)
-knitr::opts_chunk$set(fig.path = 'figurasR/',
-                      echo = TRUE, warning = FALSE, message = FALSE,
-                      fig.pos = "H",fig.align = "center", out.width = "95%",
-                      cache=FALSE) 
+knitr::opts_chunk$set(
+  fig.path = 'figurasR/',
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.pos = "H",
+  fig.align = "center",
+  out.width = "95%",
+  cache = FALSE
+) 
 ```
 
-
-<!-- Indentar el texto al inicio de cada nuevo párrafo -->
 \setlength{\parindent}{1em}
 
 \pagestyle{fancy}
@@ -90,37 +92,6 @@ knitr::opts_chunk$set(fig.path = 'figurasR/',
 ```{r child = 'capitulo04.Rmd'}
 ```
 
-
-<!-- 
-Descomentarlo para incluir el capítulo 5 el cual contiene utilidades de ejemplo
-para copiar y pegar.
-Atención: necesitará la instalación de algunos paquetes R 
-que puede no tener instalados. Son:
-install.packages(c("ggplot2","kableExtra","dplyr"))
--->
-
-
-<!-- \FloatBarrier -->
-
-<!-- ```{r child = 'capitulo05.Rmd'} -->
-<!-- ``` -->
-
-
-
-
-\FloatBarrier
-
-\appendix
-
-```{r child = 'apendice01.Rmd'}
-```
-
-
-
-```{r child = 'apendice02.Rmd'}
-```
-
-
 \FloatBarrier
 \cleardoublepage
 
@@ -134,17 +105,15 @@ install.packages(c("ggplot2","kableExtra","dplyr"))
   \fancyhead[CO]{Bibliografía}
 \fi
 
-
 \ifdefined\ifcitapandoc
 
 \hypertarget{bibliografuxeda}{%
 \chapter*{Bibliografía}\label{bibliografuxeda}}
 \addcontentsline{toc}{chapter}{Bibliografía}
 
-
 \else
 
-<!-- \nocite{*} -->
 \nocite{Luque2017}
+\nocite{Campos2018}
 
 \fi 

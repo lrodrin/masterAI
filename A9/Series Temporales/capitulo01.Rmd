@@ -23,7 +23,6 @@ output:
     template: latex/template.tex
 ---
 
-
 ```{r include=FALSE}
 knitr::opts_chunk$set(
   fig.path = 'figurasR/',
@@ -37,17 +36,13 @@ knitr::opts_chunk$set(
 )
 ```
 
-<!-- \setcounter{chapter}{2} -->
-<!-- \setcounter{chapter}{2} escribir 2 para capítulo 3  -->
-<!-- \pagenumbering{arabic} -->
-
 \ifdefined\ifprincipal
 \else
 \setlength{\parindent}{1em}
 \pagestyle{fancy}
 \setcounter{tocdepth}{4}
 \tableofcontents
-<!-- \nocite{*} -->
+
 \fi
 
 \ifdefined\ifdoblecara
@@ -80,65 +75,58 @@ Se pide:
 
 3. Seleccionar un artículo publicado en una revista científica de prestigio internacional en el que se presente un método de predicción. Estudiar de manera detallada el método publicado y describirlo de forma resumida.
 
-4. Aplicar el método seleccionado en el apartado anterior para obtener una predicción del consumo eléctrico con un horizonte temporal de 4 horas para los días de la semana desde el lunes 8 de junio hasta el domingo 14 de junio. Para ello, se debe implementar un método de predicción en el lenguaje de programación que se estime oportuno o bien usar software libre disponible como WEKA, R, KEEL, etc. Una vez obtenidas las predicciones del periodo indicado, visualizar los resultados (predicciones, errores, etc.).
+4. Aplicar el método seleccionado en el apartado anterior para obtener una predicción del consumo eléctrico con un horizonte temporal de 4 horas para los días de la semana desde el lunes 8 de junio hasta el domingo 14 de junio. Para ello, se debe implementar un método de predicción en el lenguaje de programación que se estime oportuno o bien usar software libre disponible como WEKA, R, KEEL, ... Una vez obtenidas las predicciones del periodo indicado, visualizar los resultados (predicciones, errores, ...).
 
-El trabajo de investigación se realiza utilizando el lenguaje de programación **R** y todos los datos y el código necesarios para reproducir el estudio se proporcionan dentro de este documento para garantizar que éste sea completamente reproducible.
+El trabajo de investigación se realiza utilizando el lenguaje de programación R y todos los datos y el código necesarios para reproducir el estudio se proporcionan dentro de este documento para garantizar que éste sea completamente reproducible.
 
-Se han utilizado los siguientes paquetes para el análisis:
+Se utilizan los siguientes paquetes para el análisis:
 
 ```{r warning=FALSE}
 library(tidyverse)
-library(ggplot2)
 library(lubridate)
 library(xts)
 library(forecast)
 ```
 
+- [tidyverse](https://www.rdocumentation.org/packages/tidyverse) es un conjunto de librerías de R diseñadas para la *"Ciencia de datos"*. 
+- [lubridate](https://www.rdocumentation.org/packages/lubridate) es una librería que permite manipular fechas e intervalos de tiempo.
+- [xts](https://www.rdocumentation.org/packages/xts) es una librería que permite convertir datos en series temporales.
+
 ## Datos de la serie temporal
 
-Los datos están disponibles para descargar [aquí](https://github.com/lrodrin/masterAI/raw/master/A9/Series%20Temporales/Demanda_2015.csv). Una vez descargados, los cargamos en nuestro espacio de trabajo.
+Los datos están disponibles para descargar [aquí](https://github.com/lrodrin/masterAI/raw/master/A9/Series%20Temporales/Demanda_2015.csv). Una vez descargados, se cargan en el espacio de trabajo.
 
 ```{r}
 data <- read.csv("Demanda_2015.csv", header = FALSE, sep = ",")
 ```
 
-Para su uso posterior, el marco de datos de la serie temporal se formatea. 
-
-
-```{r}
-#
-colnames(data) <- c("date", "time", "demand")
-
-#
-head(data, 10)
-
-#
-summary(data)
-```
-
-Tenemos la variable *date* como *character*, la variable *time* como *character* y la variable *demand* como *integer.*
+Buscamos valores perdidos.
 
 ```{r}
 sum(is.na(data))
 ```
 
+Vemos que no existen valores perdidos, por lo tanto no tendremos que eliminarlos.
+
+```{r}
+# Establecemos nombres a las columnas
+colnames(data) <- c("date", "time", "demand")
+head(data, 10)
+summary(data)
+```
+
+Tenemos la variable *date* como *character*, la variable *time* como *character* y la variable *demand* como *integer.* Para su análisis posterior, el marco de datos de fechas y horas se formatea. Para ello, primero crearemos una nueva columna *datetime*, donde juntaremos las fechas con las horas usando la función *cbind()*. Luego procederemos a la conversión de tipos *character* a *POSIXct* para la fecha-hora usando la función *parse_date_time()*.
 
 ```{r warning=FALSE}
-#
 data <- cbind(datetime = paste(data$date, data$time), data)
-data$datetime <- parse_date_time(data$datetime, "dmY HMS",
-                                 truncated = 3, tz = "UTC")
-#
-# data$date <- NULL
-data$time <- NULL
-
-#
+data$datetime <-
+  parse_date_time(data$datetime, "dmY HMS", truncated = 3, tz = "UTC")
 head(data, 10)
 ```
 
-## Características de la serie temporal
+## Visualización de la serie temporal
 
-La siguiente figura ayuda a visualizar la evolución de la demanda a lo largo del año 2015.
+La siguiente figura muestra la distribución del consumo eléctrico a lo largo del 2015.
 
 ```{r warning=FALSE}
 ggplot(data = data, aes(x = datetime, y = demand)) +
@@ -146,18 +134,27 @@ ggplot(data = data, aes(x = datetime, y = demand)) +
   scale_x_datetime(date_labels = "%b",
                    breaks = "1 month",
                    expand = c(0, 0)) +
-  ggtitle("Consumo eléctrico, 2015") +
+  ggtitle("Consumos eléctricos del año 2015") +
   xlab("Mes") +
-  ylab("Demanda en MW")
+  ylab("Consumo en MW")
 ```
 
-Observando la figura se puede detectar una dependencia estacional de la demanda, aunque pueden existir otros factores que pueden afectarla, como los días festivos, los fines de semana, ...
+Observando la figura se puede detectar una dependencia estacional del consumo eléctrico, aunque pueden existir otros factores que pueden afectarla, como los días festivos, los fines de semana, ...
+
+Parece que el principal desafío introducido por la serie temporal podría ser su estacionalidad múltiple. En ese caso, las siguientes estacionalidades pueden estar presentes:
+
+- Las personas usan la mayoría de sus electrodomésticos en determinadas horas del día, lo que resulta en una estacionalidad diaria.
+
+- Las personas usan la electricidad de manera diferente los días entre semana y los fines de semana, lo que resulta en una estacionalidad semanal.
+
+- Las personas usan la electricidad de manera diferente en diferentes épocas del año, lo que resulta en una estacionalidad anual.
 
 ```{r include=FALSE}
+Sys.setlocale("LC_TIME", "Spanish")
 data$month <- format(data$datetime, format = "%B")
 ```
 
-Si queremos comparar mejor la distribución de la demanda de energía para cada mes, la siguiente figura es muy útil.
+Para mejorar la visualización de la distribución del consumo eléctrico a lo largo del 2015, la siguiente figura es muy útil.
 
 ```{r warning=FALSE}
 ggplot(data, aes(x = datetime, y = demand)) +
@@ -165,70 +162,79 @@ ggplot(data, aes(x = datetime, y = demand)) +
   scale_x_datetime(date_labels = "%b",
                    breaks = "1 month",
                    expand = c(0, 0)) +
-  ggtitle("Consumo eléctrico, 2015") +
+  ggtitle("Consumos eléctricos del año 2015") +
   xlab("Mes") +
-  ylab("Demanda en MW") +
+  ylab("Consumo en MW") +
   theme(legend.position = "none")
 ```
 
-Durante el invierno y el verano la demanda es de manera clara mayor salvo, probablemente, en los períodos vacacionales. Como se puede observar en el mes de agosto. Podemos deducir de la figura que en sí mismos los datos siguen un patrón de subidas y caídas en una tendencia que varia sumo en los meses de invierno. Esto se debe a que las personas usan la electricidad para enfriar y calentar sus viviendas respectivamente.
-
-Los meses de menor demanda son abril y octubre.
-Los meses de mayor demanda son enero-febrero y julio.
-
-```{r include=FALSE}
-data$month <- NULL
-```
+Es importante tener en cuenta cómo aumenta el consumo de la electricidad tanto en los meses de verano, de mayo a septiembre, como en los días de invierno, desde noviembre hasta febrero. Esto se debe a que las personas usan la electricidad para enfriar y calentar sus viviendas.
+Durante los períodos de invierno y de verano, el consumo eléctrico es de manera clara mayor salvo, probablemente, en los períodos vacacionales. Como se puede observar en el mes de agosto.
+En resumen, visualmente podemos deducir que los consumos eléctricos siguen un patrón de subidas y bajadas en una tendencia que varía de manera estacional. 
 
 ## Componentes de la serie temporal
 
-Si queremos que **R** trate un objeto como una serie temporal, tenemos que determinar apropiadamente sus características con el comando *ts*. Para definir la serie correctamente escribimos:
+Es frecuente analizar las series temporales des del punto de vista de sus componentes estructurales. Pero primero necesitamos que R trate los datos como una serie temporal, así que para ello tendremos que determinar apropiadamente sus características con la función *ts()*. Para definir la serie correctamente escribimos:
 
 ```{r}
-ts <- ts(data$demand, frequency = 24*60/10)
+ts <- ts(data$demand, frequency = 24 * 60 / 10)
+# El argumento frequency de la función *ts()* se utiliza para indicar 
+# la periodicidad de la serie (en este caso es de 10 minutos)
 ```
 
-El argumento *frequency* se utiliza para indicar la periodicidad de la serie (en este caso de 10 minutos).
+Los componentes de una serie temporal son:
 
-WORKING HERE
+- Tendencia: un aumento o disminución a largo plazo de los datos se denomina tendencia. No tiene por qué ser necesariamente lineal. Es el patrón subyacente en los datos a lo largo del tiempo. 
 
-seguir guión de https://www.diegocalvo.es/analisis-de-series-temporales-en-r-arima/
+- Estacional o Periódico: cuando una serie está influenciada por factores estacionales. Como en este caso y hemos podido visualizar en el apartado anterior.
 
-Es frecuente analizar las series temporales desde el punto de vista de sus componentes estructurales: *Serie observada = Tendencia + Efecto estacional + Residuos*.
+- Cíclico: cuando los datos muestran subidas y bajadas que no son de un mismo período.
 
-### Análisis de autocorrelación y autocorrelación parcial
-
-El análisis de correlación y autocorrelación parcial se usa para examinar la dependencia de la serie. 
-
-```{r}
-acf(ts, main = "Autocorrelación")
-pacf(ts, main = "Autocorrelación parcial")
-```
-
-La función de autocorrelación muestra un proceso no estacionario altamente autocorrelacionado, y destaca la estacionalidad. La función de autocorrelación parical es más difícil de interpretar, pero debido a la forma de *tail-off*, donde los valores cada vez se van haciendo más pequeños, parece un comportamiento típico de los modelos **ARIMA**.
-
-### Descomposición de la serie
+En R se pueden averiguar los componentes de la serie temporal con la siguiente función:
 
 ```{r}
 componentes.ts <- decompose(ts)
 plot(componentes.ts)
 ```
 
+En la figura se observant cuatro sub-figuras:
+
+- observed: los datos actuales.
+- trend: el movimiento general hacia arriba o hacia abajo de los datos.
+- seasonal: cualquier patrón mensual o anual de los os datos.
+- random: parte inexplicable de los datos.
+
+A partir de las sub-figuras se puede determinar que la serie temporal no presenta una tendencia. Con esto se puede afirmar que la serie es estacionaria. También se puede observar que la serie es estacionaria en cuando a la varianza, ya que no se aprecia gran variabilidad. En cambio, sí que presenta una estacionalidad muy marcada (el consumo aumenta durante los meses de invierno y verano). Por ese motivo, para mejorar las futuras predicciones se debe eliminar la estacionalidad de la serie temporal original. Pero antes, para confirmar que la serie es estacionaria trazaremos la gráfica de su función de autocorrelación, usando la función *acf()*.
+
 ```{r}
-library("fUnitRoots")
-urkpssTest(ts, type = c("tau"), lags = c("short"),use.lag = NULL, doplot = TRUE)
+acf(ts, main = "Autocorrelación")
 ```
 
+Se puede confirmar que la serie es estacionaria, ya que el valor de la función de autocorrelación decae de manera exponencial a medida que aumentan los rezagos en el tiempo. Como es estacionaria será más fácil de predecir. 
 
+<!-- Aun así, se tiene que eliminar la estacionalidad. Para ello usaremos la función *ndiffs()* para determinar el número de primeras diferencias necesarias para que la serie temporal no sean estacional, y la función *diff()* para eliminar la estacionalidad. -->
 
-```{r}
-tsstationary = diff(ts, differences=1)
+```{r eval=FALSE, include=FALSE}
+ndiffs(ts) 
+```
+<!-- El número de primeras diferencias necesarias para que la serie temporal no sean estacional es 1. Como consecuencia el parámetro *differences* de la función *diff()* será igual a 1. -->
+
+```{r eval=FALSE, include=FALSE}
+tsstationary <- diff(ts, differences = 1)
 ```
 
-```{r}
+<!-- A continuación, comparamos mediante figuras y la función de autocorrelación la serie original con la serie original transformada (eliminada la estacionalidad). -->
+
+<!-- Antes de eliminar la estacionalidad, -->
+
+```{r eval=FALSE, include=FALSE}
 plot(ts)
+acf(ts, main = "Autocorrelación")
+```
+
+<!-- Después de eliminar la estacionalidad, -->
+
+```{r eval=FALSE, include=FALSE}
 plot(tsstationary)
 acf(tsstationary, main = "Autocorrelación")
-pacf(tsstationary, main = "Autocorrelación parcial")
 ```
-
