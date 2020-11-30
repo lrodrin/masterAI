@@ -25,15 +25,17 @@ output:
 
 
 ```{r include=FALSE}
-knitr::opts_chunk$set(fig.path = 'figurasR/',
-                      echo = TRUE, warning = FALSE, message = FALSE,
-                      fig.pos = "H",fig.align = "center", out.width = "95%",
-                      cache=FALSE)
+knitr::opts_chunk$set(
+  fig.path = 'figurasR/',
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.pos = "H",
+  fig.align = "center",
+  out.width = "95%",
+  cache = FALSE
+)
 ```
-
-<!-- \setcounter{chapter}{2} -->
-<!-- \setcounter{chapter}{2} escribir 2 para capítulo 3  -->
-<!-- \pagenumbering{arabic} -->
 
 \ifdefined\ifprincipal
 \else
@@ -41,7 +43,7 @@ knitr::opts_chunk$set(fig.path = 'figurasR/',
 \pagestyle{fancy}
 \setcounter{tocdepth}{4}
 \tableofcontents
-<!-- \nocite{*} -->
+
 \fi
 
 \ifdefined\ifdoblecara
@@ -64,28 +66,24 @@ knitr::opts_chunk$set(fig.path = 'figurasR/',
 
 # Búsqueda de outliers
 
-Se han utilizado los siguientes paquetes para la búsqueda de outliers:
+Se utilizan los siguientes paquetes para la búsqueda de *outliers*:
 
 ```{r}
-library(tidyverse)
-library(tsoutliers)
 ```
 
-Durante los fines de semana, la demanda disminuye considerablemente en comparación con el resto de días de la semana, además observamos la presencia de *outliers*.
+En el capítulo anterior se ha comentado que podrían existir factores que afecten a la serie temporal. Uno de esos factores podría ser que, durante los fines de semana, el consumo eléctrico disminuya considerablemente en comparación con el resto de los días de la semana, y eso provocaría la aparición de valores atípicos en la serie temporal. Otro factor que puede hacer disminuir el consumo eléctrico considerablemente y provocar la aparición de valores atípicos en la serie temporal, son los días festivos. Así, se han considerado estos dos factores para localizar valores atípicos en la serie temporal, si es que tiene.
 
-```{r eval=TRUE, include=FALSE}
+Primero se analiza el consumo eléctrico durante los fines de semana mediante la siguiente figura. Pero antes se añade a los datos una columna nueva *day*, para indicar los días de la semana.
+
+```{r}
 data$day <- format(data$datetime, format = "%A")
-data$yearday <- format(data$datetime, format = "%m%d")
-```
-
-
-```{r}
 ggplot(data, aes(day, demand)) +
   geom_boxplot() +
-  ggtitle("Consumo eléctrico por día de la semana, 2015") +
+  ggtitle("Consumos eléctricos por día de la semana del año 2015") +
   xlab("Día") +
-  ylab("Demanda en MW")
+  ylab("Consumo en MW")
 ```
+Como se observa en la figura durante los fines de semana (sábado y domingo), la demanda disminuye considerablemente en comparación con el resto de los días de la semana y aparecen valores atípicos.
 
 ```{r}
 hist(data$demand, main="Frecuencia de la demanda")
