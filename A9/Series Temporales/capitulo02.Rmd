@@ -66,11 +66,6 @@ knitr::opts_chunk$set(
 
 # Búsqueda de outliers
 
-Se utilizan los siguientes paquetes para la búsqueda de *outliers*:
-
-```{r}
-```
-
 En el capítulo anterior se ha comentado que podrían existir factores que afecten a la serie temporal. Uno de esos factores podría ser que, durante los fines de semana, el consumo eléctrico disminuya considerablemente en comparación con el resto de los días de la semana, y eso provocaría la aparición de valores atípicos en la serie temporal. Otro factor que puede hacer disminuir el consumo eléctrico considerablemente y provocar la aparición de valores atípicos en la serie temporal, son los días festivos. Así, se han considerado estos dos factores para localizar valores atípicos en la serie temporal, si es que tiene.
 
 Primero se analiza el consumo eléctrico durante los fines de semana mediante la siguiente figura. Pero antes se añade a los datos una columna nueva *day*, para indicar los días de la semana.
@@ -101,66 +96,7 @@ La figura anterior muestra una distribución extraña para la demanda. Lo que se
 
 - La baja demanda es más frecuente de lo normal dentro de conjunto de datos de la serie temporal, parece que predominan bastantes valores atípicos.
 
-## Reemplazo de outliers
-
-A continuación, se definirán los umbrales para reemplazar los valores atípicos de la serie temporal. Estos umbrales indicarán qué valores de la demanda serán reemplazados por la la mediana (que en este caso podría ser más representativa). Para ello, usaremos la función *summary()*.
-
-```{r}
-summary(data$demand)
-```
-Comprobamos que la mediana es más representativa que la media. 
-
-En el ejemplo que nos traemos entre manos, vemos que Q1 está en 24392 MW y que Q3 está en 31664 MW. Entre Q1 y Q3 sabemos que están el 50% de los valores obtenidos en el estudio. A esta distancia se le llama rango intercuantílico (IQR: InterQuantile Range).
-
-IQR = Q3 - Q1 = 31664 - 24392 = 7272 MW
-
-```{r}
-IQR <- 31664 - 24392
-IQR
-```
-
-Se define como valor atípico leve aquel que dista 1,5 veces el rango intercuantílico por debajo de Q1 o por encima de Q3.
-
-*q* < Q1 - 1.5 * IQR o bien *q* > Q3 + 1.5 * IQR
-
-y valor atípico extremo aquel que dista 3 veces el rango intercantílico por debajo de Q1 o por encima de Q3.
-
-*q* < Q1 - 3 * IQR o bien *q* > Q2 + 3 * IQR
-
-De hecho, sospechando que hay *outliers*, vamos a calcular cual serían los umbrales:
-
-```{r}
-highLimit <- 24392 + 1.5 * IQR
-lowLimit <- 31664 - 1.5 * IQR
-highLimit
-lowLimit
-```
-
-Todos los valores del muestro que superen 35300 son outliers. De ahí para arriba, está muy por encima y se consideran valores atípicos.
-
-
-Todos los valores del muestro que sean inferiores a 20756 son outliers. De ahí para abajo, está muy por debajo y se consideran valores atípicos.
-
-Nos definimos nuestra propia función que recibe como parámetros el conjunto de datos, el umbral inferior y el umbral superior. Y en la función decidimos reemplazar por la media aquellos valores atípicos que estén por debajo del umbral inferior, y por la mediana aquellos que estén por encima del umbral superior.
-
-```{r}
-# reemplazo de outliers con R
-outliersReplace <- function(data, lowLimit, highLimit){
-  data[data < lowLimit] <- mean(data)
-  data[data > highLimit] <- median(data)
-  data           
-}
-
-data$demand.WO <- outliersReplace(data$demand, lowLimit, highLimit)
-
-summary(data$demand)
-summary(data$demand.WO)
-```
-
-
 ## INVENT
-
-Es normal que la media, mediana y cuartiles hayan cambiado, pues los outliers tenían mucho peso y distorsionaban los datos. Aún así, este muestreo que es un subconjunto del original, tiene pinta que no está bien balanceado y tendrá sus propios outliers. No hay más que ver la distancia que hay por encima del Q3.
 
 ```{r}
 
@@ -188,3 +124,72 @@ summary(data$demand)
 datarm <- data[data$demand.F != "Low",]
 summary(datarm)
 ```
+
+En el apartado siguiente, se identificarán y remplazarán los valores atípicos de la demanda. Porqué las futuras predicciones derivadas de los conjuntos de datos de series temporales que incluyen valores atípicos frecuentemente son engañosas.
+
+## Reemplazo de outliers
+
+Para reemplazar los *outliers*, se necesitan dos umbrales. Como se ha comentado, se opta por el reemplazo. No se opta por la eliminación de los valores atípicos para no perder datos representativos de la serie. La eliminación de bastantes datos representativos de la serie puede tener un impacto negativo en las futuras predicciones de la serie. Los umbrales que se definirán indicarán qué valores de la demanda serán reemplazados.
+
+Se usa la función *summary()*, que nos devolverá información sobre los cuartiles de la demanda. Los cuartiles son valores que dividen el conjunto de datos de la serie temporal en diferentes partes. Estos se utilizarán para definir los umbrales.
+
+```{r}
+summary(data$demand)
+```
+En el reemplazo que nos traemos entre manos, se observa que el primer cuartil (*Q1*) está en 24392 MW y que el tercer cuartil (*Q3*) está en 31664 MW. El uso de los cuartiles en el reemplazo se debe a que entre *Q1* y *Q3* sabemos que se encuentran el 50% de los valores de la serie. La distancia entre los valores de *Q1* y *Q3* se le llama rango intercuantílico (*IQR: InterQuantile Range*). En este caso, el valor de *IQR* es:
+
+```{r}
+IQR <- 31664 - 24392
+IQR
+```
+
+Así según los cuartiles sobre la demanda, se define como valor atípico leve aquel que dista 1.5 veces el rango intercuantílico por debajo de *Q1* o por encima de *Q3.*
+
+\begin{center}
+  *outlier* < Q1 - 1.5 * IQR o bien *outlier* > Q3 + 1.5 * IQR
+\end{center}
+
+y valor atípico extremo aquel que dista 3 veces el rango intercantílico por debajo de *Q1* o por encima de *Q3*.
+
+\begin{center}
+  *outlier* < Q1 - 3 * IQR o bien *outlier* > Q2 + 3 * IQR
+\end{center}
+
+De hecho, con esta información, se calculan los umbrales *highLimit* y *lowLimit*, de la siguiente manera:
+
+```{r}
+highLimit <- 24392 + 1.5 * IQR
+highLimit
+lowLimit <- 31664 - 1.5 * IQR
+lowLimit
+```
+
+Concretamente, todos los valores de la demanda que superen los 35300 MW se consideran *outliers*. Y todos los valores de la demanda que sean inferiores a los 20756 MW también son *outliers*.
+
+Una vez que se han identificado los *outliers* de la demanda, se procede al reemplazo de estos. Para ello, se define una función propia que recibe como parámetros el conjunto de datos de la demanda, el umbral inferior y el umbral superior. En la función se decide reemplazar por la media aquellos valores atípicos que estén por debajo del umbral inferior, y por la mediana aquellos que estén por encima del umbral superior, procedimiento muy utilizado en el reemplazo de *outliers*.
+
+La función y su aplicación se muestran a continuación:
+
+```{r}
+outliersReplace <- function(data, lowLimit, highLimit) {
+  data[data < lowLimit] <- as.integer(mean(data))
+  data[data > highLimit] <- as.integer(median(data))
+  data
+}
+
+data$demand.WO <- outliersReplace(data$demand, lowLimit, highLimit)
+```
+Veamos dos ejemplos donde se ha realizado el reemplazo.
+
+```{r}
+data[752, c("demand", "demand.WO")]
+data[1666, c("demand", "demand.WO")]
+```
+
+Finalmente, substituiremos los valores de la demanda originales por los valores de la demanda sin *outliers*.
+```{r}
+data$demand <- data$demand.WO
+summary(data$demand)
+```
+
+Es normal que la media, o la mediana o los cuartiles cambien después del reemplazo, pues los *outliers* tenían bastante peso y distorsionaban los datos de la serie.
