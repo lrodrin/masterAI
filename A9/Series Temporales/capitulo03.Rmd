@@ -25,15 +25,17 @@ output:
 
 
 ```{r include=FALSE}
-knitr::opts_chunk$set(fig.path = 'figurasR/',
-                      echo = TRUE, warning = FALSE, message = FALSE,
-                      fig.pos = "H",fig.align = "center", out.width = "95%",
-                      cache=FALSE)
+knitr::opts_chunk$set(
+  fig.path = 'figurasR/',
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.pos = "H",
+  fig.align = "center",
+  out.width = "95%",
+  cache = FALSE
+)
 ```
-
-<!-- \setcounter{chapter}{2} -->
-<!-- \setcounter{chapter}{2} escribir 2 para capítulo 3  -->
-<!-- \pagenumbering{arabic} -->
 
 \ifdefined\ifprincipal
 \else
@@ -41,7 +43,7 @@ knitr::opts_chunk$set(fig.path = 'figurasR/',
 \pagestyle{fancy}
 \setcounter{tocdepth}{4}
 \tableofcontents
-<!-- \nocite{*} -->
+
 \fi
 
 \ifdefined\ifdoblecara
@@ -61,4 +63,30 @@ knitr::opts_chunk$set(fig.path = 'figurasR/',
 \renewcommand{\footrulewidth}{0.4pt}
 
 
-# Método de predicción
+# Modelo ARIMA
+
+Se selecciona el artículo publicado [aquí](https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1553-2712.1998.tb02493.x), que presenta el modelo de predicción ARIMA.
+
+## Descripción del modelo
+
+El modelo ARIMA funciona bien cuando se disponen de series temporales largas y el patrón de comportamiento es estable o consistente durante el tiempo. Las condiciones necesarias de una serie temporal para el modelo ARIMA es que los datos deben ser estacionarios, esto significa que las propiedades de la serie no dependen del momento en que se capturan. Los datos también deben ser univariantes, ya que el modelo ARIMA trabaja en una sola variable. 
+
+ARIMA es la abreviatura de "AutoRegressive Integrated Moving Average", consiste en un modelo estadístico que utiliza variaciones y regresiones de datos estadísticos con el fin de encontrar patrones para una predicción hacia el futuro, es decir, las estimaciones futuras vienen explicadas por los datos del pasado y no por variables independientes.
+
+Componentes:
+
+- AutoReressive *(AR(p))* componente autorregresivo, se refiere a la utilización de valores pasados en la ecuación de regresión para la serie de $Y_{t}$ . El parámetro $ρ$ autoregresivo especifica el número de retardos utilizados en el modelo.
+
+- Integrated *(I(d))* representa el grado de diferenciación, es decir, el número de diferencias utilizadas para hacer que las series temporales sean estacionarias.
+
+- Moving Average *(MA(q))* representa el error del modelo como una combinación de los términos de error anteriores $ε_{t}$. El orden $q$ determina el número de términos a incluir en el modelo.
+
+Los componentes de diferenciación, autorregresión y promedio móvil conforman un modelo ARIMA(p,d,q), no estacional, que se puede escribir como una ecuación lineal:
+
+:::: {.center data-latex=""}
+$Y_{t} = c + \phi_{1}y_{dt-1} + \phi_{p}y_{dt-p} + ... + \theta_{1}e_{t-1} + \theta_{q}e_{t-q} + e_{t}$
+::::
+
+donde $y_{d}$ es $Y$ diferenciado $d$ veces y $c$ es una constante.
+
+Otra ventaja del modelo ARIMA es que permite adaptarse a cualquier frecuencia utilizando las series de *Fourier*, y además, utilizar variables externas que ayudan a mejorar el modelo.
