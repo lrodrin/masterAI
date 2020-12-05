@@ -25,15 +25,16 @@ output:
 
 
 ```{r include=FALSE}
-knitr::opts_chunk$set(fig.path = 'figurasR/',
-                      echo = TRUE, warning = FALSE, message = FALSE,
-                      fig.pos = "H",fig.align = "center", out.width = "95%",
-                      cache=FALSE)
+knitr::opts_chunk$set(
+  fig.path = 'figurasR/',
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.pos = "H",
+  fig.align = "center",
+  out.width = "95%",
+  cache = FALSE)
 ```
-
-<!-- \setcounter{chapter}{2} -->
-<!-- \setcounter{chapter}{2} escribir 2 para capítulo 3  -->
-<!-- \pagenumbering{arabic} -->
 
 \ifdefined\ifprincipal
 \else
@@ -41,7 +42,7 @@ knitr::opts_chunk$set(fig.path = 'figurasR/',
 \pagestyle{fancy}
 \setcounter{tocdepth}{4}
 \tableofcontents
-<!-- \nocite{*} -->
+
 \fi
 
 \ifdefined\ifdoblecara
@@ -60,7 +61,46 @@ knitr::opts_chunk$set(fig.path = 'figurasR/',
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0.4pt}
 
+```{r include=FALSE}
+data$date <- NULL
+data$time <- NULL
+data$month <- NULL
+data$day <- NULL
+```
 
 # Aplicación del método de predicción
 
 Se aplica el método de predicción descrito en el capítulo anterior para obtener una predicción del consumo eléctrico con un horizonte temporal de 4 horas para los días de la semana desde el lunes 8 de junio hasta el domingo 14 de junio.
+
+## Transformación de la serie
+
+El análisis previo del primer capítulo nos ha revelado que la serie no es estacionaria por su estacionalidad, y como el modelo que vamos a utilizar es un modelo ARIMA, necesitamos que la serie sea estacionaria. Para ello, tendremos que eliminar la estacionalidad de la serie, diferenciando la serie lograremos que se convierta a estacionaria, por lo tanto primero se observa que resultado devuelve la función *ndiffs()*, que calcula el número de diferenciaciones estacionales que se necesitan llevar a cabo para que la serie sea estacionaria.
+
+```{r}
+ndiffs(ts) 
+```
+El cálculo nos muestran que la serie necesita de una diferenciación estacional. Con ella y la función *diff()* eliminaremos la estacionalidad.
+
+```{r}
+tsstationary <- diff(ts, differences = 1)
+```
+
+<!-- A continuación, comparamos mediante figuras y la función de autocorrelación la serie original con la serie original transformada (eliminada la estacionalidad). -->
+
+<!-- Antes de eliminar la estacionalidad, -->
+
+```{r eval=FALSE, include=FALSE}
+plot(ts)
+acf(ts, main = "Autocorrelación")
+```
+
+<!-- Después de eliminar la estacionalidad, -->
+
+```{r eval=FALSE, include=FALSE}
+plot(tsstationary)
+acf(tsstationary, main = "Autocorrelación")
+```
+
+Una vez eliminado tanto la componente de tendencia y la estacional, observemos que esta serie se parece bastante a una serie estacionaria, ya que parece ser constante en media y varianza, para asegurarnos aplicamos un test de estacionariedad como el test ADF (Dickey-Fuller) y el test de KPSS (Kwiatkowski-Phillips-Schmidt-Shin).
+
+https://rpubs.com/palominoM/series

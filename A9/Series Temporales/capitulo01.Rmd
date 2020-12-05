@@ -79,6 +79,8 @@ Se pide:
 
 El trabajo de investigación se realiza utilizando el lenguaje de programación R y todos los datos y el código necesarios para reproducir el estudio se proporcionan dentro de este documento para garantizar que éste sea completamente reproducible.
 
+\newpage 
+
 Se utilizan los siguientes paquetes para el análisis:
 
 ```{r warning=FALSE}
@@ -91,6 +93,7 @@ library(forecast)
 - [tidyverse](https://www.rdocumentation.org/packages/tidyverse) es un conjunto de librerías de R diseñadas para la *"Ciencia de datos"*. 
 - [lubridate](https://www.rdocumentation.org/packages/lubridate) es una librería que permite manipular fechas e intervalos de tiempo.
 - [xts](https://www.rdocumentation.org/packages/xts) es una librería que permite convertir datos en series temporales.
+- [forecast](https://www.rdocumentation.org/packages/forecast/) es una librería que contiene métodos y herramientas para analizar series temporales
 
 ## Datos de la serie temporal
 
@@ -119,8 +122,8 @@ Tenemos la variable *date* como *character*, la variable *time* como *character*
 
 ```{r warning=FALSE}
 data <- cbind(datetime = paste(data$date, data$time), data)
-data$datetime <-
-  parse_date_time(data$datetime, "dmY HMS", truncated = 3, tz = "UTC")
+data$datetime <- parse_date_time(data$datetime, "dmY HMS", 
+                                 truncated = 3, tz = "UTC")
 head(data, 10)
 ```
 
@@ -139,9 +142,7 @@ ggplot(data = data, aes(x = datetime, y = demand)) +
   ylab("Consumo en MW")
 ```
 
-Observando la figura se puede detectar una dependencia estacional del consumo eléctrico, aunque pueden existir otros factores que pueden afectarla, como los días festivos, los fines de semana, ...
-
-Parece que el principal desafío introducido por la serie temporal podría ser su estacionalidad múltiple. En ese caso, las siguientes estacionalidades pueden estar presentes:
+Observando la figura se puede detectar una dependencia estacional del consumo eléctrico, aunque pueden existir otros factores que pueden afectarla, como los días festivos, los fines de semana, ... Parece que el principal desafío introducido por la serie temporal podría ser su estacionalidad múltiple. En ese caso, las siguientes estacionalidades pueden estar presentes:
 
 - Las personas usan la mayoría de sus electrodomésticos en determinadas horas del día, lo que resulta en una estacionalidad diaria.
 
@@ -211,30 +212,3 @@ acf(ts, main = "Autocorrelación")
 ```
 
 Se puede confirmar que la serie es estacionaria, ya que el valor de la función de autocorrelación decae de manera exponencial a medida que aumentan los rezagos en el tiempo. Como es estacionaria será más fácil de predecir. 
-
-<!-- Aun así, se tiene que eliminar la estacionalidad. Para ello usaremos la función *ndiffs()* para determinar el número de primeras diferencias necesarias para que la serie temporal no sean estacional, y la función *diff()* para eliminar la estacionalidad. -->
-
-```{r eval=FALSE, include=FALSE}
-ndiffs(ts) 
-```
-<!-- El número de primeras diferencias necesarias para que la serie temporal no sean estacional es 1. Como consecuencia el parámetro *differences* de la función *diff()* será igual a 1. -->
-
-```{r eval=FALSE, include=FALSE}
-tsstationary <- diff(ts, differences = 1)
-```
-
-<!-- A continuación, comparamos mediante figuras y la función de autocorrelación la serie original con la serie original transformada (eliminada la estacionalidad). -->
-
-<!-- Antes de eliminar la estacionalidad, -->
-
-```{r eval=FALSE, include=FALSE}
-plot(ts)
-acf(ts, main = "Autocorrelación")
-```
-
-<!-- Después de eliminar la estacionalidad, -->
-
-```{r eval=FALSE, include=FALSE}
-plot(tsstationary)
-acf(tsstationary, main = "Autocorrelación")
-```
