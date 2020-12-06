@@ -137,19 +137,24 @@ pacf(tsstationary, lag.max = 140,
 Vistas la figuras *acf()* y *pacf()* se pueden plantear varias soluciones para ajustar el modelo, como lo serían: ARIMA(0,1,2) o ARIMA(1,1,0), o realizando una combinación de componentes como ARIMA(1,1,2) o incluso solo variando algunos de los componentes como puede ser con ARIMA(1,1,1) o ARIMA(1,1,2) o ARIMA(0,1,1) o ARIMA(1,1,0), ... En este caso, el proceso de ajuste será un proceso recursivo y necesitaremos ejecutar la función *arima()* con diferentes valores (p, d, q) para encontrar el modelo más optimizado y eficiente.
 
 ```{r}
-arima.1 <- arima(tsstationary, order = c(0, 1, 2))
-arima.2 <- arima(tsstationary, order = c(1, 1, 0))
-arima.3 <- arima(tsstationary, order = c(1, 1, 2))
-arima.4 <- arima(tsstationary, order = c(1, 1, 1))
-arima.5 <- arima(tsstationary, order = c(1, 1, 2))
-arima.6 <- arima(tsstationary, order = c(0, 1, 1))
-arima.7 <- arima(tsstationary, order = c(1, 1, 0))
+
+trainset <- subset(tsstationary, end = length(tsstationary) - (24 / 4))
+testset <- subset(tsstationary, start = length(tsstationary) - (24 / 4) + 1)
+
+arima.1 <- arima(trainset, order = c(0, 1, 2))
+arima.2 <- arima(trainset, order = c(1, 1, 0))
+arima.3 <- arima(trainset, order = c(1, 1, 2))
+arima.4 <- arima(trainset, order = c(1, 1, 1))
+arima.5 <- arima(trainset, order = c(1, 1, 2))
+arima.6 <- arima(trainset, order = c(0, 1, 1))
+arima.7 <- arima(trainset, order = c(1, 1, 0))
 ```
 
 Cálculo del valor *AIC* para seleccionar el modelo más optimizado y eficiente.
 
 ```{r}
-AIC(arima.1, arima.2, arima.3, arima.4, arima.5, arima.6, arima.7)
+aic <- AIC(arima.1, arima.2, arima.3, arima.4, arima.5, arima.6, arima.7)
+aic
 ```
 
 Aquí se puede apreciar que el modelo que mejor AIC presenta es aquel que tienen un componente AutoReressive *(AR(p))*, un componente Integrated *(I(d))* y un componente Moving Average *(MA(q))*, siendo ARIMA(1, 1, 1) el modelo que el test arroja con un menor valor y por tanto con una mayor consideración. 
@@ -184,7 +189,7 @@ En este caso, el valor de *p-value* está muy lejos de ser significativo (7.83e-
 ## Predicción
 
 ```{r}
-pred.ts <- forecast(arima.4, h = 10, level = c(99.5))
-plot(pred.ts)
+futurVal <- forecast(arima.4, 10)
+plot(futurVal)
 ```
 
