@@ -63,7 +63,7 @@ knitr::opts_chunk$set(
 
 # Aplicación del modelo ARIMA
 
-Puesto que el entrenamiento del modelo de una serie temporal muy larga puede ser computacionalmente costoso, se filtran los datos de la serie para contemplar sólo desde el lunes 8 de junio hasta el domingo 14 de junio con un horizonte temporal de 4 horas. Para no modificar el conjunto de datos al añadir otra estacionalidad usaremos la función *msts()*, que al contrario que la función *ts()* que ya hemos usado, puede manejar diferentes estacionalidades de una misma serie temporal.
+Puesto que el entrenamiento del modelo de una serie temporal muy larga puede ser computacionalmente costoso, se filtran los datos de la serie para contemplar sólo desde el lunes 8 de junio hasta el domingo 14 de junio. Para no modificar el conjunto de datos al añadir otra estacionalidad usaremos la función *msts()*, que al contrario que la función *ts()* que ya hemos usado, puede manejar diferentes estacionalidades de una misma serie temporal.
 
 ```{r}
 ts <- data %>% filter(
@@ -71,7 +71,7 @@ ts <- data %>% filter(
   datetime <= as.POSIXct("2015-06-14 23:50:00", tz = "UTC")
   ) %>%
   select(demand) %>%
-  msts(seasonal.periods = c(24 * 60 / 10, 24 / 4)) # 10 minutos, 4 horas
+  ts(frequency = 24 * 60 / 10)
 ```
 
 Se utilizan los siguientes paquetes para la aplicación del modelo ARIMA:
@@ -134,45 +134,22 @@ pacf(tsstationary, lag.max = 140,
     main = "Autocorrelación parcial de la serie temporal")
 ```
 
-Vistas la figuras *acf()* y *pacf()* se pueden plantear varias soluciones para ajustar el modelo, como lo serían: ARIMA(0,1,2) o ARIMA(1,1,0), o realizando una combinación de componentes como ARIMA(1,1,2) o incluso solo variando algunos de los componentes como puede ser con ARIMA(1,1,1) o ARIMA(1,1,2) o ARIMA(0,1,1) o ARIMA(1,1,0), ... En este caso, el proceso de ajuste será un proceso recursivo y necesitaremos ejecutar la función *arima()* con diferentes valores (p, d, q) para encontrar el modelo más optimizado y eficiente.
+En este caso, el proceso de ajuste será un proceso automático y necesitaremos ejecutar la función *auto.arima()* para encontrar el modelo más optimizado y eficiente.
 
 ```{r}
-
-trainset <- subset(tsstationary, end = length(tsstationary) - (24 / 4))
-testset <- subset(tsstationary, start = length(tsstationary) - (24 / 4) + 1)
-
-arima.1 <- arima(trainset, order = c(0, 1, 2))
-arima.2 <- arima(trainset, order = c(1, 1, 0))
-arima.3 <- arima(trainset, order = c(1, 1, 2))
-arima.4 <- arima(trainset, order = c(1, 1, 1))
-arima.5 <- arima(trainset, order = c(1, 1, 2))
-arima.6 <- arima(trainset, order = c(0, 1, 1))
-arima.7 <- arima(trainset, order = c(1, 1, 0))
+trainset <- subset(tsstationary, end = length(tsstationary) - (24 * 60 / 10))
+testset <- subset(tsstationary, start = length(tsstationary) - (24 * 60 / 10) + 1)
 ```
 
-Cálculo del valor *AIC* para seleccionar el modelo más optimizado y eficiente.
 
 ```{r}
-aic <- AIC(arima.1, arima.2, arima.3, arima.4, arima.5, arima.6, arima.7)
-aic
+fitARIMA <- auto.arima(trainset, trace = TRUE, seasonal = FALSE)
+fitARIMA
 ```
 
 Aquí se puede apreciar que el modelo que mejor AIC presenta es aquel que tienen un componente AutoReressive *(AR(p))*, un componente Integrated *(I(d))* y un componente Moving Average *(MA(q))*, siendo ARIMA(1, 1, 1) el modelo que el test arroja con un menor valor y por tanto con una mayor consideración. 
 
 Una vez estimados diferentes modelos y elegido el mejor de ellos, en este caso ARIMA(1,1,1), se procede a validar el modelo con el test *Box-Ljung* para evaluar si los residuos que tiene son ruido blanco, ruido aleatorio que no es problemático para el modelo y no afectará a la futura predicción. 
-
-```{r include=FALSE}
-rm(
-  list = c(
-    "arima.1",
-    "arima.2",
-    "arima.3",
-    "arima.5",
-    "arima.6",
-    "arima.7"
-  )
-)
-```
 
 El test de *Box-Ljung* es una prueba para comprobar si una serie de observaciones en un período de tiempo especifico son aleatorias o independientes en todos los retardos hasta el especificado. En lugar de probar la aleatoriedad en cada retardo distinto, prueba la aleatoriedad *"general"* basada en un número de retardos y, por lo tanto, es una prueba de comparación. Se aplica a los residuos de un modelo ARIMA ajustado, no a la serie original, y en tales aplicaciones, la hipótesis que se prueba es que los residuos del modelo ARIMA no tengan autocorrelación. Si los retardos no son independientes, un retardo puede estar relacionado con otros retardos de *k* unidades de tiempo por lo que la autocorrelacion puede reducir la exactitud del modelo predictivo y conducir a una interpretación errónea de los datos. La hipótesis ($H_{0}$) nula del test de *Box-Ljung* dice que los datos no son diferentes del "ruido blanco". Por lo tanto, los valores *p-value* pequeños indicarán residuos independientes.
 
@@ -181,7 +158,7 @@ El test de *Box-Ljung* es una prueba para comprobar si una serie de observacione
 Se aplica el test de *Box-Ljung*:
 
 ```{r}
-checkresiduals(arima.4)
+checkresiduals(fitARIMA)
 ```
 
 En este caso, el valor de *p-value* está muy lejos de ser significativo (7.83e-11). Por lo tanto, no rechazamos la hipótesis nula de que los residuos se distribuyen aleatoriamente y se concluye que el modelo ARIMA, como se especifica, se ha ajustado correctamente.
@@ -189,7 +166,8 @@ En este caso, el valor de *p-value* está muy lejos de ser significativo (7.83e-
 ## Predicción
 
 ```{r}
-futurVal <- forecast(arima.4, 10)
-plot(futurVal)
+forecast.arima <- forecast(fitARIMA, 24 * 60 / 10)
+plot(forecast.arima)
+autoplot(forecast.arima) + autolayer(testset)
 ```
 
