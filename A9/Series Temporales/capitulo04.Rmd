@@ -123,27 +123,16 @@ Con este test, también se obtiene un *p-value* de 0.01, por tanto, también rec
 
 ## Ajuste del modelo
 
-Una vez que tenemos la serie transformada que satisface las condiciones del modelo ARIMA, para determinar el orden del modelo que se ajustará a la serie, se necesitan tres variables: *p*, *d* y *q*, que son enteros positivos que se refieren al orden de los componentes que forman el modelo: AutoReressive *(AR(p))*, Integrated *(I(d))* y Moving Average *(MA(q))*, respectivamente. Para identificar que valores de *p* y *q* serán apropiados, se necesita ejecutar las funciones *acf()* y *pacf()*.
-
-*pacf()* en el retardo *k-éssimo* es la función de autocorrelación parcial que describe la correlación entre todos los puntos de la serie que están exactamente *k* instantes antes, después de tener en cuenta su correlación con la serie entre esos *k* instantes.
-
-```{r}
-acf(tsstationary, lag.max = 140, 
-    main = "Autocorrelación de la serie temporal")
-pacf(tsstationary, lag.max = 140,
-    main = "Autocorrelación parcial de la serie temporal")
-```
-
-En este caso, el proceso de ajuste será un proceso automático y necesitaremos ejecutar la función *auto.arima()* para encontrar el modelo más optimizado y eficiente.
 
 ```{r}
 trainset <- subset(tsstationary, end = length(tsstationary) - (24 * 60 / 10))
 testset <- subset(tsstationary, start = length(tsstationary) - (24 * 60 / 10) + 1)
 ```
 
+Una vez que tenemos la serie transformada que satisface las condiciones del modelo ARIMA, para determinar el orden del modelo que se ajustará a la serie, se necesitan tres variables: *p*, *d* y *q*, que son enteros positivos que se refieren al orden de los componentes que forman el modelo: AutoReressive *(AR(p))*, Integrated *(I(d))* y Moving Average *(MA(q))*, respectivamente. Para identificar que valores de *p*, *d* y *q* serán apropiados, se usa la función *auto.arima()*, que calcula automáticamente cual es la mejor combinación de los componentes que forman el modelo.
 
 ```{r}
-fitARIMA <- auto.arima(trainset, trace = TRUE, seasonal = FALSE)
+fitARIMA <- auto.arima(trainset, trace = TRUE)
 fitARIMA
 ```
 
@@ -168,6 +157,5 @@ En este caso, el valor de *p-value* está muy lejos de ser significativo (7.83e-
 ```{r}
 forecast.arima <- forecast(fitARIMA, 24 * 60 / 10)
 plot(forecast.arima)
-autoplot(forecast.arima) + autolayer(testset)
 ```
 
