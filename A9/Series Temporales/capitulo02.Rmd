@@ -199,3 +199,26 @@ summary(data$demand)
 ```
 
 Es normal que la media, o la mediana o los cuartiles cambien después del reemplazo, pues los *outliers* tenían bastante peso y distorsionaban los datos de la serie.
+
+```{r warning=FALSE}
+# Borrado de variables temporales para ahorrar espacio
+data$date <- NULL
+data$time <- NULL
+data$month <- NULL
+data$day <- NULL
+data$demand.C <- NULL
+data$demand.WO <- NULL
+rm(
+  list = c(
+    "breakPoints",
+    "categories",
+    "demand.high",
+    "demand.low",
+    "demand.monday",
+    "IQR",
+    "highLimit",
+    "lowLimit"
+  )
+)
+```
+

@@ -18,6 +18,7 @@ output:
     template: latex/template.tex
     includes:
       before_body: portada/latex_paginatitulo_modTFMDS.tex
+    latex_engine: xelatex
   html_document: 
     toc: yes
     fig_caption: yes
@@ -82,10 +83,10 @@ knitr::opts_chunk$set(
 ```{r child = 'capitulo02.Rmd'}
 ```
 
-<!-- \FloatBarrier -->
+\FloatBarrier
 
-<!-- ```{r child = 'capitulo03.Rmd'} -->
-<!-- ``` -->
+```{r child = 'capitulo03.Rmd'}
+```
 
 \FloatBarrier
 

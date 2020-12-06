@@ -62,7 +62,6 @@ knitr::opts_chunk$set(
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0.4pt}
 
-
 # Modelo ARIMA
 
 Se selecciona el artículo publicado [aquí](https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1553-2712.1998.tb02493.x), que presenta el modelo de predicción ARIMA.
@@ -83,9 +82,9 @@ Componentes:
 
 Los componentes de diferenciación, autorregresión y promedio móvil conforman un modelo ARIMA(p,d,q), no estacional, que se puede escribir como una ecuación lineal:
 
-:::: {.center data-latex=""}
-$Y_{t} = c + \phi_{1}y_{dt-1} + \phi_{p}y_{dt-p} + ... + \theta_{1}e_{t-1} + \theta_{q}e_{t-q} + e_{t}$
-::::
+$$ 
+Y_{t} = c + \phi_{1}y_{dt-1} + \phi_{p}y_{dt-p} + ... + \theta_{1}e_{t-1} + \theta_{q}e_{t-q} + e_{t}
+$$
 
 donde $y_{d}$ es $Y$ diferenciado $d$ veces y $c$ es una constante.
 
