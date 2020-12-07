@@ -12,15 +12,15 @@ biblio-style: plainnat
 csl: methods-in-ecology-and-evolution.csl
 link-citations: yes
 output:
-  html_document: 
-    toc: yes
-    fig_caption: yes
   pdf_document:
     keep_tex: no
     number_sections: yes
     citation_package: natbib
     fig_caption: yes
     template: latex/template.tex
+  html_document: 
+    toc: yes
+    fig_caption: yes
 ---
 
 
@@ -64,28 +64,43 @@ knitr::opts_chunk$set(
 
 # Modelo ARIMA
 
-Se selecciona el artículo publicado [aquí](https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1553-2712.1998.tb02493.x), que presenta el modelo de predicción ARIMA.
-
 ## Descripción del modelo
 
-El modelo ARIMA funciona bien cuando se disponen de series temporales largas y el patrón de comportamiento es estable o consistente durante el tiempo. Las condiciones necesarias de una serie temporal para el modelo ARIMA es que los datos deben ser estacionarios, esto significa que las propiedades de la serie no dependen del momento en que se capturan. Los datos también deben ser univariantes, ya que el modelo ARIMA trabaja en una sola variable. 
+La metodología se puede aplicar solamente a procesos ARMA estacionarios (ARIMA antes de las correspondientes transformaciones para garantizar estacionalidad).
 
-ARIMA es la abreviatura de "AutoRegressive Integrated Moving Average", consiste en un modelo estadístico que utiliza variaciones y regresiones de datos estadísticos con el fin de encontrar patrones para una predicción hacia el futuro, es decir, las estimaciones futuras vienen explicadas por los datos del pasado y no por variables independientes.
+## Metodologia del modelo
 
-Componentes:
+@BoxJenkins1976 definieron una metodología de cuatro etapas para seleccionar el modelo ARIMA subyacente a una serie temporal concreta con el propósito de estimar, contrastar y predecir series temporales. 
 
-- AutoReressive *(AR(p))* componente autorregresivo, se refiere a la utilización de valores pasados en la ecuación de regresión para la serie de $Y_{t}$ . El parámetro $ρ$ autoregresivo especifica el número de retardos utilizados en el modelo.
+Las cuatro etapas son las siguientes:
 
-- Integrated *(I(d))* representa el grado de diferenciación, es decir, el número de diferencias utilizadas para hacer que las series temporales sean estacionarias.
+- Identificación
+- Estimación
+- Contraste
+- Predicción
 
-- Moving Average *(MA(q))* representa el error del modelo como una combinación de los términos de error anteriores $ε_{t}$. El orden $q$ determina el número de términos a incluir en el modelo.
+Se pueden dividir las etapas en los pasos siguientes:
 
-Los componentes de diferenciación, autorregresión y promedio móvil conforman un modelo ARIMA(p,d,q), no estacional, que se puede escribir como una ecuación lineal:
+1) Representar la serie y calcular la función de autocorrelación (FA) y la función de autocorrelación parcial (FAP) y comprobar si la serie es estacionaria. Si lo es (sus correlaciones decrecen rápidamente) pasar al paso 3, si no lo son (lento decrecimiento) continuar con el paso 2. 
 
-$$ 
-Y_{t} = c + \phi_{1}y_{dt-1} + \phi_{p}y_{dt-p} + ... + \theta_{1}e_{t-1} + \theta_{q}e_{t-q} + e_{t}
-$$
+2) Tomar logaritmos de la serie si parece que no es estacionaria en varianza (varianza no constante en el tiempo) y/o primeras diferencias si parece que no es estacionaria en media (tiene tendencia o medias distintas por tramos). 
 
-donde $y_{d}$ es $Y$ diferenciado $d$ veces y $c$ es una constante.
+3) Examinar la función de autocorrelación (FA) y la función de autocorrelación parcial (FAP) de la nueva serie transformada (si siguiera sin ser estacionaria volver al paso 2 y aplicar una nueva diferencia) e intentar identificar el proceso ARMA teniendo en cuenta las correlaciones simples y parciales significativas (bandas de fluctuación).
 
-Otra ventaja del modelo ARIMA es que permite adaptarse a cualquier frecuencia utilizando las series de *Fourier*, y además, utilizar variables externas que ayudan a mejorar el modelo.
+4) Estimar el proceso que se ha especificado (máxima verosimilitud).
+
+5) Contrastes de hipótesis:
+
+    5.1) Contraste de significatividad individual (o conjunta) de los parámetros del modelo.
+  
+    5.2) Contrastes sobre los residuos del modelo: comprobar que la función de autocorrelación (FA) y la función de autocorrelación parcial (FAP) tienen un comportamiento de ruido aleatorio (ninguna correlación significativa), contraste de normalidad ([test de Jarque-Bera](https://es.wikipedia.org/wiki/Test_de_Jarque-Bera)) ...
+  
+    5.3) Usar los criterios de información de Akaike y Schwarz (AIC, BIC) además del $R^{2}$ ajustado para decidir sobre la bondad de los ajustes de posibles especificaciones alternativas (normalmente de la inspección de la función de autocorrelación (FA) y de la función de autocovarianza (FAC) se pueden identificar distintos modelos). 
+  
+6) Si se deciden cambios en el modelo original volver estimar los nuevos modelos en el paso 4. 
+
+7) Predicción bajo normalidad y varianza constante:
+
+8) Evaluación de las predicciones:
+
+http://campus.usal.es/~ehe/perote/documentos/TEMA%202%20MODELIZACION%20ECONOMICA%20II_2.pdf

@@ -117,5 +117,8 @@ knitr::opts_chunk$set(
 \nocite{Luque2017}
 \nocite{Campos2018}
 \nocite{Jimenez2019}
+\nocite{HyndmanAthanasopoulos2018}
+\nocite{HyndmanKhandakar2008}
+\nocite{BoxJenkins1973}
 
 \fi 
