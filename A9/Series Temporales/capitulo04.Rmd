@@ -169,12 +169,20 @@ Los parámetros del modelo ARIMA se pueden usar como un modelo predictivo para h
 
 ```{r}
 forecastARIMA <- forecast(fitARIMA)
-autoplot(trainset, xlab = "Minutos", ylab = "Demanda en MW") +
+autoplot(trainset, xlab = "Horas", ylab = "Demanda en MW") +
   autolayer(testset) +
   autolayer(forecastARIMA, series = "ARIMA(2,0,0)(0,1,0)", PI = FALSE) +
   ggtitle("Predicción obtenida del modelo ARIMA")
 ```
-La figura muestra que el modelo proporciona una buena predicción. Finalmente, se guarda el resultado de la predicción en un fichero Excel. Para ello, necesitaremos el paquete [openxlsx](https://www.rdocumentation.org/packages/openxlsx/versions/4.2.3).
+
+La figura muestra que el modelo proporciona una predicción aceptable. En la tabla siguiente, vemos que los errores en la predicción son mayores que en el entrenamiento. La predicción ha resultado peor de lo esperado. Los valores NaN y Inf de los errores MAE y MAPE, se deben a que la predicción se ha realizado con pocos datos.
+
+```{r}
+accuracy(forecastARIMA, tsstationary)
+```
+\newpage
+
+Finalmente, se guarda el resultado de la predicción en un fichero Excel. Para ello, necesitaremos el paquete [openxlsx](https://www.rdocumentation.org/packages/openxlsx/versions/4.2.3).
 
 ```{r warning=FALSE}
 library(openxlsx)
