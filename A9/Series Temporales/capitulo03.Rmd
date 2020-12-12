@@ -6,23 +6,22 @@ principal: yes
 forprint: false
 fontsize: 11pt
 geometry: margin = 2.5cm
-bibliography: bib/library.bib
+bibliography: library.bib
 metodobib: yes
 biblio-style: plainnat
 csl: methods-in-ecology-and-evolution.csl
 link-citations: yes
 output:
+  html_document: 
+    toc: yes
+    fig_caption: yes
   pdf_document:
     keep_tex: no
     number_sections: yes
     citation_package: natbib
     fig_caption: yes
-    template: latex/template.tex
-  html_document: 
-    toc: yes
-    fig_caption: yes
+    template: template.tex
 ---
-
 
 ```{r include=FALSE}
 knitr::opts_chunk$set(
@@ -64,13 +63,33 @@ knitr::opts_chunk$set(
 
 # Modelo ARIMA
 
+El artículo publicado en una revista científica de prestigio internacional en el que se presenta el modelo seleccionado se ha adjuntado en la entrega de esta actividad. El modelo se describe de forma breve a continuación.
+
 ## Descripción del modelo
 
-La metodología se puede aplicar solamente a procesos ARMA estacionarios (ARIMA antes de las correspondientes transformaciones para garantizar estacionalidad).
+La metodología de los modelos ARIMA fue formalizada por Box y Jenkins en 1976, por lo que también se les denomina modelos Box-Jenkins. El enfoque de la metodología parte del hecho de que la serie temporal que se trata de predecir es generada por un proceso estocástico cuya naturaleza puede ser caracterizada mediante un modelo. 
+
+Para efectuar la estimación de un modelo ARIMA se requiere que la serie temporal mensual o trimestral cuente con un elevado número de observaciones. Básicamente la metodología Box-Jenkins, consiste en encontrar un modelo matemático que represente el comportamiento de una serie temporal de datos, y permita hacer previsiones únicamente introduciendo el período de tiempo correspondiente (Chatfield, 1989).
+
+El modelo se suele expresar como ARIMA($p,d,q$) y el término significa:
+
+- Autorregresivos (AR($p$)).
+
+- Integrados (I($d$)).
+
+- Medias - móviles (MA($q$)).
+
+Los parámetros $p$, $d$ y $q$ son números enteros no negativos que indican el orden de las distintas componentes del modelo respectivamente, las componentes autorregresivas, integrada y de media móvil. $p$ es el número de componentes autorregresivos, $d$ es el número de diferenciaciones para que la serie sea estacionaria, y $q$ es el número de componentes de medias móviles
+
+En los modelos ARIMA se aplica el comportamiento de una serie temporal a partir de observaciones pasadas de la propia seria y a partir de los errores pasados de previsión.
+
+La metodología de los modelos ARIMA proporciona predicciones sin necesidad de la existencia de ningún tipo de condición previa. Además, una vez encontrado el modelo, se pueden efectuar de manera inmediata predicciones y comparaciones entre los datos reales y estimados para las observaciones pertenecientes al pasado. Sin embargo, además de requerir un elevado número de observaciones, la estimación y la interpretación de los resultados es compleja, y suele proporcionar peores resultados en previsiones a largo plazo.
+
+En el siguiente apartado, se describe brevemente la metodología Box-Jenkins que recoge una serie de etapas y procedimientos para la identificación, estimación, contraste y predicción de los modelos ARIMA con datos de series temporales. La metodología solo se puede aplicar a procesos ARMA (unión de AR y MA) estacionarios (ARIMA antes de las correspondientes transformaciones para garantizar estacionalidad).
 
 ## Metodologia del modelo
 
-@BoxJenkins1976 definieron una metodología de cuatro etapas para seleccionar el modelo ARIMA subyacente a una serie temporal concreta con el propósito de estimar, contrastar y predecir series temporales. 
+La metodología esta formada de cuatro etapas para seleccionar el modelo ARIMA subyacente a una serie temporal concreta con el propósito de estimar, contrastar y predecir series temporales. 
 
 Las cuatro etapas son las siguientes:
 
@@ -95,12 +114,10 @@ Se pueden dividir las etapas en los pasos siguientes:
   
     5.2) Contrastes sobre los residuos del modelo: comprobar que la función de autocorrelación (FA) y la función de autocorrelación parcial (FAP) tienen un comportamiento de ruido aleatorio (ninguna correlación significativa), contraste de normalidad ([test de Jarque-Bera](https://es.wikipedia.org/wiki/Test_de_Jarque-Bera)) ...
   
-    5.3) Usar los criterios de información de Akaike y Schwarz (AIC, BIC) además del $R^{2}$ ajustado para decidir sobre la bondad de los ajustes de posibles especificaciones alternativas (normalmente de la inspección de la función de autocorrelación (FA) y de la función de autocovarianza (FAC) se pueden identificar distintos modelos). 
+    5.3) Usar los criterios de información de Akaike y Schwarz (AIC, BIC) además del $R^{2}$ ajustado para decidir sobre la bondad de los ajustes de posibles especificaciones alternativas (normalmente de la inspección de la función de autocorrelación (FA) y de la función de auto covarianza (FAC) se pueden identificar distintos modelos). 
   
 6) Si se deciden cambios en el modelo original volver estimar los nuevos modelos en el paso 4. 
 
-7) Predicción bajo normalidad y varianza constante:
+7) Una vez que el modelo está correctamente especificado puede usarse para la predicción. La predicción es bajo normalidad y varianza constante.
 
-8) Evaluación de las predicciones:
-
-http://campus.usal.es/~ehe/perote/documentos/TEMA%202%20MODELIZACION%20ECONOMICA%20II_2.pdf
+8) Finalmente, se evalúa la predicción con alguna medida como el error cuadrático medio (MSE, en inglés).

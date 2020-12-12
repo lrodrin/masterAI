@@ -6,7 +6,7 @@ principal: yes
 forprint: false
 fontsize: 11pt
 geometry: margin = 2.5cm
-bibliography: bib/library.bib
+bibliography: library.bib
 metodobib: yes
 biblio-style: plainnat
 csl: methods-in-ecology-and-evolution.csl
@@ -20,7 +20,7 @@ output:
     number_sections: yes
     citation_package: natbib
     fig_caption: yes
-    template: latex/template.tex
+    template: template.tex
 ---
 
 ```{r include=FALSE}

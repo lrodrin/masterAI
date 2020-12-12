@@ -6,23 +6,22 @@ principal: yes
 forprint: false
 fontsize: 11pt
 geometry: margin = 2.5cm
-bibliography: bib/library.bib
+bibliography: library.bib
 metodobib: yes
 biblio-style: plainnat
 csl: methods-in-ecology-and-evolution.csl
 link-citations: yes
 output:
+  html_document: 
+    toc: yes
+    fig_caption: yes
   pdf_document:
     keep_tex: no
     number_sections: yes
     citation_package: natbib
     fig_caption: yes
-    template: latex/template.tex
-  html_document: 
-    toc: yes
-    fig_caption: yes
+    template: template.tex
 ---
-
 
 ```{r include=FALSE}
 knitr::opts_chunk$set(
@@ -148,11 +147,11 @@ fitARIMA <- auto.arima(trainset, trace = TRUE)
 fitARIMA
 ```
 
-En este caso la función sugiere que el mejor modelo que representa a la serie sería un ARIMA(2,0,0)(0,1,0) sin tendencia, y que arroja un AIC de 9925.15. Lo validaremos con la prueba *Ljung-Box* (una versión simplificada de la prueba de Box y Pierce) que evalúa si los residuos de la serie son ruido aleatorio. 
+En este caso la función sugiere que el mejor modelo que representa a la serie sería un ARIMA(2,0,0)(0,1,0) sin tendencia, y que arroja un AIC de 9925.15. Lo validaremos con la prueba *Ljung-Box* (una versión simplificada de la prueba de Box y Pierce) que evalúa si los residuos de la serie son ruido blanco (proceso estocástico estacionario)
 
 La prueba de *Ljung-Box* es una prueba para comprobar si una serie de observaciones, en un período de tiempo específico, son aleatorias o independientes en todos los retardos hasta el retardo especificado. En lugar de probar la aleatoriedad en cada retardo distinto, se prueba la aleatoriedad *"general"* basada en un número de retardos y, por lo tanto, también es una prueba de comparación. 
 
-La prueba se aplica a los residuos de un modelo ARIMA ajustado y no a la serie original, y en tales aplicaciones, la hipótesis que se prueba es que los residuos del modelo no tengan autocorrelación. Si los retardos no son independientes, un retardo puede estar relacionado con otros retardos de $k$ unidades de tiempo, por lo que la autocorrelación puede reducir la exactitud del modelo predictivo y conducir a una interpretación errónea de los datos. La hipótesis nula $H_{0}$ indicará que los datos no son diferentes del ruido aleatorio ($H_{0}$: los residuos se distribuyen aleatoriamente). 
+La prueba se aplica a los residuos de un modelo ARIMA ajustado y no a la serie original, y en tales aplicaciones, la hipótesis que se prueba es que los residuos del modelo no tengan autocorrelación. Si los retardos no son independientes, un retardo puede estar relacionado con otros retardos de $k$ unidades de tiempo, por lo que la autocorrelación puede reducir la exactitud del modelo predictivo y conducir a una interpretación errónea de los datos. La hipótesis nula $H_{0}$ indicará que los datos no son diferentes del ruido blanco ($H_{0}$: los residuos se distribuyen aleatoriamente). 
 
 A continuación, se aplica la prueba de *Ljung-Box* sobre el modelo ARIMA(2,0,0)(0,1,0), si el modelo rechaza la hipótesis nula $H_{0}$, debemos considerar el modelo como problemático.
 
