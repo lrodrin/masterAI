@@ -97,7 +97,7 @@ library(forecast)
 
 ## Datos de la serie temporal
 
-Los datos están disponibles para descargar [aquí](https://github.com/lrodrin/masterAI/raw/master/A9/Series%20Temporales/Demanda_2015.csv). Una vez descargados, se cargan en el espacio de trabajo.
+Los datos están disponibles para descargar [aquí](https://github.com/lrodrin/masterAI/raw/master/A9/Series%20Temporales/Demanda_2015.csv). Una vez descargados, se cargan en el espacio de trabajo conel siguiente comando:
 
 ```{r}
 data <- read.csv("Demanda_2015.csv", header = FALSE, sep = ",")
@@ -124,6 +124,11 @@ Tenemos la variable *date* como *character*, la variable *time* como *character*
 data <- cbind(datetime = paste(data$date, data$time), data)
 data$datetime <- parse_date_time(data$datetime, "dmY HMS", 
                                  truncated = 3, tz = "UTC")
+```
+
+Veamos los datos:
+
+```{r}
 head(data, 10)
 ```
 
@@ -142,7 +147,7 @@ ggplot(data = data, aes(x = datetime, y = demand)) +
   ylab("Consumo en MW")
 ```
 
-Observando la figura se puede detectar una dependencia estacional del consumo eléctrico, aunque pueden existir otros factores que pueden afectarla, como los días festivos, los fines de semana, ... Parece que el principal desafío introducido por la serie temporal podría ser su estacionalidad múltiple. En ese caso, las siguientes estacionalidades pueden estar presentes:
+Observando la figura se puede detectar una dependencia estacional en el consumo eléctrico, aunque pueden existir otros factores que pueden afectar a la serie, como los días festivos, los fines de semana, ... Parece que el principal desafío introducido por la serie temporal podría ser su estacionalidad múltiple. En ese caso, las siguientes estacionalidades pueden estar presentes:
 
 - Las personas usan la mayoría de sus electrodomésticos en determinadas horas del día, lo que resulta en una estacionalidad diaria.
 
@@ -179,19 +184,19 @@ Es frecuente analizar las series temporales des del punto de vista de sus compon
 
 ```{r}
 ts <- ts(data$demand, frequency = 24 * 60 / 10)
-# El argumento frequency de la función *ts()* se utiliza para indicar 
+# El argumento frequency de la función ts() se utiliza para indicar 
 # la periodicidad de la serie (en este caso es de 10 minutos)
 ```
 
 Los componentes de una serie temporal son:
 
-- Tendencia: un aumento o disminución a largo plazo de los datos se denomina tendencia. No tiene por qué ser necesariamente lineal. Es el patrón subyacente en los datos a lo largo del tiempo. 
+- **Tendencia**. Un aumento o disminución a largo plazo de los datos se denomina tendencia. No tiene por qué ser necesariamente lineal. Es el patrón subyacente en los datos a lo largo del tiempo. 
 
-- Estacional o Periódico: cuando una serie está influenciada por factores estacionales. Como en este caso y hemos podido visualizar en el apartado anterior.
+- **Estacional** o **Periódico**. Cuando una serie está influenciada por factores estacionales. Como en este caso y hemos podido visualizar en el apartado anterior.
 
-- Cíclico: cuando los datos muestran subidas y bajadas que no son de un mismo período.
+- **Cíclico**. Cuando los datos muestran subidas y bajadas que no son de un mismo período.
 
-En R se pueden averiguar los componentes de la serie temporal con la siguiente función:
+En R se pueden averiguar los componentes de la serie temporal con la función *decompose*.
 
 ```{r}
 componentes.ts <- decompose(ts)
@@ -202,14 +207,14 @@ En la figura se observant cuatro sub-figuras:
 
 - observed: los datos actuales.
 - trend: el movimiento general hacia arriba o hacia abajo de los datos.
-- seasonal: cualquier patrón mensual o anual de los os datos.
+- seasonal: cualquier patrón mensual o anual de los datos.
 - random: parte inexplicable de los datos.
 
-A partir de las sub-figuras se puede determinar que la serie temporal no presenta una tendencia clara. Por ese motivo podría ser estacionaria. También se puede observar que la serie podría ser estacionaria en cuando a la varianza, ya que no se aprecia gran variabilidad. Pero presenta una estacionalidad muy marcada (el consumo aumenta durante los meses de invierno y verano). Y por ese motivo la serie no es estacionaria. Según que modelo sea seleccionado y mejorar las futuras predicciones, se debe eliminar esa estacionalidad de la serie. Las series temporales no estacionarias son más difíciles de predecir. 
+A partir de las sub-figuras se puede determinar que la serie temporal no presenta una tendencia clara. Por ese motivo podría ser estacionaria. También se puede observar que la serie podría ser estacionaria en cuando a la varianza, ya que no se aprecia gran variabilidad. Pero presenta una estacionalidad muy marcada (el consumo aumenta durante los meses de invierno y verano). Y por ese motivo la serie **no es estacionaria**. Según que modelo sea seleccionado y para mejorar las futuras predicciones, se debe eliminar esa estacionalidad de la serie. Las series temporales no estacionarias son más difíciles de predecir. 
 
 Pero antes, para confirmar que la serie no es estacionaria trazaremos la gráfica de su función de autocorrelación, usando la función *acf()*. La función de autocorrelación *acf()* proporciona la autocorrelación en todos los retrasos posibles. La autocorrelación en el retraso 0 se incluye por defecto, lo que siempre toma el valor 1, ya que representa la correlación entre los datos y ellos mismos.
 
 ```{r}
 acf(ts, main = "Autocorrelación")
 ```
-Como podemos observar en la figura anterior, la autocorrelación disminuye a medida que aumenta el retraso, lo que confirma que no existe una asociación lineal entre las observaciones separadas por retrasos mayores. Es decir, la serie no es estacionaria, ya que el valor de la función de autocorrelación decae de manera exponencial a medida que aumentan los rezagos en el tiempo. 
+Como podemos observar en la figura que representa la función de autocorrelación, la autocorrelación disminuye a medida que aumenta el retraso, lo que confirma que no existe una asociación lineal entre las observaciones separadas por retrasos mayores. Es decir, la serie **no es estacionaria**, ya que el valor de la función de autocorrelación decae de manera exponencial a medida que aumentan los rezagos en el tiempo. 

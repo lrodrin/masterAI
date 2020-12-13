@@ -65,7 +65,7 @@ knitr::opts_chunk$set(
 
 ## Identificación de outliers
 
-En el capítulo anterior, durante un breve análisis, se ha comentado que podrían existir factores que afecten a la serie temporal. Uno de esos factores podría ser que, durante los fines de semana, el consumo eléctrico disminuya considerablemente en comparación con el resto de los días de la semana, y eso provocaría la aparición de valores atípicos en la serie. Otro factor que puede hacer variar el consumo eléctrico considerablemente y provocar la aparición de valores atípicos en la serie, son los días festivos. Así, inicialmente se consideran estos dos factores para identificar valores atípicos en la serie, si es que existen. Primero vemos si el consumo eléctrico durante los fines de semana es más bajo que entre semana. Pero antes se añade a los datos una columna nueva *day*, para indicar los días de la semana de la serie.
+En el capítulo anterior, durante un breve análisis, se ha comentado que podrían existir factores que afecten a la serie temporal. Uno de esos factores podría ser que, durante los fines de semana, el consumo eléctrico disminuya considerablemente en comparación con el resto de los días de la semana, y eso provocaría la aparición de valores atípicos en la serie. Otro factor que puede hacer variar el consumo eléctrico considerablemente y provocar la aparición de valores atípicos en la serie, son los días festivos. Así, inicialmente se consideran estos dos factores para identificar valores atípicos en la serie, si es que existen. Primero vemos si el consumo eléctrico durante los fines de semana es más bajo que entre semana. Para ello, se añade a los datos una columna nueva *day*, para indicar los días de la semana de la serie.
 
 ```{r}
 data$day <- format(data$datetime, format = "%A")
@@ -75,7 +75,7 @@ ggplot(data, aes(day, demand)) +
   xlab("Día") + ylab("Consumo en MW")
 ```
 
-Como se observa en la figura durante los fines de semana (sábado y domingo), la demanda disminuye considerablemente en comparación con el resto de los días de la semana y se observan valores atípicos. Por otro lado, a continuación, nos fijaremos en qué rangos se mueve la demanda del consumo eléctrico a lo largo del 2015 para identificar más valores atípicos. Se usa un histograma para que aporte esa información con un simple vistazo.
+Como se observa en la figura anterior durante los fines de semana (sábado y domingo), la demanda disminuye considerablemente en comparación con el resto de los días de la semana y se observan valores atípicos. Por otro lado, a continuación, nos fijaremos en qué rangos se mueve la demanda del consumo eléctrico a lo largo del 2015 para identificar más valores atípicos. Se usa un histograma para que aporte esa información con un simple vistazo.
 
 ```{r}
 hist(data$demand,
@@ -91,7 +91,7 @@ Vemos que el histograma nos muestra una distribución extraña de la demanda.
 
 - La baja demanda es más frecuente de lo normal dentro del conjunto de datos de la serie. Parece que predominan bastantes valores atípicos.
 
-Creemos que es interesante estudiar cuantos valores atípicos hay en la demanda y porqué lo son. Para ello, el primer paso es convertir la variable demanda, una variable numérica, en categórica. Se define la siguiente categorización, basándonos en el histograma, que a priori parece razonable:
+Se considera que es interesante estudiar cuantos valores atípicos hay en la demanda y porqué lo son. Para ello, el primer paso es convertir la variable demanda, una variable numérica, en una variable categórica. Se define la siguiente categorización, que a priori parece razonable, basándonos en el histograma:
 
 - Hasta 22000 MW la demanda es baja (*low*).
 
@@ -106,7 +106,7 @@ data$demand.C <- cut(data$demand, breaks = breakPoints, labels = categories)
 summary(data$demand.C)
 ```
 
-Con esta categorización, se puede decir que la serie tiene aproximadamente 10972 valores atípicos (4453 + 6519). Esta cantidad es bastante alta, y dado este caso sería recomendable aplicar un método de reemplazo de estos valores atípicos que se encuentran fuera del rango medio de la demanda. Además, como curiosidad, antes de reemplazar los *outliers* de la serie, analizaremos si muchos de estos valores atípicos pertenecen a días festivos, fines de semana o días en períodos de vacaciones, como parece que hemos detectado en nuestro primer análisis para identificar valores atípicos en la serie.
+Con esta categorización, se puede decir que la serie tiene aproximadamente 10972 valores atípicos (4453 + 6519). Esa cantidad es bastante alta y dado ese caso es recomendable aplicar un método de reemplazo de estos valores atípicos que se encuentran fuera del rango medio de la demanda. Además, como curiosidad, antes de reemplazar los *outliers* de la serie, analizaremos si muchos de estos valores atípicos pertenecen a días festivos, fines de semana o a días de períodos de vacaciones, como parece que hemos detectado en nuestro primer análisis para identificar valores atípicos en la serie.
 
 ```{r}
 demand.high <- data[data$demand.C == "high", ]
@@ -152,23 +152,23 @@ Se usa la función *summary()*, que nos devuelve información sobre los cuartile
 summary(data$demand)
 ```
 
-Para el reemplazo que nos traemos entre manos, se observa que el primer cuartil (*Q1*) está en 24392 MW y que el tercer cuartil (*Q3*) está en 31664 MW. El uso de los cuartiles en el reemplazo de los valores atípicos se debe a que entre *Q1* y *Q3* sabemos que se encuentran el 50% de los valores de la demanda de la serie. La distancia entre los valores de *Q1* y *Q3* se le llama rango intercuartílico (*IQR: InterQuantile Range*).
+Para el reemplazo que nos traemos entre manos, se observa que el primer cuartil (*Q1*) está en 24392 MW y que el tercer cuartil (*Q3*) está en 31664 MW. El uso de los cuartiles en el reemplazo de los valores atípicos se debe a que entre *Q1* y *Q3* sabemos que se encuentran el 50% de los valores de la demanda de la serie. La distancia entre los valores de *Q1* y *Q3* se le llama rango intercuartílico (*IQR: InterQuantile Range*). Lo calculamos:
 
 ```{r}
 IQR <- 31664 - 24392
 IQR
 ```
 
-Según los cuartiles, se define como valor atípico leve aquel que dista 1.5 veces el rango intercuartílico por debajo de *Q1* o por encima de *Q3*
+Así si nos fijmos en los cuartiles, se define como valor atípico leve aquel que dista 1.5 veces el rango intercuartílico por debajo de *Q1* o por encima de *Q3*
 
 \begin{center}
-*outlier* < Q1 - 1.5 * IQR o bien *outlier* > Q3 + 1.5 * IQR
+outlier < Q1 - 1.5 * IQR o bien outlier > Q3 + 1.5 * IQR
 \end{center}
 
-y valor atípico extremo aquel que dista 3 veces el rango intercuartílico por debajo de *Q1* o por encima de *Q3*
+y como valor atípico extremo aquel que dista 3 veces el rango intercuartílico por debajo de *Q1* o por encima de *Q3*
 
 \begin{center}
-*outlier* < Q1 - 3 * IQR o bien *outlier* > Q2 + 3 * IQR
+outlier < Q1 - 3 * IQR o bien outlier > Q2 + 3 * IQR
 \end{center}
 
 De hecho, con esta información, se calculan los umbrales *highLimit* y *lowLimit*:
@@ -180,9 +180,11 @@ lowLimit <- 31664 - 1.5 * IQR
 lowLimit
 ```
 
-Todos los valores de la demanda que superen los 35300 MW se consideran valores atípicos. Y todos los valores de la demanda que sean inferiores a los 20756 MW también se consideran valores atípicos. 
+- Todos los valores de la demanda que superen los 35300 MW se consideran valores atípicos. 
 
-Una vez identificados los valores atípicos en la demanda, se procede al reemplazo de estos. Para ello, se define una función propia que recibe como parámetros el conjunto de datos de la demanda, el umbral inferior y el umbral superior. En la función se decide reemplazar por la media aquellos valores que estén por debajo del umbral inferior, y por la mediana aquellos que estén por encima del umbral superior, procedimiento muy utilizado en el reemplazo de *outliers*. La función y su aplicación se muestran a continuación:
+- Todos los valores de la demanda inferiores a 20756 MW se consideran valores atípicos. 
+
+Una vez identificados los valores atípicos en la demanda, se procede al reemplazo de estos con la función *outliersReplace()*. La función es un método propio que recibe como parámetros el conjunto de datos de la demanda, el umbral inferior y el umbral superior. En la función se decide reemplazar por la media aquellos valores que estén por debajo del umbral inferior, y por la mediana aquellos que estén por encima del umbral superior, procedimiento muy utilizado en el reemplazo de *outliers*. 
 
 ```{r}
 outliersReplace <- function(data, lowLimit, highLimit) {
@@ -201,7 +203,7 @@ data[752, c("demand", "demand.WO")]
 data[1666, c("demand", "demand.WO")]
 ```
 
-Finalmente, se substituyen los valores de la demanda originales por los valores de la demanda sin valores atípicos*.
+Vemos que se ha realizado el reemplazo correctamente. El valor de la demanda 20243 se ha modificado por 28348, y el valor de la demanda 35315 se ha modificado por 28566. Finalmente, se substituyen los valores de la demanda originales por los valores de la demanda sin valores atípicos.
 
 ```{r}
 data$demand <- data$demand.WO

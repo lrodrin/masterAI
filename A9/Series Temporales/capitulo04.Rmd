@@ -62,7 +62,7 @@ knitr::opts_chunk$set(
 
 # Aplicación del modelo ARIMA
 
-Puesto que el entrenamiento del modelo de una serie temporal muy larga puede ser computacionalmente costoso, se filtran los datos de la serie para contemplar sólo desde el lunes 8 de junio hasta el domingo 14 de junio.
+Puesto que el entrenamiento del modelo de una serie temporal muy larga puede ser computacionalmente costoso, se filtran los datos de la serie temporal original para contemplar sólo desde el lunes 8 de junio hasta el domingo 14 de junio.
 
 ```{r}
 ts <- data %>% filter(
@@ -82,13 +82,13 @@ library(forecast)
 library(tseries)
 ```
 
-Las librerías *tidyverse*, *xts* y *forecast* se han usado anteriormente. En este capítulo se añade la librería *tseries.*
+Las librerías *tidyverse*, *xts* y *forecast* se han usado anteriormente. Como novedad en este capítulo se añade la librería *tseries.*
 
 - [tseries](https://www.rdocumentation.org/packages/tseries/) es una librería para analizar series temporales.
 
 ## Transformación de la serie
 
-El análisis previo del primer capítulo nos ha revelado que la serie temporal no es estacionaria por su estacionalidad, y como el modelo que vamos a utilizar para la predicción es un modelo ARIMA, necesitamos que la serie sea estacionaria. Para ello, tendremos que transformar la serie eliminando la estacionalidad. Diferenciando la serie lograremos que se convierta en estacionaria. Para empezar con la transformación de la serie, primero se observará el resultado de la función *ndiffs()*, que calcula el número de diferenciaciones estacionales que se necesitan llevar a cabo para que la serie sea estacionaria.
+El análisis previo del primer capítulo nos ha revelado que la serie temporal no es estacionaria por su estacionalidad, y como el modelo que vamos a utilizar para la predicción es un modelo ARIMA, necesitamos que la serie sea estacionaria. Para ello, tendremos que transformar la serie eliminando su estacionalidad. Diferenciando la serie lograremos que se convierta en estacionaria. Para empezar con la transformación de la serie, primero se observará el resultado de la función *ndiffs()*, que calcula el número de diferenciaciones estacionales que se necesitan llevar a cabo para que la serie sea estacionaria.
 
 ```{r}
 ndiffs(ts) 
@@ -97,35 +97,37 @@ ndiffs(ts)
 El respectivo cálculo muestra que la serie necesita de una diferenciación estacional. Para eliminar la estacionalidad se usa la función *diff()* que resta el componente estacional de la serie original y luego lo diferencia para que sea estacionario (varianza constante e independiente).
 
 ```{r}
-tsstationary <- diff(ts, differences = 1)
 plot(ts,  main = "Serie con estacionalidad", ylab = "Demanda")
+tsstationary <- diff(ts, differences = 1)
 plot(tsstationary, main = "Serie sin estacionalidad", ylab = "Demanda")
 ```
 
-Como podemos ver ahora en la serie se ha eliminado la componente de estacionalidad. Aunque la serie parece tener ruido, que trataremos más adelante, se parece bastante a una serie estacionaria, ya que parece ser constante en media y varianza. Volvemos a visualizar la función de autocorrelación.
+Como podemos ver ahora se ha eliminado la componente de estacionalidad de la serie. Aunque la serie parece tener ruido, que analizaremos más adelante, se parece bastante a una serie estacionaria, ya que parece ser constante en media y varianza. Aún así, lo comprobaremos visualizando la gráfica de la función de autocorrelación.
 
 ```{r}
 acf(ts, main = "Autocorrelación con estacionalidad")
 acf(tsstationary, main = "Autocorrelación sin estacionalidad")
 ```
 
-Podemos apreciar que la serie ya es estacionaria una vez se ha eliminado la componente estacional. Para asegurarnos se aplica la prueba de estacionalidad como la prueba de Dickey-Fuller Aumentado *(Augmented Dickey-Fuller Test (ADF), en inglés) * y la prueba de Phillips–Perron (PP), una modificación del test de Dickey-Fuller. En estas pruebas, se considera que en la hipótesis nula $H_{0}$ se observan raíces unitarias en la serie, por tanto, no es estacionaria. Al contrario, la serie es estacionaria ($H_{1}$). Con un *p-value* inferior a 0.05 (significancia $\alpha$), la hipótesis nula $H_{0}$ se rechaza, confirmando que la serie es estacionaria.
+Podemos apreciar que la serie ya es estacionaria una vez se ha eliminado la componente estacional. Para asegurarnos se aplican las pruebas de estacionalidad como la prueba de [Dickey-Fuller Aumentado](https://en.wikipedia.org/wiki/Augmented_Dickey%E2%80%93Fuller_test) *(Augmented Dickey-Fuller Test (ADF), en inglés)* y la prueba de [Phillips–Perron](https://en.wikipedia.org/wiki/Phillips%E2%80%93Perron_test) (PP), una modificación de la prueba de Dickey-Fuller.
 
-El motivo de basarse en la observación de las raíces unitarias es porqué una raíz unitaria, es una tendencia estocástica en la serie temporal. Algunas veces se le llama *"paseo aleatorio con deriva"*. Y, por tanto, si la serie temporal tiene raíces unitarias, ésta presenta un patrón sistemático que es impredecible. Entonces, la serie temporal es estacionaria si un cambio en el tiempo no cambia la forma de la distribución, y las raíces unitarias son una causa de no estacionalidad.
+En estas pruebas, se considera que en la hipótesis nula ($H_{0}$) se observan raíces unitarias en la serie, por tanto, no es estacionaria. Al contrario, la serie es estacionaria ($H_{1}$). Con un *p-value* inferior a 0.05 (significancia $\alpha$), la hipótesis nula ($H_{0}$) se rechaza, confirmando que la serie es estacionaria.
 
-Se aplica la prueba de Dickey-Fuller Aumentado:
+El motivo de basarse en la observación de las raíces unitarias es porqué una raíz unitaria, es una tendencia estocástica de la serie temporal. Algunas veces se le llama *"paseo aleatorio con deriva"*. Y, por tanto, si la serie temporal tiene raíces unitarias, ésta presenta un patrón sistemático que es impredecible. Entonces, la serie temporal es estacionaria si un cambio en el tiempo no cambia la forma de la distribución, y las raíces unitarias son una causa de no estacionalidad.
+
+Primero se aplica la prueba de Dickey-Fuller Aumentado:
 
 ```{r warning=FALSE}
 adf.test(tsstationary)
 ```
 
-El valor del *p-value* de 0.01, indica que rechazamos la hipótesis nula$H_{0}$, indicando que la serie es estacionaria. A continuación se aplica la prueba de PP:
+El valor del *p-value* de 0.01 nos indica que rechazamos la hipótesis nula ($H_{0}$), la serie es estacionaria. Y a continuación se aplica la prueba de Phillips–Perron:
 
 ```{r warning=FALSE}
 pp.test(tsstationary)
 ```
 
-El valor del *p-value* de 0.01, indica que también rechazamos la hipótesis nula$H_{0}$, indicando que la serie es estacionaria.
+El valor del *p-value* de 0.01 nos indica que también rechazamos la hipótesis nula ($H_{0}$), la serie es estacionaria. Se ha eliminado correctamente la estacionalidad y ya se puede ajustar el modelo.
 
 ## Ajuste del modelo
 
@@ -138,20 +140,20 @@ testset <- subset(tsstationary,
                   start = length(tsstationary) - (24 * 60 / 10) + 1)
 ```
 
-Una vez que tenemos los datos listos y han satisfecho todas las suposiciones del modelo ARIMA, para determinar el orden del modelo que se ajustará a los datos, necesitamos tres variables: $p$, $d$ y $q$ que son enteros positivos que se refieren al orden de las partes medias autorregresivas, integradas y móviles del modelo, respectivamente.
+Una vez que tenemos los datos listos y han satisfecho todas las suposiciones del modelo ARIMA, para determinar el orden del modelo que se ajustará a los datos, necesitamos tres variables: $p$, $d$ y $q$ que son los enteros positivos que se refieren al orden de las partes medias autorregresivas, integradas y móviles del modelo, que se describen en el capítulo anterior.
 
-Para identificar que valores de $p$, $d$ y $q$ serán apropiados, se usa la función *auto.arima()*. La función calcula automáticamente cuál es la mejor combinación de órdenes para el modelo. Para ello, utiliza una combinación de pruebas de raíz unitaria, minimización de los valores [AIC](https://en.wikipedia.org/wiki/Akaike_information_criterion) y [MLE](https://en.wikipedia.org/wiki/Maximum_likelihood_estimation) para obtener el mejor modelo. Básicamente, los valores $p$, $d$ y $q$ son elegidos minimizando el AIC. La función utiliza el algoritmo @HyndmanKhandakar2008, que usa una búsqueda por pasos para recorrer el espacio del modelo para seleccionar el mejor modelo con el AIC más pequeño.
+Para identificar que valores de $p$, $d$ y $q$ serán apropiados, se usa la función *auto.arima()*. La función calcula automáticamente cuál es la mejor combinación de órdenes para el modelo. Para ello, utiliza una combinación de pruebas de raíz unitaria, minimización de los valores AIC y [MLE](https://en.wikipedia.org/wiki/Maximum_likelihood_estimation) para obtener el mejor modelo. Básicamente, los valores $p$, $d$ y $q$ son elegidos minimizando el AIC. La función utiliza el algoritmo @HyndmanKhandakar2008, que usa una búsqueda por pasos para recorrer el espacio del modelo para seleccionar el mejor modelo con el AIC más pequeño.
 
 ```{r}
 fitARIMA <- auto.arima(trainset, trace = TRUE)
 fitARIMA
 ```
 
-En este caso la función sugiere que el mejor modelo que representa a la serie sería un ARIMA(2,0,0)(0,1,0) sin tendencia, y que arroja un AIC de 9925.15. Lo validaremos con la prueba *Ljung-Box* (una versión simplificada de la prueba de Box y Pierce) que evalúa si los residuos de la serie son ruido blanco (proceso estocástico estacionario)
+En este caso la función sugiere que el mejor modelo que representa a la serie sería un ARIMA(2,0,0)(0,1,0) sin tendencia, y que arroja un AIC de 9925.15. Lo validaremos con la prueba *Ljung-Box* (una versión simplificada de la prueba de Box y Pierce) que evalúa si los residuos de la serie son ruido blanco (proceso estocástico estacionario).
 
 La prueba de *Ljung-Box* es una prueba para comprobar si una serie de observaciones, en un período de tiempo específico, son aleatorias o independientes en todos los retardos hasta el retardo especificado. En lugar de probar la aleatoriedad en cada retardo distinto, se prueba la aleatoriedad *"general"* basada en un número de retardos y, por lo tanto, también es una prueba de comparación. 
 
-La prueba se aplica a los residuos de un modelo ARIMA ajustado y no a la serie original, y en tales aplicaciones, la hipótesis que se prueba es que los residuos del modelo no tengan autocorrelación. Si los retardos no son independientes, un retardo puede estar relacionado con otros retardos de $k$ unidades de tiempo, por lo que la autocorrelación puede reducir la exactitud del modelo predictivo y conducir a una interpretación errónea de los datos. La hipótesis nula $H_{0}$ indicará que los datos no son diferentes del ruido blanco ($H_{0}$: los residuos se distribuyen aleatoriamente). 
+La prueba se aplica a los residuos de un modelo ARIMA ajustado y no a la serie original, y en tales aplicaciones, la hipótesis que se prueba es que los residuos del modelo no tengan autocorrelación. Si los retardos no son independientes, un retardo puede estar relacionado con otros retardos de $k$ unidades de tiempo, por lo que la autocorrelación puede reducir la exactitud del modelo predictivo y conducir a una interpretación errónea de los datos. La hipótesis nula ($H_{0}$) indicará que los datos no son diferentes del ruido blanco ($H_{0}$: los residuos se distribuyen aleatoriamente). 
 
 A continuación, se aplica la prueba de *Ljung-Box* sobre el modelo ARIMA(2,0,0)(0,1,0), si el modelo rechaza la hipótesis nula $H_{0}$, debemos considerar el modelo como problemático.
 
@@ -159,13 +161,13 @@ A continuación, se aplica la prueba de *Ljung-Box* sobre el modelo ARIMA(2,0,0)
 Box.test(fitARIMA$residuals, type = "Ljung-Box")
 ```
 
-En este caso, el valor de p (*p-value = 0.8777*) está lejos de ser significativo (inferior a 0.05). Por lo tanto, no podemos rechazar la hipótesis nula $H_{0}$de que los residuos se distribuyen aleatoriamente y se concluye que el modelo, como se especifica, se ha ajustado correctamente.
+En este caso, el valor de p (*p-value = 0.8777*) está lejos de ser significativo (inferior a 0.05). Por tanto, no podemos rechazar la hipótesis nula ($H_{0}$) de que los residuos se distribuyen aleatoriamente y se concluye que el modelo, como se especifica, se ha ajustado correctamente.
 
 \newpage
 
 ## Predicción
 
-Los parámetros del modelo ARIMA se pueden usar como un modelo predictivo para hacer pronósticos de valores futuros de las series temporales, una vez que se selecciona el modelo más adecuado para los datos de la serie temporal. Se usará la función *forecast()* para la predicción de la serie.
+Los parámetros del modelo ARIMA se pueden usar como un modelo predictivo para hacer pronósticos de valores futuros de las series temporales, una vez que se selecciona el modelo más adecuado para los datos de la serie temporal. Se usa la función *forecast()* para la predicción de la serie temporal.
 
 ```{r}
 forecastARIMA <- forecast(fitARIMA)
@@ -175,7 +177,7 @@ autoplot(trainset, xlab = "Horas", ylab = "Demanda en MW") +
   ggtitle("Predicción obtenida del modelo ARIMA")
 ```
 
-La figura muestra que el modelo proporciona una predicción aceptable. En la tabla siguiente, vemos que los errores en la predicción son mayores que en el entrenamiento. La predicción ha resultado peor de lo esperado. Los valores NaN y Inf de los errores MAE y MAPE, se deben a que la predicción se ha realizado con pocos datos.
+La figura muestra que el modelo proporciona una buena predicción. La predicción concuerda con los datos reales, aunque parece que ha habido errores. En la tabla siguiente, vemos que los errores en la predicción son mayores que en el entrenamiento. La predicción ha resultado peor de lo esperado. Los valores NaN y Inf de los errores MAE y MAPE, se deben a que la predicción se ha realizado con pocos datos.
 
 ```{r}
 accuracy(forecastARIMA, tsstationary)
