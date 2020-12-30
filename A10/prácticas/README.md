@@ -6,6 +6,7 @@ ficheros zip de 1GB, en caso de que se tengan problemas descargando un fichero t
 IMPORTANTE: La máquina viene con un usuario creado. Todas las aplicaciones y librerías necesarias para acometer el contenido de la asignatura se encuentran preinstaladas. 
 
 Nombre de usuario: bigdata
+
 Password: herramientas
 
 INSTALACIÓN:
