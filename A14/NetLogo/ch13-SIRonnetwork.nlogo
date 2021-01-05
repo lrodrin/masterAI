@@ -25,7 +25,7 @@ to setup
         set resistant? true
         set color blue
       ]
-      set i i + 1 
+      set i i + 1
     ]
   ]
   reset-ticks
@@ -99,7 +99,7 @@ to spread-virus
     [ ask link-neighbors with [not resistant?]
         [ if random-float 100 < virus-spread-chance
             [ become-infected ] ] ]
-   set R0 (virus-spread-chance / 100) * count turtles with [infected?] / recovery-chance 
+   set R0 (virus-spread-chance / 100) * count turtles with [infected?] / recovery-chance
 end
 
 to do-virus-checks
@@ -123,16 +123,16 @@ to isolate
         set color blue
         ask my-links [ set color blue - 2 ]]
     ]
-  ]     
+  ]
   if whoisolate = "degreeanddistance" [
     ask turtles [set nearby 0]
     if count turtles with [color = blue] < numberofisolatedagents [
       ask turtles with [color = red]
       [
         ask turtles with [color = green] in-radius dist [
-          set nearby 1 
+          set nearby 1
         ]
-      ]   
+      ]
       let target max-one-of turtles with [nearby = 1] [count link-neighbors]
       if target != nobody [
         ask target [
@@ -151,10 +151,10 @@ end
 GRAPHICS-WINDOW
 265
 10
-726
-492
-20
-20
+724
+470
+-1
+-1
 11.0
 1
 10
@@ -184,7 +184,7 @@ gain-resistance-chance
 gain-resistance-chance
 0.0
 100
-100
+100.0
 1
 1
 %
@@ -199,7 +199,7 @@ recovery-chance
 recovery-chance
 0.0
 10.0
-5
+5.0
 0.1
 1
 %
@@ -214,7 +214,7 @@ virus-spread-chance
 virus-spread-chance
 0.0
 10.0
-10
+10.0
 0.1
 1
 %
@@ -283,7 +283,7 @@ number-of-nodes
 number-of-nodes
 10
 1000
-300
+300.0
 5
 1
 NIL
@@ -298,7 +298,7 @@ virus-check-frequency
 virus-check-frequency
 1
 20
-1
+1.0
 1
 1
 ticks
@@ -313,7 +313,7 @@ initial-outbreak-size
 initial-outbreak-size
 1
 number-of-nodes
-3
+3.0
 1
 1
 NIL
@@ -328,7 +328,7 @@ average-node-degree
 average-node-degree
 1
 number-of-nodes - 1
-6
+6.0
 1
 1
 NIL
@@ -372,7 +372,7 @@ numberofisolatedagents
 numberofisolatedagents
 0
 100
-100
+100.0
 1
 1
 NIL
@@ -397,7 +397,7 @@ dist
 dist
 0
 100
-10
+10.0
 1
 1
 NIL
@@ -774,9 +774,8 @@ false
 0
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
-
 @#$#@#$#@
-NetLogo 5.0.3
+NetLogo 6.2.0
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
@@ -845,7 +844,6 @@ true
 0
 Line -7500403 true 150 150 90 180
 Line -7500403 true 150 150 210 180
-
 @#$#@#$#@
 0
 @#$#@#$#@

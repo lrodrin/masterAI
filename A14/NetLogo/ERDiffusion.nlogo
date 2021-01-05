@@ -26,7 +26,7 @@ to spread
   [
     ;; infect neighbors
     ask link-neighbors with [ infected? = false]
-    [ 
+    [
       if ( random-float 1 <= infect-rate )  ;; infect with probability p
       [
         set infected? true
@@ -35,7 +35,7 @@ to spread
           ;; incremement infection-count of the node doing the infection
         ask myself [set infection-count infection-count + 1]
           ;; color the link with the node doing the infection
-        ask link-with myself [set color red - 1 
+        ask link-with myself [set color red - 1
         set thickness 1
         show-link]
       ]
@@ -44,7 +44,7 @@ to spread
     ;; resize node so that the area is proportional to the current number of infections
     set size 2.25 * sqrt (infection-count + 1)
   ]
-  
+
   ;; update the total number of infected agents
   set num-infected count turtles with [infected? = true]
   do-plotting
@@ -58,7 +58,7 @@ to toggle-tree
   ifelse tree-mode?
   [
     ask turtles with [not infected?] [show-turtle]
-    ask links with [color != red - 1] [show-link]  
+    ask links with [color != red - 1] [show-link]
     set tree-mode? false
   ]
   [
@@ -92,16 +92,16 @@ to generate-topology
   ;; setup small world topology
   create-turtles num-nodes
     [set explored? false]
-  
+
   ;; generate erdos-renyi random graph
   let num-links ceiling (num-nodes * avg-degree / 2)
   while [count links < num-links]
   [
     ask one-of turtles [ create-link-with one-of other turtles ]
   ]
-  
+
   setup
-    
+
   ;; Layout turtles:
   layout-circle (sort turtles) 20
   repeat 15 [do-layout]
@@ -116,10 +116,10 @@ to setup
 
   ask links
     [set color gray + 1.5
-      set thickness 0.5]  
+      set thickness 0.5]
   ask turtles
     [reset-node]
-  
+
   ;; infect a single agent
   ask one-of turtles
   [
@@ -172,7 +172,7 @@ to mouse-infect
         ]
       ]
       display
-    ] 
+    ]
   ]
 end
 
@@ -185,17 +185,17 @@ to do-plotting
      ;; plot the number of infected individuals at each step
      set-current-plot "Number infected"
      set-current-plot-pen "inf"
-     
+
      plotxy ticks num-infected
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
 295
 10
-788
-524
-80
-80
+786
+502
+-1
+-1
 3.0
 1
 10
@@ -225,7 +225,7 @@ num-nodes
 num-nodes
 100
 500
-200
+200.0
 1
 1
 NIL
@@ -752,9 +752,8 @@ false
 0
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
-
 @#$#@#$#@
-NetLogo 5.0.2
+NetLogo 6.2.0
 @#$#@#$#@
 setup
 repeat 5 [rewire-one]
@@ -782,7 +781,6 @@ true
 0
 Line -7500403 true 150 150 90 180
 Line -7500403 true 150 150 210 180
-
 @#$#@#$#@
 0
 @#$#@#$#@
