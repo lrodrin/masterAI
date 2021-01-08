@@ -28,7 +28,9 @@
 \RequirePackage{hyperref}
 % Mostrar Bibliografía en Índice
 \RequirePackage[nottoc]{tocbibind}
-% 
+\RequirePackage{flafter} 
+\RequirePackage{sidecap} 
+\RequirePackage{subfig}
 \RequirePackage{notoccite}
 
 %Poner la fuente como predeterminada
