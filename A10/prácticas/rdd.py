@@ -77,7 +77,7 @@ print(longitudes.reduce(max))
 print(longitudes.reduce(lambda x, y: max(x, y)))  # Equivalente a lo anterior
 
 # Claves
-# print(rddPreposiciones.map(lambda x: (x[0], 1)).groupByKey().map(lambda p, c: (p,sum(c))).collect())  # Con groupByKey
+print(rddPreposiciones.map(lambda x: (x[0], 1)).groupByKey().map(lambda p: (p[0], sum(p[1]))).collect())  # Con groupByKey
 print(rddPreposiciones.map(lambda x: (x[0], 1)).reduceByKey(lambda c1, c2: c1 + c2).collect())  # Con reduceByKey
 
 # Cache
