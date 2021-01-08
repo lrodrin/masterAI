@@ -2,14 +2,6 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{uimppracticas}[2020/10/25 Clase personalizada de Laura Rodríguez Navas para prácticas de la UIMP]
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%                   Plantilla Prácticas UIMP                               %%%
-%%%                Universidad Internacional Menéndez Pelayo                 %%%
-%%%                   Laura Rodríguez Navas                                  %%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
 %Biblioteca para los encabezados y pie de página
 \RequirePackage{fancyhdr}
 %Biblioteca para el lenguaje en español
@@ -36,10 +28,11 @@
 \RequirePackage{hyperref}
 % Mostrar Bibliografía en Índice
 \RequirePackage[nottoc]{tocbibind}
+% 
+\RequirePackage{notoccite}
 
 %Poner la fuente como predeterminada
 \renewcommand\familydefault{\sfdefault}
-
 
 %Cambiar márgenes de la página
 \geometry{margin=2.5cm}
@@ -51,7 +44,6 @@
     filecolor=magenta,      
     urlcolor=cyan,
 }
-
 
 %Comando para insertar la cabecera
 %1 -> Tamaño línea separación
