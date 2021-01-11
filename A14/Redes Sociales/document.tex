@@ -85,7 +85,11 @@ Las diferentes comunidades están agrupadas por colores. El tamaño de las etiqu
 
 \section*{Análisis Básico de la Red}
 
-Para los primeros pasos del análisis de la red, comenzamos por anotar los valores de las medidas globales básicas: el número de nodos 1419 ($N$) y el número de enlaces 3926 ($L$), que aparecen directamente en la ventana Contexto, además de calculamos manualmente el número máximo de enlaces $L_{max}$. 
+Para los primeros pasos del análisis de la red, comenzamos por anotar los valores de las medidas globales básicas: el número de nodos 1419 ($N$) y el número de enlaces 3926 ($L$), que aparecen directamente en la ventana Contexto. Además calculamos manualmente el número máximo de enlaces $L_{max}$. 
+
+\begin{center}
+	$L_{max} = \frac{N * (N-1)}{2} = \frac{1419 * (1419-1)}{2} = 1006071$
+\end{center}
 
 Posteriormente, calculamos otra medida global, el grado medio <k>, ejecutando la opción correspondiente en la ventana \textit{Estadísticas}. El valor del grado medio <k> es 5,533. Al realizar el cálculo del grado medio, también obtenemos la distribución de grados de la red completa (ver Figura \ref{degree-distribution}).
 
@@ -96,9 +100,22 @@ Posteriormente, calculamos otra medida global, el grado medio <k>, ejecutando la
 	\label{degree-distribution}
 \end{figure}
 
-\begin{center}
-	$L_{max} = N * (N-1) = 1419 * (1419 - 1) = 2012142$
-\end{center}
+La opción \textit{Densidad} de grafo mide la relación entre número de enlaces $L$ y el número máximo de enlaces $L_{max}$. La ejecutamos y vemos que su valor es 0,004.
+
+A continuación, ejecutamos la opción \textit{Coeficiente medio de clustering} para obtener la medida del mismo nombre, <C>. El valor del coeficiente medio de clustering <C> es 0,819. Al realizar el cálculo del coeficiente medio de clustering, también obtenemos la distribución de coeficientes de clustering de la red completa (ver Figura \ref{clustering-coefficient}).
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.6\textwidth]{images/clustering-coefficient}
+	\caption{Distribución de coeficientes de clustering de la red completa.}
+	\label{clustering-coefficient}
+\end{figure}
+
+Pasamos a analizar la conectividad de la red. En primer lugar, obtenemos el número de componentes conexas ejecutando la opción \textit{Componentes conexos}. El número de componentes conexas es 1. Por ello, podemos determinar que nuestra red no es conexa.
+
+Ahora nos centramos en la componente gigante y calculamos su número de nodos. Para ello, iremos a \textit{Filtros}, seleccionaremos \textit{Topología -> Componente gigante} y arrastramos el filtro a la ventana de abajo llamada \textit{Consultas} donde pone \textit{Arrastrar filtro aquí}. Entonces pulsamos en el botón \textit{Filtrar} con la flecha verde en la esquina inferior izquierda de la pantalla. La visualización cambia y sólo muestra la componente gigante. La ventana \textit{Contexto} en la esquina superior izquierda nos muestra el número de nodos y enlaces de dicha componente y sus porcentajes con respecto a la red completa. El número de nodos y enlaces de la componente gigante son \textbf{X} y \textbf{Y}, respectivamente.
+
+Finalmente, calculamos las medidas globales restantes (diámetro $d_{max}$ y distancia media $d$) sobre la componente gigante de la red ejecutando la opción correspondiente al \textit{Diámetro de la red} en la ventana {Estadísticas}. El cálculo del diámetro nos proporciona también el valor de la distancia media, que anotaremos, así como el de tres medidas de Centralidad (intermediación, cercanía y excentricidad), que emplearemos en la siguiente sección de la práctica.
 
 \section*{Estudio de la Centralidad de los Actores}
 

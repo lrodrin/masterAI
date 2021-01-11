@@ -1,0 +1,1420 @@
+Id,Label,timeset,0,1,modularity_class,degree,clustering,triangles
+55,Deafness,,disease,"Ear,Nose,Throat",5,91,0.024242,52
+47,Leukemia,,disease,Cancer,18,89,0.031234,61
+114,Colon cancer,,disease,Cancer,4,134,0.062536,218
+45,Retinitis pigmentosa,,disease,Ophthamological,16,62,0.038647,40
+87,Diabetes mellitus,,disease,Endocrine,21,75,0.042353,54
+54,Cardiomyopathy,,disease,Cardiovascular,12,55,0.039744,31
+81,Mental retardation,,disease,Neurological,2,52,0.045519,32
+48,Blood group,,disease,Hematological,1,39,0.030108,14
+70,Obesity,,disease,Nutritional,10,37,0.041872,17
+137,Breast cancer,,disease,Cancer,23,79,0.119048,140
+223,Muscular dystrophy,,disease,Muscular,12,34,0.061538,20
+390,Charcot-Marie-Tooth disease,,disease,Neurological,8,28,0.055336,14
+220,Epilepsy,,disease,Neurological,2,27,0.021645,5
+325,Cataract,,disease,Ophthamological,22,37,0.144615,47
+68,Asthma,,disease,Respiratory,10,35,0.072464,20
+208,Complementary component deficiency,,disease,Immunological,7,15,0.010989,1
+213,Spinocereballar ataxia,,disease,Neurological,13,23,0.058824,9
+30,Alzheimer disease,,disease,Neurological,21,42,0.102564,36
+65,Hypertension,,disease,Cardiovascular,21,30,0.080952,17
+139,Prostate cancer,,disease,Cancer,23,52,0.15121,75
+185,Leigh syndrome,,disease,Neurological,0,24,0.071895,11
+202,Fanconi anemia,,disease,Multiple,23,19,0.104762,11
+302,Epidermolysis bullosa,,disease,Dermatological,15,29,0.094737,18
+364,Parkinson disease,,disease,Neurological,4,23,0.058824,8
+634,Thyroid carcinoma,,disease,Cancer,23,63,0.174174,116
+53,Myopathy,,disease,Muscular,12,28,0.122807,21
+86,Hemolytic anemia,,disease,Hematological,1,26,0.098039,15
+99,Myocardial infarction,,disease,Cardiovascular,21,30,0.126316,24
+117,Gastric cancer,,disease,Cancer,4,64,0.148649,99
+155,Lymphoma,,disease,Cancer,4,38,0.188406,52
+41,Anemia,,disease,Hematological,1,15,0.060606,4
+59,Pancreatic cancer,,disease,Cancer,23,55,0.201613,100
+130,Schizophrenia,,disease,Psychiatric,20,23,0.116667,14
+239,Thrombophilia,,disease,Hematological,11,23,0.091667,11
+285,Ehlers-Danlos syndrome,,disease,Connective tissue disorder,19,23,0.141667,17
+640,Spastic ataxia/paraplegia,,disease,Neurological,12,15,0.060606,4
+63,Severe combined immunodeciency,,disease,Immunological,7,16,0.090909,6
+125,Hypercholesterolemia,,disease,Metabolic,11,14,0.072727,4
+197,Ovarian cancer,,disease,Cancer,4,40,0.23913,66
+224,Hepatic adenoma,,disease,Cancer,23,40,0.25,69
+236,Rheumatoid arthritis,,disease,Connective tissue disorder,7,24,0.1,12
+414,Ectodermal dysplasia,,disease,Dermatological,5,16,0.075758,5
+420,Neuropathy,,disease,Neurological,8,14,0.218182,12
+448,Factor x deficiency,,disease,Hematological,16,16,0.106061,7
+822,Usher syndrome,,disease,Multiple,5,14,0.109091,6
+42,Cone dystrophy,,disease,Ophthamological,16,19,0.25641,20
+110,Long QT syndrome,,disease,Cardiovascular,6,21,0.175824,16
+122,Corneal dystrophy,,disease,Ophthamological,11,21,0.153846,14
+140,Spinal muscular atrophy,,disease,Muscular,12,25,0.133333,16
+146,Ichthyosis,,disease,Dermatological,15,23,0.161905,17
+186,Mitochondrial complex deciency,,disease,Multiple,0,13,0.177778,8
+266,Myasthenic syndrome,,disease,Muscular,14,17,0.227273,15
+324,Leber congenital amaurosis,,disease,Ophthamological,16,13,0.244444,11
+332,Hypothyroidism,,disease,Endocrine,9,17,0.106061,7
+411,Hirschsprung disease,,disease,Gastrointestinal,20,25,0.175,21
+775,Renal cell carcinoma,,disease,Cancer,3,23,0.180952,19
+37,Coronary artery disease,,disease,Cardiovascular,10,12,0.166667,6
+120,Amyloidosis,,disease,Neurological,11,28,0.161765,22
+222,Osteoporosis,,disease,Bone,19,30,0.24183,37
+306,Epiphyseal dysplasia,,disease,Bone,17,20,0.153846,12
+367,Amyotrophic lateral sclerosis,,disease,Neurological,12,14,0.111111,5
+541,MODY,,disease,Endocrine,21,18,0.212121,14
+751,Dementia,,disease,Neurological,21,26,0.166667,20
+786,Pseudohypoaldosteronism,,disease,Endocrine,21,10,0.107143,3
+44,Macular dystrophy,,disease,Ophthamological,16,21,0.25641,20
+74,Spondyloepiphyseal dysplasia,,disease,Skeletal,17,11,0.142857,4
+109,Spherocytosis,,disease,Hematological,1,17,0.290909,16
+164,Renal tubular acidosis,,disease,Renal,1,13,0.277778,10
+187,Central hypoventilation syndrome,,disease,Respiratory,20,21,0.25641,20
+200,Melanoma,,disease,Cancer,23,21,0.24359,19
+215,Night blindness,,disease,Ophthamological,16,7,0.133333,2
+219,Ataxia,,disease,Neurological,2,7,0.066667,1
+245,Malaria,,disease,Immunological,10,17,0.236364,13
+327,Atrial fibrillation,,disease,Cardiovascular,6,15,0.177778,8
+384,Glioblastoma,,disease,Cancer,4,33,0.274854,47
+607,Macular degeneration,,disease,Ophthamological,16,19,0.166667,11
+661,Atopy,,disease,Immunological,10,11,0.142857,4
+736,Lipodystrophy,,disease,Metabolic,12,21,0.205128,16
+778,Bare lymphocyte syndrome,,disease,Immunological,7,11,0.142857,4
+940,Holoprosencephaly,,disease,Developmental,22,13,0.166667,6
+80,Renal tubular dysgenesis,,disease,Renal,21,20,0.333333,22
+119,Autoimmune disease,,disease,Immunological,4,12,0.178571,5
+121,Apolipoprotein deficiency,,disease,Metabolic,11,14,0.305556,11
+123,Hypertriglyceridemia,,disease,Metabolic,11,14,0.305556,11
+133,Systemic lupus erythematosus,,disease,Immunological,7,8,0.2,3
+158,Migraine,,disease,Neurological,10,18,0.254545,14
+180,Maple syrup urine disease,,disease,Metabolic,0,6,0.1,1
+199,Adenocarcinoma,,disease,Cancer,4,20,0.30303,20
+203,Wilms tumor,,disease,Cancer,23,22,0.269231,21
+235,Platelet defect/deficiency,,disease,Hematological,10,14,0.222222,8
+237,Myelogenous leukemia,,disease,Cancer,4,12,0.392857,11
+248,Endometrial carcinoma,,disease,Cancer,23,32,0.379085,58
+277,Osteopetrosis,,disease,Bone,19,16,0.466667,21
+280,HIV,,disease,Immunological,7,8,0.2,3
+290,Osteoarthritis,,disease,Connective tissue disorder,17,18,0.327273,18
+314,Lung cancer,,disease,Cancer,23,16,0.4,18
+340,Glaucoma,,disease,Ophthamological,22,8,0.133333,2
+369,Lissencephaly,,disease,Neurological,2,16,0.377778,17
+401,Keratosis palmoplantaria striata,,disease,Dermatological,15,20,0.30303,20
+419,Dejerine-Sottas disease,,disease,Multiple,8,10,0.52381,11
+423,Neutropenia,,disease,Hematological,11,12,0.178571,5
+429,Elliptocytosis,,disease,Hematological,1,16,0.355556,16
+441,Anterior segment anomalies and cataract,,disease,Ophthamological,22,16,0.266667,12
+447,Thrombocytopenia,,disease,Hematological,11,12,0.214286,6
+474,Bladder cancer,,disease,Cancer,4,34,0.309942,53
+497,Rhabdomyosarcoma,,disease,Cancer,23,12,0.214286,6
+570,Autism,,disease,Psychiatric,2,14,0.388889,14
+602,Huntington disease,,disease,Neurological,13,16,0.288889,13
+782,Waardenburg syndrome,,disease,Multiple,23,12,0.178571,5
+790,Meningioma,,disease,Cancer,23,28,0.35,42
+851,Retinal cone dsytrophy,,disease,Ophthamological,16,6,0.1,1
+938,Basal cell carcinoma,,disease,Cancer,22,14,0.194444,7
+968,Esophageal cancer,,disease,Cancer,4,8,0.2,3
+43,Fundus albipunctatus,,disease,Ophthamological,16,15,0.444444,16
+78,Tetralogy of Fallot,,disease,Cardiovascular,6,11,0.285714,6
+79,Preeclampsia,,disease,Cardiovascular,21,9,0.266667,4
+101,Ichthyosiform erythroderma,,disease,Dermatological,15,7,0.3,3
+113,Adenomas,,disease,Cancer,4,15,0.638889,23
+118,Turcot syndrome,,disease,Cancer,4,21,0.454545,30
+132,Squamous cell carcinoma,,disease,Cancer,4,5,0.166667,1
+165,Cutis laxa,,disease,Connective tissue disorder,16,13,0.25,7
+177,Hypercholanemia,,disease,Gastrointestinal,21,5,0.166667,1
+189,Obsessive-compulsive disorder,,disease,Psychiatric,20,17,0.311111,14
+201,Nonsmall cell lung cancer,,disease,Cancer,4,17,0.422222,19
+216,Hypokalemic periodic paralysis,,disease,Renal,14,17,0.4,18
+226,Ventricular tachycardia,,disease,Cardiovascular,15,7,0.2,2
+227,Hyperparathyroidism,,disease,Endocrine,20,21,0.484848,32
+270,Nicotine addiction,,disease,Psychiatric,2,7,0.2,2
+282,Achromatopsia,,disease,Ophthamological,16,5,0.166667,1
+292,Stickler syndrome,,disease,Multiple,17,21,0.333333,22
+328,Atrioventricular block,,disease,Cardiovascular,6,13,0.321429,9
+402,Arrhythmogenic right ventricular dysplasia,,disease,Cardiovascular,15,13,0.392857,11
+464,Walker-Warburg syndrome,,disease,Multiple,12,5,0.333333,2
+467,Dysfibrinogenemia,,disease,Hematological,11,11,0.428571,9
+527,Myoclonic epilepsy,,disease,Neurological,2,15,0.444444,16
+560,Erythrokeratoderma,,disease,Dermatological,5,7,0.3,3
+574,Pituitary ACTH-secreting adenoma,,disease,Cancer,15,15,0.444444,16
+671,Myelodysplastic syndrome,,disease,Muscular,4,11,0.52381,11
+703,Epidermolytic hyperkeratosis,,disease,Dermatological,15,13,0.464286,13
+742,Lipoma,,disease,Cancer,20,23,0.410256,32
+744,Exudative vitreoretinopathy,,disease,Ophthamological,19,19,0.436364,24
+795,Neurofibromatosis,,disease,Cancer,4,29,0.35,42
+796,Cleft palate,,disease,Developmental,5,11,0.285714,6
+856,Albinism,,disease,Dermatological,23,5,0.166667,1
+880,Pyruvate dehydrogenase deciency,,disease,Metabolic,0,5,0.166667,1
+919,Insulin resistance,,disease,Metabolic,12,11,0.47619,10
+953,Omenn syndrome,,disease,Immunological,7,5,0.5,3
+984,Paragangliomas,,disease,Cancer,3,9,0.466667,7
+985,Pheochromocytoma,,disease,Cancer,3,17,0.377778,17
+36,Cerebral amyloid angiopathy,,disease,Neurological,10,8,0.6,6
+38,HDL cholesterol level QTL,,disease,Metabolic,10,12,0.428571,9
+46,Stargardt disease,,disease,Ophthamological,16,10,0.733333,11
+100,Stroke,,disease,Cardiovascular,21,4,0.333333,1
+126,Abetalipoproteinemia,,disease,Metabolic,11,6,0.5,3
+128,Hyperlipoproteinemia,,disease,Metabolic,21,8,0.6,6
+131,Urolithiasise,,disease,Metabolic,19,4,0.333333,1
+154,Ataxia-telangiectasia,,disease,Immunological,4,8,0.6,6
+156,T-cell lymphoblastic leukemia,,disease,Cancer,4,10,0.6,9
+181,von Hippel-Lindau syndrome,,disease,Cancer,3,14,0.5,14
+191,Cowden disease,,disease,Cancer,23,20,0.672727,37
+192,Polyposis,,disease,Cancer,23,8,0.4,4
+209,Combined immunodeficiency,,disease,Immunological,7,6,0.333333,2
+210,Cerebellar ataxia,,disease,Neurological,13,12,0.428571,9
+211,Episodic ataxia,,disease,Neurological,13,8,0.6,6
+217,Malignant hyperthermia susceptibility,,disease,Neurological,14,8,0.4,4
+238,Homocystinuria,,disease,Metabolic,11,4,0.333333,1
+272,Myotonia congenita,,disease,Muscular,14,12,0.714286,15
+286,Osteogenesis imperfecta,,disease,Bone,19,12,0.714286,15
+287,Marfan syndrome,,disease,Connective tissue disorder,22,18,0.466667,21
+307,Intervertebral disc disease,,disease,Neurological,17,4,0.666667,2
+322,"CPT deficiency, hepatic",,disease,Metabolic,12,4,0.333333,1
+323,Rubenstein-Taybi syndrome,,disease,Multiple,4,4,0.333333,1
+331,Graves disease,,disease,Endocrine,9,4,0.333333,1
+341,Peters anomaly,,disease,Developmental,22,22,0.69697,46
+370,Subcortical laminar heterotopia,,disease,Neurological,2,4,0.666667,2
+385,Becker muscular dystrophy,,disease,Muscular,12,8,0.5,5
+408,Atelosteogenesis,,disease,Connective tissue disorder,17,12,0.428571,9
+417,Waardenburg-Shah syndrome,,disease,Multiple,20,10,0.4,6
+426,Emery-Dreifuss muscular dystrophy,,disease,Muscular,12,6,0.5,3
+446,Hemorrhagic diathesis,,disease,Hematological,11,8,0.4,4
+454,Ectopia,,disease,Ophthamological,22,30,0.5,60
+457,Weill-Marchesani syndrome,,disease,Connective tissue disorder,22,12,0.714286,15
+463,Viral infection,,disease,Immunological,11,4,0.333333,1
+466,Afibrinogenemia,,disease,Hematological,11,8,0.6,6
+470,Jackson-Weiss syndrome,,disease,Skeletal,4,20,0.709091,39
+471,Kallmann syndrome,,disease,Multiple,4,6,0.5,3
+472,Pfeiffer syndrome,,disease,Skeletal,4,20,0.709091,39
+476,Crouzon syndrome,,disease,Skeletal,4,32,0.477941,65
+483,Craniosynostosis,,disease,Skeletal,4,20,0.672727,37
+484,Saethre-Chotzen syndrome,,disease,Developmental,4,18,0.8,36
+485,Cancer susceptibility,,disease,Cancer,4,8,0.6,6
+491,Iridogoniodysgenesis,,disease,Ophthamological,22,12,0.619048,13
+493,Rieger syndrome,,disease,Multiple,22,12,0.619048,13
+526,Insomnia,,disease,Psychiatric,13,10,0.666667,10
+545,Alexander disease,,disease,Multiple,0,6,0.5,3
+550,Growth hormone,,disease,Endocrine,18,4,0.333333,1
+559,Vohwinkel syndrome,,disease,Multiple,5,14,0.607143,17
+575,Acromegaly,,disease,Endocrine,15,12,0.714286,15
+616,Creutzfeldt-Jakob disease,,disease,Neurological,13,10,0.666667,10
+681,Polycythemia,,disease,Hematological,3,14,0.464286,13
+682,Thrombocythemia,,disease,Hematological,3,6,0.5,3
+685,Jervell and Lange-Nielsen syndrome,,disease,Multiple,6,6,0.666667,4
+691,Gastrointestinal stromal tumor,,disease,Cancer,18,14,0.571429,16
+692,Germ cell tumor,,disease,Cancer,18,20,0.472727,26
+765,Angelman syndrome,,disease,Developmental,2,10,0.666667,10
+767,Rett syndrome,,disease,Neurological,2,10,0.666667,10
+772,Multiple endocrine neoplasia,,disease,Cancer,20,24,0.487179,38
+773,Parathyroid adenoma,,disease,Cancer,20,16,0.805556,29
+779,Multiple sclerosis,,disease,Neurological,7,8,0.4,4
+784,Cafe-au-lait spots,,disease,Cancer,4,18,0.733333,33
+785,Muir-Torre syndrome,,disease,Cancer,4,18,0.733333,33
+793,Roussy-Levy syndrome,,disease,Multiple,8,8,0.9,9
+797,Hypodontia,,disease,Skeletal,5,8,0.4,4
+799,Parietal foramina,,disease,Skeletal,4,4,0.333333,1
+814,Central core disease,,disease,Muscular,12,8,0.4,4
+815,Carney complex,,disease,Multiple,23,12,0.52381,11
+838,Neuroblastoma,,disease,Cancer,20,6,0.5,3
+853,Medullary thyroid carcinoma,,disease,Cancer,20,12,0.52381,11
+858,Optic atrophy,,disease,Ophthamological,22,6,0.333333,2
+873,"Coloboma, ocular",,disease,Ophthamological,22,24,0.615385,48
+930,Hyperprolinemia,,disease,Metabolic,20,4,0.333333,1
+963,Rh-negative blood type,,disease,Hematological,1,4,0.333333,1
+982,Liddle syndrome,,disease,Renal,21,4,0.666667,2
+1048,Goiter,,disease,Endocrine,9,12,0.428571,9
+1050,Loeys-Dietz syndrome,,disease,Connective tissue disorder,4,6,0.5,3
+1053,Thyroid hormone resistance,,disease,Endocrine,9,8,0.6,6
+1061,Sepsis,,disease,Immunological,10,10,0.666667,10
+1067,Li-Fraumeni syndrome,,disease,Cancer,23,24,0.794872,62
+1070,Osteosarcoma,,disease,Cancer,23,24,0.794872,62
+1145,Medulloblastoma,,disease,Cancer,22,4,0.333333,1
+1245,Asperger syndrome,,disease,Psychiatric,2,6,0.666667,4
+39,Tangier disease,,disease,Metabolic,10,7,1,6
+62,Adenosine deaminase deficiency,,disease,Immunological,7,3,1,1
+69,"Beta-2-adrenoreceptor agonist, reduced response to",,disease,Unclassified,10,5,1,3
+76,"Leanness, inherited",,disease,Nutritional,10,3,1,1
+77,Alagille syndrome,,disease,Multiple,6,5,1,3
+98,Atherosclerosis,,disease,Cardiovascular,10,3,1,1
+112,"Adenoma, periampullary",,disease,Cancer,4,13,1,21
+115,"Desmoid disease, hereditary",,disease,Cancer,4,13,1,21
+116,Gardner syndrome,,disease,Cancer,4,13,1,21
+124,Hypoalphalipoproteinemia,,disease,Metabolic,11,9,1,10
+127,Hypobetalipoproteinemia,,disease,Metabolic,11,5,1,3
+129,Sea-blue histiocyte disease,,disease,Hematological,21,7,1,6
+134,Aquaporin-1 deficiency,,disease,Unclassified,1,3,1,1
+136,Androgen insensitivity,,disease,Endocrine,12,9,1,10
+138,Perineal hypospadias,,disease,Endocrine,12,9,1,10
+147,Placental steroid sulfatase deciency,,disease,Metabolic,15,3,1,1
+157,Alternating hemiplegia of childhood,,disease,Neurological,10,3,1,1
+166,Menkes disease,,disease,Neurological,16,5,1,3
+167,Occipital horn syndrome,,disease,Multiple,16,5,1,3
+184,GRACILE syndrome,,disease,Metabolic,0,5,1,3
+188,Memory impairment,,disease,Neurological,20,5,1,3
+198,Papillary serous carcinoma of the peritoneum,,disease,Cancer,4,5,1,3
+212,"Hemiplegic migraine, familial",,disease,Neurological,13,7,1,6
+218,Thyrotoxic periodic paralysis,,disease,Endocrine,14,5,1,3
+225,Non-Hodgkin lymphoma,,disease,Cancer,4,5,1,3
+228,Hypocalcemia,,disease,Endocrine,20,5,1,3
+229,Hypocalciuric hypercalcemia,,disease,Endocrine,20,5,1,3
+231,Creatine phosphokinase,,disease,Metabolic,12,9,1,10
+232,Rippling muscle disease,,disease,Muscular,12,9,1,10
+249,Listeria monocytogenes,,disease,Immunological,4,9,1,10
+252,Li Fraumeni syndrome,,disease,Cancer,23,7,1,6
+253,Orolaryngeal cancer,,disease,Cancer,23,7,1,6
+283,Caffey disease,,disease,Connective tissue disorder,19,9,1,10
+284,Dissection of cervical arteries,,disease,Connective tissue disorder,19,9,1,10
+288,"Achondrogenesis-hypochondrogenesis, type II",,disease,Bone,17,11,1,15
+289,Kniest dysplasia,,disease,Skeletal,17,11,1,15
+291,SMED Strudwick type,,disease,Skeletal,17,11,1,15
+293,Wagner syndrome,,disease,Ophthamological,17,11,1,15
+294,"Aneurysm, familial arterial",,disease,Unclassified,19,3,1,1
+301,EBD,,disease,Dermatological,15,7,1,6
+303,"Toenail dystrophy, isolated",,disease,Dermatological,15,7,1,6
+304,Transient bullous of the newborn,,disease,Dermatological,15,7,1,6
+305,Fuchs endothelial corneal dystrophy,,disease,Ophthamological,11,3,1,1
+310,Marshall syndrome,,disease,Multiple,17,3,1,1
+311,OSMED syndrome,,disease,Bone,17,7,1,6
+312,Weissenbacher-Zweymuller syndrome,,disease,Connective tissue disorder,17,7,1,6
+313,Pseudoachondroplasia,,disease,Skeletal,17,3,1,1
+316,"Hemosiderosis, systemic, due to aceruloplasminemia",,disease,Hematological,13,5,1,3
+317,Hypoceruloplasminemia,,disease,Metabolic,13,5,1,3
+334,Pilomatricoma,,disease,Cancer,4,7,1,6
+342,Coumarin resistance,,disease,Hematological,2,3,1,1
+363,Dopamine beta-hydroxylase deciency,,disease,Metabolic,4,3,1,1
+365,Angiotensin I-converting enzyme,,disease,Endocrine,21,11,1,15
+366,"SARS, progression of",,disease,Immunological,21,11,1,15
+368,"Lower motor neuron disease, progressive, without sensory symptoms",,disease,Neurological,12,3,1,1
+374,Jensen syndrome,,disease,Neurological,5,5,1,3
+375,Mohr-Tranebjaerg syndrome,,disease,Neurological,5,5,1,3
+376,Meniere disease,,disease,Neurological,5,3,1,1
+380,Benzene toxicity,,disease,Unclassified,18,3,1,1
+386,Duchenne muscular dystrophy,,disease,Muscular,12,5,1,3
+403,Dilated cardiomyopathy with woolly hair and keratoderma,,disease,Multiple,15,9,1,10
+404,Skin fragility-woolly hair syndrome,,disease,Dermatological,15,9,1,10
+405,"Dentin dysplasia, type II",,disease,Bone,5,5,1,3
+406,"Dentinogenesis imperfecta, Shields type",,disease,Bone,5,5,1,3
+407,Achondrogenesis Ib,,disease,Bone,17,7,1,6
+409,Diastrophic dysplasia,,disease,Skeletal,17,7,1,6
+415,Shah-Waardenburg syndrome,,disease,Multiple,20,5,1,3
+416,ABCD syndrome,,disease,Multiple,20,5,1,3
+422,"Hematopoiesis, cyclic",,disease,Hematological,11,3,1,1
+424,Supravalvar aortic stenosis,,disease,Cardiovascular,16,5,1,3
+425,Williams-Beuren syndrome,,disease,Multiple,16,5,1,3
+434,Estrogen resistance,,disease,Endocrine,10,5,1,3
+442,Branchiootic syndrome,,disease,Neurological,22,3,1,1
+453,Aortic aneurysm,,disease,Cardiovascular,22,11,1,15
+455,MASS syndrome,,disease,Connective tissue disorder,22,11,1,15
+456,Shprintzen-Goldberg syndrome,,disease,Multiple,22,11,1,15
+468,Aarskog-Scott syndrome,,disease,Multiple,2,3,1,1
+473,Achondroplasia,,disease,Skeletal,4,15,1,28
+475,Cervical carcinoma,,disease,Cancer,4,15,1,28
+477,Hypochondroplasia,,disease,Skeletal,4,15,1,28
+478,Muenke syndrome,,disease,Skeletal,4,15,1,28
+479,"Thanatophoric dysplasia, types I and II",,disease,Skeletal,4,15,1,28
+480,Apert syndrome,,disease,Connective tissue disorder,4,17,1,36
+481,Beare-Stevenson cutis gyrata syndrome,,disease,Multiple,4,17,1,36
+482,Craniofacial-skeletal-dermatologic dysplasia,,disease,Multiple,4,17,1,36
+486,Hypofibrinogenemia,,disease,Hematological,11,5,1,3
+490,Axenfeld anomaly,,disease,Ophthamological,22,9,1,10
+492,Iris hypoplasia and glaucoma,,disease,Ophthamological,22,9,1,10
+502,Larson syndrome,,disease,Skeletal,17,5,1,3
+503,Spondylocarpotarsal synostosis syndrome,,disease,Skeletal,17,5,1,3
+523,Favism,,disease,Metabolic,1,5,1,3
+524,G6PD deficiency,,disease,Metabolic,1,5,1,3
+535,Dyserythropoietic anemia,,disease,Hematological,18,5,1,3
+536,Macrothrombocytopenia,,disease,Hematological,18,5,1,3
+540,Hyperinsulinism,,disease,Metabolic,21,5,1,3
+542,Adult i phenotype,,disease,Hematological,1,3,1,1
+552,Hypoplastic left heart syndrome,,disease,Cardiovascular,6,7,1,6
+553,Oculodentodigital dysplasia,,disease,Skeletal,6,7,1,6
+554,Syndactyly,,disease,Skeletal,6,7,1,6
+555,Bart-Pumphrey syndrome,,disease,Multiple,5,11,1,15
+556,Hystrix-like ichthyosis with deafness,,disease,Multiple,5,11,1,15
+557,Keratitis-ichthyosis-deafness syndrome,,disease,Multiple,5,11,1,15
+558,"Keratoderma, palmoplantar, with deafness",,disease,Dermatological,5,11,1,15
+563,Simpson-Golabi-Behmel syndrome,,disease,Multiple,23,3,1,1
+576,McCune-Albright syndrome,,disease,Multiple,15,11,1,15
+577,Osseous heteroplasia,,disease,Bone,15,11,1,15
+578,Pseudohypoparathyroidism,,disease,Endocrine,15,11,1,15
+579,Somatotrophinoma,,disease,Endocrine,15,11,1,15
+585,Glutathione synthetase deciency,,disease,Metabolic,1,3,1,1
+605,"Sandho disease, infantile, juvenile, and adult forms",,disease,Metabolic,12,3,1,1
+606,Hemolytic-uremic syndrome,,disease,Hematological,16,7,1,6
+608,Nephropathy-hypertension,,disease,Renal,16,7,1,6
+627,Vertical talus,,disease,Skeletal,8,3,1,1
+633,Costello syndrome,,disease,Multiple,4,5,1,3
+637,"Apparent mineralocorticoid excess, hypertension due to",,disease,Bone,21,3,1,1
+643,Alcohol dependence,,disease,Unclassified,20,9,1,10
+644,Anorexia nervosa,,disease,Nutritional,20,9,1,10
+645,Seasonal affective disorder,,disease,Psychiatric,20,9,1,10
+663,Graft-versus-host disease,,disease,Immunological,7,5,1,3
+664,Allergic rhinitis,,disease,Immunological,10,3,1,1
+665,Hyperproinsulinemia,,disease,Endocrine,21,3,1,1
+667,Leprechaunism,,disease,Developmental,21,5,1,3
+668,Rabson-Mendenhall syndrome,,disease,Multiple,21,5,1,3
+669,Pancreatic agenesis,,disease,Gastrointestinal,21,5,1,3
+670,Macrocytic anemia,,disease,Hematological,4,9,1,10
+680,"Myelofibrosis, idiopathic",,disease,Hematological,3,5,1,3
+686,Acquired long QT syndrome,,disease,Cardiovascular,6,3,1,1
+687,Persistent hyperinsulinemic hypoglycemia of infancy,,disease,Metabolic,21,3,1,1
+689,Myokymia with neonatal epilepsy,,disease,Neurological,2,3,1,1
+693,Mast cell leukemia,,disease,Cancer,18,11,1,15
+694,Mastocytosis with associated hematologic disorder,,disease,Immunological,18,11,1,15
+695,Piebaldism,,disease,Dermatological,18,11,1,15
+701,Stomach cancer,,disease,Cancer,23,11,1,15
+702,Cyclic ichthyosis with epidermolytic hyperkeratosis,,disease,Dermatological,15,9,1,10
+704,"Unna-Thost disease, nonepidermolytic",,disease,Dermatological,15,9,1,10
+709,"Nevus, epidermal, epidermolytic hyperkeratotic type",,disease,Dermatological,15,5,1,3
+716,Laryngoonychocutaneous syndrome,,disease,Multiple,15,3,1,1
+743,Bone mineral density variability,,disease,Bone,19,13,1,21
+745,"Hyperostosis, endosteal",,disease,Bone,19,13,1,21
+746,Osteoporosis-pseudoglioma syndrome,,disease,Bone,19,13,1,21
+747,van Buchem disease,,disease,Unclassified,19,13,1,21
+748,Juvenile polyposis/hereditary hemorrhagic telangiectasia syndrome,,disease,Cancer,23,5,1,3
+752,Pallidopontonigral degeneration,,disease,Neurological,21,7,1,6
+753,Supranuclear palsy,,disease,Neurological,21,7,1,6
+754,Tauopathy and respiratory failure,,disease,Neurological,21,7,1,6
+766,PPM-X syndrome,,disease,Neurological,2,9,1,10
+769,Adrenal adenoma,,disease,Cancer,20,15,1,28
+770,"Angiofibroma, sporadic",,disease,Endocrine,20,15,1,28
+771,Carcinoid tumor of lung,,disease,Cancer,20,15,1,28
+774,"Prolactinoma, hyperparathyroidism, carcinoid syndrome",,disease,Endocrine,20,15,1,28
+781,Tietz syndrome,,disease,Multiple,23,3,1,1
+792,Myeloperoxidase deficiency,,disease,Immunological,21,3,1,1
+794,Lynch cancer family syndrome II,,disease,Cancer,4,15,1,28
+798,Witkop syndrome,,disease,Developmental,5,5,1,3
+810,Neurofibrosarcoma,,disease,Cancer,23,3,1,1
+816,Trismus-pseudocomptodactyly syndrome,,disease,Multiple,23,3,1,1
+817,Epstein syndrome,,disease,Hematological,5,9,1,10
+818,Fechtner syndrome,,disease,Multiple,5,9,1,10
+819,May-Hegglin anomaly,,disease,Hematological,5,9,1,10
+820,Sebastian syndrome,,disease,Hematological,5,9,1,10
+826,Nijmegen breakage syndrome,,disease,Multiple,18,3,1,1
+828,Coats disease,,disease,Ophthamological,19,5,1,3
+829,Norrie disease,,disease,Neurological,19,5,1,3
+833,Neurofibromatosis,,disease,Cancer,18,9,1,10
+834,Neurobromatosis-Noonan syndrome,,disease,Cancer,18,9,1,10
+835,Watson syndrome,,disease,Cancer,18,9,1,10
+836,Schwannomatosis,,disease,Cancer,4,5,1,3
+841,Coronary spasms,,disease,Cardiovascular,21,7,1,6
+842,Placental abruption,,disease,Unclassified,21,7,1,6
+852,Insensitivity to pain,,disease,Neurological,20,3,1,1
+868,Leprosy,,disease,Immunological,4,5,1,3
+871,Craniofacial-deafness-hand syndrome,,disease,Multiple,23,5,1,3
+872,"Aniridia, type II",,disease,Ophthamological,22,19,1,45
+874,Eye anomalies,,disease,Ophthamological,22,19,1,45
+875,Foveal hypoplasia,,disease,Ophthamological,22,19,1,45
+876,Keratitis,,disease,Ophthamological,22,19,1,45
+877,Morning glory disc anomaly,,disease,Skeletal,22,19,1,45
+878,Optic nerve hypoplasia/aplasia,,disease,Ophthamological,22,19,1,45
+879,Oligodontia,,disease,Skeletal,5,3,1,1
+882,Dermatobrosarcoma protuberans,,disease,Cancer,23,5,1,3
+883,Giant-cell fibroblastoma,,disease,Cancer,23,5,1,3
+884,Hypereosinophilic syndrome,,disease,Hematological,18,3,1,1
+887,Ossication of the posterior longitudinal spinal ligaments,,disease,Connective tissue disorder,10,5,1,3
+888,Enlarged vestibular aqueduct,,disease,"Ear,Nose,Throat",5,5,1,3
+889,Pendred syndrome,,disease,"Ear,Nose,Throat",5,5,1,3
+897,Myoglobinuria/hemolysis due to PGK deciency,,disease,Metabolic,1,3,1,1
+902,Emphysema,,disease,Respiratory,11,3,1,1
+904,Ring dermoid of cornea,,disease,Ophthamological,22,5,1,3
+909,Nevo syndrome,,disease,Connective tissue disorder,19,3,1,1
+911,Pelizaeus-Merzbacher disease,,disease,Neurological,12,3,1,1
+912,Neuroectodermal tumors,,disease,Multiple,4,5,1,3
+923,Adrenocortical carcinoma,,disease,Cancer,23,9,1,10
+924,"Myxoma, intracardiac",,disease,Cardiovascular,23,9,1,10
+925,"Pigmented adrenocortical disease, primary isolated",,disease,Cancer,23,9,1,10
+928,Gerstmann-Straussler disease,,disease,Neurological,13,9,1,10
+929,Prion disease with protracted course,,disease,Neurological,13,9,1,10
+935,Pick disease,,disease,Neurological,21,5,1,3
+939,Basal cell nevus syndrome,,disease,Multiple,22,5,1,3
+941,Bannayan-Riley-Ruvalcaba syndrome,,disease,Unclassified,23,17,1,36
+942,Lhermitte-Duclos syndrome,,disease,Cancer,23,17,1,36
+943,Oligodendroglioma,,disease,Cancer,23,17,1,36
+944,VATER association with hydrocephalus,,disease,Multiple,23,17,1,36
+947,Leopard syndrome,,disease,Multiple,18,5,1,3
+948,Noonan syndrome,,disease,Developmental,18,5,1,3
+949,Zlotogora-Ogur syndrome,,disease,Multiple,5,5,1,3
+954,Capillary malformations,,disease,Cardiovascular,22,5,1,3
+955,Parkes Weber syndrome,,disease,Multiple,22,5,1,3
+956,Retinoblastoma,,disease,Cancer,4,3,1,1
+958,"Butterfly dystrophy, retinal",,disease,Ophthamological,16,7,1,6
+959,"Foveomacular dystrophy, adult-onset, with choroidal neovascularization",,disease,Ophthamological,16,7,1,6
+960,Hyperproreninemia,,disease,Cardiovascular,21,3,1,1
+961,"Colonic aganglionosis, total, with small bowel involvement",,disease,Gastrointestinal,20,9,1,10
+962,Rh-mod syndrome,,disease,Hematological,1,3,1,1
+965,Bothnia retinal dystrophy,,disease,Ophthamological,16,7,1,6
+966,Newfoundland rod-cone dystrophy,,disease,Ophthamological,16,7,1,6
+969,Coffin-Lowry syndrome,,disease,Multiple,2,3,1,1
+974,"Cramps, potassium-aggravated",,disease,Muscular,14,11,1,15
+975,Hyperkalemic periodic paralysis,,disease,Neurological,14,11,1,15
+976,Paramyotonia congenita,,disease,Muscular,14,11,1,15
+977,Brugada syndrome,,disease,Cardiovascular,6,9,1,10
+978,Heart block,,disease,Cardiovascular,6,9,1,10
+979,Sick sinus syndrome,,disease,Cardiovascular,6,9,1,10
+980,"Ventricular brillation, idiopathic",,disease,Cardiovascular,6,9,1,10
+986,"Carcinoid tumors, intestinal",,disease,Cancer,3,7,1,6
+987,Merkel cell carcinoma,,disease,Cancer,3,7,1,6
+991,Solitary median maxillary central incisor,,disease,Skeletal,22,5,1,3
+996,Fanconi-Bickel syndrome,,disease,Metabolic,21,3,1,1
+1002,Anxiety-related personality traits,,disease,Psychiatric,20,3,1,1
+1003,"Creatine deciency syndrome, X-linked",,disease,Neurological,2,3,1,1
+1012,Infundibular hypoplasia and hypopituitarism,,disease,Endocrine,2,3,1,1
+1015,PCWH,,disease,Neurological,20,5,1,3
+1016,Yemenite deaf-blind hypopigmentation syndrome,,disease,Multiple,20,5,1,3
+1020,Pyropoikilocytosis,,disease,Hematological,1,5,1,3
+1025,Peutz-Jeghers syndrome,,disease,Cancer,23,5,1,3
+1027,Hypoglycemia,,disease,Metabolic,21,3,1,1
+1029,Wegener granulomatosis,,disease,Immunological,7,3,1,1
+1033,Barth syndrome,,disease,Multiple,12,5,1,3
+1034,Noncompaction of left ventricular myocardium,,disease,Cardiovascular,12,5,1,3
+1040,"Glomerulocystic kidney disease, hypoplastic",,disease,Renal,21,5,1,3
+1047,Autoimmune thyroid disease,,disease,Endocrine,9,5,1,3
+1051,Self-healing collodion baby,,disease,Dermatological,15,5,1,3
+1065,Adrenal cortical carcinoma,,disease,Cancer,23,21,1,55
+1066,Histiocytoma,,disease,Cancer,23,21,1,55
+1068,Multiple malignancy syndrome,,disease,Cancer,23,21,1,55
+1069,Nasopharyngeal carcinoma,,disease,Cancer,23,21,1,55
+1072,Hyperthyroidism,,disease,Endocrine,9,7,1,6
+1073,Total iodide organication defect,,disease,Endocrine,9,7,1,6
+1078,Hyperthroidism,,disease,Endocrine,9,5,1,3
+1080,Amyloid neuropathy,,disease,Neurological,11,7,1,6
+1081,"Carpal tunnel syndrome, familial",,disease,Unclassified,11,7,1,6
+1082,Dystransthyretinemic hyperthyroxinemia,,disease,Hematological,11,7,1,6
+1089,"Hemangioblastoma, cerebellar",,disease,Cancer,3,9,1,10
+1091,"Maculopathy, bull's-eye",,disease,Ophthamological,16,5,1,3
+1092,Vitelliform macular dystrophy,,disease,Ophthamological,16,5,1,3
+1094,Wiskott-Aldrich syndrome,,disease,Immunological,11,5,1,3
+1099,Denys-Drash syndrome,,disease,Renal,23,9,1,10
+1100,Frasier syndrome,,disease,Multiple,23,9,1,10
+1101,Mesangial sclerosis,,disease,Renal,23,9,1,10
+1102,WAGR syndrome,,disease,Multiple,23,9,1,10
+1120,Salivary adenoma,,disease,Cancer,20,5,1,3
+1121,Uterine leiomyoma,,disease,Cancer,20,5,1,3
+1130,Miyoshi myopathy,,disease,Muscular,12,5,1,3
+1132,Oligodontia-colorectal cancer syndrome,,disease,Cancer,4,3,1,1
+1136,Incontinentia pigmenti,,disease,Dermatological,5,3,1,1
+1148,Arthropathy,,disease,Bone,17,3,1,1
+1152,Mesothelioma,,disease,Cancer,4,9,1,10
+1153,Sezary syndrome,,disease,Cancer,4,9,1,10
+1174,Myotilinopathy,,disease,Muscular,12,3,1,1
+1181,Enhanced S-cone syndrome,,disease,Ophthamological,16,3,1,1
+1198,Netherton syndrome,,disease,Dermatological,10,3,1,1
+1208,Pigmented paravenous chorioretinal atrophy,,disease,Ophthamological,16,5,1,3
+1221,Silver spastic paraplegia syndrome,,disease,Neurological,12,5,1,3
+1227,"Craniofacial anomalies, empty sella turcica, corneal endothelial changes",,disease,Multiple,11,5,1,3
+1228,Keratoconus,,disease,Ophthamological,11,5,1,3
+1232,"Immunodysregulation, polyendocrinopathy, and enteropathy, X-linked",,disease,Multiple,21,3,1,1
+1238,IgE levels QTL,,disease,Immunological,10,3,1,1
+1242,Wolff-Parkinson-White syndrome,,disease,Cardiovascular,12,3,1,1
+1270,Primary lateral sclerosis,,disease,Neurological,12,5,1,3
+1285,3-methylglutaconicaciduria,,disease,Metabolic,22,3,1,1
+1289,Convulsions,,disease,Neurological,5,3,1,1
+1303,Infantile spasm syndrome,,disease,Neurological,2,11,1,15
+1304,Partington syndrome,,disease,Neurological,2,11,1,15
+1305,Proud syndrome,,disease,Multiple,2,11,1,15
+1306,Birt-Hogg-Dube syndrome,,disease,Dermatological,3,7,1,6
+1307,"Pneumothorax, primary spontaneous",,disease,Respiratory,3,7,1,6
+1329,MTP,,gene,gene,11,1,0,0
+1338,CNGA3,,gene,gene,16,1,0,0
+1339,GNAT2,,gene,gene,16,1,0,0
+1348,SSTR5,,gene,gene,15,1,0,0
+1361,PLAG1,,gene,gene,4,1,0,0
+1394,OCA2,,gene,gene,23,1,0,0
+1396,TYRP1,,gene,gene,23,1,0,0
+1402,GFAP,,gene,gene,0,1,0,0
+1420,A2M,,gene,gene,21,1,0,0
+1421,APBB2,,gene,gene,21,1,0,0
+1424,BLMH,,gene,gene,21,1,0,0
+1428,PLAU,,gene,gene,21,1,0,0
+1430,PSEN2,,gene,gene,21,1,0,0
+1431,PAXIP1,,gene,gene,21,1,0,0
+1442,GSN,,gene,gene,11,1,0,0
+1443,LYZ,,gene,gene,11,1,0,0
+1446,NEFH,,gene,gene,12,1,0,0
+1447,PRPH,,gene,gene,12,1,0,0
+1448,SOD1,,gene,gene,12,1,0,0
+1455,ABCB7,,gene,gene,1,1,0,0
+1456,ALAS2,,gene,gene,1,1,0,0
+1457,SLC11A2,,gene,gene,1,1,0,0
+1458,PKLR,,gene,gene,1,1,0,0
+1460,RPS19,,gene,gene,1,1,0,0
+1462,NT5C3,,gene,gene,1,1,0,0
+1463,CDAN1,,gene,gene,1,1,0,0
+1465,UBE3A,,gene,gene,2,1,0,0
+1477,FOXE3,,gene,gene,22,1,0,0
+1491,APOC3,,gene,gene,11,1,0,0
+1492,APOH,,gene,gene,11,1,0,0
+1501,PKP2,,gene,gene,15,1,0,0
+1512,MS4A2,,gene,gene,10,1,0,0
+1513,HNMT,,gene,gene,10,1,0,0
+1514,IL12B,,gene,gene,10,1,0,0
+1515,IL13,,gene,gene,10,2,1,1
+1516,PTGDR,,gene,gene,10,1,0,0
+1518,SCGB1A1,,gene,gene,10,1,0,0
+1521,SCGB3A2,,gene,gene,10,1,0,0
+1522,GPR154,,gene,gene,10,1,0,0
+1524,TTPA,,gene,gene,2,1,0,0
+1525,ALS4,,gene,gene,2,1,0,0
+1526,APTX,,gene,gene,2,1,0,0
+1527,ATCAY,,gene,gene,2,1,0,0
+1529,MRE11A,,gene,gene,4,1,0,0
+1533,ALOX5,,gene,gene,10,2,1,1
+1534,IL4R,,gene,gene,10,1,0,0
+1535,SELP,,gene,gene,10,1,0,0
+1538,HAVCR1,,gene,gene,10,1,0,0
+1541,GATA4,,gene,gene,6,1,0,0
+1548,CRELD1,,gene,gene,6,1,0,0
+1550,GLO1,,gene,gene,2,1,0,0
+1552,NLGN3,,gene,gene,2,2,1,1
+1554,AIRE,,gene,gene,4,1,0,0
+1573,RFX5,,gene,gene,7,1,0,0
+1574,RFXAP,,gene,gene,7,1,0,0
+1576,TAPBP,,gene,gene,7,1,0,0
+1586,SMO,,gene,gene,22,1,0,0
+1621,ABO,,gene,gene,1,1,0,0
+1622,ACHE,,gene,gene,1,1,0,0
+1623,AQP1,,gene,gene,1,2,1,1
+1624,AQP3,,gene,gene,1,1,0,0
+1625,DO,,gene,gene,1,1,0,0
+1626,BSG,,gene,gene,1,1,0,0
+1627,CD44,,gene,gene,1,1,0,0
+1628,CR1,,gene,gene,1,1,0,0
+1629,DAF,,gene,gene,1,1,0,0
+1630,FUT3,,gene,gene,1,1,0,0
+1631,GCNT2,,gene,gene,1,2,1,1
+1632,GYPA,,gene,gene,1,1,0,0
+1633,GYPB,,gene,gene,1,1,0,0
+1635,ICAM4,,gene,gene,1,1,0,0
+1636,KEL,,gene,gene,1,1,0,0
+1637,LU,,gene,gene,1,1,0,0
+1640,SLC14A1,,gene,gene,1,1,0,0
+1641,XG,,gene,gene,1,1,0,0
+1642,B3GALT3,,gene,gene,1,1,0,0
+1643,A4GALT,,gene,gene,1,1,0,0
+1660,EYA1,,gene,gene,22,2,1,1
+1663,BARD1,,gene,gene,23,1,0,0
+1669,PHB,,gene,gene,23,1,0,0
+1671,RAD51,,gene,gene,23,1,0,0
+1673,TSG101,,gene,gene,23,1,0,0
+1676,PPM1D,,gene,gene,23,1,0,0
+1677,RB1CC1,,gene,gene,23,1,0,0
+1687,C1QA,,gene,gene,7,1,0,0
+1688,C1QB,,gene,gene,7,1,0,0
+1689,C1QG,,gene,gene,7,1,0,0
+1690,C1S,,gene,gene,7,1,0,0
+1691,C2,,gene,gene,7,1,0,0
+1692,C3,,gene,gene,7,1,0,0
+1693,C4A,,gene,gene,7,1,0,0
+1694,C4B,,gene,gene,7,1,0,0
+1696,C7,,gene,gene,7,1,0,0
+1697,C8B,,gene,gene,7,1,0,0
+1698,C9,,gene,gene,7,1,0,0
+1699,IF,,gene,gene,7,1,0,0
+1709,FGFR4,,gene,gene,4,1,0,0
+1719,ACTC,,gene,gene,12,1,0,0
+1726,MYBPC3,,gene,gene,12,1,0,0
+1727,MYH6,,gene,gene,6,2,1,1
+1729,MYL2,,gene,gene,12,1,0,0
+1730,MYL3,,gene,gene,12,1,0,0
+1731,PLN,,gene,gene,12,1,0,0
+1734,TNNC1,,gene,gene,12,1,0,0
+1735,TNNI3,,gene,gene,12,1,0,0
+1736,TNNT2,,gene,gene,12,1,0,0
+1737,TPM1,,gene,gene,12,1,0,0
+1739,CSRP3,,gene,gene,12,1,0,0
+1741,ABCC9,,gene,gene,12,1,0,0
+1743,MYLK2,,gene,gene,12,1,0,0
+1750,CRYAA,,gene,gene,22,1,0,0
+1752,CRYBA1,,gene,gene,22,1,0,0
+1753,CRYBB1,,gene,gene,22,1,0,0
+1754,CRYBB2,,gene,gene,22,1,0,0
+1755,CRYGC,,gene,gene,22,1,0,0
+1756,CRYGD,,gene,gene,22,1,0,0
+1757,GJA3,,gene,gene,22,1,0,0
+1758,GJA8,,gene,gene,22,1,0,0
+1759,HSF4,,gene,gene,22,1,0,0
+1760,LIM2,,gene,gene,22,1,0,0
+1761,MIP,,gene,gene,22,1,0,0
+1763,PITX3,,gene,gene,22,2,1,1
+1764,BFSP2,,gene,gene,22,1,0,0
+1776,CST3,,gene,gene,10,1,0,0
+1792,DNM2,,gene,gene,8,1,0,0
+1795,GJB1,,gene,gene,8,1,0,0
+1799,NEFL,,gene,gene,8,1,0,0
+1801,RAB7,,gene,gene,8,1,0,0
+1802,MTMR2,,gene,gene,8,1,0,0
+1803,LITAF,,gene,gene,8,1,0,0
+1804,MFN2,,gene,gene,8,1,0,0
+1805,NDRG1,,gene,gene,8,1,0,0
+1806,KIF1B,,gene,gene,8,1,0,0
+1807,GDAP1,,gene,gene,8,1,0,0
+1808,SH3TC2,,gene,gene,8,1,0,0
+1809,SBF2,,gene,gene,8,1,0,0
+1852,TBX22,,gene,gene,5,1,0,0
+1868,BUB1,,gene,gene,4,1,0,0
+1869,BUB1B,,gene,gene,4,1,0,0
+1871,DCC,,gene,gene,4,1,0,0
+1875,MCC,,gene,gene,4,1,0,0
+1879,NRAS,,gene,gene,4,1,0,0
+1880,ODC1,,gene,gene,4,1,0,0
+1883,PLA2G2A,,gene,gene,4,1,0,0
+1884,PMS1,,gene,gene,4,1,0,0
+1886,PTPN12,,gene,gene,4,1,0,0
+1887,PTPRJ,,gene,gene,4,1,0,0
+1888,SRC,,gene,gene,4,1,0,0
+1894,DLC1,,gene,gene,4,1,0,0
+1896,MLH3,,gene,gene,4,1,0,0
+1907,GUCA1A,,gene,gene,16,1,0,0
+1935,TACSTD2,,gene,gene,11,1,0,0
+1936,TGFBI,,gene,gene,11,1,0,0
+1937,KERA,,gene,gene,11,1,0,0
+1939,PIP5K3,,gene,gene,11,1,0,0
+1942,MEF2A,,gene,gene,10,1,0,0
+1943,MMP3,,gene,gene,10,1,0,0
+1944,PON1,,gene,gene,10,1,0,0
+1945,PON2,,gene,gene,10,1,0,0
+1946,KL,,gene,gene,10,1,0,0
+1955,CPT1A,,gene,gene,12,1,0,0
+1967,HLA-DQB1,,gene,gene,13,1,0,0
+1990,ACTG1,,gene,gene,5,1,0,0
+1992,ATP2B2,,gene,gene,5,1,0,0
+1994,CRYM,,gene,gene,5,1,0,0
+1996,DFNA5,,gene,gene,5,1,0,0
+1998,DIAPH1,,gene,gene,5,1,0,0
+2000,EYA4,,gene,gene,12,2,1,1
+2004,MYO1A,,gene,gene,5,1,0,0
+2005,MYO6,,gene,gene,5,1,0,0
+2008,POU3F4,,gene,gene,5,1,0,0
+2009,POU4F3,,gene,gene,5,1,0,0
+2010,TECTA,,gene,gene,5,1,0,0
+2011,KCNQ4,,gene,gene,5,1,0,0
+2012,OTOF,,gene,gene,5,1,0,0
+2015,CLDN14,,gene,gene,5,1,0,0
+2016,DFNB31,,gene,gene,5,1,0,0
+2017,MYO15A,,gene,gene,5,1,0,0
+2018,MYO3A,,gene,gene,5,1,0,0
+2019,KIAA1199,,gene,gene,5,1,0,0
+2021,TMPRSS3,,gene,gene,5,1,0,0
+2023,MYH14,,gene,gene,5,1,0,0
+2024,GRHL2,,gene,gene,5,1,0,0
+2025,ESPN,,gene,gene,5,1,0,0
+2026,TMC1,,gene,gene,5,1,0,0
+2027,OTOA,,gene,gene,5,1,0,0
+2028,STRC,,gene,gene,5,1,0,0
+2029,TMIE,,gene,gene,5,1,0,0
+2030,SLC26A5,,gene,gene,5,1,0,0
+2035,PRX,,gene,gene,8,1,0,0
+2039,SNCB,,gene,gene,21,1,0,0
+2042,ITM2B,,gene,gene,21,1,0,0
+2049,DSPP,,gene,gene,5,3,1,3
+2055,AKT2,,gene,gene,21,1,0,0
+2057,GCGR,,gene,gene,21,1,0,0
+2059,GPD2,,gene,gene,21,1,0,0
+2063,IRS1,,gene,gene,21,1,0,0
+2065,NEUROD1,,gene,gene,21,1,0,0
+2069,SLC2A4,,gene,gene,21,1,0,0
+2073,VEGF,,gene,gene,21,1,0,0
+2074,IRS2,,gene,gene,21,1,0,0
+2075,MAPK8IP1,,gene,gene,21,1,0,0
+2076,CAPN10,,gene,gene,21,1,0,0
+2080,PTF1A,,gene,gene,21,1,0,0
+2081,SUMO4,,gene,gene,21,1,0,0
+2099,DMD,,gene,gene,12,3,1,3
+2105,FGA,,gene,gene,11,3,1,3
+2120,TTR,,gene,gene,11,4,1,6
+2122,EDA,,gene,gene,5,1,0,0
+2123,NFKBIA,,gene,gene,5,1,0,0
+2124,PKP1,,gene,gene,5,1,0,0
+2127,GJB6,,gene,gene,5,2,1,1
+2128,EDAR,,gene,gene,5,1,0,0
+2129,EDARADD,,gene,gene,5,1,0,0
+2136,COL5A1,,gene,gene,19,1,0,0
+2137,COL5A2,,gene,gene,19,1,0,0
+2139,TNXB,,gene,gene,19,1,0,0
+2140,ADAMTS2,,gene,gene,19,1,0,0
+2141,B4GALT7,,gene,gene,19,1,0,0
+2143,EPB41,,gene,gene,1,1,0,0
+2149,EMD,,gene,gene,12,1,0,0
+2157,MSH3,,gene,gene,23,1,0,0
+2169,COL17A1,,gene,gene,15,1,0,0
+2171,ITGA6,,gene,gene,15,1,0,0
+2172,ITGB4,,gene,gene,15,1,0,0
+2173,KRT5,,gene,gene,15,1,0,0
+2174,KRT14,,gene,gene,15,1,0,0
+2176,LAMB3,,gene,gene,15,1,0,0
+2177,LAMC2,,gene,gene,15,1,0,0
+2180,KRT9,,gene,gene,15,1,0,0
+2182,CACNB4,,gene,gene,2,2,1,1
+2184,CHRNB2,,gene,gene,2,1,0,0
+2185,CLCN2,,gene,gene,2,1,0,0
+2186,CSTB,,gene,gene,2,1,0,0
+2187,GABRA1,,gene,gene,2,1,0,0
+2190,KCNQ3,,gene,gene,2,1,0,0
+2191,ME2,,gene,gene,2,1,0,0
+2192,SCN1A,,gene,gene,2,1,0,0
+2193,SYN1,,gene,gene,2,1,0,0
+2194,EPM2A,,gene,gene,2,1,0,0
+2195,JRK,,gene,gene,2,1,0,0
+2197,SLC25A22,,gene,gene,2,1,0,0
+2198,NHLRC1,,gene,gene,2,1,0,0
+2199,COL9A1,,gene,gene,17,1,0,0
+2203,SLC26A2,,gene,gene,17,4,1,6
+2206,KCNA1,,gene,gene,13,1,0,0
+2214,GJB3,,gene,gene,5,2,1,1
+2216,GJB4,,gene,gene,5,1,0,0
+2217,RNF6,,gene,gene,4,1,0,0
+2219,LZTS1,,gene,gene,4,1,0,0
+2220,WWOX,,gene,gene,4,1,0,0
+2229,FZD4,,gene,gene,19,1,0,0
+2235,F10,,gene,gene,16,1,0,0
+2236,F11,,gene,gene,16,1,0,0
+2237,F12,,gene,gene,16,1,0,0
+2238,F13A1,,gene,gene,16,1,0,0
+2239,F13B,,gene,gene,16,1,0,0
+2241,MCFD2,,gene,gene,16,1,0,0
+2244,FANCA,,gene,gene,23,1,0,0
+2245,FANCC,,gene,gene,23,1,0,0
+2246,FANCD2,,gene,gene,23,1,0,0
+2247,FANCE,,gene,gene,23,1,0,0
+2248,FANCB,,gene,gene,23,1,0,0
+2249,FANCF,,gene,gene,23,1,0,0
+2250,FANCG,,gene,gene,23,1,0,0
+2251,FANCL,,gene,gene,23,1,0,0
+2252,FANCM,,gene,gene,23,1,0,0
+2253,BRIP1,,gene,gene,23,2,1,1
+2254,SLC2A2,,gene,gene,21,2,1,1
+2285,COL8A2,,gene,gene,11,2,1,1
+2290,RDH5,,gene,gene,16,1,0,0
+2306,IL1B,,gene,gene,4,1,0,0
+2307,IL1RN,,gene,gene,4,1,0,0
+2309,MUTYH,,gene,gene,4,3,1,3
+2328,MYOC,,gene,gene,22,1,0,0
+2330,OPTN,,gene,gene,22,1,0,0
+2331,DMBT1,,gene,gene,4,1,0,0
+2335,LGI1,,gene,gene,2,2,1,1
+2380,GC,,gene,gene,9,1,0,0
+2386,GHRHR,,gene,gene,18,1,0,0
+2418,AK1,,gene,gene,1,1,0,0
+2419,BPGM,,gene,gene,1,1,0,0
+2420,G6PD,,gene,gene,1,3,1,3
+2421,GCLC,,gene,gene,1,1,0,0
+2422,GPI,,gene,gene,1,1,0,0
+2423,GSS,,gene,gene,1,2,1,1
+2424,HK1,,gene,gene,1,1,0,0
+2427,TPI1,,gene,gene,1,1,0,0
+2434,SERPINA1,,gene,gene,11,2,1,1
+2437,CASP8,,gene,gene,4,2,1,1
+2439,IGF2R,,gene,gene,23,1,0,0
+2441,PDGFRL,,gene,gene,4,2,1,1
+2444,AXIN1,,gene,gene,23,1,0,0
+2462,GDNF,,gene,gene,20,2,1,1
+2463,NRTN,,gene,gene,20,1,0,0
+2468,CCR2,,gene,gene,7,1,0,0
+2469,CCR5,,gene,gene,7,1,0,0
+2471,CCL5,,gene,gene,7,1,0,0
+2477,SIX3,,gene,gene,22,1,0,0
+2478,TGIF,,gene,gene,22,1,0,0
+2479,ZIC2,,gene,gene,22,1,0,0
+2483,MTHFR,,gene,gene,11,1,0,0
+2492,HD,,gene,gene,13,1,0,0
+2495,JPH3,,gene,gene,13,1,0,0
+2504,BAAT,,gene,gene,21,1,0,0
+2506,TJP2,,gene,gene,21,1,0,0
+2507,APOA2,,gene,gene,11,2,1,1
+2509,EPHX2,,gene,gene,11,1,0,0
+2510,ITIH4,,gene,gene,11,1,0,0
+2511,LDLR,,gene,gene,11,1,0,0
+2512,C7orf16,,gene,gene,11,1,0,0
+2513,LDLRAP1,,gene,gene,11,1,0,0
+2514,PCSK9,,gene,gene,11,1,0,0
+2517,PDGFRA,,gene,gene,18,2,1,1
+2525,APOC2,,gene,gene,21,1,0,0
+2541,ALDH4A1,,gene,gene,20,1,0,0
+2544,ADD1,,gene,gene,21,1,0,0
+2547,CYP3A5,,gene,gene,21,1,0,0
+2548,ECE1,,gene,gene,21,2,1,1
+2549,GNB3,,gene,gene,21,1,0,0
+2550,HSD11B2,,gene,gene,21,2,1,1
+2551,KCNMB1,,gene,gene,21,1,0,0
+2554,PTGIS,,gene,gene,21,1,0,0
+2555,RETN,,gene,gene,21,2,1,1
+2560,APOA5,,gene,gene,11,1,0,0
+2561,LIPI,,gene,gene,11,1,0,0
+2565,APOA1,,gene,gene,11,5,1,10
+2566,APOB,,gene,gene,11,3,1,3
+2568,CASR,,gene,gene,20,3,1,3
+2569,CP,,gene,gene,13,3,1,3
+2576,ABCC8,,gene,gene,21,2,1,1
+2585,KCNE3,,gene,gene,14,1,0,0
+2601,CTLA4,,gene,gene,9,2,1,1
+2602,SLC5A5,,gene,gene,9,1,0,0
+2604,TSHB,,gene,gene,9,1,0,0
+2606,PAX8,,gene,gene,9,1,0,0
+2607,DUOX2,,gene,gene,9,1,0,0
+2614,ALOX12B,,gene,gene,15,1,0,0
+2616,ALOXE3,,gene,gene,15,1,0,0
+2619,KRT2A,,gene,gene,15,1,0,0
+2622,ABCA12,,gene,gene,15,1,0,0
+2623,ICHTHYIN,,gene,gene,15,1,0,0
+2625,PHF11,,gene,gene,10,2,1,1
+2635,FOXP3,,gene,gene,21,2,1,1
+2640,IKBKG,,gene,gene,5,2,1,1
+2645,GABRB3,,gene,gene,13,1,0,0
+2648,PPP1R3A,,gene,gene,12,1,0,0
+2649,PTPN1,,gene,gene,12,1,0,0
+2651,COL9A2,,gene,gene,17,2,1,1
+2652,COL9A3,,gene,gene,17,2,1,1
+2675,KAL1,,gene,gene,4,1,0,0
+2685,VSX1,,gene,gene,11,3,1,3
+2687,DSG1,,gene,gene,15,1,0,0
+2690,SAT,,gene,gene,15,1,0,0
+2705,LAMA3,,gene,gene,15,2,1,1
+2711,GUCY2D,,gene,gene,16,2,1,1
+2715,RPGRIP1,,gene,gene,16,2,1,1
+2716,RDH12,,gene,gene,16,1,0,0
+2722,COX15,,gene,gene,0,2,1,1
+2724,NDUFS3,,gene,gene,0,1,0,0
+2727,NDUFS8,,gene,gene,0,1,0,0
+2730,SURF1,,gene,gene,0,1,0,0
+2731,LRPPRC,,gene,gene,0,1,0,0
+2732,NDUFS7,,gene,gene,0,1,0,0
+2740,ABL1,,gene,gene,18,1,0,0
+2741,ARNT,,gene,gene,18,1,0,0
+2743,BCL2,,gene,gene,18,1,0,0
+2744,BCR,,gene,gene,18,1,0,0
+2746,CEBPA,,gene,gene,18,1,0,0
+2747,NQO1,,gene,gene,18,2,1,1
+2748,FLT3,,gene,gene,18,1,0,0
+2750,HOXD4,,gene,gene,18,1,0,0
+2756,NPM1,,gene,gene,18,1,0,0
+2757,NUMA1,,gene,gene,18,1,0,0
+2758,P2RX7,,gene,gene,18,1,0,0
+2759,PML,,gene,gene,18,1,0,0
+2761,STAT5B,,gene,gene,18,2,1,1
+2762,TAL1,,gene,gene,18,1,0,0
+2763,TAL2,,gene,gene,18,1,0,0
+2764,TRA@,,gene,gene,18,1,0,0
+2765,ZBTB16,,gene,gene,18,1,0,0
+2766,NUP214,,gene,gene,18,1,0,0
+2767,MLLT10,,gene,gene,18,1,0,0
+2768,PICALM,,gene,gene,18,1,0,0
+2769,GMPS,,gene,gene,18,1,0,0
+2770,ZNFN1A1,,gene,gene,18,1,0,0
+2771,MLLT11,,gene,gene,18,1,0,0
+2772,ARHGAP26,,gene,gene,18,1,0,0
+2773,ARHGEF12,,gene,gene,18,1,0,0
+2774,CHIC2,,gene,gene,18,1,0,0
+2775,WHSC1L1,,gene,gene,18,1,0,0
+2776,ARL11,,gene,gene,18,1,0,0
+2792,LMNA,,gene,gene,12,3,1,3
+2794,AGPAT2,,gene,gene,12,1,0,0
+2795,PPARGC1A,,gene,gene,12,1,0,0
+2799,LPP,,gene,gene,18,2,1,1
+2805,RELN,,gene,gene,2,1,0,0
+2808,TGFBR1,,gene,gene,4,1,0,0
+2809,TGFBR2,,gene,gene,4,3,1,3
+2812,ANK2,,gene,gene,6,1,0,0
+2813,KCNE1,,gene,gene,6,2,1,1
+2814,KCNH2,,gene,gene,6,2,1,1
+2815,KCNJ2,,gene,gene,6,1,0,0
+2816,KCNQ1,,gene,gene,6,3,1,3
+2818,KCNE2,,gene,gene,6,2,1,1
+2819,DCTN1,,gene,gene,12,2,1,1
+2824,MAP3K8,,gene,gene,23,1,0,0
+2827,PPP2R1B,,gene,gene,23,1,0,0
+2834,BCL8,,gene,gene,4,1,0,0
+2835,FCGR2B,,gene,gene,4,1,0,0
+2836,SH2D1A,,gene,gene,4,1,0,0
+2838,RAP1GDS1,,gene,gene,4,1,0,0
+2840,RAD54L,,gene,gene,4,3,1,3
+2842,RAD54B,,gene,gene,4,2,1,1
+2847,GATA1,,gene,gene,18,3,1,3
+2850,FBLN5,,gene,gene,16,2,1,1
+2851,CNGB3,,gene,gene,16,2,1,1
+2852,HMCN1,,gene,gene,16,1,0,0
+2856,GYPC,,gene,gene,10,2,1,1
+2857,ICAM1,,gene,gene,10,1,0,0
+2858,NOS2A,,gene,gene,10,1,0,0
+2867,BCKDHA,,gene,gene,0,1,0,0
+2868,BCKDHB,,gene,gene,0,1,0,0
+2869,DBT,,gene,gene,0,1,0,0
+2870,GCSL,,gene,gene,0,2,1,1
+2887,PTCH2,,gene,gene,22,2,1,1
+2888,SUFU,,gene,gene,22,1,0,0
+2896,CDK4,,gene,gene,23,1,0,0
+2899,XRCC3,,gene,gene,23,2,1,1
+2904,COCH,,gene,gene,5,2,1,1
+2905,MN1,,gene,gene,23,1,0,0
+2907,PDGFB,,gene,gene,23,3,1,3
+2911,AGTR2,,gene,gene,2,1,0,0
+2912,DLG3,,gene,gene,2,1,0,0
+2913,ACSL4,,gene,gene,2,1,0,0
+2914,FGD1,,gene,gene,2,2,1,1
+2915,AFF2,,gene,gene,2,1,0,0
+2916,GDI1,,gene,gene,2,1,0,0
+2918,OPHN1,,gene,gene,2,1,0,0
+2919,PAK3,,gene,gene,2,1,0,0
+2920,RPS6KA3,,gene,gene,2,2,1,1
+2922,SMS,,gene,gene,2,1,0,0
+2923,SOX3,,gene,gene,2,2,1,1
+2924,TSPAN7,,gene,gene,2,1,0,0
+2925,ZNF41,,gene,gene,2,1,0,0
+2926,SMCX,,gene,gene,2,1,0,0
+2927,PRSS12,,gene,gene,2,1,0,0
+2928,ARHGEF6,,gene,gene,2,1,0,0
+2929,IL1RAPL1,,gene,gene,2,1,0,0
+2930,FTSJ1,,gene,gene,2,1,0,0
+2931,CRBN,,gene,gene,2,1,0,0
+2932,NLGN4X,,gene,gene,2,3,1,3
+2934,ZNF81,,gene,gene,2,1,0,0
+2966,ATP1A2,,gene,gene,10,2,1,1
+2967,EDNRA,,gene,gene,10,1,0,0
+2968,ESR1,,gene,gene,10,3,1,3
+2971,BCS1L,,gene,gene,0,3,1,3
+2972,NDUFS1,,gene,gene,0,1,0,0
+2973,NDUFS2,,gene,gene,0,1,0,0
+2974,NDUFV1,,gene,gene,0,3,1,3
+2975,NDUFS4,,gene,gene,0,2,1,1
+2976,SDHA,,gene,gene,0,2,1,1
+2977,UQCRB,,gene,gene,0,1,0,0
+2979,GCK,,gene,gene,21,3,1,3
+2980,HNF4A,,gene,gene,21,2,1,1
+2981,INS,,gene,gene,21,2,1,1
+2983,TCF1,,gene,gene,21,3,1,3
+2984,TCF2,,gene,gene,21,3,1,3
+2985,TIMM8A,,gene,gene,5,3,1,3
+3016,CAPN3,,gene,gene,12,1,0,0
+3019,LAMA2,,gene,gene,12,1,0,0
+3020,PLEC1,,gene,gene,15,2,1,1
+3021,SGCA,,gene,gene,12,1,0,0
+3022,SGCB,,gene,gene,12,1,0,0
+3023,SGCD,,gene,gene,12,2,1,1
+3024,SGCG,,gene,gene,12,1,0,0
+3025,TTN,,gene,gene,12,2,1,1
+3027,TCAP,,gene,gene,12,2,1,1
+3028,LARGE,,gene,gene,12,1,0,0
+3031,TRIM32,,gene,gene,12,1,0,0
+3032,SEPN1,,gene,gene,12,1,0,0
+3033,FKRP,,gene,gene,12,1,0,0
+3035,CHAT,,gene,gene,14,1,0,0
+3036,CHRNA1,,gene,gene,14,1,0,0
+3037,CHRNB1,,gene,gene,14,1,0,0
+3038,CHRND,,gene,gene,14,1,0,0
+3039,CHRNE,,gene,gene,14,1,0,0
+3040,RAPSN,,gene,gene,14,1,0,0
+3048,MDS1,,gene,gene,4,1,0,0
+3051,CBFB,,gene,gene,4,1,0,0
+3052,CSF1R,,gene,gene,4,1,0,0
+3054,ACSL6,,gene,gene,4,2,1,1
+3057,MPO,,gene,gene,21,2,1,1
+3063,F7,,gene,gene,21,2,1,1
+3064,GCLM,,gene,gene,21,1,0,0
+3065,LGALS2,,gene,gene,21,1,0,0
+3066,LTA,,gene,gene,21,1,0,0
+3067,OLR1,,gene,gene,21,1,0,0
+3069,TNFSF4,,gene,gene,21,1,0,0
+3070,GABRG2,,gene,gene,2,2,1,1
+3071,EFHC1,,gene,gene,2,1,0,0
+3073,PGK1,,gene,gene,1,2,1,1
+3074,KCNQ2,,gene,gene,2,2,1,1
+3076,ACTA1,,gene,gene,12,1,0,0
+3078,CPT2,,gene,gene,12,2,1,1
+3079,CRYAB,,gene,gene,12,2,1,1
+3080,DES,,gene,gene,12,2,1,1
+3081,ITGA7,,gene,gene,12,1,0,0
+3082,MYF6,,gene,gene,12,2,1,1
+3084,PGAM2,,gene,gene,12,1,0,0
+3085,DYSF,,gene,gene,12,3,1,3
+3086,MYOT,,gene,gene,12,2,1,1
+3087,CLCN1,,gene,gene,14,1,0,0
+3113,CFH,,gene,gene,16,4,1,6
+3117,SPINK5,,gene,gene,10,2,1,1
+3119,NME1,,gene,gene,20,1,0,0
+3120,PHOX2B,,gene,gene,20,3,1,3
+3129,EGR2,,gene,gene,8,3,1,3
+3130,HSPB1,,gene,gene,8,2,1,1
+3132,NGFB,,gene,gene,8,1,0,0
+3134,SPTLC1,,gene,gene,8,1,0,0
+3135,HSPB8,,gene,gene,8,1,0,0
+3136,HSN2,,gene,gene,8,1,0,0
+3137,ELA2,,gene,gene,11,2,1,1
+3139,GFI1,,gene,gene,11,1,0,0
+3142,PLOD1,,gene,gene,19,2,1,1
+3143,KRT10,,gene,gene,15,3,1,3
+3145,CHRNA4,,gene,gene,2,2,1,1
+3146,CYP2A6,,gene,gene,2,2,1,1
+3147,GPR51,,gene,gene,2,1,0,0
+3151,CACNA1F,,gene,gene,16,1,0,0
+3152,GNAT1,,gene,gene,16,1,0,0
+3155,NYX,,gene,gene,16,1,0,0
+3156,NBN,,gene,gene,18,2,1,1
+3158,TAZ,,gene,gene,12,3,1,3
+3159,CASP10,,gene,gene,4,3,1,3
+3160,BRAF,,gene,gene,23,4,1,6
+3161,EGFR,,gene,gene,4,2,1,1
+3162,IRF1,,gene,gene,4,5,1,10
+3163,PTPN11,,gene,gene,18,3,1,3
+3164,NDP,,gene,gene,19,3,1,3
+3168,ADRB2,,gene,gene,10,3,1,3
+3169,ADRB3,,gene,gene,10,1,0,0
+3170,AGRP,,gene,gene,10,2,1,1
+3171,AKR1C2,,gene,gene,10,1,0,0
+3172,LEP,,gene,gene,10,1,0,0
+3173,LEPR,,gene,gene,10,1,0,0
+3174,MC3R,,gene,gene,10,1,0,0
+3175,MC4R,,gene,gene,10,1,0,0
+3176,NTRK2,,gene,gene,10,1,0,0
+3177,PCSK1,,gene,gene,10,1,0,0
+3179,POMC,,gene,gene,10,1,0,0
+3180,PPARG,,gene,gene,12,5,1,10
+3181,SIM1,,gene,gene,10,1,0,0
+3182,UCP1,,gene,gene,10,1,0,0
+3183,UCP2,,gene,gene,10,1,0,0
+3184,UCP3,,gene,gene,10,1,0,0
+3185,NR0B2,,gene,gene,10,1,0,0
+3186,CART,,gene,gene,10,1,0,0
+3187,SLC6A14,,gene,gene,10,1,0,0
+3188,GHRL,,gene,gene,10,1,0,0
+3189,BDNF,,gene,gene,20,3,1,3
+3191,SLC6A4,,gene,gene,20,2,1,1
+3192,ATP7A,,gene,gene,16,3,1,3
+3203,PAX9,,gene,gene,5,2,1,1
+3204,AXIN2,,gene,gene,4,2,1,1
+3210,OPA1,,gene,gene,22,2,1,1
+3211,OPA3,,gene,gene,22,2,1,1
+3220,ENPP1,,gene,gene,10,3,1,3
+3222,FRZB,,gene,gene,17,1,0,0
+3224,ASPN,,gene,gene,17,1,0,0
+3229,CLCN7,,gene,gene,19,1,0,0
+3231,TCIRG1,,gene,gene,19,1,0,0
+3232,OSTM1,,gene,gene,19,1,0,0
+3234,CALCA,,gene,gene,19,1,0,0
+3235,CALCR,,gene,gene,19,1,0,0
+3236,COL1A1,,gene,gene,19,5,1,10
+3237,COL1A2,,gene,gene,19,4,1,6
+3246,CDH1,,gene,gene,4,5,1,10
+3248,ERBB2,,gene,gene,4,4,1,6
+3249,MSH6,,gene,gene,4,4,1,6
+3250,MSH2,,gene,gene,4,8,1,28
+3251,PIK3CA,,gene,gene,4,3,1,3
+3252,RRAS2,,gene,gene,4,1,0,0
+3266,ACVR1B,,gene,gene,23,1,0,0
+3268,CDKN2A,,gene,gene,23,4,1,6
+3271,RBBP8,,gene,gene,23,1,0,0
+3274,ARMET,,gene,gene,23,1,0,0
+3278,BRCA1,,gene,gene,4,3,1,3
+3281,SDHC,,gene,gene,3,1,0,0
+3283,SCN4A,,gene,gene,14,6,1,15
+3285,CDC73,,gene,gene,20,2,1,1
+3286,MSX2,,gene,gene,4,2,1,1
+3287,ALX4,,gene,gene,4,1,0,0
+3288,RASA1,,gene,gene,22,3,1,3
+3289,DBH,,gene,gene,4,2,1,1
+3290,NDUFV2,,gene,gene,4,1,0,0
+3291,NR4A2,,gene,gene,4,1,0,0
+3292,PARK2,,gene,gene,4,3,1,3
+3293,SNCA,,gene,gene,21,2,1,1
+3295,UCHL1,,gene,gene,4,1,0,0
+3296,SNCAIP,,gene,gene,4,1,0,0
+3297,PARK7,,gene,gene,4,1,0,0
+3298,PINK1,,gene,gene,4,1,0,0
+3299,LRRK2,,gene,gene,4,1,0,0
+3306,SLC26A4,,gene,gene,5,3,1,3
+3315,CYP1B1,,gene,gene,22,2,1,1
+3317,STK11,,gene,gene,23,3,1,3
+3318,FGFR1,,gene,gene,4,3,1,3
+3324,SDHB,,gene,gene,3,2,1,1
+3325,SDHD,,gene,gene,3,4,1,6
+3331,PSEN1,,gene,gene,21,3,1,3
+3332,KIT,,gene,gene,18,6,1,15
+3335,CTNNB1,,gene,gene,4,4,1,6
+3338,THRA,,gene,gene,15,1,0,0
+3343,CD36,,gene,gene,10,2,1,1
+3344,PLA2G7,,gene,gene,10,3,1,3
+3345,P2RY12,,gene,gene,10,1,0,0
+3356,BMPR1A,,gene,gene,23,2,1,1
+3357,SMAD4,,gene,gene,23,3,1,3
+3371,EPHX1,,gene,gene,21,2,1,1
+3372,STOX1,,gene,gene,21,1,0,0
+3377,PRNP,,gene,gene,13,5,1,10
+3388,ATBF1,,gene,gene,23,1,0,0
+3390,KLF6,,gene,gene,23,2,1,1
+3391,EPHB2,,gene,gene,23,1,0,0
+3392,MSR1,,gene,gene,23,1,0,0
+3393,MXI1,,gene,gene,23,2,1,1
+3395,RNASEL,,gene,gene,23,1,0,0
+3396,MAD1L1,,gene,gene,4,2,1,1
+3397,CHEK2,,gene,gene,23,4,1,6
+3398,ELAC2,,gene,gene,23,1,0,0
+3402,ARX,,gene,gene,2,6,1,15
+3403,COMP,,gene,gene,17,2,1,1
+3406,NR3C2,,gene,gene,21,2,1,1
+3407,SCNN1A,,gene,gene,21,1,0,0
+3408,SCNN1B,,gene,gene,21,2,1,1
+3409,SCNN1G,,gene,gene,21,2,1,1
+3410,WNK1,,gene,gene,21,1,0,0
+3411,WNK4,,gene,gene,21,1,0,0
+3426,PC,,gene,gene,0,1,0,0
+3427,PDHA1,,gene,gene,0,2,1,1
+3428,PDHB,,gene,gene,0,1,0,0
+3429,INSR,,gene,gene,21,3,1,3
+3440,MET,,gene,gene,3,2,1,1
+3441,OGG1,,gene,gene,3,1,0,0
+3442,PRCC,,gene,gene,3,1,0,0
+3443,TFE3,,gene,gene,3,1,0,0
+3445,RNF139,,gene,gene,3,1,0,0
+3446,FLCN,,gene,gene,3,4,1,6
+3452,PROM1,,gene,gene,16,1,0,0
+3453,LRAT,,gene,gene,16,1,0,0
+3454,C1QTNF5,,gene,gene,16,1,0,0
+3456,CA4,,gene,gene,16,1,0,0
+3457,CNGB1,,gene,gene,16,1,0,0
+3458,CNGA1,,gene,gene,16,1,0,0
+3459,CRX,,gene,gene,16,3,1,3
+3460,IMPDH1,,gene,gene,16,1,0,0
+3461,NRL,,gene,gene,16,2,1,1
+3462,PDE6A,,gene,gene,16,1,0,0
+3463,PDE6B,,gene,gene,16,2,1,1
+3465,RGR,,gene,gene,16,1,0,0
+3466,RHO,,gene,gene,16,2,1,1
+3467,RLBP1,,gene,gene,16,4,1,6
+3468,ROM1,,gene,gene,16,1,0,0
+3469,RP9,,gene,gene,16,1,0,0
+3470,RP1,,gene,gene,11,2,1,1
+3471,RP2,,gene,gene,16,1,0,0
+3472,RPGR,,gene,gene,16,3,1,3
+3473,RPE65,,gene,gene,16,2,1,1
+3474,TULP1,,gene,gene,16,1,0,0
+3476,PRPF3,,gene,gene,16,1,0,0
+3477,NR2E3,,gene,gene,16,2,1,1
+3478,MERTK,,gene,gene,16,1,0,0
+3479,PRPF8,,gene,gene,16,1,0,0
+3480,CRB1,,gene,gene,16,3,1,3
+3481,AIPL1,,gene,gene,16,3,1,3
+3482,FSCN2,,gene,gene,16,1,0,0
+3483,PRPF31,,gene,gene,16,1,0,0
+3484,CERKL,,gene,gene,16,1,0,0
+3485,RB1,,gene,gene,4,2,1,1
+3488,MECP2,,gene,gene,2,5,1,10
+3489,CDKL5,,gene,gene,2,1,0,0
+3491,FOXO1A,,gene,gene,23,1,0,0
+3492,SLC22A18,,gene,gene,23,3,1,3
+3494,PAX7,,gene,gene,23,1,0,0
+3495,RUNX1,,gene,gene,10,3,1,3
+3496,IL10,,gene,gene,7,3,1,3
+3498,MIF,,gene,gene,7,1,0,0
+3499,NFKBIL1,,gene,gene,7,1,0,0
+3500,SLC22A4,,gene,gene,7,1,0,0
+3501,PADI4,,gene,gene,7,1,0,0
+3505,RHAG,,gene,gene,1,2,1,1
+3506,RHCE,,gene,gene,1,2,1,1
+3507,RHD,,gene,gene,1,1,0,0
+3511,FOXC1,,gene,gene,22,5,1,10
+3513,PITX2,,gene,gene,22,3,1,3
+3514,CAV3,,gene,gene,12,5,1,10
+3519,MPZ,,gene,gene,8,4,1,6
+3520,PMP22,,gene,gene,8,4,1,6
+3521,CREBBP,,gene,gene,4,1,0,0
+3522,EP300,,gene,gene,4,2,1,1
+3523,FGFR2,,gene,gene,4,9,1,36
+3524,TWIST1,,gene,gene,4,1,0,0
+3539,APP,,gene,gene,21,3,1,3
+3540,COMT,,gene,gene,20,1,0,0
+3542,PRODH,,gene,gene,20,2,1,1
+3543,SYN2,,gene,gene,20,1,0,0
+3544,ENTH,,gene,gene,20,1,0,0
+3545,DISC1,,gene,gene,20,1,0,0
+3546,RTN4R,,gene,gene,20,1,0,0
+3547,TAAR6,,gene,gene,20,1,0,0
+3548,NF2,,gene,gene,4,3,1,3
+3553,APOE,,gene,gene,21,4,1,6
+3554,HTR2A,,gene,gene,20,5,1,10
+3555,MYH9,,gene,gene,5,5,1,10
+3560,TGM1,,gene,gene,15,3,1,3
+3567,TNF,,gene,gene,10,5,1,10
+3568,CASP12P1,,gene,gene,10,1,0,0
+3571,ADA,,gene,gene,7,2,1,1
+3572,CD3D,,gene,gene,7,1,0,0
+3574,IL7R,,gene,gene,7,1,0,0
+3576,RAG1,,gene,gene,7,2,1,1
+3577,RAG2,,gene,gene,7,2,1,1
+3578,DCLRE1C,,gene,gene,7,2,1,1
+3580,BCL10,,gene,gene,4,5,1,10
+3581,EDN3,,gene,gene,20,3,1,3
+3599,DSP,,gene,gene,15,5,1,10
+3608,SHH,,gene,gene,22,3,1,3
+3609,GNAS,,gene,gene,15,6,1,15
+3612,HSPD1,,gene,gene,12,1,0,0
+3613,KIF5A,,gene,gene,12,1,0,0
+3614,PLP1,,gene,gene,12,2,1,1
+3615,SPAST,,gene,gene,12,1,0,0
+3616,SPG7,,gene,gene,12,1,0,0
+3617,SACS,,gene,gene,12,1,0,0
+3618,SPG3A,,gene,gene,12,1,0,0
+3619,ALS2,,gene,gene,12,3,1,3
+3620,NIPA1,,gene,gene,12,1,0,0
+3623,ANK1,,gene,gene,1,1,0,0
+3624,EPB42,,gene,gene,1,1,0,0
+3626,SPTA1,,gene,gene,1,3,1,3
+3627,SPTB,,gene,gene,1,3,1,3
+3631,AR,,gene,gene,12,5,1,10
+3632,GARS,,gene,gene,12,2,1,1
+3633,HEXB,,gene,gene,12,2,1,1
+3634,IGHMBP2,,gene,gene,12,1,0,0
+3635,SMN1,,gene,gene,12,1,0,0
+3636,VAPB,,gene,gene,12,2,1,1
+3637,BSCL2,,gene,gene,12,3,1,3
+3638,CACNA1A,,gene,gene,13,4,1,6
+3639,FGF14,,gene,gene,13,1,0,0
+3640,PPP2R2B,,gene,gene,13,1,0,0
+3641,PRKCG,,gene,gene,13,1,0,0
+3642,ATXN1,,gene,gene,13,1,0,0
+3643,ATXN2,,gene,gene,13,1,0,0
+3644,ATXN7,,gene,gene,13,1,0,0
+3645,KLHL1AS,,gene,gene,13,1,0,0
+3646,TBP,,gene,gene,13,3,1,3
+3647,ATXN10,,gene,gene,13,1,0,0
+3648,PLEKHG4,,gene,gene,13,1,0,0
+3649,TDP1,,gene,gene,13,1,0,0
+3650,SCA25,,gene,gene,13,1,0,0
+3653,FLNB,,gene,gene,17,3,1,3
+3656,AGC1,,gene,gene,17,1,0,0
+3657,MATN3,,gene,gene,17,3,1,3
+3658,TRAPPC2,,gene,gene,17,1,0,0
+3659,WISP3,,gene,gene,17,2,1,1
+3660,CHST3,,gene,gene,17,1,0,0
+3662,FAS,,gene,gene,4,2,1,1
+3663,ING1,,gene,gene,4,1,0,0
+3664,TNFRSF10B,,gene,gene,4,1,0,0
+3675,COL11A1,,gene,gene,17,2,1,1
+3677,KRAS,,gene,gene,23,6,1,15
+3678,ALOX5AP,,gene,gene,21,2,1,1
+3679,PDE4D,,gene,gene,21,1,0,0
+3681,DCX,,gene,gene,2,2,1,1
+3682,PAFAH1B1,,gene,gene,2,2,1,1
+3699,FASLG,,gene,gene,7,1,0,0
+3700,DNASE1,,gene,gene,7,1,0,0
+3701,PDCD1,,gene,gene,7,1,0,0
+3702,PTPN22,,gene,gene,7,3,1,3
+3704,ABCA1,,gene,gene,10,4,1,6
+3706,MAPT,,gene,gene,21,4,1,6
+3708,ATM,,gene,gene,4,4,1,6
+3709,BAX,,gene,gene,4,2,1,1
+3712,JAG1,,gene,gene,6,3,1,3
+3713,NKX2-5,,gene,gene,6,3,1,3
+3714,ZFPM2,,gene,gene,6,1,0,0
+3720,FGFR3,,gene,gene,4,8,1,28
+3722,JAK2,,gene,gene,3,3,1,3
+3723,THPO,,gene,gene,3,1,0,0
+3725,MPL,,gene,gene,11,1,0,0
+3727,MASTL,,gene,gene,11,1,0,0
+3728,CBS,,gene,gene,11,2,1,1
+3729,F5,,gene,gene,11,3,1,3
+3730,FGB,,gene,gene,11,3,1,3
+3731,FGG,,gene,gene,11,3,1,3
+3732,SERPIND1,,gene,gene,11,1,0,0
+3733,HRG,,gene,gene,11,1,0,0
+3734,PROC,,gene,gene,11,1,0,0
+3735,THBD,,gene,gene,21,2,1,1
+3736,ADAMTS13,,gene,gene,11,1,0,0
+3738,HRAS,,gene,gene,4,3,1,3
+3739,PCM1,,gene,gene,23,1,0,0
+3743,TSHR,,gene,gene,9,3,1,3
+3744,NCOA4,,gene,gene,23,1,0,0
+3745,TRIM24,,gene,gene,23,1,0,0
+3746,MINPP1,,gene,gene,23,1,0,0
+3747,GOLGA5,,gene,gene,23,1,0,0
+3748,TRIM33,,gene,gene,23,1,0,0
+3749,CACNA1S,,gene,gene,14,3,1,3
+3759,COL7A1,,gene,gene,15,4,1,6
+3772,MYH8,,gene,gene,23,2,1,1
+3780,APC,,gene,gene,4,7,1,21
+3781,MLH1,,gene,gene,4,4,1,6
+3782,PMS2,,gene,gene,4,3,1,3
+3792,KRT1,,gene,gene,15,5,1,10
+3793,APRT,,gene,gene,19,1,0,0
+3794,SLC34A1,,gene,gene,19,2,1,1
+3795,MYO7A,,gene,gene,5,2,1,1
+3796,USH2A,,gene,gene,5,2,1,1
+3797,USH3A,,gene,gene,5,1,0,0
+3798,USH1C,,gene,gene,5,2,1,1
+3799,CDH23,,gene,gene,5,2,1,1
+3800,PCDH15,,gene,gene,5,2,1,1
+3801,MASS1,,gene,gene,5,2,1,1
+3802,USH1G,,gene,gene,5,1,0,0
+3803,HMGA2,,gene,gene,20,3,1,3
+3805,LRP5,,gene,gene,19,7,1,21
+3806,PTEN,,gene,gene,23,9,1,36
+3810,CASQ2,,gene,gene,15,1,0,0
+3811,GNAI2,,gene,gene,15,2,1,1
+3812,RYR2,,gene,gene,15,2,1,1
+3813,HOXD10,,gene,gene,8,2,1,1
+3814,FCGR3A,,gene,gene,11,2,1,1
+3815,OAS1,,gene,gene,11,1,0,0
+3821,GJB2,,gene,gene,5,6,1,15
+3822,LOR,,gene,gene,5,2,1,1
+3823,CCND1,,gene,gene,3,3,1,3
+3824,VHL,,gene,gene,3,5,1,10
+3825,EDNRB,,gene,gene,20,3,1,3
+3827,MITF,,gene,gene,23,2,1,1
+3828,PAX3,,gene,gene,23,3,1,3
+3829,SNAI2,,gene,gene,23,1,0,0
+3830,TYR,,gene,gene,23,2,1,1
+3831,COL2A1,,gene,gene,17,6,1,15
+3833,FCMD,,gene,gene,12,2,1,1
+3834,POMT1,,gene,gene,12,2,1,1
+3835,RAB3GAP1,,gene,gene,12,1,0,0
+3839,NF1,,gene,gene,18,5,1,10
+3841,TAP2,,gene,gene,7,2,1,1
+3842,FBN1,,gene,gene,22,6,1,15
+3843,ADAMTS10,,gene,gene,22,1,0,0
+3844,COL11A2,,gene,gene,17,4,1,6
+3851,ELN,,gene,gene,16,3,1,3
+3852,BRCA2,,gene,gene,23,5,1,10
+3853,GPC3,,gene,gene,23,2,1,1
+3854,WT1,,gene,gene,23,5,1,10
+3855,POU6F2,,gene,gene,23,1,0,0
+3857,WAS,,gene,gene,11,3,1,3
+3858,MSX1,,gene,gene,5,3,1,3
+3860,PRKAG2,,gene,gene,12,2,1,1
+3875,SOX10,,gene,gene,20,3,1,3
+3887,PVRL1,,gene,gene,5,3,1,3
+3892,COL3A1,,gene,gene,19,2,1,1
+3893,TG,,gene,gene,9,3,1,3
+3894,PTCH,,gene,gene,22,3,1,3
+3895,MEN1,,gene,gene,20,8,1,28
+3896,MYH7,,gene,gene,12,3,1,3
+3897,RYR1,,gene,gene,14,2,1,1
+3904,NOS3,,gene,gene,21,4,1,6
+3905,SLC6A8,,gene,gene,2,2,1,1
+3913,GJA1,,gene,gene,6,4,1,6
+3915,ABCA4,,gene,gene,16,5,1,10
+3916,CHST6,,gene,gene,16,1,0,0
+3917,RDS,,gene,gene,16,4,1,6
+3918,ELOVL4,,gene,gene,16,2,1,1
+3919,VMD2,,gene,gene,16,3,1,3
+3920,NTRK1,,gene,gene,20,2,1,1
+3921,RET,,gene,gene,20,5,1,10
+3928,IPF1,,gene,gene,21,3,1,3
+3930,KCNJ11,,gene,gene,21,2,1,1
+3931,PRKAR1A,,gene,gene,23,5,1,10
+3939,THRB,,gene,gene,9,1,0,0
+3941,TPO,,gene,gene,9,4,1,6
+3943,SCN5A,,gene,gene,6,5,1,10
+3951,C6,,gene,gene,7,2,1,1
+3952,IL2RG,,gene,gene,7,2,1,1
+3957,TP53,,gene,gene,23,11,1,55
+3958,PAX6,,gene,gene,22,10,1,45
+3964,STS,,gene,gene,15,2,1,1
+3972,ATP6V1B1,,gene,gene,1,1,0,0
+3973,CA2,,gene,gene,1,1,0,0
+3974,SLC4A1,,gene,gene,1,5,1,10
+3975,SLC4A4,,gene,gene,1,1,0,0
+3976,ATP6V0A4,,gene,gene,1,1,0,0
+3980,CIITA,,gene,gene,7,3,1,3
+3981,PTPRC,,gene,gene,7,2,1,1
+3983,AGT,,gene,gene,21,3,1,3
+3984,AGTR1,,gene,gene,21,2,1,1
+3985,ACE,,gene,gene,21,6,1,15
+3986,REN,,gene,gene,21,2,1,1
