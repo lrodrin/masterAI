@@ -32,6 +32,7 @@
 \RequirePackage{sidecap} 
 \RequirePackage{subfig}
 \RequirePackage{notoccite}
+\RequirePackage{float}
 
 %Poner la fuente como predeterminada
 \renewcommand\familydefault{\sfdefault}

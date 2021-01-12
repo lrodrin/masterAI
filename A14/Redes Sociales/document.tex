@@ -65,7 +65,7 @@ Después de probar diferentes visualizaciones encojemos el algoritmo de distribu
 
 De aquí pasamos a la detección de comunidades para colorear los clústers de la red. \textit{Gephi} implementa el método \href{https://es.wikipedia.org/wiki/M\%C3\%A9todo_de_Louvain}{Louvain} disponible en el panel de \textit{Estadísticas}. Damos clic en ejecutar \textit{Modularidad} y veremos como el algoritmo de detección de comunidades nos ha creado un nuevo parámetro de particionamiento (\textit{Modularity Class}). Si seleccionamos este nuevo parámetro observaremos las comunidades encontradas y si finalmente pulsamos \textit{Aplicar} colorearemos los nodos según las comunidades encontradas. Esto hace que la visualización sea más colorida y se vean bien donde se encuentra cada comunidad.
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=0.6\textwidth]{images/completa_negro_FR}
 	\caption{Red completa sobre un fondo negro sin etiquetas.}
@@ -74,7 +74,7 @@ De aquí pasamos a la detección de comunidades para colorear los clústers de l
 
 A continuación, añadiremos las etiquetas a los nodos para ver la red con más a detalle (ver Figura \ref{completa_FR_labels}). 
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=0.9\textwidth]{images/completa_FR_labels}
 	\caption{Red completa sobre un fondo blanco con etiquetas.}
@@ -82,6 +82,8 @@ A continuación, añadiremos las etiquetas a los nodos para ver la red con más 
 \end{figure}
 
 Las diferentes comunidades están agrupadas por colores. El tamaño de las etiquetas depende del tamaño del nodo. Está claro que los cánceres son la enfermedad más dominante de todas, es una de las enfermedades más comunes en comparación con otras que existen en la actualidad. La sordera es la enfermedad que se lleva la mayor porción. También vemos diferentes clústers además de los cánceres, como la diabetes, la salud mental, etc. 
+
+\newpage
 
 \section*{Análisis Básico de la Red}
 
@@ -93,7 +95,7 @@ Para los primeros pasos del análisis de la red, comenzamos por anotar los valor
 
 Posteriormente, calculamos otra medida global, el grado medio <k>, ejecutando la opción correspondiente en la ventana \textit{Estadísticas}. El valor del grado medio <k> es 5,533. Al realizar el cálculo del grado medio, también obtenemos la distribución de grados de la red completa (ver Figura \ref{degree-distribution}).
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=0.6\textwidth]{images/degree-distribution}
 	\caption{Distribución de grados de la red completa.}
@@ -104,20 +106,70 @@ La opción \textit{Densidad} de grafo mide la relación entre número de enlaces
 
 A continuación, ejecutamos la opción \textit{Coeficiente medio de clustering} para obtener la medida del mismo nombre, <C>. El valor del coeficiente medio de clustering <C> es 0,819. Al realizar el cálculo del coeficiente medio de clustering, también obtenemos la distribución de coeficientes de clustering de la red completa (ver Figura \ref{clustering-coefficient}).
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=0.6\textwidth]{images/clustering-coefficient}
 	\caption{Distribución de coeficientes de clustering de la red completa.}
 	\label{clustering-coefficient}
 \end{figure}
 
-Pasamos a analizar la conectividad de la red. En primer lugar, obtenemos el número de componentes conexas ejecutando la opción \textit{Componentes conexos}. El número de componentes conexas es 1. Por ello, podemos determinar que nuestra red no es conexa.
+Pasamos a analizar la conectividad de la red. En primer lugar, obtenemos el número de componentes conexas ejecutando la opción \textit{Componentes conexos}. Vemos  que el número de componentes conexas es 1. En este caso, como solo tenemos una componente conexa, determinamos que la componente gigante de la red es la red completa actual.
 
-Ahora nos centramos en la componente gigante y calculamos su número de nodos. Para ello, iremos a \textit{Filtros}, seleccionaremos \textit{Topología -> Componente gigante} y arrastramos el filtro a la ventana de abajo llamada \textit{Consultas} donde pone \textit{Arrastrar filtro aquí}. Entonces pulsamos en el botón \textit{Filtrar} con la flecha verde en la esquina inferior izquierda de la pantalla. La visualización cambia y sólo muestra la componente gigante. La ventana \textit{Contexto} en la esquina superior izquierda nos muestra el número de nodos y enlaces de dicha componente y sus porcentajes con respecto a la red completa. El número de nodos y enlaces de la componente gigante son \textbf{X} y \textbf{Y}, respectivamente.
+Finalmente, calculamos las medidas globales restantes (diámetro $d_{max}$ y distancia media $d$) ejecutando la opción correspondiente al \textit{Diámetro de la red} en la ventana {Estadísticas}. El valor del diámetro ($d_{max}$) es igual a 15. El cálculo del diámetro también nos proporciona el valor de la distancia media ($d$), 6.783, así como el valor de tres medidas de centralidad (intermediación, cercanía y excentricidad), que podemos observar en la siguientes figuras.
 
-Finalmente, calculamos las medidas globales restantes (diámetro $d_{max}$ y distancia media $d$) sobre la componente gigante de la red ejecutando la opción correspondiente al \textit{Diámetro de la red} en la ventana {Estadísticas}. El cálculo del diámetro nos proporciona también el valor de la distancia media, que anotaremos, así como el de tres medidas de Centralidad (intermediación, cercanía y excentricidad), que emplearemos en la siguiente sección de la práctica.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/Betweenness-Centrality-Distribution}
+	\caption{Intermediación de la red completa.}
+	\label{Betweenness-Centrality-Distribution}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/Closeness-Centrality-Distribution}
+	\caption{Cercanía de la red completa.}
+	\label{Closeness-Centrality-Distribution}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/Eccentricity-Distribution}
+	\caption{Excentricidad de la red completa.}
+	\label{Eccentricity-Distribution}
+\end{figure}
+
+En la siguiente sección de la práctica empleamos la medidas de centralidad calculadas.
+
+\newpage
 
 \section*{Estudio de la Centralidad de los Actores}
+
+En esta sección se realiza un pequeño análisis de redes sociales sobre nuestra red basado en las medidas de centralidad. El análisis determina los 5 actores principales de la red mediante las medidas de grado, intermediación, cercanía y vector propio.
+
+El valor de tres de estas medidas ya está calculado en los pasos que se han realizado en la sección anterior. La centralidad de grado (no normalizada) se generó al calcular el \textit{Grado medio} en la ventana \textit{Estadísticas}. Las medidas de intermediación y cercanía (no normalizadas) se generaron con la opción \textit{Diámetro de la red}. En este caso, las volvemos a calcular para obtener las medidas normalizadas con el checkbox \textit{Normalizar centralidades en el rango [0,1]}. El resultado de la repetición de cálculo lo podemos visualizar en las siguientes figuras.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.6\textwidth]{images/Closeness-Centrality-Distribution-Norm}
+	\caption{Cercanía normalizada de la red completa.}
+	\label{Closeness-Centrality-Distribution-Norm}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.6\textwidth]{images/Eccentricity-Distribution-Norm}
+	\caption{Excentricidad normalizada de la red completa.}
+	\label{Eccentricity-Distribution-Norm}
+\end{figure}
+
+Finalmente, calculamos la centralidad de vector propio que se calcula en la opción del menú \textit{Estadísticas} del mismo nombre (ver Figura \ref{eigenvector-centralities}).
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.6\textwidth]{images/eigenvector-centralities}
+	\caption{Centralidad de vector propio de la red completa.}
+	\label{eigenvector-centralities}
+\end{figure}
 
 \section*{Visualizaciones y Gráficos adicionales}
 
