@@ -1,9 +1,11 @@
 import bz2
 import json
 import os
-import re
+import tokenize
 
+from pyspark.ml.feature import Tokenizer, StopWordsRemover
 from pyspark.sql import SparkSession
+from pyspark.sql.functions import col, concat_ws, lower, regexp_replace
 
 
 def uncompress(filesPath):
@@ -18,15 +20,22 @@ def uncompress(filesPath):
             if filepath.endswith(".bz2"):
                 zipfile = bz2.BZ2File(filepath)  # open the file
                 data = zipfile.read()  # get the decompressed data
-                newfilepath = filepath[:-4]  # assuming the filepath ends with .bz2
-                filesList.append(newfilepath)
-                open(newfilepath, "wb").write(data)  # write a uncompressed file
+                newFilepath = filepath[:-4]  # assuming the filepath ends with .bz2
+                filesList.append(newFilepath)
+                open(newFilepath, "wb").write(data)  # write a uncompressed file
 
     return filesList
 
 
-def quitaNoAlfa(s):
-    return re.sub(r'([^\s\wñáéíóú]|_)+', '', s.lower())
+def clean_text(s):
+    s = lower(s)
+    s = regexp_replace(s, "^rt ", "")
+    s = regexp_replace(s, "[^a-zA-Z0-9\\s]", "")
+    return s
+
+
+def untokenize(s):
+    return tokenize.untokenize(s)
 
 
 if __name__ == '__main__':
@@ -50,8 +59,9 @@ if __name__ == '__main__':
         .appName("My first ETL") \
         .getOrCreate()
 
+    # RDD
     rdd = sc.sparkContext.parallelize(tupleList).toDF(["user", "date", "text"])
-    print(rdd.collect())
+    print(rdd.show(10, truncate=False))
 
     # Usuario que más ha twitteado
     users = rdd.select("user").groupBy("user").count()
@@ -61,11 +71,28 @@ if __name__ == '__main__':
     # Palabra que más veces aparece en los tweets
     tweets = rdd.select("text")
     wordsCount = tweets.rdd.flatMap(lambda x: x[0].split(" ")) \
-        .map(lambda x: (x, 1)).reduceByKey(lambda x, y: x+y).toDF(["word", "count"]).sort("count", ascending=False)
+        .map(lambda x: (x, 1)).reduceByKey(lambda x, y: x + y).toDF(["word", "count"]).sort("count", ascending=False)
+    print(wordsCount.show(10, truncate=False))
 
-    print(wordsCount.show())
+    # Tokenize
+    tokenizer = Tokenizer(inputCol="text", outputCol="vector")
+    vector_df = tokenizer.transform(tweets).select("vector")
+    print(vector_df.show(10, truncate=False))
 
-    # pandas_df = wordsCount.toPandas()
-    # pandas_df.to_json("./tweets.json")
+    # Eliminar stopwords
+    stopwords = ['como', 'pero', 'o', 'al', 'mas', 'esta', 'le', 'cuando', 'eso', 'su', 'porque', 'd', 'del', 'los',
+                 'mi', 'si', 'las', 'una', 'q', 'ya', 'yo', 'tu', 'el', 'ella', 'a', 'ante', 'bajo', 'cabe', 'con',
+                 'contra', 'de', 'desde', 'en', 'entre', 'hacia', 'hasta', 'para', 'por', 'segun', 'sin', 'so',
+                 'sobre', 'tras', 'que', 'la', 'no', 'y', 'el', 'me', 'es', 'te', 'se', 'un', 'lo']
+
+    remover = StopWordsRemover(inputCol="vector", outputCol="vector_no_stopw", stopWords=stopwords)
+    vector_df_no_stopw = remover.transform(vector_df).select("vector_no_stopw")
+
+    # Cambiamos tipo columna de array a string
+    vector_df_no_stopw = vector_df_no_stopw.withColumn("vector_no_stopw", concat_ws(",", col("vector_no_stopw")))
+    print(vector_df_no_stopw.show(10, truncate=False))
 
     # La segunda palabra que más veces aparece en los tweets
+    wordsCount_2 = vector_df_no_stopw.rdd.flatMap(lambda x: x[0].split(",")) \
+        .map(lambda x: (x, 1)).reduceByKey(lambda x, y: x + y).toDF(["word", "count"]).sort("count", ascending=False)
+    print(wordsCount_2.show(10, truncate=False))
