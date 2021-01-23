@@ -33,6 +33,7 @@
 \RequirePackage{subfig}
 \RequirePackage{notoccite}
 \RequirePackage{float}
+\RequirePackage{makecell}
 
 %Poner la fuente como predeterminada
 \renewcommand\familydefault{\sfdefault}
