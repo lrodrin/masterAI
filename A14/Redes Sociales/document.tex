@@ -185,13 +185,13 @@ Los valores de tres de estas medidas (grado, intermediación y cercanía) ya est
 	\label{Closeness-Centrality-Distribution-Norm}
 \end{figure}
 
-Finalmente, calculamos la centralidad de vector propio que se calcula en la opción del menú \textit{Estadísticas} del mismo nombre (ver Figura \ref{Eigenvector-Centralities}).
+Finalmente, calculamos la centralidad de vector propio que se calcula en la opción del menú \textit{Estadísticas} del mismo nombre (ver Figura \ref{Eigenvector-Centrality}).
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.6\textwidth]{images/Eigenvector-Centralities}
+	\includegraphics[width=0.6\textwidth]{images/Eigenvector-Centrality}
 	\caption{Centralidad de vector propio de la red completa.}
-	\label{Eigenvector-Centralities}
+	\label{Eigenvector-Centrality}
 \end{figure}
 
 Una vez ejecutadas las opciones de menú correspondientes, los valores de centralidad de cada nodo pueden visualizarse en la tabla \textit{Nodos} de la pestaña \textit{Tabla de datos}, junto con el resto de la información asociada a cada nodo. A continuación, anotamos los nombres de los 5 actores con mejor valor para cada una de las cuatro medidas anteriores, así como el valor de la medida en cada caso y los almacenamos en la tabla siguiente:
@@ -252,10 +252,63 @@ Los 5 actores mas importantes de la red desde una perspectiva global en función
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.75\textwidth]{images/Eigenvector-Centrality}
+	\includegraphics[width=0.75\textwidth]{images/Eigenvector-Centrality-Graph}
 	\caption{Centralidad de vector propio de la red completa.}
-	\label{Eigenvector-Centrality}
+	\label{Eigenvector-Centrality-Graph}
 \end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.65\textwidth]{images/degree}
+	\caption{Actores de la medida de centralidad de grado.}
+	\label{degree}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.65\textwidth]{images/betweenesscentrality}
+	\caption{Actores de la medida de centralidad de intermediación.}
+	\label{betweenesscentrality}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.65\textwidth]{images/closnesscentrality}
+	\caption{Actores de la medida de centralidad de cercanía.}
+	\label{closnesscentrality}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.65\textwidth]{images/eigencentrality}
+	\caption{Actores de la medida de centralidad de vector propio.}
+	\label{eigencentrality}
+\end{figure}
+
+Para realizar los gráficos anteriores, que representan los valores de las medidas para todos los actores de las enfermedades de la red en ejes de coordenadas, donde se han excluido algunas enfermedades y todos los genes, para poder mejorar las visualizaciones, se ha utilizado un \textit{script} en Python que se incluye en los ficheros de la práctica y que también podemos ver a continuación:
+
+\begin{lstlisting}[language=Python, basicstyle=\small]
+import seaborn as sns
+import matplotlib.pyplot as plt
+import pandas as pd
+
+
+def createGraph(values, col):
+	plt.figure(num=None, figsize=(20, 18), dpi=80, facecolor='w', edgecolor='r')
+	g = sns.barplot(x="Label", y=col, data=values)
+	plt.xticks(rotation=90)
+	plt.savefig('images/{}.png'.format(col))
+
+
+if __name__ == '__main__':
+	df = pd.read_csv("dataset/diseasome.csv", sep=",")
+	df_disease = df[df['0'].str.contains("disease")]
+	df_disease = df_disease[df_disease["degree"] > 15]
+	
+	colNames = ["degree", "betweenesscentrality", "closnesscentrality", "eigencentrality"]
+	for colName in colNames:
+		createGraph(df_disease, colName)
+\end{lstlisting}
 
 \newpage
 

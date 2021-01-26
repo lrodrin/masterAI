@@ -34,6 +34,7 @@
 \RequirePackage{notoccite}
 \RequirePackage{float}
 \RequirePackage{makecell}
+\usepackage{listings}
 
 %Poner la fuente como predeterminada
 \renewcommand\familydefault{\sfdefault}
