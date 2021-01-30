@@ -1,4 +1,5 @@
 import bz2
+import json
 import os
 import shutil
 import zipfile
@@ -23,3 +24,21 @@ def uncompress(path_to_zip_file):
                     open(newFilepath, "wb").write(data)
 
         return filesList
+
+
+def readFiles(path_to_file):
+    with open(path_to_file) as json_file:
+        result = []
+        for line in json_file.readlines():
+            data = json.loads(line)
+            # print(data)
+            if "text" in data.keys() and data["user"]["lang"] == "es":
+                user = data["user"]["screen_name"]
+                if "retweeted_status" in data.keys():
+                    tweet = data["retweeted_status"]["text"]
+                else:
+                    tweet = data["text"]
+
+                result.append(tuple([tweet, user]))
+
+        return result

@@ -1,13 +1,20 @@
 from pyspark import SparkConf, SparkContext
-
-from methods import uncompress
+from methods import *
 
 # Configura Spark
 conf = SparkConf()
 sc = SparkContext(conf=conf)
 sc.setLogLevel("ERROR")
 
+# Crea una lista con la ruta a cada fichero
 path_to_zip_file = "./ficheros-práctica-evaluable-spark.zip"
-files_path = uncompress(path_to_zip_file)  # Crea una lista con la ruta a cada fichero
-rddFiles = sc.parallelize(files_path)  # Crea un RDD con las rutas de los ficheros
-print(rddFiles.collect())
+filesList = uncompress(path_to_zip_file)
+
+# Crea un RDD con las rutas de los ficheros
+rddF = sc.parallelize(filesList)
+
+# Crea RDD con los tuits
+rddF2 = rddF.map(lambda x: readFiles(x))
+rddF3 = rddF2.flatMap(lambda xs: [(x[0], x[1]) for x in xs])
+print(rddF3.collect())
+
