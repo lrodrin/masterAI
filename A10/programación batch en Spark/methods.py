@@ -1,6 +1,7 @@
 import bz2
 import json
 import os
+import re
 import shutil
 import zipfile
 
@@ -39,3 +40,7 @@ def readFiles(path_to_file):
             result.append(tuple([tweet, user]))
 
     return result
+
+
+def quitaNoAlfa(s):
+    return re.sub(r'([^\s\wñáéíóú]|_)+', '', s.lower())

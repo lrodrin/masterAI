@@ -21,4 +21,12 @@ rddF = sc.parallelize(filesList)
 # Crea RDD con los tuits
 rddF2 = rddF.map(lambda x: readFiles(x))
 rddF3 = rddF2.flatMap(lambda xs: [(x[0], x[1]) for x in xs])
-print(rddF3.collect())
+# print(rddF3.collect())
+
+# El usuario que más ha twitteado es
+userCount = rddF3.map(lambda x: (x[1], 1)).reduceByKey(lambda x, y: x+y)
+print(userCount.max(key=lambda x: x[1]))
+
+
+
+
