@@ -8,7 +8,12 @@ sc.setLogLevel("ERROR")
 
 # Crea una lista con la ruta a cada fichero
 path_to_zip_file = "./ficheros-práctica-evaluable-spark.zip"
-filesList = uncompress(path_to_zip_file)
+workDir = "./30/01/"
+
+if not os.path.isdir(workDir):
+    unzip(path_to_zip_file)
+
+filesList = unbz2(workDir)
 
 # Crea un RDD con las rutas de los ficheros
 rddF = sc.parallelize(filesList)
@@ -17,4 +22,3 @@ rddF = sc.parallelize(filesList)
 rddF2 = rddF.map(lambda x: readFiles(x))
 rddF3 = rddF2.flatMap(lambda xs: [(x[0], x[1]) for x in xs])
 print(rddF3.collect())
-
