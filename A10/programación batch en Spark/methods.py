@@ -44,3 +44,11 @@ def readFiles(path_to_file):
 
 def quitaNoAlfa(s):
     return re.sub(r'([^\s\wñáéíóú]|_)+', '', s.lower())
+
+
+def rmSpaces(s):
+    return s.strip()
+
+
+def pr(s):
+    print(s)
