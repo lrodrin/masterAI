@@ -37,11 +37,22 @@ wordsCount = rddF3Clean.flatMap(lambda x: x.split(" ")).map(lambda x: (x, 1)).re
 print(wordsCount.max(key=lambda x: x[1]))
 
 # remove stopwords
-stopwords = ['como', 'pero', 'o', 'al', 'mas', 'esta', 'le', 'cuando', 'eso', 'su', 'porque', 'd', 'del', 'los', 'mi', 'si', 'las', 'una', 'q', 'ya', 'yo', 'tu', 'el', 'ella', 'a', 'ante', 'bajo', 'cabe', 'con', 'contra', 'de', 'desde', 'en', 'entre', 'hacia', 'hasta', 'para', 'por', 'segun', 'sin', 'so', 'sobre', 'tras', 'que', 'la', 'no', 'y', 'el', 'me', 'es', 'te', 'se', 'un', 'lo']
+stopwords = ['como', 'pero', 'o', 'al', 'mas', 'esta', 'le', 'cuando', 'eso', 'su', 'porque', 'd', 'del', 'los', 'mi',
+             'si', 'las', 'una', 'q', 'ya', 'yo', 'tu', 'el', 'ella', 'a', 'ante', 'bajo', 'cabe', 'con', 'contra',
+             'de', 'desde', 'en', 'entre', 'hacia', 'hasta', 'para', 'por', 'segun', 'sin', 'so', 'sobre', 'tras',
+             'que', 'la', 'no', 'y', 'el', 'me', 'es', 'te', 'se', 'un', 'lo']
+
 rddF4 = rddF3Clean.flatMap(lambda x: x.split(" ")) \
     .filter(lambda x: x and x not in stopwords)
 
 # La segunda palabra que más veces aparece en los tweets es
 words2Count = rddF4.flatMap(lambda x: x.split(" ")).map(lambda x: (x, 1)).reduceByKey(lambda x, y: x + y)
-print(words2Count.sortBy(lambda x: x[1], ascending=False).take(2)) # first and second
+print(words2Count.sortBy(lambda x: x[1], ascending=False).take(2))  # first and second
 
+rddF5 = rddF3.filter(lambda x: '#' in x[0])  # hashtags x user
+hashtags = rddF5.flatMap(lambda x: x[0].split(",")) # hashtags
+
+# alcance
+hashtagsCount = hashtags.flatMap(lambda x: x.split(" ")).map(lambda x: (x, 1)).reduceByKey(lambda x, y: x + y) \
+    .filter(lambda x: '#' in x[0])
+print(hashtagsCount.sortBy(lambda x: x[1], ascending=False).collect())   # 10 hashtags more used
