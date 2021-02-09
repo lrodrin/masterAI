@@ -1,3 +1,5 @@
+import re
+
 from pyspark import SparkConf, SparkContext
 from methods import *
 
@@ -24,11 +26,11 @@ rddF3 = rddF2.flatMap(lambda xs: [(x[0], x[1]) for x in xs])
 # print(rddF3.collect())
 
 # El usuario que más ha twitteado es
-userCount = rddF3.map(lambda x: (x[1], 1)).reduceByKey(lambda x, y: x + y)
+userCount = rddF3.map(lambda x: (x[0], 1)).reduceByKey(lambda x, y: x + y)
 print(userCount.max(key=lambda x: x[1]))
 
 # quitaNoAlfa and rmSpaces
-rddF3Clean = rddF3.flatMap(lambda x: x[0].split(",")) \
+rddF3Clean = rddF3.flatMap(lambda x: x[1].split(",")) \
     .map(quitaNoAlfa) \
     .map(rmSpaces)
 
@@ -49,10 +51,12 @@ rddF4 = rddF3Clean.flatMap(lambda x: x.split(" ")) \
 words2Count = rddF4.flatMap(lambda x: x.split(" ")).map(lambda x: (x, 1)).reduceByKey(lambda x, y: x + y)
 print(words2Count.sortBy(lambda x: x[1], ascending=False).take(2))  # first and second
 
-rddF5 = rddF3.filter(lambda x: '#' in x[0])  # hashtags x user
-hashtags = rddF5.flatMap(lambda x: x[0].split(",")) # hashtags
+rddF5 = rddF3.filter(lambda x: '#' in x[1])  # user with hashtags
 
 # alcance
-hashtagsCount = hashtags.flatMap(lambda x: x.split(" ")).map(lambda x: (x, 1)).reduceByKey(lambda x, y: x + y) \
+hashtags = rddF5.flatMap(lambda x: x[1].split(","))  # hashtags
+hashtagsCount = hashtags.flatMap(lambda x: x.split(" ")).map(lambda x: (x.lower(), 1)).reduceByKey(lambda x, y: x + y) \
     .filter(lambda x: '#' in x[0])
-print(hashtagsCount.sortBy(lambda x: x[1], ascending=False).collect())   # 10 hashtags more used
+
+print(hashtagsCount.sortBy(lambda x: x[1], ascending=False).collect())  # 10 hashtags more used
+print(rddF5.mapValues(sacaHashtags).collect())

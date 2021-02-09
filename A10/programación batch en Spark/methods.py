@@ -37,7 +37,7 @@ def readFiles(path_to_file):
         if "text" in data.keys() and data["user"]["lang"] == "es":
             user = data["user"]["screen_name"]
             tweet = data["text"]
-            result.append(tuple([tweet, user]))
+            result.append(tuple([user, tweet]))
 
     return result
 
@@ -52,3 +52,8 @@ def rmSpaces(s):
 
 def pr(s):
     print(s)
+
+
+def sacaHashtags(tweet):
+    pattern = re.compile(r"#(\w+)")
+    return pattern.findall(tweet.lower())
