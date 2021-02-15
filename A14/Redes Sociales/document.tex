@@ -113,7 +113,7 @@ A continuación, ejecutamos la opción \textit{Coeficiente medio de clustering <
 
 Ahora, pasamos a analizar la conectividad de la red. En primer lugar, obtenemos el número de componentes conexas ejecutando la opción \textit{Componentes conexos} (disponible en el panel de \textit{Estadísticas}). Vemos  que el número de componentes conexas es igual a 1. En este caso, como solo tenemos una componente conexa, determinamos que la componente gigante de la red es la red completa actual.
 
-Finalmente, calculamos las medidas globales restantes (diámetro $d_{max}$ y distancia media <d>) ejecutando la opción correspondiente al \textit{Diámetro de la red} en la ventana {Estadísticas}. El valor del diámetro ($d_{max}$) es igual a 15. Viendo la red (ver Figura \ref{completa_FR_labels}), pensaríamos que hay variaciones grandes en las distancias entre los nodos pero la red tiene una distancia media baja (<d> = 6,783). El cálculo del diámetro también nos proporciona los valores de las tres medidas de centralidad (intermediación, cercanía y excentricidad), que podemos observar en las figuras \ref{Betweenness-Centrality-Distribution}, \ref{Closeness-Centrality-Distribution} y \ref{Eccentricity-Distribution}.
+Finalmente, calculamos las medidas globales restantes (diámetro $d_{max}$ y distancia media <d>) ejecutando la opción correspondiente al \textit{Diámetro de la red} en la ventana {Estadísticas}. El valor del diámetro ($d_{max}$) es igual a 15. Viendo la red (ver Figura \ref{completa_FR_labels}), pensaríamos que hay variaciones grandes en las distancias entre los nodos pero la red tiene una distancia media baja (<d> = 6,783). El cálculo del diámetro también nos proporciona los valores de las tres medidas de centralidad (intermediación, cercanía y excentricidad), que podemos observar en las figuras \ref{Betweenness-Centrality-Distribution}, \ref{Closeness-Centrality-Distribution} y \ref{Eccentricity-Distribution}. En la Figura \ref{Betweenness-Centrality-Distribution} podemos comprobar que no hay variaciones grandes en las distancias entre los nodos, la mayoría de los nodos están bastante juntos. Solo 4 se encuentran muy alejados del resto.
 
 \begin{figure}[H]
 	\centering
@@ -129,7 +129,7 @@ Finalmente, calculamos las medidas globales restantes (diámetro $d_{max}$ y dis
 	\label{Closeness-Centrality-Distribution}
 \end{figure}
 
-Observando la figura anterior parece que se de la propiedad de mundos pequeños (\textit{small-world}). La mayoría de los nodos no son vecinos entre sí, y sin embargo la mayoría de los nodos pueden ser alcanzados desde cualquier nodo origen a través de un número relativamente corto de saltos entre ellos. También observamos que no existen distancias largas en la red.
+Observando la Figura \ref{Closeness-Centrality-Distribution} parece que se de la propiedad de mundos pequeños (\textit{small-world}). La mayoría de los nodos no son vecinos entre sí, y sin embargo la mayoría de los nodos pueden ser alcanzados desde cualquier nodo origen a través de un número relativamente corto de saltos entre ellos. También observamos que no existen distancias largas en la red y que bastantes nodos no están muy alejados del centro de la red.
 
 \begin{figure}[H]
 	\centering
@@ -137,6 +137,8 @@ Observando la figura anterior parece que se de la propiedad de mundos pequeños 
 	\caption{Centralidad de excentricidad no normalizada de la red completa.}
 	\label{Eccentricity-Distribution}
 \end{figure}
+
+Observando la Figura \ref{Eccentricity-Distribution} vemos que la excentricidad no es muy constante. Esto nos indica que al no ser constante, no existen ni nodos muy periféricos ni muy centrales en la red.
 
 A continuación, mostramos la tabla que resume los valores de las medidas calculadas anteriormente (ver fichero \textit{MedidasRedesPracticaParteI-1.xlsx} para observar la tabla en formato Excel).
 
@@ -214,16 +216,18 @@ Una vez ejecutadas las opciones de menú correspondientes, los valores de centra
 		\hline 
 	\end{tabular}
 	\caption{Los 5 actores con mejor valor por medida de centralidad.}
+	\label{tabla2}
 \end{table}
 
-Los 5 actores mas importantes de la red desde una perspectiva global en función de los valores de las medidas de centralidad pertenecen a cánceres, diabetes, sordera, cardiopatías, VIH y obesidad. Aunque las centralidades de grado no tienen en cuenta la estructura global de la red, también las analizaremos ya que son medidas importantes.
+Los actores mas importantes de la red desde una perspectiva global en función de los valores de las medidas de centralidad pertenecen a cánceres, diabetes, sordera, cardiopatías, VIH y obesidad (ver Tabla \ref{tabla2}). 
 
-\begin{itemize}
-	\item Los cánceres tienen una alta centralidad de grado. Una alta centralidad de grado nos indica que son los actores con más enlaces que conectan con otros nodos. Si solo nos fijáramos en esta medida, los cánceres serian los actores más centrales. Pero, como no nos podemos quedar con una sola medida, analizamos también porque el clúster de cánceres tiene una alta centralidad de vector propio (los 5 actores pertenecen a este clúster). Sabemos que la centralidad de vector propio se basa en que la centralidad de un nodo concreto depende de cómo de centrales sean sus vecinos (prominencia).
-	\item La sordera también tiene una alta centralidad de grado. Muchas personas en el mundo padecen sordera. También tiene una alta centralidad de intermediación.
-	\item Las cardiopatías tienen una alta centralidad de intermediación. También tiene una alta centralidad de cercanía.
-	\item El VIH y la diabetes tienen una alta centralidad de cercanía.
-\end{itemize}
+De estos actores realizamos un pequeño análisis a continuación, sin tener en cuenta la centralidad de grado, que aunque refleja el número de conexiones de cada actor, no tiene en cuenta la estructura global de la red.
+
+Como sabemos, una medida bastante importante es la centralidad de intermediación, que nos indica que actores hacen de puente entre otras regiones de la red. Por lo cual pueden conectar distintas comunidades entre sí. En el caso que nos ocupa (\textit{Diseasome}), podemos observar en la Tabla \ref{tabla2} que las cardiopatías son el actor mayoritario de esta medida de centralidad. Eso es que las cardiopatías son la enfermedad más conectada a otras enfermedades distintas, podemos decir que se diagnostica junto a muchísimas otras enfermedades. Por ejemplo, podemos sufrir cardipatías con la obesidad, con la diabetes, etc. En la Figura \ref{Betweenness-Centrality} se puede observar como el nodo correspondiente a las cardiopatías tiene la mayor intensidad de color de la red.
+
+La centralidad de cercanía mide cómo de cerca está un actor del centro de la red. En este caso parece ser que el actor más centrado pertenece a la enfermedad lipodistrofia, que se asocia a enfermedades como el virus de la inmunodeficiencia humana (VIH). Pero está medida no nos serviría de mucho en un análisis más profundo, ya que muchos de los actores tienen un valor parecido de centralidad de cercanía. En la tabla \ref{tabla2} no se puede apreciar bien esta conclusión, pero si observamos la Figura \ref{Closeness-Centrality} o la Figura \ref{closnesscentrality}, se puede observar perfectamente. En la Figura \ref{Closeness-Centrality} vemos diferentes nodos con la misma intensidad de color, y en la Figura \ref{closnesscentrality} muchas enfermedades con valores parecidos de centralidad de cercanía.
+
+Por último, la medida de centralidad de vector propio es una medida recursiva que asigna importancia a un nodo en función de la importancia de sus vecinos. Es decir, tiene en cuenta la calidad de las conexiones, en lugar de la cantidad. El primer actor, el cáncer de colon, tiene un valor de esta medida de 1, lo cual indica que es el nodo más importante y con el mayor número de conexiones importantes. Es el actor a tener más en cuenta de la red. Tanto en la Figura \ref{Eigenvector-Centrality-Graph} y Figura \ref{eigencentrality} se puede observar.
 
 \newpage
 
