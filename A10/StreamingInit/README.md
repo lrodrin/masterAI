@@ -14,5 +14,8 @@ cambiar el argumento master.
 ```bash
 $ sbt clean assembly
 $ chmod +x execute.sh 
-$ ./execute.sh 
+$ ./execute.sh es.dmr.uimp.spark.streaming.NetworkWordCount localhost 19999 
 ```
+
+## Conteo total de palabras
+
