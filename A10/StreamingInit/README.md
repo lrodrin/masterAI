@@ -31,7 +31,7 @@ $ cd /opt/Kafka/kafka_2.11-2.3.0/
 $ sudo bin/zookeeper-server-start.sh config/zookeeper.properties & 
 $ sudo bin/kafka-server-start.sh config/server.properties & 
 ```
-Define un topic:
+Define un topic.
 
 1. Utilizar el script `kafka-topics.sh` para crear un nuevo topic.
 ```bash
@@ -41,7 +41,7 @@ Define un topic:
 ```bash
 $ bin/kafka-topics.sh --list --zookeeper localhost:2181
 ```
-3. Prueba el topic:
+3. Prueba el topic.
 
 Ejecuta el siguiente comando, que permite enviar mensajes a un tema desde la consola:
 ```bash
