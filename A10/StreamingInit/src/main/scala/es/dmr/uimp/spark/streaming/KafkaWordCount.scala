@@ -35,7 +35,7 @@ object KafkaWordCount {
      * La lista de temas de la que se quieren consumir mensajes
      * El número de consumidores que van a leer de Kafka y crear el Dstream
      */
-    val Array(zkQuorum, group, topics) = args
+    val Array(zkQuorum, group, topics, numThreads) = args
     val topicMap = topics.split(",")
 
     val kafkaParams = Map[String, Object](
