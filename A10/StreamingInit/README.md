@@ -43,14 +43,14 @@ $ bin/kafka-topics.sh --list --zookeeper localhost:2181
 ```
 3. Prueba el topic:
 
-3.1 Ejecuta el siguiente comando, que permite enviar mensajes a un tema desde la consola:
+Ejecuta el siguiente comando, que permite enviar mensajes a un tema desde la consola:
 ```bash
 $ bin/kafka-console-producer.sh --broker-list localhost:9092 --topic my_topic
 ```
 - Escribe un texto y pulsa Enter. Cada línea de texto envía un mensaje a my_topic.
 - Pulsa `Ctrl + c` para detener el proceso.
 
- 3.2 Para consumir los mensajes escritos, ejecuta el programa siguiente:
+Para consumir los mensajes escritos, ejecuta el programa siguiente:
 ```bash
 $ bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic my_topic --from-beginning
 ```
