@@ -52,46 +52,34 @@ object KafkaWordCount2 {
       PreferConsistent,
       Subscribe[String, String](topicMap, kafkaParams)
     ).map(_.value)
-
-    /** Ahora vamos a realizar el cálculo de la media de apariciones. Para ello, vamos
-     * a hacer un calculo rolling. Cada RDD de entrada es un batch de 1 segundo y lo
-     * que queremos es tener el número de apariciones por segundo. Por lo tanto, por
-     * cada batch se genera un valor
-     */
     val words = lines.flatMap(_.split(" "))
-    val wordsDstream = words.map(x => (x, 1))
-      .reduceByKey(_ + _)
-      .map { case (k: String, c: Int) => (k, (c, 1)) }
-
+    
+    /* Hemos duplicado la clase KafkaWordCount.scala, y ahora vamos a cambiar el cálculo sobre el
+    pipeline de Kafka. Generamos un evento por cada aparición de un término
+    */
+    val wordDstream = words.map(x => (x, 1)) 
+    
+    // Creamos una función que suma evento cada vez que estos entren en la ventana
+    val addCount = (x: Int, y: Int) => x + y
+    
     /**
-     * Ahora vamos a hacer el calculo de la media. En cada batch se genera un valor
-     * con clave con (count, 1). Para hacer el calculo de la media, los estadísticos
-     * suficientes son (media actual, numero de batches). En base a esto se puede
-     * hacer la actualización
-     */
-    val mappingFunc = (word: String, c: Option[(Int, Int)], state:
-    State[(Float, Int)]) => {
-      val s = state.getOption.getOrElse((0.0f, 0))
-      val v = c.getOrElse((0, 0))
-      val sum = s._1 * s._2 + v._1
-      val count = s._2 + v._2
-
-      if (count == 0) {
-        val output = (0.0f, count)
-        state.update(output)
-        (word, output)
-      } else {
-        val output = (sum / count.toFloat, count)
-        state.update(output)
-        (word, output)
-      }
-    }
-
-    // Conecte el calculo de la media de apariciones con el stream de entrada
-    val stateDstream = wordsDstream.mapWithState(StateSpec.function(mappingFunc))
+    Añadadimos una función que elimina conteos que caigan fuera de la ventana cuando
+    esta se mueva hacia delante
+    */
+    val removeCount = (x: Int, y: Int) => x - y
+    
+    /**
+    Añadimos una función que filtra términos que hayan desaparecido. Esto nos ayuda
+    a que la memoria del cálculo en el cluster no crezca indefinidamente y sin
+    necesidad
+    */
+    val filterEmpty = (x: (String, Int)) => x._2 != 0
+    
+    // Conectamos el cálculo a la entrada e imprimimos el resultado
+    val runningCountStream = wordDstream.reduceByKeyAndWindow(addCount, removeCount, Seconds(10), Seconds(1), 2, filterEmpty)
 
     // Imprima el resultado y comience la ejecución del pipeline de cálculo
-    stateDstream.print()
+    runningCountStream.print()
     ssc.start()
     ssc.awaitTermination()
   }
