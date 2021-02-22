@@ -23,7 +23,7 @@ $ sbt clean assembly
 $ ./execute.sh es.dmr.uimp.spark.streaming.StatefulNetworkWordCount localhost 19999 
 ```
 
-## [Integrar Spark con Kafka]
+## Integrar Spark con Kafka
 
 Arrancar Kafka, servidores de Zookeeper y Kafka en dos sessiones diferentes.
 ```bash
@@ -71,7 +71,7 @@ $ ./execute.sh es.dmr.uimp.spark.streaming.KafkaWordCount localhost:9092 kafkaCo
 
 Ejecuta la pipeline:
 
-- Introduce datos utilizando `kafka-console-producer.sh`. See [Integrar Spark con Kafka](#integrar-spark-con-kafka).
+- Introduce datos utilizando `kafka-console-producer.sh`. Mirar sección [Integrar Spark con Kafka](#integrar-spark-con-kafka).
 - Compila el proyecto y ejecuta la pipeline.
 ```bash
 $ sbt clean assembly
