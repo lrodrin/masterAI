@@ -5,7 +5,7 @@ import org.apache.spark.SparkConf
 import org.apache.spark.streaming.kafka010.ConsumerStrategies.Subscribe
 import org.apache.spark.streaming.kafka010.KafkaUtils
 import org.apache.spark.streaming.kafka010.LocationStrategies.PreferConsistent
-import org.apache.spark.streaming.{Seconds, State, StateSpec, StreamingContext}
+import org.apache.spark.streaming.{Seconds, StreamingContext}
 
 /**
  * Consume mensajes de uno o mas temas de Kafka
@@ -52,6 +52,7 @@ object KafkaWordCount2 {
       PreferConsistent,
       Subscribe[String, String](topicMap, kafkaParams)
     ).map(_.value)
+
     val words = lines.flatMap(_.split(" "))
     
     /* Hemos duplicado la clase KafkaWordCount.scala, y ahora vamos a cambiar el cálculo sobre el
@@ -77,8 +78,7 @@ object KafkaWordCount2 {
     
     // Conectamos el cálculo a la entrada e imprimimos el resultado
     val runningCountStream = wordDstream.reduceByKeyAndWindow(addCount, removeCount, Seconds(10), Seconds(1), 2, filterEmpty)
-
-    // Imprima el resultado y comience la ejecución del pipeline de cálculo
+    
     runningCountStream.print()
     ssc.start()
     ssc.awaitTermination()
