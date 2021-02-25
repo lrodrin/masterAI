@@ -78,7 +78,7 @@ object KafkaWordCount2 {
     
     // Conectamos el cálculo a la entrada e imprimimos el resultado
     val runningCountStream = wordDstream.reduceByKeyAndWindow(addCount, removeCount, Seconds(10), Seconds(1), 2, filterEmpty)
-    
+
     runningCountStream.print()
     ssc.start()
     ssc.awaitTermination()
