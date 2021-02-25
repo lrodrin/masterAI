@@ -51,12 +51,20 @@ rddF4 = rddF3Clean.flatMap(lambda x: x.split(" ")) \
 words2Count = rddF4.flatMap(lambda x: x.split(" ")).map(lambda x: (x, 1)).reduceByKey(lambda x, y: x + y)
 print(words2Count.sortBy(lambda x: x[1], ascending=False).take(2))  # first and second
 
-rddF5 = rddF3.filter(lambda x: '#' in x[1])  # user with hashtags
+# filter users that write hashtags
+rddF5 = rddF3.filter(lambda x: '#' in x[1])
 
 # alcance
 hashtags = rddF5.flatMap(lambda x: x[1].split(","))  # hashtags
 hashtagsCount = hashtags.flatMap(lambda x: x.split(" ")).map(lambda x: (x.lower(), 1)).reduceByKey(lambda x, y: x + y) \
     .filter(lambda x: '#' in x[0])
 
-print(hashtagsCount.sortBy(lambda x: x[1], ascending=False).collect())  # 10 hashtags more used
-print(rddF5.mapValues(sacaHashtags).collect())
+rddF6 = hashtagsCount.sortBy(lambda x: x[1], ascending=False)
+rddF7 = rddF5.flatMapValues(sacaHashtags)
+print(rddF6.collect())
+print(rddF7.collect())
+
+rdd = sc.parallelize([("ff", 45), ("cuandomedrogo", 8), ("fb", 7)])
+rdd2 = sc.parallelize([("ff", "AraceliMasArte"), ("ff", "Ositoosito147"), ("fb", "Ositoosito147")])
+print(rdd.join(rdd2).collect())
+# Gives [('red', (20, 40)), ('red', (20, 50)), ('red', (30, 40)), ('red', (30, 50))]
