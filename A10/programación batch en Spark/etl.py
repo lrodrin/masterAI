@@ -81,17 +81,17 @@ rddF7 = hashtagsCount.filter(lambda x: x[1] == 1)
 # print(rddF7.collect())
 
 # Join rddF7 with rddF6
-rddFJoin = rddF7.join(rddF6)
-# print(rddFJoin.collect())
+rddFJoin2 = rddF7.join(rddF6)
+# print(rddFJoin2.collect())
 
 # El usuario que más hashtags inútiles han creado es
 print("El usuario que más hashtags inútiles han creado es {}".format(
-    rddFJoin.map(lambda x: (x[1][1], 1)).groupByKey().map(lambda p: (p[0], sum(p[1]))).sortBy(lambda x: x[1], ascending=False).take(1)))
+    rddFJoin2.map(lambda x: (x[1][1], 1)).groupByKey().map(lambda p: (p[0], sum(p[1]))).sortBy(lambda x: x[1], ascending=False).take(1)))
 
-# Join hashtagsCount with rddF6
-rddFJoin = hashtagsCount.join(rddF6).reduceByKey(lambda x, y: x)
-# print(rddFJoin.collect())
+# Join3 hashtagsCount with rddF6
+rddFJoin3 = hashtagsCount.join(rddF6).reduceByKey(lambda x, y: x)
+# print(rddFJoin3.collect())
 
 # El usuario que ha creado (utilizado por primera vez) hashtags con mayor impacto es
 print("El usuario que ha creado (utilizado por primera vez) hashtags con mayor impacto es {}".format(
-    rddFJoin.map(lambda x: (x[1][1], x[1][0])).reduceByKey(lambda x1, x2: x1 + x2).sortBy(lambda x: x[1], ascending=False).take(1)))
+    rddFJoin3.map(lambda x: (x[1][1], x[1][0])).reduceByKey(lambda x1, x2: x1 + x2).sortBy(lambda x: x[1], ascending=False).take(1)))
