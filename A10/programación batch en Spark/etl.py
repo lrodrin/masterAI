@@ -18,7 +18,7 @@ if not os.path.isdir(workDir):
 filesList = unbz2(workDir)
 
 # Crea un RDD con las rutas de los ficheros
-rddF = sc.parallelize(filesList)
+rddF = sc.parallelize(sorted(filesList))
 
 # Crea RDD con los tuits
 rddF2 = rddF.map(lambda x: readFiles(x))
