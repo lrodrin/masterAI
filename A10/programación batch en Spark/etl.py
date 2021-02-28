@@ -27,7 +27,7 @@ rddF3 = rddF2.flatMap(lambda xs: [(x[0], x[1]) for x in xs])
 
 # El usuario que más ha twitteado es
 userCount = rddF3.map(lambda x: (x[0], 1)).reduceByKey(lambda x, y: x + y)
-print(userCount.max(key=lambda x: x[1]))
+print("El usuario que más ha twitteado es {}".format(userCount.max(key=lambda x: x[1])))
 
 # quitaNoAlfa and rmSpaces
 rddF3Clean = rddF3.flatMap(lambda x: x[1].split(",")) \
@@ -36,9 +36,9 @@ rddF3Clean = rddF3.flatMap(lambda x: x[1].split(",")) \
 
 # La palabra que más veces aparece en los tweets es
 wordsCount = rddF3Clean.flatMap(lambda x: x.split(" ")).map(lambda x: (x, 1)).reduceByKey(lambda x, y: x + y)
-print(wordsCount.max(key=lambda x: x[1]))
+print("La palabra que más veces aparece en los tweets es {}".format(wordsCount.max(key=lambda x: x[1])))
 
-# remove stopwords
+# Remove stopwords
 stopwords = ['como', 'pero', 'o', 'al', 'mas', 'esta', 'le', 'cuando', 'eso', 'su', 'porque', 'd', 'del', 'los', 'mi',
              'si', 'las', 'una', 'q', 'ya', 'yo', 'tu', 'el', 'ella', 'a', 'ante', 'bajo', 'cabe', 'con', 'contra',
              'de', 'desde', 'en', 'entre', 'hacia', 'hasta', 'para', 'por', 'segun', 'sin', 'so', 'sobre', 'tras',
@@ -49,22 +49,43 @@ rddF4 = rddF3Clean.flatMap(lambda x: x.split(" ")) \
 
 # La segunda palabra que más veces aparece en los tweets es
 words2Count = rddF4.flatMap(lambda x: x.split(" ")).map(lambda x: (x, 1)).reduceByKey(lambda x, y: x + y)
-print(words2Count.sortBy(lambda x: x[1], ascending=False).take(2))  # first and second
+print("Las palabras que más veces aparecen en los tweets son {}".format(
+    words2Count.sortBy(lambda x: x[1], ascending=False).take(2)))  # first and second
 
-# filter users that write hashtags
+# Filter users that write hashtags
 rddF5 = rddF3.filter(lambda x: '#' in x[1])
 
-# alcance
-hashtags = rddF5.flatMap(lambda x: x[1].split(","))  # hashtags
-hashtagsCount = hashtags.flatMap(lambda x: x.split(" ")).map(lambda x: (x.lower(), 1)).reduceByKey(lambda x, y: x + y) \
-    .filter(lambda x: '#' in x[0])
+# alcance for each hashtag
+hashtags = rddF5.flatMap(lambda x: x[1].split(","))
+hashtagsCount = hashtags.flatMap(lambda x: x.split(" ")).map(lambda x: (x.lower(), 1)) \
+    .reduceByKey(lambda x, y: x + y) \
+    .filter(lambda x: '#' in x[0]) \
+    .sortBy(lambda x: x[1], ascending=False) \
+    .map(lambda x: (x[0].replace("#", ""), x[1]))
 
-rddF6 = hashtagsCount.sortBy(lambda x: x[1], ascending=False)
-rddF7 = rddF5.flatMapValues(sacaHashtags)
-print(rddF6.collect())
-print(rddF7.collect())
+# [..., ('denisse_alonso', 'bestwishes'), ('denisse_alonso', 'alwaysonmymind'), ('raquelita_jg', 'dormire'), ...]
+rddF6 = rddF5.flatMapValues(sacaHashtags).map(lambda x: (x[1], x[0]))
+# print(hashtagsCount.collect())
+# print(rddF6.collect())
 
-rdd = sc.parallelize([("ff", 45), ("cuandomedrogo", 8), ("fb", 7)])
-rdd2 = sc.parallelize([("ff", "AraceliMasArte"), ("ff", "Ositoosito147"), ("fb", "Ositoosito147")])
-print(rdd.join(rdd2).collect())
-# Gives [('red', (20, 40)), ('red', (20, 50)), ('red', (30, 40)), ('red', (30, 50))]
+# Join hashtagsCount with rddF6
+rddFJoin = hashtagsCount.join(rddF6)
+# print(rddFJoin.collect())
+
+# El usuario cuyos hashtags utilizados sumen el mayor alcance es
+print("El usuario cuyos hashtags utilizados sumen el mayor alcance es {}".format(
+    rddFJoin.map(lambda x: (x[1][1], x[1][0]))
+    .reduceByKey(lambda x1, x2: x1 + x2).sortBy(lambda x: x[1], ascending=False).take(1)))
+
+# hashtag con alcance igual a 1
+rddF7 = hashtagsCount.filter(lambda x: x[1] == 1)
+# print(rddF7.collect())
+
+# Join rddF7 with rddF6
+rddFJoin = rddF7.join(rddF6)
+print(rddFJoin.collect())
+
+# El usuario que más hashtags inútiles han creado es
+print("El usuario que más hashtags inútiles han creado es {}".format(
+    rddFJoin.map(lambda x: (x[1][1], 1)).groupByKey()
+    .map(lambda p: (p[0], sum(p[1]))).sortBy(lambda x: x[1], ascending=False).collect()))
