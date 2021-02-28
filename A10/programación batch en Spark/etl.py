@@ -9,8 +9,8 @@ sc = SparkContext(conf=conf)
 sc.setLogLevel("ERROR")
 
 # Crea una lista con la ruta a cada fichero
-path_to_zip_file = "./ficheros-práctica-evaluable-spark-actualizados.zip"
-workDir = "./30/"
+path_to_zip_file = "ficheros-práctica-evaluable-spark-actualizados.zip"
+workDir = "./30/01"
 
 if not os.path.isdir(workDir):
     unzip(path_to_zip_file)
