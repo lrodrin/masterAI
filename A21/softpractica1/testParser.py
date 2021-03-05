@@ -5,8 +5,9 @@
 import re
 import sys
 
+
 class TestParser(object):
-    
+
     def __init__(self, path):
         # save the path to the test file
         self.path = path
@@ -27,7 +28,7 @@ class TestParser(object):
         test = {}
         with open(self.path) as handle:
             raw_lines = handle.read().split('\n')
-        
+
         test_text = self.removeComments(raw_lines)
         test['__raw_lines__'] = raw_lines
         test['path'] = self.path
@@ -35,7 +36,7 @@ class TestParser(object):
         lines = test_text.split('\n')
         i = 0
         # read a property in each loop cycle
-        while(i < len(lines)):
+        while (i < len(lines)):
             # skip blank lines
             if re.match('\A\s*\Z', lines[i]):
                 test['__emit__'].append(("raw", raw_lines[i]))
@@ -51,7 +52,7 @@ class TestParser(object):
             if m:
                 msg = []
                 i += 1
-                while(not re.match('\A\s*"""\s*\Z', lines[i])):
+                while (not re.match('\A\s*"""\s*\Z', lines[i])):
                     msg.append(raw_lines[i])
                     i += 1
                 test[m.group(1)] = '\n'.join(msg)
@@ -62,7 +63,7 @@ class TestParser(object):
             sys.exit(1)
         return test
 
-    
+
 def emitTestDict(testDict, handle):
     for kind, data in testDict['__emit__']:
         if kind == "raw":

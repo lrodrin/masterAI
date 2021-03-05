@@ -2,12 +2,12 @@
 # ------------
 
 
-
 import itertools
 import util
 import random
 import busters
 import game
+
 
 class InferenceModule:
     """
@@ -23,7 +23,7 @@ class InferenceModule:
         "Sets the ghost agent for later access"
         self.ghostAgent = ghostAgent
         self.index = ghostAgent.index
-        self.obs = [] # most recent observation position
+        self.obs = []  # most recent observation position
 
     def getJailPosition(self):
         return (2 * self.ghostAgent.index - 1, 1)
@@ -36,7 +36,7 @@ class InferenceModule:
         You must first place the ghost in the gameState, using setGhostPosition
         below.
         """
-        ghostPosition = gameState.getGhostPosition(self.index) # The position you set
+        ghostPosition = gameState.getGhostPosition(self.index)  # The position you set
         actionDist = self.ghostAgent.getDistribution(gameState)
         dist = util.Counter()
         for action, prob in actionDist.items():
@@ -65,7 +65,7 @@ class InferenceModule:
     def observeState(self, gameState):
         "Collects the relevant noisy distance observation and pass it along."
         distances = gameState.getNoisyGhostDistances()
-        if len(distances) >= self.index: # Check for missing observations
+        if len(distances) >= self.index:  # Check for missing observations
             obs = distances[self.index - 1]
             self.obs = obs
             self.observe(obs, gameState)
@@ -98,6 +98,7 @@ class InferenceModule:
         locations conditioned on all evidence so far.
         """
         pass
+
 
 class ExactInference(InferenceModule):
     """
@@ -138,7 +139,7 @@ class ExactInference(InferenceModule):
         noisyDistance = observation
         emissionModel = busters.getObservationDistribution(noisyDistance)
         pacmanPosition = gameState.getPacmanPosition()
-       
+
         "*** YOUR CODE HERE ***"
         ##AA
         '''print("Estamos Aqui")
@@ -223,6 +224,7 @@ class ExactInference(InferenceModule):
     def getBeliefDistribution(self):
         return self.beliefs
 
+
 class ParticleFilter(InferenceModule):
     """
     A particle filter for approximately tracking a single ghost.
@@ -238,7 +240,6 @@ class ParticleFilter(InferenceModule):
 
     def setNumParticles(self, numParticles):
         self.numParticles = numParticles
-
 
     def initializeUniformly(self, gameState):
         """
@@ -312,7 +313,8 @@ class ParticleFilter(InferenceModule):
         Counter object)
         """
         "*** YOUR CODE HERE ***"
-       ## util.raiseNotDefined()
+    ## util.raiseNotDefined()
+
 
 class MarginalInference(InferenceModule):
     """
@@ -343,6 +345,7 @@ class MarginalInference(InferenceModule):
         for t, prob in jointDistribution.items():
             dist[t[self.index - 1]] += prob
         return dist
+
 
 class JointParticleFilter:
     """
@@ -488,7 +491,7 @@ class JointParticleFilter:
         """
         newParticles = []
         for oldParticle in self.particles:
-            newParticle = list(oldParticle) # A list of ghost positions
+            newParticle = list(oldParticle)  # A list of ghost positions
             # now loop through and update each entry in newParticle...
 
             "*** YOUR CODE HERE ***"
@@ -501,8 +504,10 @@ class JointParticleFilter:
         "*** YOUR CODE HERE ***"
         util.raiseNotDefined()
 
+
 # One JointInference module is shared globally across instances of MarginalInference
 jointInference = JointParticleFilter()
+
 
 def getPositionDistributionForGhost(gameState, ghostIndex, agent):
     """
@@ -510,7 +515,7 @@ def getPositionDistributionForGhost(gameState, ghostIndex, agent):
     gameState.
     """
     # index 0 is pacman, but the students think that index 0 is the first ghost.
-    ghostPosition = gameState.getGhostPosition(ghostIndex+1)
+    ghostPosition = gameState.getGhostPosition(ghostIndex + 1)
     actionDist = agent.getDistribution(gameState)
     dist = util.Counter()
     for action, prob in actionDist.items():
@@ -518,10 +523,10 @@ def getPositionDistributionForGhost(gameState, ghostIndex, agent):
         dist[successorPosition] = prob
     return dist
 
+
 def setGhostPositions(gameState, ghostPositions):
     "Sets the position of all ghosts to the values in ghostPositionTuple."
     for index, pos in enumerate(ghostPositions):
         conf = game.Configuration(pos, game.Directions.STOP)
         gameState.data.agentStates[index + 1] = game.AgentState(conf, False)
     return gameState
-

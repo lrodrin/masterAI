@@ -4,6 +4,7 @@
 
 import random
 
+
 class MarkovDecisionProcess:
 
     def getStates(self):

@@ -1,6 +1,6 @@
 # environment.py
 # --------------
-#!/usr/bin/python
+# !/usr/bin/python
 
 class Environment:
 

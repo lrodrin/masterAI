@@ -8,25 +8,34 @@ from keyboardAgents import KeyboardAgent
 import inference
 import busters
 
+
 class NullGraphics:
     "Placeholder for graphics"
-    def initialize(self, state, isBlue = False):
+
+    def initialize(self, state, isBlue=False):
         pass
+
     def update(self, state):
         pass
+
     def pause(self):
         pass
+
     def draw(self, state):
         pass
+
     def updateDistributions(self, dist):
         pass
+
     def finish(self):
         pass
+
 
 class KeyboardInference(inference.InferenceModule):
     """
     Basic inference module for use with the keyboard.
     """
+
     def initializeUniformly(self, gameState):
         "Begin with a uniform distribution over ghost positions."
         self.beliefs = util.Counter()
@@ -55,7 +64,8 @@ class KeyboardInference(inference.InferenceModule):
 class BustersAgent:
     "An agent that tracks and displays its beliefs about ghost positions."
 
-    def __init__( self, index = 0, inference = "ExactInference", ghostAgents = None, observeEnable = True, elapseTimeEnable = True):
+    def __init__(self, index=0, inference="ExactInference", ghostAgents=None, observeEnable=True,
+                 elapseTimeEnable=True):
         inferenceType = util.lookup(inference, globals())
         self.inferenceModules = [inferenceType(a) for a in ghostAgents]
         self.observeEnable = observeEnable
@@ -92,10 +102,11 @@ class BustersAgent:
         "By default, a BustersAgent just stops.  This should be overridden."
         return Directions.STOP
 
+
 class BustersKeyboardAgent(BustersAgent, KeyboardAgent):
     "An agent controlled by the keyboard that displays beliefs about ghost positions."
 
-    def __init__(self, index = 0, inference = "KeyboardInference", ghostAgents = None):
+    def __init__(self, index=0, inference="KeyboardInference", ghostAgents=None):
         KeyboardAgent.__init__(self, index)
         BustersAgent.__init__(self, index, inference, ghostAgents)
 
@@ -105,28 +116,33 @@ class BustersKeyboardAgent(BustersAgent, KeyboardAgent):
     def chooseAction(self, gameState):
         return KeyboardAgent.getAction(self, gameState)
 
+
 from distanceCalculator import Distancer
 from game import Actions
 from game import Directions
 import random, sys
 
 '''Random PacMan Agent'''
+
+
 class RandomPAgent(BustersAgent):
 
     def registerInitialState(self, gameState):
         BustersAgent.registerInitialState(self, gameState)
         self.distancer = Distancer(gameState.data.layout, False)
-        
+
     ''' Example of counting something'''
+
     def countFood(self, gameState):
         food = 0
         for width in gameState.data.food:
             for height in width:
-                if(height == True):
+                if (height == True):
                     food = food + 1
         return food
-    
-    ''' Print the layout'''  
+
+    ''' Print the layout'''
+
     def printGrid(self, gameState):
         table = ""
         ##print(gameState.data.layout) ## Print by terminal
@@ -136,9 +152,9 @@ class RandomPAgent(BustersAgent):
                 table = table + gameState.data._foodWallStr(food[x][y], walls[x][y]) + ","
         table = table[:-1]
         return table
-        
-    def printLineData(self,gameState):
-    
+
+    def printLineData(self, gameState):
+
         '''Observations of the state
         
         print(str(gameState.livingGhosts))
@@ -149,44 +165,44 @@ class RandomPAgent(BustersAgent):
         print(width, height)
         print(gameState.data.ghostDistances)
         print(gameState.data.layout)'''
-      
+
         '''END Observations of the state'''
-        
+
         print gameState
-        
+
         weka_line = ""
         for i in gameState.livingGhosts:
             weka_line = weka_line + str(i) + ","
-        weka_line = weka_line + str(gameState.getNumFood()) + "," 
+        weka_line = weka_line + str(gameState.getNumFood()) + ","
         for i in gameState.getCapsules():
             weka_line = weka_line + str(i[0]) + "," + str(i[1]) + ","
         for i in gameState.data.ghostDistances:
             weka_line = weka_line + str(i) + ","
-        weka_line = weka_line + str(gameState.data.score) + "," +\
-        str(len(gameState.data.capsules))  + "," + str(self.countFood(gameState)) +\
-        "," + str(gameState.data.agentStates[0].configuration.pos[0]) + "," +\
-        str(gameState.data.agentStates[0].configuration.pos[0])  +\
-        "," + str(gameState.data.agentStates[0].scaredTimer) + "," +\
-        self.printGrid(gameState) + "," +\
-        str(gameState.data.agentStates[0].numReturned) + "," +\
-        str(gameState.data.agentStates[0].getPosition()[0]) + "," +\
-        str(gameState.data.agentStates[0].getPosition()[1])+ "," +\
-        str(gameState.data.agentStates[0].numCarrying)+ "," +\
-        str(gameState.data.agentStates[0].getDirection())
+        weka_line = weka_line + str(gameState.data.score) + "," + \
+                    str(len(gameState.data.capsules)) + "," + str(self.countFood(gameState)) + \
+                    "," + str(gameState.data.agentStates[0].configuration.pos[0]) + "," + \
+                    str(gameState.data.agentStates[0].configuration.pos[0]) + \
+                    "," + str(gameState.data.agentStates[0].scaredTimer) + "," + \
+                    self.printGrid(gameState) + "," + \
+                    str(gameState.data.agentStates[0].numReturned) + "," + \
+                    str(gameState.data.agentStates[0].getPosition()[0]) + "," + \
+                    str(gameState.data.agentStates[0].getPosition()[1]) + "," + \
+                    str(gameState.data.agentStates[0].numCarrying) + "," + \
+                    str(gameState.data.agentStates[0].getDirection())
         print(weka_line)
-        
-        
+
     def chooseAction(self, gameState):
         move = Directions.STOP
-        legal = gameState.getLegalActions(0) ##Legal position from the pacman
+        legal = gameState.getLegalActions(0)  ##Legal position from the pacman
         move_random = random.randint(0, 3)
         self.printLineData(gameState)
-        if   ( move_random == 0 ) and Directions.WEST in legal:  move = Directions.WEST
-        if   ( move_random == 1 ) and Directions.EAST in legal: move = Directions.EAST
-        if   ( move_random == 2 ) and Directions.NORTH in legal:   move = Directions.NORTH
-        if   ( move_random == 3 ) and Directions.SOUTH in legal: move = Directions.SOUTH
+        if (move_random == 0) and Directions.WEST in legal:  move = Directions.WEST
+        if (move_random == 1) and Directions.EAST in legal: move = Directions.EAST
+        if (move_random == 2) and Directions.NORTH in legal:   move = Directions.NORTH
+        if (move_random == 3) and Directions.SOUTH in legal: move = Directions.SOUTH
         return move
-        
+
+
 class GreedyBustersAgent(BustersAgent):
     "An agent that charges the closest ghost."
 
@@ -228,6 +244,6 @@ class GreedyBustersAgent(BustersAgent):
         livingGhosts = gameState.getLivingGhosts()
         livingGhostPositionDistributions = \
             [beliefs for i, beliefs in enumerate(self.ghostBeliefs)
-             if livingGhosts[i+1]]
+             if livingGhosts[i + 1]]
         "*** YOUR CODE HERE ***"
         return Directions.EAST
