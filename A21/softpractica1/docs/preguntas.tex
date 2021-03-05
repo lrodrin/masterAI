@@ -1,0 +1,87 @@
+\documentclass[11pt]{exam}
+
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\usepackage[spanish]{babel}
+
+\title{Práctica 1}
+\author{Laura Rodríguez Navas \\ rodrigueznavas@posgrado.uimp.es}
+\date{{\selectlanguage{spanish}\today} }
+
+\pagestyle{plain}
+
+\begin{document}
+	
+\maketitle
+
+\section*{Ejercicio 1}
+
+\begin{enumerate}
+	\item Descargar el código fuente para esta práctica, \textit{softpractica1.zip}, de la página web de la asignatura
+	\item Descomprimir el fichero anterior.
+	\item Abrir un terminal o consola de comandos y entrar dentro de la carpeta \textit{softpractica1}.
+	\item Para empezar vamos a ejecutar GridWorld en el modo de control manual, que utiliza las teclas de flecha. \textit{python gridworld.py -m -n 0}
+	\item El objetivo es lograr llegar lo antes posible a la celda etiquetada con un 1, evitando caer en la celda con un -1.
+\end{enumerate}
+
+\subsection*{Preguntas}
+
+\begin{questions}
+	
+% Pregunta 1
+{ \question ¿Cuántas celdas/estados aparecen en el tablero? ¿Cuántas acciones puede ejecutar el agente? Si quisieras resolver el juego mediante aprendizaje por refuerzo, ¿cómo lo harías? 
+}
+
+% Pregunta 2
+{ \question Abrir el fichero \textit{qlearningAgents.py} y buscar la clase \textit{QLearningAgent}. Describir los métodos que aparecen en ella.
+}
+
+% Pregunta 3
+{ \question Ejecuta ahora el agente anterior con: \\ \textit{python gridworld.py -a q -k 100 -n 0}}
+
+% Pregunta 4
+{ \question ¿Qué información se muestra en el laberinto? ¿Qué aparece por terminal cuando se realizan los movimientos en el laberinto? 
+}
+
+% Pregunta 5
+{ \question ¿Qué clase de movimiento realiza el agente anterior?}
+
+% Pregunta 6
+{ \question ¿Se pueden sacar varias políticas óptimas? Describe todas las políticas óptimas para este problema.}
+
+% Pregunta 7
+{ \question Escribir el método \textit{update} de la clase \textit{QLearningAgent} utilizando las funciones de actualización del algoritmo \textit{Q-Learning}. Para ello, inserta el código necesario allí donde aparezca la etiqueta INSERTA TU CÓDIGO AQUÍ siguiendo las instrucciones que se proporcionan, con el fin de conseguir el comportamiento deseado. }
+
+% Pregunta 8
+{ \question Establece en el constructor de la clase \textit{QLearningAgent} el valor de la variable \textit{epsilon} a 0,05. Ejecuta nuevamente con: \\ \textit{python gridworld.py -a q -k 100 -n 0} \\ ¿Qué sucede?
+}
+
+% Pregunta 9
+{ \question Después de la ejecución anterior, abrir el fichero \textit{qtable.txt}. ¿Qué contiene?}
+
+\end{questions}
+
+\section*{Ejercicio 2}
+
+En el ejercicio anterior, siempre que el agente decid´ıa moverse hacia una dirección se movía en esa dirección con probabilidad 1. Es decir, se trataba de un MDP determinista. Ahora vamos a crear un MDP estocástico:
+
+\begin{questions}
+
+% Pregunta 1
+{ \question Ejecuta y juega un par de partidas con el agente manual: \\ \textit{python gridworld.py -m -n 0.3} \\ ¿Qué sucede? ¿Crees que el agente \textit{QLearningAgent} será capaz de aprender en este nuevo escenario?
+}
+
+% Pregunta 2
+{ \question Reiniciar los valores de la tabla Q del fichero \textit{qtable.txt}. Para ello ejecutar desde el terminal: \\ \textit{cp qtable.ini.txt qtable.txt}
+}
+
+% Pregunta 3
+{ \question Ejecutar el agente \textit{QLearningAgent}: \\ \textit{python gridworld.py -a q -k 100 -n 0.3}}
+
+% Pregunta 4
+{ \question Tras unas cuantos episodios, ¿se genera la política óptima? Y si se genera, ¿se tarda más o menos que en el caso determinista?
+}
+
+\end{questions}
+
+\end{document}
