@@ -158,7 +158,9 @@ class QLearningAgent(ReinforcementAgent):
     #
     # En ambos casos Q se corresponde con la tabla Q (es decir, self.q_table). Con la parte izquierda de estas reglas decimos
     # que queremos 	actualizar el valor de la celda de esa tabla correspondiente a (state, action). En este caso, state nos
-    # da la fila que debemos actualizar y action la columna. Ahora bien, state son posiciones del tipo (x,y). Por lo tanto, 	# debemos transformar estas coordenadas a la fila en concreto que queremos actualizar. Para ello, debemos utilizar el metodo 		# self.computePosition(state) que ya esta implementado. En cambio, action es un diccionario y para acceder a la columna
+    # da la fila que debemos actualizar y action la columna. Ahora bien, state son posiciones del tipo (x,y). Por lo tanto,
+    # debemos transformar estas coordenadas a la fila en concreto que queremos actualizar. Para ello, debemos utilizar el metodo
+    # self.computePosition(state) que ya esta implementado. En cambio, action es un diccionario y para acceder a la columna
     # en concreto que debemos actualizar podemos hacerlo con self.actions[action].
     #
     # Finalmente, para comprobar si el siguiente estado es terminal podemos comprobar si nextState == 'TERMINAL_STATE'
@@ -242,8 +244,7 @@ class ApproximateQAgent(PacmanQAgent):
         feats = self.featExtractor.getFeatures(state, action)
         for f in feats:
             self.weights[f] = self.weights[f] + self.alpha * feats[f] * (
-                        (reward + self.discount * self.computeValueFromQValues(nextState)) - self.getQValue(state,
-                                                                                                            action))
+                        (reward + self.discount * self.computeValueFromQValues(nextState)) - self.getQValue(state,  action))
 
         # util.raiseNotDefined()
 

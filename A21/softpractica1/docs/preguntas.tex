@@ -28,7 +28,7 @@
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.5]{image_1}
-	\caption{Interfaz del dominio GridWorld}
+	\caption{Interfaz del dominio GridWorld.}
 	\label{image_1}
 \end{figure}
 
@@ -45,6 +45,8 @@ En el tablero aparecen 11 celdas/estado.
 
 El agente puede ejecutar 6 acciones: \textit{north}, \textit{west}, \textit{south}, \textit{east}, \textit{exit} y \textit{done}.
 
+Para resolver el juego mediante el algoritmo Q-Learning: \textbf{TODO}
+
 % Pregunta 2
 { \question Abrir el fichero \textit{qlearningAgents.py} y buscar la clase \textit{QLearningAgent}. Describir los métodos que aparecen en ella.
 }
@@ -58,7 +60,7 @@ Los métodos que aparecen en la clase \textit{QLearningAgent} son:
 	
 	\item writeQtable: Escribe la \textit{Q-Table} en el fichero \textit{qtable.txt}.
 	
-	\item \_\_del\_\_:
+	\item \_\_del\_\_: Llama al método \textit{writeQtable} que escribe el resultado final de la \textit{Q-Table} en el fichero \textit{qtable.txt}.
 	
 	\item computePosition: Calcula la fila de la \textit{Q-Table} para un estado dado.
 	
@@ -70,7 +72,19 @@ Los métodos que aparecen en la clase \textit{QLearningAgent} son:
 	
 	\item getAction: Calcula la acción a realizar para un estado dado. En caso contrario, con probabilidad \textit{self.epsilon}, elige una acción aleatoria y la mejor acción política. Si no hay acciones válidas, como en el caso del estado \textit{exit}, elige \textit{None} como acción.
 	
-	\item update:
+	\item update: Actualiza la \textit{Q-Table}. El método para un acción dada, observa una recompensa, introduce un estado nuevo (que depende del estado anterior y de la acción dada), y actualiza el valor $Q(s,a)$. 
+	
+	Si el nuevo estado introducido es el estado \textit{exit}, se sigue la regla:
+	
+	\begin{center}
+		$Q(state,action) <- (1-self.alpha) * Q(state,action) + self.alpha * (reward + 0)$
+	\end{center}
+
+	De lo contrario, si el nuevo estado introducido no es el estado \textit{exit}, se sigue la regla:
+	
+	\begin{center}
+		$Q(state,action) <- (1-self.alpha) * Q(state,action) + self.alpha * (reward + self.discount * max a' Q(nextState, a'))$
+	\end{center}
 	
 	\item getPolicy: Devuelve la mejor acción de la \textit{Q-Table} para un estado dado.
 	
@@ -81,12 +95,34 @@ Los métodos que aparecen en la clase \textit{QLearningAgent} son:
 % Pregunta 3
 { \question Ejecuta ahora el agente anterior con: \\ \textit{python gridworld.py -a q -k 100 -n 0}}
 
+A diferencia de la primera ejecución, en esta le indicamos el tipo de agente (q) y el número de episodios del MDP a ejecutar (100).
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.5]{image_2}
+	\caption{Interfaz del dominio GridWorld.}
+	\label{image_2}
+\end{figure}
+
 % Pregunta 4
 { \question ¿Qué información se muestra en el laberinto? ¿Qué aparece por terminal cuando se realizan los movimientos en el laberinto? 
 }
 
+Si observamos la Figura \ref{image_2} vemos que la información que se muestra son los valores de $Q(s,a)$. 
+
+En la terminal, cuando se realizan los movimientos en el laberinto, vemos que aparecen los siguientes valores:
+
+\begin{itemize}
+	\item La posición (x, y) donde empieza el estado. Por ejemplo: (2, 1).
+	\item La acción tomada. Por ejemplo: \textit{east}.
+	\item La posición (x, y) donde acaba el estado. Por ejemplo: (3, 1).
+	\item La recompensa obtenida. Por ejemplo: 0.0, en este caso no ha habido recompensa.
+\end{itemize}
+
 % Pregunta 5
 { \question ¿Qué clase de movimiento realiza el agente anterior?}
+
+% El agente siempre que decida moverse en una dirección, lo hace en esa dirección con probabilidad 1 (se mueve una posición).
 
 % Pregunta 6
 { \question ¿Se pueden sacar varias políticas óptimas? Describe todas las políticas óptimas para este problema.}
@@ -105,7 +141,7 @@ Los métodos que aparecen en la clase \textit{QLearningAgent} son:
 
 \section*{Ejercicio 2}
 
-En el ejercicio anterior, siempre que el agente decid´ıa moverse hacia una dirección se movía en esa dirección con probabilidad 1. Es decir, se trataba de un MDP determinista. Ahora vamos a crear un MDP estocástico:
+En el ejercicio anterior, siempre que el agente decidía moverse hacia una dirección se movía en esa dirección con probabilidad 1. Es decir, se trataba de un MDP determinista. Ahora vamos a crear un MDP estocástico:
 
 \begin{questions}
 

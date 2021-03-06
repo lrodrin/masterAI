@@ -411,7 +411,7 @@ def parseOptions():
                          metavar="K", help='Number of rounds of value iteration (default %default)')
     optParser.add_option('-k', '--episodes', action='store',
                          type='int', dest='episodes', default=1,
-                         metavar="K", help='Number of epsiodes of the MDP to run (default %default)')
+                         metavar="K", help='Number of episodes of the MDP to run (default %default)')
     optParser.add_option('-g', '--grid', action='store',
                          metavar="G", type='string', dest='grid', default="BookGrid",
                          help='Grid to use (case sensitive; options are BookGrid, BridgeGrid, CliffGrid, MazeGrid, default %default)')
