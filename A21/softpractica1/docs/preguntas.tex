@@ -3,6 +3,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{hyperref}
 \usepackage[spanish]{babel}
+\usepackage{graphicx}
 
 \title{Práctica 1}
 \author{Laura Rodríguez Navas \\ rodrigueznavas@posgrado.uimp.es}
@@ -20,9 +21,17 @@
 	\item Descargar el código fuente para esta práctica, \textit{softpractica1.zip}, de la página web de la asignatura
 	\item Descomprimir el fichero anterior.
 	\item Abrir un terminal o consola de comandos y entrar dentro de la carpeta \textit{softpractica1}.
-	\item Para empezar vamos a ejecutar GridWorld en el modo de control manual, que utiliza las teclas de flecha. \textit{python gridworld.py -m -n 0}
+	\item Para empezar vamos a ejecutar GridWorld en el modo de control manual, que utiliza las teclas de flecha (ver Figura \ref{image_1}). \\ \textit{python gridworld.py -m -n 0}	
 	\item El objetivo es lograr llegar lo antes posible a la celda etiquetada con un 1, evitando caer en la celda con un -1.
 \end{enumerate}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.5]{image_1}
+	\caption{Interfaz del dominio GridWorld}
+	\label{image_1}
+\end{figure}
+
 
 \subsection*{Preguntas}
 
@@ -32,9 +41,42 @@
 { \question ¿Cuántas celdas/estados aparecen en el tablero? ¿Cuántas acciones puede ejecutar el agente? Si quisieras resolver el juego mediante aprendizaje por refuerzo, ¿cómo lo harías? 
 }
 
+En el tablero aparecen 11 celdas/estado.
+
+El agente puede ejecutar 6 acciones: \textit{north}, \textit{west}, \textit{south}, \textit{east}, \textit{exit} y \textit{done}.
+
 % Pregunta 2
 { \question Abrir el fichero \textit{qlearningAgents.py} y buscar la clase \textit{QLearningAgent}. Describir los métodos que aparecen en ella.
 }
+
+Los métodos que aparecen en la clase \textit{QLearningAgent} son:
+
+\begin{itemize}
+	\item \_\_init\_\_: Inicializa la \textit{Q-Table} a partir del fichero \textit{qtable.txt}, es decir, la \textit{Q-Table} se inicializa a cero.
+	
+	\item readQtable: Lee la \textit{Q-Table} del fichero \textit{qtable.txt}.
+	
+	\item writeQtable: Escribe la \textit{Q-Table} en el fichero \textit{qtable.txt}.
+	
+	\item \_\_del\_\_:
+	
+	\item computePosition: Calcula la fila de la \textit{Q-Table} para un estado dado.
+	
+	\item getQValue: Devuelve el valor $Q(s,a)$ para un estado y una acción dados. De lo contrario, devuelve 0.0, si nunca hemos visto el estado o el valor del nodo $Q$.
+	
+	\item computeValueFromQValues: Devuelve el valor máximo de $Q(s,a)$ para un estado dado. Este valor se encuentra por encima de las acciones válidas. Si no hay acciones válidas, como en el caso del estado \textit{exit}, devuelve 0.0.
+	
+	\item computeActionFromQValues: Calcula la mejor acción a realizar para un estado dado. Si no hay acciones válidas, como en el caso del estado \textit{exit}, devuelve \textit{None}.
+	
+	\item getAction: Calcula la acción a realizar para un estado dado. En caso contrario, con probabilidad \textit{self.epsilon}, elige una acción aleatoria y la mejor acción política. Si no hay acciones válidas, como en el caso del estado \textit{exit}, elige \textit{None} como acción.
+	
+	\item update:
+	
+	\item getPolicy: Devuelve la mejor acción de la \textit{Q-Table} para un estado dado.
+	
+	\item getValue: Devuelve el valor $Q(s,a)$ más alto para un estado dado.
+		
+\end{itemize}
 
 % Pregunta 3
 { \question Ejecuta ahora el agente anterior con: \\ \textit{python gridworld.py -a q -k 100 -n 0}}
