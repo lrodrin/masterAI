@@ -1,0 +1,7 @@
+pyqtgraph
+pandas
+tensorflow
+numpy
+PyQt5
+PyQt5-stubs
+scikit_learn

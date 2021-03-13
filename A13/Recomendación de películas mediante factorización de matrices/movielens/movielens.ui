@@ -1,0 +1,454 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1210</width>
+    <height>784</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1210</width>
+    <height>784</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>1210</width>
+    <height>784</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Sistema de Recomendación de Películas</string>
+  </property>
+  <property name="toolTip">
+   <string extracomment="Elimina el modelo de memoria, reinicia los parámetros"/>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="PlotWidget" name="graphicsView_pelis">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>10</y>
+      <width>491</width>
+      <height>391</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="PlotWidget" name="graphicsView_errores">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>440</y>
+      <width>491</width>
+      <height>311</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QTableWidget" name="tableWidget">
+    <property name="geometry">
+     <rect>
+      <x>660</x>
+      <y>420</y>
+      <width>542</width>
+      <height>331</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>16777215</width>
+      <height>751</height>
+     </size>
+    </property>
+    <column>
+     <property name="text">
+      <string>Puntuación</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Película</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Valoración</string>
+     </property>
+    </column>
+   </widget>
+   <widget class="QPlainTextEdit" name="consola">
+    <property name="geometry">
+     <rect>
+      <x>660</x>
+      <y>10</y>
+      <width>541</width>
+      <height>391</height>
+     </rect>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="cb_Y">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>200</y>
+      <width>104</width>
+      <height>26</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="cb_X">
+    <property name="geometry">
+     <rect>
+      <x>340</x>
+      <y>410</y>
+      <width>104</width>
+      <height>26</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="Line" name="line">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>410</y>
+      <width>141</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QWidget" name="formLayoutWidget_3">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>440</y>
+      <width>141</width>
+      <height>85</height>
+     </rect>
+    </property>
+    <layout class="QFormLayout" name="layout_variables">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string># epochs</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="le_epochs">
+       <property name="toolTip">
+        <string>Número de veces que se presentará el conjunto de entrenamiento</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="le_minibatch">
+       <property name="toolTip">
+        <string>Número de ejemplos de cada batch</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_6">
+       <property name="text">
+        <string>refresco</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="le_drawevery">
+       <property name="toolTip">
+        <string>Indica cada cuantos segundos se actualizan los gráficos</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>batch</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="verticalLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>290</y>
+      <width>151</width>
+      <height>112</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="layout_fijos">
+     <item>
+      <widget class="QCheckBox" name="cb_semillaaleatoria">
+       <property name="toolTip">
+        <string>La generación de aleatorios comienza con semilla fija o variable</string>
+       </property>
+       <property name="text">
+        <string>Semilla aleatoria</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QFormLayout" name="fl_fijos_texto">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>K</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="le_K">
+         <property name="toolTip">
+          <string>Dimensiones del espacio de proyección (embedding)</string>
+         </property>
+         <property name="toolTipDuration">
+          <number>5</number>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>learn. rate</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="le_learningrate">
+         <property name="toolTip">
+          <string>Factor de aprendizaje</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>nu</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="le_nu">
+         <property name="toolTip">
+          <string>Factor de regularización</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="verticalLayoutWidget_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>561</y>
+      <width>151</width>
+      <height>192</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QPushButton" name="pb_Aprender">
+       <property name="toolTip">
+        <string>Aprende un modelo a partir de los datos de entrenamiento y de los gustos del usuario, si los ha indicado</string>
+       </property>
+       <property name="text">
+        <string>Aprender</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QProgressBar" name="progressBar">
+       <property name="toolTip">
+        <string>Progreso del proceso de aprendizaje</string>
+       </property>
+       <property name="value">
+        <number>0</number>
+       </property>
+       <property name="textVisible">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pb_Parar">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="toolTip">
+        <string>Detiene el entrenamiento</string>
+       </property>
+       <property name="text">
+        <string>Parar</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Expanding</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pb_Borrarpuntos">
+       <property name="toolTip">
+        <string>Borra las puntuaciones cargadas en memoria</string>
+       </property>
+       <property name="text">
+        <string>Borrar puntuación</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Expanding</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pb_Olvidar">
+       <property name="font">
+        <font>
+         <italic>true</italic>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>Elimina el modelo aprendido</string>
+       </property>
+       <property name="text">
+        <string>Olvidar</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1210</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>Ficheros</string>
+    </property>
+    <addaction name="actionCargar_puntuaciones"/>
+    <addaction name="actionGuardar_puntuaciones"/>
+    <addaction name="separator"/>
+    <addaction name="actionCargar_modelo_entrenado"/>
+    <addaction name="actionGuardar_modelo_entrenado"/>
+    <addaction name="separator"/>
+    <addaction name="actionExportar"/>
+   </widget>
+   <addaction name="menu"/>
+  </widget>
+  <action name="actionCargar_puntuaciones">
+   <property name="text">
+    <string>Cargar puntuaciones</string>
+   </property>
+  </action>
+  <action name="actionGuardar_puntuaciones">
+   <property name="text">
+    <string>Guardar puntuaciones</string>
+   </property>
+  </action>
+  <action name="actionCargar_modelo_entrenado">
+   <property name="text">
+    <string>Cargar modelo entrenado</string>
+   </property>
+  </action>
+  <action name="actionGuardar_modelo_entrenado">
+   <property name="text">
+    <string>Guardar modelo entrenado</string>
+   </property>
+  </action>
+  <action name="actionExportar">
+   <property name="text">
+    <string>Exportar</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>PlotWidget</class>
+   <extends>QGraphicsView</extends>
+   <header>pyqtgraph</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

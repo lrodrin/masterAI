@@ -1,0 +1,91 @@
+\documentclass{uimppracticas}
+
+%Permitir cabeceras y pie de páginas personalizados
+\pagestyle{fancy}
+
+%Path por defecto de las imágenes
+\graphicspath{ {./images/} }
+
+%Declarar formato de encabezado y pie de página de las páginas del documento
+\fancypagestyle{doc}{
+  %Pie de Página
+  \footerpr{}{}{{\thepage} de \pageref{LastPage}}
+}
+
+%Declarar formato de encabezado y pie del título e indice
+\fancypagestyle{titu}{%
+  %Cabecera
+  \headerpr{}{}{}
+  %Pie de Página
+  \footerpr{}{}{}
+}
+
+\appto\frontmatter{\pagestyle{titu}}
+\appto\mainmatter{\pagestyle{doc}}
+
+\begin{document}
+	
+%Comienzo formato título
+\frontmatter
+
+%Portada (Centrado todo)
+\centeredtitle{./images/LogoUIMP.png}{Máster Universitario en Investigación en Inteligencia Artificial}{Curso 2020-2021}{Sistemas de Recomendación}{ Recomendación de películas mediante factorización de matrices}
+
+\begin{center}
+\large \today
+\end{center}
+
+\vspace{40mm}
+
+\begin{flushright}
+ 	{\bf Laura Rodríguez Navas}\\
+ 	\textbf{DNI:} 43630508Z\\
+ 	\textbf{e-mail:} \href{rodrigueznavas@posgrado.uimp.es}{rodrigueznavas@posgrado.uimp.es}
+\end{flushright}
+
+\newpage
+
+%Índice
+%\tableofcontents
+
+%\newpage
+
+%Comienzo formato documento general
+\mainmatter
+
+\setlength\parskip{2.5ex}
+
+\section*{Primera parte}
+
+En la hoja Excel \href{https://poliformat.upv.es/access/content/group/ESP_0_2827/movies-users.xlsx}{movies-users.xlsx} aparecen las variables latentes para las películas y usuarios. Se pide que se ordenen las películas por la variable X4 en orden ascendente y que se indique si se aprecia algún tipo de relación entre las películas situadas al principio y al final de esta ordenación. Comprueba esto mismo utilizando otras variables latentes y comenta lo que se observa.
+
+La columna C de la pestaña \textit{movies} de la hoja Excel está preparada para que se calcule la valoración de cada película para el usuario número 410. Esta valoración debe calcularse utilizando el producto escalar tal como se explica en el tema de factorización de matrices.
+
+Una vez calculada la valoración para el usuario 410 se debe indicar qué variable latente se ajusta mejor a los gustos del usuario. Apoya las conclusiones gráfica y numéricamente. 
+
+%La hoja Excel que se debe entregar ha de llamarse 'primera_parte.xlsx'
+
+\section*{Segunda Parte}
+
+Utilizando la \href{https://poliformat.upv.es/access/content/group/ESP_0_2827/Movielens.zip}{aplicación de recomendación de películas}:
+
+\begin{enumerate}
+	\item Borra las puntuaciones que vienen por defecto precargadas en la aplicación y puntúa, según tus gustos, 5 películas, procurando que haya variedad de puntuaciones, tanto buenas como malas.
+	
+	\item 
+	Entrena el recomendador y obtén las valoraciones del modelo para todas las películas del conjunto. Puedes fijar la semilla para que los experimentos sean reproducibles. Si utilizas un espacio de salida con pocas dimensiones, por ejemplo K=2, es probable que los resultados no sean demasiado buenos. Prueba con espacios mayores como K=100 o K=200.
+	
+	\item Una vez seleccionada la dimensión del espacio de salida, repite el aprendizaje varias veces, añadiendo  cada vez 5 valoraciones más a las anteriores, para tener así 10, 15, 20, 25, y 30 películas valoradas. 
+	%Guarda la valoración del modelo para todas las películas en las distintas fases del experimento en una hoja excel llamada %'valoraciones.xlsx', que deberás entregar junto con la memoria.
+	
+	\item Haz un estudio para analizar los resultados, obtenidos con las distintas ejecuciones, tratando de ver si el modelo converge hacia un ranking más o menos estable. No es importante si el sistema converge hacia una solución más o menos adecuada, sino si converge hacia un ranking estable (bueno o malo). Para ello debes escoger alguna medida para comparar las salidas (rankings) de las distintas ejecuciones y justificar por qué te parece razonable usarla.
+	
+	\item Haz también una valoración del ranking final (con 30 películas valoradas), indicando si te parece aceptable o no, en función de tus gustos.
+\end{enumerate}
+
+%\newpage
+%\renewcommand{\refname}{Bibliografía}
+%\bibliographystyle{unsrt}
+%\bibliography{biblio}
+
+\end{document}
