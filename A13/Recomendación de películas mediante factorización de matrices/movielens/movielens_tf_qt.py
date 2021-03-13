@@ -1,15 +1,20 @@
-import json
-import math
+# import code
+# import glob
 import os
+import math
 import random
-from datetime import timedelta
-from time import time
+import json
+# import collections
+# from itertools import compress
+import pandas as pd
 
 import numpy as np
-import pandas as pd
 import tensorflow as tf
-from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
-from sklearn.base import BaseEstimator
+from sklearn.base import BaseEstimator, TransformerMixin
+# import pickle
+from PyQt5.Qt import QObject, pyqtSignal, pyqtSlot
+from datetime import timedelta
+from time import time
 
 
 def seq_batch_decorator(func):
@@ -176,8 +181,7 @@ class Movielens_Learner(QObject, BaseEstimator):
         result = tf.diag_part(tf.matmul(f_aux, movie, transpose_b=True))
         return result
 
-    @staticmethod
-    def F_embeddings(user_embedding, movie_embedding):
+    def F_embeddings(self, user_embedding, movie_embedding):
         # Función de valoración/compatibilidad entre un usuario y una película
         # Los ususarios vienen dados por su representación en el espacio de dimensión K, al igual
         # que las películas, así que sólo nos queda hacer el producto escalar de ambos.
@@ -192,7 +196,7 @@ class Movielens_Learner(QObject, BaseEstimator):
         self.grafo_eliminado.emit()
 
     def reset_model(self):
-        if self.sess is not None:
+        if self.sess != None:
             self.sess.run(self._init_op)
             self.global_step = self.average_loss = 0
             self.mensaje.emit('Modelo reiniciado!\n')
@@ -202,7 +206,7 @@ class Movielens_Learner(QObject, BaseEstimator):
 
     @pyqtSlot(pd.DataFrame, pd.DataFrame, name='fit')
     def fit(self, data, test_data):
-        if self.graph is None:
+        if self.graph == None:
             self._init_graph()
 
         # data is a pandas DataFrame
@@ -267,7 +271,7 @@ class Movielens_Learner(QObject, BaseEstimator):
                     # para el último usuario, que es el usuario interactivo. En este objeto
                     # ya contamos con el usuario interactivo, así que aquí su índice es self.num_users-1, mientras
                     # que en la clase de la aplicación su índice es num_users (allí num_users vale 1 menos que aquí)
-                    # TODO: Dos contadores para número de usuarios con valores distintos es confuso, hay que cambiarlo
+                    # todo: Dos contadores para número de usuarios con valores distintos es confuso, hay que cambiarlo
                     data_interactive_user = data[data.user == self.num_users - 1]
                     if len(data_interactive_user) > 0:  # pero sólo si ha dado algunas puntuaciones
                         feed_dict = {self.user: data_interactive_user.user,
@@ -320,7 +324,7 @@ class Movielens_Learner(QObject, BaseEstimator):
         self.computed_embeddings.emit(user, movies)
 
     def getEmbeddings(self):
-        if self.sess is not None:
+        if self.sess != None:
             resultado = self.sess.run([self.W, self.V])
         else:
             resultado = (None, None)
@@ -331,11 +335,10 @@ class Movielens_Learner(QObject, BaseEstimator):
         Predice la valoración de los usuarios para las películas, contenidos ambos en *data*
 
         :param data: Pandas DataFrame donde la columna *user* contiene el ID de los usuarios y la columna *best*
-        contiene los IDs de las películas que se quieren valorar. No se utiliza en este caso la columna *worst*,
-        incluso puede no existir en el DataFrame, y la columna *best* puede llamarse *movie*
-
+         contiene los IDs de las películas que se quieren valorar. No se utiliza en este caso la columna *worst*,
+         incluso puede no existir en el DataFrame, y la columna *best* puede llamarse *movie*
         :return: Un DataFrame Pandas con un valor (puntuación) para cada par usuario-película. Ojo, este valor no está
-        normalizado de ninguna manera
+         normalizado de ninguna manera
         """
         # data es un DataFrame pandas
         num_examples = data.shape[0]
@@ -382,7 +385,7 @@ class Movielens_Learner(QObject, BaseEstimator):
         self._restore(path)
 
     def _restore(self, path):
-        if self.graph is None:
+        if self.graph == None:
             self._init_graph()
         with self.graph.as_default():
             self._saver.restore(self.sess, path)
@@ -409,10 +412,10 @@ def load_and_recode_pj(filename, new_user_codes=None, new_movie_codes=None):
     # Si ya se suministran los diccionarios de recodificación como parámetros, sólo se aplican, si no, se
     # calculan y luego se aplican.
 
-    if new_user_codes is None:
+    if new_user_codes == None:
         set_of_users = set(pj.user)
         new_user_codes = dict(zip(set_of_users, range(len(set_of_users))))
-    if new_movie_codes is None:
+    if new_movie_codes == None:
         set_of_movies = set(pj.best_movie).union(set(pj.worst_movie))
         new_movie_codes = dict(zip(set_of_movies, range(len(set_of_movies))))
 
@@ -423,5 +426,5 @@ def load_and_recode_pj(filename, new_user_codes=None, new_movie_codes=None):
     worst_movies_recoded = [new_movie_codes[i] for i in pj.worst_movie]
     pj.worst_movie = worst_movies_recoded
 
-    return pj, new_user_codes, new_movie_codes
+    return (pj, new_user_codes, new_movie_codes)
     # return (pj, len(set_of_users), len(set_of_movies))

@@ -7,8 +7,6 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from pyqtgraph import PlotWidget
-
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -60,7 +58,7 @@ class Ui_MainWindow(object):
         self.layout_variables.setContentsMargins(0, 0, 0, 0)
         self.layout_variables.setObjectName("layout_variables")
         self.label_4 = QtWidgets.QLabel(self.formLayoutWidget_3)
-        self.label_4.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+        self.label_4.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label_4.setObjectName("label_4")
         self.layout_variables.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.label_4)
         self.le_epochs = QtWidgets.QLineEdit(self.formLayoutWidget_3)
@@ -78,7 +76,7 @@ class Ui_MainWindow(object):
         self.le_drawevery.setObjectName("le_drawevery")
         self.layout_variables.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.le_drawevery)
         self.label_5 = QtWidgets.QLabel(self.formLayoutWidget_3)
-        self.label_5.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+        self.label_5.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label_5.setObjectName("label_5")
         self.layout_variables.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.label_5)
         self.verticalLayoutWidget = QtWidgets.QWidget(self.centralwidget)
@@ -94,7 +92,7 @@ class Ui_MainWindow(object):
         self.fl_fijos_texto = QtWidgets.QFormLayout()
         self.fl_fijos_texto.setObjectName("fl_fijos_texto")
         self.label = QtWidgets.QLabel(self.verticalLayoutWidget)
-        self.label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+        self.label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label.setObjectName("label")
         self.fl_fijos_texto.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.label)
         self.le_K = QtWidgets.QLineEdit(self.verticalLayoutWidget)
@@ -103,7 +101,7 @@ class Ui_MainWindow(object):
         self.le_K.setObjectName("le_K")
         self.fl_fijos_texto.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.le_K)
         self.label_2 = QtWidgets.QLabel(self.verticalLayoutWidget)
-        self.label_2.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+        self.label_2.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label_2.setObjectName("label_2")
         self.fl_fijos_texto.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.label_2)
         self.le_learningrate = QtWidgets.QLineEdit(self.verticalLayoutWidget)
@@ -111,7 +109,7 @@ class Ui_MainWindow(object):
         self.le_learningrate.setObjectName("le_learningrate")
         self.fl_fijos_texto.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.le_learningrate)
         self.label_3 = QtWidgets.QLabel(self.verticalLayoutWidget)
-        self.label_3.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+        self.label_3.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label_3.setObjectName("label_3")
         self.fl_fijos_texto.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.label_3)
         self.le_nu = QtWidgets.QLineEdit(self.verticalLayoutWidget)
@@ -189,15 +187,12 @@ class Ui_MainWindow(object):
         item = self.tableWidget.horizontalHeaderItem(2)
         item.setText(_translate("MainWindow", "Valoración"))
         self.label_4.setText(_translate("MainWindow", "# epochs"))
-        self.le_epochs.setToolTip(
-            _translate("MainWindow", "Número de veces que se presentará el conjunto de entrenamiento"))
+        self.le_epochs.setToolTip(_translate("MainWindow", "Número de veces que se presentará el conjunto de entrenamiento"))
         self.le_minibatch.setToolTip(_translate("MainWindow", "Número de ejemplos de cada batch"))
         self.label_6.setText(_translate("MainWindow", "refresco"))
-        self.le_drawevery.setToolTip(
-            _translate("MainWindow", "Indica cada cuantos segundos se actualizan los gráficos"))
+        self.le_drawevery.setToolTip(_translate("MainWindow", "Indica cada cuantos segundos se actualizan los gráficos"))
         self.label_5.setText(_translate("MainWindow", "batch"))
-        self.cb_semillaaleatoria.setToolTip(
-            _translate("MainWindow", "La generación de aleatorios comienza con semilla fija o variable"))
+        self.cb_semillaaleatoria.setToolTip(_translate("MainWindow", "La generación de aleatorios comienza con semilla fija o variable"))
         self.cb_semillaaleatoria.setText(_translate("MainWindow", "Semilla aleatoria"))
         self.label.setText(_translate("MainWindow", "K"))
         self.le_K.setToolTip(_translate("MainWindow", "Dimensiones del espacio de proyección (embedding)"))
@@ -205,8 +200,7 @@ class Ui_MainWindow(object):
         self.le_learningrate.setToolTip(_translate("MainWindow", "Factor de aprendizaje"))
         self.label_3.setText(_translate("MainWindow", "nu"))
         self.le_nu.setToolTip(_translate("MainWindow", "Factor de regularización"))
-        self.pb_Aprender.setToolTip(_translate("MainWindow",
-                                               "Aprende un modelo a partir de los datos de entrenamiento y de los gustos del usuario, si los ha indicado"))
+        self.pb_Aprender.setToolTip(_translate("MainWindow", "Aprende un modelo a partir de los datos de entrenamiento y de los gustos del usuario, si los ha indicado"))
         self.pb_Aprender.setText(_translate("MainWindow", "Aprender"))
         self.progressBar.setToolTip(_translate("MainWindow", "Progreso del proceso de aprendizaje"))
         self.pb_Parar.setToolTip(_translate("MainWindow", "Detiene el entrenamiento"))
@@ -221,3 +215,5 @@ class Ui_MainWindow(object):
         self.actionCargar_modelo_entrenado.setText(_translate("MainWindow", "Cargar modelo entrenado"))
         self.actionGuardar_modelo_entrenado.setText(_translate("MainWindow", "Guardar modelo entrenado"))
         self.actionExportar.setText(_translate("MainWindow", "Exportar"))
+
+from pyqtgraph import PlotWidget

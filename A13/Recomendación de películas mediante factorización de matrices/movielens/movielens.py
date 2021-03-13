@@ -1,18 +1,23 @@
-import datetime
-import math
-import sys
-
-import numpy as np
 import pandas as pd
-import pyqtgraph as pg
+import numpy as np
+import math
+# import matplotlib.pyplot as plt
 from PyQt5 import QtCore
-from PyQt5.QtCore import pyqtSignal, QThread, pyqtSlot
-from PyQt5.QtGui import QIntValidator, QDoubleValidator, QTextCursor
 from PyQt5.QtWidgets import QMainWindow, QComboBox, QDialog, QFileDialog, \
-    QMessageBox, QTableWidgetItem, QApplication
+    QMessageBox, QTableWidgetItem, QTableWidget
 
-import ui_movielens
+# from PyQt5.QtCore import QString
+from PyQt5.Qt import QApplication, QPen, QColor, QThread, QTextCursor, \
+    QValidator, QIntValidator, QDoubleValidator, pyqtSignal, pyqtSlot
+import sys
+from random import random
+import pyqtgraph as pg
+import datetime
+
+# import os
+
 from movielens_tf_qt import Movielens_Learner, load_and_recode_pj
+import ui_movielens
 
 
 class Movielens_app(QMainWindow, ui_movielens.Ui_MainWindow):
@@ -45,7 +50,7 @@ class Movielens_app(QMainWindow, ui_movielens.Ui_MainWindow):
         self.num_users = len(self._new_ucodes)
         self.num_movies = len(self._new_mcodes)
 
-        # validators TODO: no se usan bien, habría que comprobar cosas...
+        # validators todo: no se usan bien, habría que comprobar cosas...
         self.le_K.setValidator(QIntValidator(2, 1000))
         self.le_minibatch.setValidator(QIntValidator(1, len(self._train_pj) // 10))
         learningrate_validator = QDoubleValidator(1e-6, 1.0, 10)
@@ -174,17 +179,21 @@ class Movielens_app(QMainWindow, ui_movielens.Ui_MainWindow):
 
     @pyqtSlot(name='recoger_hiperparametros')
     def recoger_hiperparametros(self):
-        """
+        '''
         Recoger y validar los campos de entrada de los hiperparámetros
         :return: nada
-        """
+        '''
         lista_hiperparams = ['K', 'nu', 'learning_rate', 'batch_size', 'num_epochs', 'drawevery', 'random_seed']
         param_actuales = self._learner.get_params(deep=False)
         param_nuevos = {}
-        param_del_ui = {'K': int(self.le_K.text()), 'num_epochs': int(self.le_epochs.text()),
-                        'learning_rate': float(self.le_learningrate.text()),
-                        'batch_size': int(self.le_minibatch.text()), 'nu': float(self.le_nu.text()),
-                        'drawevery': int(self.le_drawevery.text()), 'random_seed': self.cb_semillaaleatoria.isChecked()}
+        param_del_ui = {}
+        param_del_ui['K'] = int(self.le_K.text())
+        param_del_ui['num_epochs'] = int(self.le_epochs.text())
+        param_del_ui['learning_rate'] = float(self.le_learningrate.text())
+        param_del_ui['batch_size'] = int(self.le_minibatch.text())
+        param_del_ui['nu'] = float(self.le_nu.text())
+        param_del_ui['drawevery'] = int(self.le_drawevery.text())
+        param_del_ui['random_seed'] = self.cb_semillaaleatoria.isChecked()
 
         # print('Params. actuales:', param_actuales)
 
@@ -372,10 +381,10 @@ class Movielens_app(QMainWindow, ui_movielens.Ui_MainWindow):
 
     @pyqtSlot(name='exportar')
     def exportar(self):
-        """
+        '''
         Exporta la representación de los usuarios y películas a formato csv
         :return: Nada
-        """
+        '''
         usuarios, peliculas = self._learner.getEmbeddings()
         if usuarios is not None:
             # Convierto las matrices en DataFrames
@@ -443,14 +452,14 @@ class Movielens_app(QMainWindow, ui_movielens.Ui_MainWindow):
                 it.setCurrentText('')
 
     def _crea_pjs_de_usuario(self):
-        """
+        '''
         Recupera las valoraciones introducidas por el usuario en la aplicación y crea
         un DataFrame con los juicios de preferencias que se derivan de esas puntuaciones.
 
         :return: DataFrame con las columnas *user*, *bset*, *worst*, preparado para ser concatenado
         a los juicios de preferencias del resto de usuarios y formar parte del conjunto de
         entrenamiento
-        """
+        '''
         # Leer las puntuaciones de la aplicación
         filas = self.tableWidget.rowCount()
         # columnas = self.tableWidget.columnCount()

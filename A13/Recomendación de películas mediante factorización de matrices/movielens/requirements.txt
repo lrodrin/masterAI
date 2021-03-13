@@ -1,7 +1,5 @@
-pyqtgraph
-pandas
-tensorflow
-numpy
-PyQt5
-PyQt5-stubs
-scikit_learn
+pyqtgraph==0.10.0
+pandas==0.23.3
+tensorflow==1.9.0
+PyQt5==5.11.2
+scikit_learn==0.19.2
