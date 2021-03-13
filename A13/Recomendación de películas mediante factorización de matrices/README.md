@@ -1,5 +1,7 @@
 # movielens
 
+This application is written for Python 3.6.
+
 ## Requirements
 
 ```bash
