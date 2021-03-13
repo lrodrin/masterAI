@@ -1,0 +1,63 @@
+\documentclass{uimppracticas}
+
+%Permitir cabeceras y pie de páginas personalizados
+\pagestyle{fancy}
+
+%Path por defecto de las imágenes
+\graphicspath{ {./images/} }
+
+%Declarar formato de encabezado y pie de página de las páginas del documento
+\fancypagestyle{doc}{
+  %Pie de Página
+  \footerpr{}{}{{\thepage} de \pageref{LastPage}}
+}
+
+%Declarar formato de encabezado y pie del título e indice
+\fancypagestyle{titu}{%
+  %Cabecera
+  \headerpr{}{}{}
+  %Pie de Página
+  \footerpr{}{}{}
+}
+
+\appto\frontmatter{\pagestyle{titu}}
+\appto\mainmatter{\pagestyle{doc}}
+
+\begin{document}
+	
+%Comienzo formato título
+\frontmatter
+
+%Portada (Centrado todo)
+\centeredtitle{./images/LogoUIMP.png}{Máster Universitario en Investigación en Inteligencia Artificial}{Curso 2020-2021}{Recuperación y extracción de información, \\ grafos y redes sociales}{Implementación de un rastreador web (crawler) en Python}
+
+\begin{center}
+\large \today
+\end{center}
+
+\vspace{40mm}
+
+\begin{flushright}
+ 	{\bf Laura Rodríguez Navas}\\
+ 	\textbf{DNI:} 43630508Z\\
+ 	\textbf{e-mail:} \href{rodrigueznavas@posgrado.uimp.es}{rodrigueznavas@posgrado.uimp.es}
+\end{flushright}
+
+\newpage
+
+%Índice
+\tableofcontents
+
+\newpage
+
+%Comienzo formato documento general
+\mainmatter
+
+\setlength\parskip{2.5ex}
+
+\newpage
+\renewcommand{\refname}{Bibliografía}
+\bibliographystyle{unsrt}
+\bibliography{biblio}
+
+\end{document}
