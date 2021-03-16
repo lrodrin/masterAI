@@ -5,3 +5,5 @@ PyQt5==5.11.2
 PyQt5-stubs==5.15.2.0
 scikit_learn==0.19.2
 scipy==1.5.4
+xlrd==1.2.0
+openpyxl==3.0.7
