@@ -51,7 +51,14 @@ Recently, hybrid and ensemble methods were added to the general framework of fea
 \section{Feature (gene) selection methods}
 
 \subsection{Correlation-based feature selection}\label{Correlation-based feature selection}
-Correlation-based feature selection (CFS) was developed by Hall in 1999~\cite{hall1998correlation}.
+Correlation-based feature selection (CFS) was developed by Hall in 1999~\cite{hall1998correlation}. CFS is a simple filter method that ranks features subsets, based on the correlation between the heuristic evaluation equation (\ref{heuristic evaluation equation}). CFS is used to select the best combination of attribute subsets via score values from the original data sets and the heuristic evaluation equation is employed to identify the best combination. 
+
+The aim of CFS is to reduce the amount of feature to feature correlations while increasing the feature to class correlations. In this paper, they used Weka~\cite{frank2004data} to implement CFS and used the selected gene subsets to identify different cancer types and various diseases.
+
+\begin{equation}\label{heuristic evaluation equation}
+	Merit_{s} = \frac{k\bar{\gamma}_{cf}}{\sqrt{k+k(k-1)\bar{\gamma}_{ff}}}
+\end{equation}
+where $Merit_{s}$ is the merit of feature subset $S$ containing $k$ features, $\bar{\gamma}_{cf}$ is the average feature and class correlation, and $\bar{\gamma}_{ff}$ is the average feature-feature intercorrelation ($f\in S$).
 
 \subsection{Genetic algorithm}\label{Genetic algorithm}
 
@@ -61,9 +68,7 @@ Correlation-based feature selection (CFS) was developed by Hall in 1999~\cite{ha
 
 \section{Conclusions}
 
-\begin{equation}
-x + y = z
-\end{equation}
+
 Please try to avoid rasterized images for line-art diagrams and
 schemas. Whenever possible, use vector graphics instead (see
 Fig.~\ref{fig1}).
