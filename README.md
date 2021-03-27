@@ -1,4 +1,4 @@
-## Máster Universitario en Investigación en Inteligencia Artificial
+# Máster Universitario en Investigación en Inteligencia Artificial
 
 - A2. RESOLUCIÓN DE PROBLEMAS CON METAHEURÍSTICOS
 - A3. CIENCIA DE DATOS Y APRENDIZAJE AUTOMÁTICO
