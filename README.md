@@ -1,6 +1,5 @@
-# Máster Universitario en Investigación en Inteligencia Artificial
+## Máster Universitario en Investigación en Inteligencia Artificial
 
-## Leyenda de las asignaturas:
 - A2. RESOLUCIÓN DE PROBLEMAS CON METAHEURÍSTICOS
 - A3. CIENCIA DE DATOS Y APRENDIZAJE AUTOMÁTICO
 - A4. PROCESAMIENTO DEL LENGUAJE NATURAL
