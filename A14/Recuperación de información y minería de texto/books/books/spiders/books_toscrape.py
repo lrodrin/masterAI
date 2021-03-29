@@ -19,4 +19,8 @@ class BooksToscrapeSpider(scrapy.Spider):
         item["title"] = product.css("h1 ::text").extract_first()
         item['category'] = response.xpath("//ul[@class='breadcrumb']/li[@class='active']/preceding-sibling::li[1]/a/text()").extract_first()
         item['description'] = response.xpath("//div[@id='product_description']/following-sibling::p/text()").extract_first()
+        price = response.xpath('//th[text()="Price (incl. tax)"]/following-sibling::td/text()').extract_first()
+        item['price'] = price.replace('£', '')
+        rating = response.xpath('//*[contains(@class, "star-rating")]/@class').extract_first()
+        item['rating'] = rating.replace('star-rating ', '')
         yield item
