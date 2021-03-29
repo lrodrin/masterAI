@@ -2,4 +2,3 @@ Scrapy
 pandas
 scikit-learn
 matplotlib
-numpy
