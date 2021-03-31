@@ -1,57 +1,100 @@
-import csv
-import numpy as np
+import json
+
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-data = pd.read_csv("books.csv", usecols=[1, 3])
-print(data.shape)
-print(list(data.columns))
+# books dataset
+books = open("../books/books2.json", "r")
+dict_books = json.load(books)
 
-categories = []
-titles = []
-with open("books.csv", encoding="utf-8") as csvfobj:  # csvfobj=object
-    readCSV = csv.reader(csvfobj, delimiter=',')  # as each field is separated by ','
-    # if file is not in the same project, add file path
-    # Reader object creates matrix
-    next(readCSV, None)  # skip the headers
-    title = []
-    # to iterate through file row by row
-    for row in readCSV:
-        category = row[1]
-        title = row[3]
+# create books df
+df = pd.DataFrame.from_dict(dict_books)
+print(df)
 
-        # adding to the list
-        categories.append(category)
-        titles.append(title)
+# remove categories that only appear once
+uniqueCategories = ["Academic", "Adult Fiction", "Crime", "Cultural", "Erotica", "Novels", "Paranormal", "Parenting",
+                    "Short Stories", "Suspense"]
 
-print(categories)
-print(titles)
+df = df[~df['category'].isin(uniqueCategories)]
 
-tfidfvect = TfidfVectorizer(stop_words='english')
-X = tfidfvect.fit_transform(titles)
+# save df to csv
+df.to_csv("books2.csv", index=False, sep=",")
 
-first_vector = X[0]
+data = pd.read_csv("books2.csv")
+# remove null values data
+data = data.dropna()
 
-dataframe = pd.DataFrame(first_vector.T.todense(), index=tfidfvect.get_feature_names(), columns=["tfidf"])
-dataframe.sort_values(by=["tfidf"], ascending=False)
+tfidf = TfidfVectorizer(
+    min_df=5,
+    max_df=0.95,
+    max_features=8000,
+    stop_words='english'
+)
+tfidf.fit(data['description'])
+text = tfidf.transform(data['description'])
 
-num = 3
-kmeans = KMeans(n_clusters = num, init = 'k-means++', max_iter = 500, n_init = 1)
-kmeans.fit(X)
-print(kmeans.cluster_centers_) #This will print cluster centroids as tf-idf vectors
+clusters = KMeans(n_clusters=40, init = 'k-means++', max_iter = 500, n_init = 1).fit_predict(text)
 
-centroids= kmeans.cluster_centers_
-data = pd.read_csv("books.csv", usecols=[0, 2])
-plt.scatter(data['category_c'], data['title_c'], c=kmeans.labels_.astype(float), s=50, alpha=0.5)
-plt.scatter(centroids[:, 0], centroids[:, 1], c='red', s=50)
+# def plot_tsne_pca(data, labels):
+#     max_label = max(labels)
+#     max_items = np.random.choice(range(data.shape[0]), size=3000)
+#
+#     pca = PCA(n_components=2).fit_transform(data[max_items, :].todense())
+#     tsne = TSNE().fit_transform(PCA(n_components=50).fit_transform(data[max_items, :].todense()))
+#
+#     idx = np.random.choice(range(pca.shape[0]), size=300)
+#     label_subset = labels[max_items]
+#     label_subset = [cm.hsv(i / max_label) for i in label_subset[idx]]
+#
+#     f, ax = plt.subplots(1, 2, figsize=(14, 6))
+#
+#     ax[0].scatter(pca[idx, 0], pca[idx, 1], c=label_subset)
+#     ax[0].set_title('PCA Cluster Plot')
+#
+#     ax[1].scatter(tsne[idx, 0], tsne[idx, 1], c=label_subset)
+#     ax[1].set_title('TSNE Cluster Plot')
+#     plt.show()
+#
+#
+# plot_tsne_pca(text, clusters)
+
+
+def get_top_keywords(data, clusters, labels, n_terms):
+    df = pd.DataFrame(data.todense()).groupby(clusters).mean()
+
+    for i, r in df.iterrows():
+        print('\nCluster {}'.format(i))
+        print(','.join([labels[t] for t in np.argsort(r)[-n_terms:]]))
+
+
+get_top_keywords(text, clusters, tfidf.get_feature_names(), 10)
+
+# test with diferent number of clusters
+cls = KMeans(n_clusters=10, random_state=0)
+cls.fit(text)
+
+# predict cluster labels for new dataset
+cls.predict(text)
+
+# to get cluster labels for the dataset used while
+# training the model (used for models that does not
+# support prediction on new dataset).
+print(cls.labels_)
+
+# reduce the features to 2D
+pca = PCA(n_components=2, random_state=0)
+reduced_features = pca.fit_transform(text.toarray())
+
+# reduce the cluster centers to 2D
+reduced_cluster_centers = pca.transform(cls.cluster_centers_)
+
+plt.scatter(reduced_features[:,0], reduced_features[:,1], c=cls.predict(text))
+plt.scatter(reduced_cluster_centers[:, 0], reduced_cluster_centers[:,1], marker='x', s=150, c='b')
 plt.show()
 
-X = tfidfvect.transform(["Data Structures and Algorithms"])
-labels = kmeans.predict(X)
-print(labels)
-
-# https://iq.opengenus.org/implement-document-clustering-python/
-
-# per trobar K https://medium.com/pursuitnotes/k-means-clustering-model-in-6-steps-with-python-35b532cfa8ad
+from sklearn.metrics import silhouette_score
+print(silhouette_score(text, labels=cls.predict(text)))
