@@ -34,10 +34,10 @@ tfidf = TfidfVectorizer(
     max_features=8000,
     stop_words='english'
 )
-tfidf.fit(data['description'])
-text = tfidf.transform(data['description'])
+tfidf.fit(data['title'])
+text = tfidf.transform(data['title'])
 
-clusters = KMeans(n_clusters=40, init = 'k-means++', max_iter = 500, n_init = 1).fit_predict(text)
+clusters = KMeans(n_clusters=5, init = 'k-means++', max_iter = 500, n_init = 1).fit_predict(text)
 
 # def plot_tsne_pca(data, labels):
 #     max_label = max(labels)
@@ -73,8 +73,20 @@ def get_top_keywords(data, clusters, labels, n_terms):
 
 get_top_keywords(text, clusters, tfidf.get_feature_names(), 10)
 
+# Start with one review:
+text2 = df.description[0]
+
+# Create and generate a word cloud image:
+from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
+wordcloud = WordCloud().generate(text2)
+
+# Display the generated image:
+plt.imshow(wordcloud, interpolation='bilinear')
+plt.axis("off")
+plt.show()
+
 # test with diferent number of clusters
-cls = KMeans(n_clusters=10, random_state=0)
+cls = KMeans(n_clusters=40, random_state=0)
 cls.fit(text)
 
 # predict cluster labels for new dataset
@@ -98,3 +110,6 @@ plt.show()
 
 from sklearn.metrics import silhouette_score
 print(silhouette_score(text, labels=cls.predict(text)))
+
+# https://sanjayasubedi.com.np/nlp/nlp-with-python-document-clustering/
+# https://www.datacamp.com/community/tutorials/wordcloud-python
