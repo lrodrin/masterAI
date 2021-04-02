@@ -1,11 +1,10 @@
 # qlearningAgents.py
 # ------------------
 
-from game import *
-from learningAgents import ReinforcementAgent
-from featureExtractors import *
+import random
+import util
 
-import random, util, math
+from learningAgents import ReinforcementAgent
 
 
 class QLearningAgent(ReinforcementAgent):
@@ -22,7 +21,7 @@ class QLearningAgent(ReinforcementAgent):
     """
 
     def __init__(self, **args):
-        "Initialize Q-values"
+        """Initialize Q-values"""
         ReinforcementAgent.__init__(self, **args)
 
         self.actions = {"north": 0, "east": 1, "south": 2, "west": 3, "exit": 4}
@@ -32,7 +31,7 @@ class QLearningAgent(ReinforcementAgent):
         self.discount = 0.9
 
     def readQtable(self):
-        "Read qtable from disc"
+        """Read qtable from disc"""
         table = self.table_file.readlines()
         q_table = []
 
@@ -44,7 +43,7 @@ class QLearningAgent(ReinforcementAgent):
         return q_table
 
     def writeQtable(self):
-        "Write qtable to disc"
+        """Write qtable to disc"""
         self.table_file.seek(0)
         self.table_file.truncate()
 
@@ -54,11 +53,12 @@ class QLearningAgent(ReinforcementAgent):
             self.table_file.write("\n")
 
     def __del__(self):
-        "Destructor. Invokation at the end of each episode"
+        """Destructor. Invokation at the end of each episode"""
         self.writeQtable()
         self.table_file.close()
 
-    def computePosition(self, state):
+    @staticmethod
+    def computePosition(state):
         """
         Compute the row of the qtable for a given state.
         For instance, the state (3,1) is the row 7
@@ -170,16 +170,16 @@ class QLearningAgent(ReinforcementAgent):
     ###########################################################################################################################
 
     def getPolicy(self, state):
-        "Return the best action in the qtable for a given state"
+        """Return the best action in the qtable for a given state"""
         return self.computeActionFromQValues(state)
 
     def getValue(self, state):
-        "Return the highest q value for a given state"
+        """Return the highest q value for a given state"""
         return self.computeValueFromQValues(state)
 
 
 class PacmanQAgent(QLearningAgent):
-    "Exactly the same as QLearningAgent, but with different default parameters"
+    """Exactly the same as QLearningAgent, but with different default parameters"""
 
     def __init__(self, epsilon=0.05, gamma=0.8, alpha=0.2, numTraining=0, **args):
         """
@@ -244,12 +244,12 @@ class ApproximateQAgent(PacmanQAgent):
         feats = self.featExtractor.getFeatures(state, action)
         for f in feats:
             self.weights[f] = self.weights[f] + self.alpha * feats[f] * (
-                        (reward + self.discount * self.computeValueFromQValues(nextState)) - self.getQValue(state,  action))
+                    (reward + self.discount * self.computeValueFromQValues(nextState)) - self.getQValue(state, action))
 
         # util.raiseNotDefined()
 
     def final(self, state):
-        "Called at the end of each game."
+        """Called at the end of each game."""
         # call the super-class final method
         PacmanQAgent.final(self, state)
 
