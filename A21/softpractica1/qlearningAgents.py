@@ -27,7 +27,7 @@ class QLearningAgent(ReinforcementAgent):
         self.actions = {"north": 0, "east": 1, "south": 2, "west": 3, "exit": 4}
         self.table_file = open("qtable.txt", "r+")
         self.q_table = self.readQtable()
-        self.epsilon = 1
+        self.epsilon = 0.05
         self.discount = 0.9
 
     def readQtable(self):
