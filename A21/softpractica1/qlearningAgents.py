@@ -139,35 +139,47 @@ class QLearningAgent(ReinforcementAgent):
           state = action => nextState and reward transition.
           You should do your Q-Value update here	
         """
-        ###########################	INSERTA TU CODIGO AQUI  ###################################################################
+        position = self.computePosition(state)
+        action_column = self.actions[action]
 
-    #
-    # INSTRUCCIONES:
-    #
-    # Vamos a implementar la funcion de actualizacion de Q-learning. Esta funcion tiene la siguiente forma dependiendo de si
-    # el estado al que transitamos es un estado terminal o no:
-    #
-    # En el caso de que el estado al que transitemos, nextState, no sea un estado terminal actualizamos siguiendo
-    # la siguiente regla:
-    #
-    #	Q(state,action) <- (1-self.alpha) * Q(state,action) + self.alpha * (reward + self.discount * max a' Q(nextState, a'))
-    #
-    # Por el contrario, si nextState es un estado terminal:
-    #
-    #	Q(state,action) <- (1-self.alpha) * Q(state,action) + self.alpha * (reward + 0)
-    #
-    # En ambos casos Q se corresponde con la tabla Q (es decir, self.q_table). Con la parte izquierda de estas reglas decimos
-    # que queremos 	actualizar el valor de la celda de esa tabla correspondiente a (state, action). En este caso, state nos
-    # da la fila que debemos actualizar y action la columna. Ahora bien, state son posiciones del tipo (x,y). Por lo tanto,
-    # debemos transformar estas coordenadas a la fila en concreto que queremos actualizar. Para ello, debemos utilizar el metodo
-    # self.computePosition(state) que ya esta implementado. En cambio, action es un diccionario y para acceder a la columna
-    # en concreto que debemos actualizar podemos hacerlo con self.actions[action].
-    #
-    # Finalmente, para comprobar si el siguiente estado es terminal podemos comprobar si nextState == 'TERMINAL_STATE'
-    #
-    ###########################################################################################################################
+        if nextState != 'TERMINAL_STATE':
+            # Q(state,action) <- (1-self.alpha) * Q(state,action) + self.alpha * (reward + self.discount * max a' Q(nextState, a'))
+            sample = (1 - self.alpha) * self.getQValue(state, action) + self.alpha * (
+                    reward + self.discount * self.computeValueFromQValues(nextState))
 
-    ###########################################################################################################################
+            self.q_table[position][action_column] = sample
+
+        elif nextState == 'TERMINAL_STATE':
+            # Q(state,action) <- (1-self.alpha) * Q(state,action) + self.alpha * (reward + 0)
+            sample = (1 - self.alpha) * self.getQValue(state, action) + self.alpha * (reward + 0)
+            self.q_table[position][action_column] = sample
+
+        ##############################INSERTA TU CODIGO AQUI############################################################
+        #
+        # INSTRUCCIONES:
+        #
+        # Vamos a implementar la funcion de actualizacion de Q-learning. Esta funcion tiene la siguiente forma dependiendo de si
+        # el estado al que transitamos es un estado terminal o no:
+        #
+        # En el caso de que el estado al que transitemos, nextState, no sea un estado terminal actualizamos siguiendo
+        # la siguiente regla:
+        #
+        # Q(state,action) <- (1-self.alpha) * Q(state,action) + self.alpha * (reward + self.discount * max a' Q(nextState, a'))
+        #
+        # Por el contrario, si nextState es un estado terminal:
+        #
+        # Q(state,action) <- (1-self.alpha) * Q(state,action) + self.alpha * (reward + 0)
+        #
+        # En ambos casos Q se corresponde con la tabla Q (es decir, self.q_table). Con la parte izquierda de estas reglas decimos
+        # que queremos 	actualizar el valor de la celda de esa tabla correspondiente a (state, action). En este caso, state nos
+        # da la fila que debemos actualizar y action la columna. Ahora bien, state son posiciones del tipo (x,y). Por lo tanto,
+        # debemos transformar estas coordenadas a la fila en concreto que queremos actualizar. Para ello, debemos utilizar el metodo
+        # self.computePosition(state) que ya esta implementado. En cambio, action es un diccionario y para acceder a la columna
+        # en concreto que debemos actualizar podemos hacerlo con self.actions[action].
+        #
+        # Finalmente, para comprobar si el siguiente estado es terminal podemos comprobar si nextState == 'TERMINAL_STATE'
+        #
+        ################################################################################################################
 
     def getPolicy(self, state):
         """Return the best action in the qtable for a given state"""
