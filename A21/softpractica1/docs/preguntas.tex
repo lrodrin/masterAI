@@ -5,6 +5,7 @@
 \usepackage[spanish]{babel}
 \usepackage{graphicx}
 \usepackage{listings}
+\usepackage{float}
 \usepackage[table,xcdraw]{xcolor}
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
@@ -65,7 +66,7 @@
 \begin{questions}
 	
 % Pregunta 1
-{ \question ¿Cuántas celdas/estados aparecen en el tablero? ¿Cuántas acciones puede ejecutar el agente? Si quisieras resolver el juego mediante aprendizaje por refuerzo, ¿cómo lo harías? 
+{ \question ¿Cuántas celdas/estados aparecen en el tablero? ¿Cuántas acciones puede ejecutar el agente? Si quisieras resolver el juego mediante aprendizaje por refuerzo, ¿cómo lo harías?\label{pregunta_1} 
 }
 
 En el tablero aparecen 11 celdas/estado y el agente puede ejecutar 4 acciones: arriba (\textit{north}), abajo (\textit{south}), izquierda (\textit{west}) y derecha (\textit{east}).
@@ -128,7 +129,7 @@ Los métodos que aparecen en la clase \textit{QLearningAgent} son:
 % Pregunta 3
 { \question Ejecuta ahora el agente anterior con: \textit{python gridworld.py -a q -k 100 -n 0}.}
 
-A diferencia de la primera ejecución, en esta ejecución le indicamos el tipo de agente, que en este caso es q, y el número de movimientos \href{https://en.wikipedia.org/wiki/Markov_decision_process}{MDP} a realizar, que en este caso son 100.
+A diferencia de la primera ejecución, en esta ejecución le indicamos el tipo de agente, que en este caso es q, y el número de movimientos/episodios \href{https://en.wikipedia.org/wiki/Markov_decision_process}{MDP} a realizar, que en este caso son 100.
 
 \begin{figure}[h]
 	\centering
@@ -141,28 +142,30 @@ A diferencia de la primera ejecución, en esta ejecución le indicamos el tipo d
 { \question ¿Qué información se muestra en el laberinto? ¿Qué aparece por terminal cuando se realizan los movimientos en el laberinto? 
 }
 
-Si observamos la Figura \ref{image_2}, vemos que la información que se muestra en el laberinto son los valores de $Q(s,a)$ después de realizarse 100 movimientos. 
+Si observamos la Figura \ref{image_2}, vemos que la información que se muestra en el laberinto son los valores de $Q(s,a)$ después de realizarse 100 movimientos/episodios. Como la función de actualización (\textit{update}) de los valores de $Q(s,a)$ no se ha implementado aún, observamos que todos los valores de $Q(s,a)$ después de realizarse 100 movimientos son 0.
 
-\newpage
-
-En la terminal cuando se realizan los movimientos en el laberinto, vemos que aparecen los siguientes valores por cada movimiento:
+En la terminal cuando se realizan los movimientos/episodios, vemos que aparecen los siguientes valores por cada episodio hasta el estado TERMINAL\_STATE (\textit{exit}):
 
 \begin{itemize}
 	\item La posición (x, y) donde empieza el estado. Por ejemplo: (2, 1).
 	\item La acción tomada. Por ejemplo: derecha (\textit{east}).
 	\item La posición (x, y) donde acaba el estado. Por ejemplo: (3, 1).
-	\item La recompensa obtenida. Por ejemplo: 0.0, en este caso no ha habido recompensa.
+	\item La recompensa obtenida. Por ejemplo: 0.0, en este caso no ha habido recompensa. 
 \end{itemize}
+
+Cuando se ha alcanzado en cada episodio el estado TERMINAL\_STATE, vemos que aparece por la terminal el valor máximo de $Q(s,a)$ de cada episodio. Por ejemplo: EPISODE 93 COMPLETE: RETURN WAS 0.0182480036314. Si hemos alcanzado el objetivo, la celda etiquetada con un 1, tendremos una recompensa igual a 1 y el valor máximo de $Q(s,a)$ será positivo. Por el contrario, el valor máximo de $Q(s,a)$ será negativo y tendremos una recompensa igual a -1, al no alcanzar el objetivo y caer en la celda etiquetada con un -1. Así pues, consideramos que hemos ganado en un episodio si el valor máximo de $Q(s,a)$ del episodio es positivo, y consideramos que hemos perdido si el valor máximo de $Q(s,a)$ del episodio es negativo. En el caso del ejemplo, vemos que en el episodio 93 el valor máximo de $Q(s,a)$ es positivo, ganamos.
+
+Finalmente, aparece en la terminal un último valor. Este valor es el promedio de todos los valores máximos de $Q(s,a)$ de todos los movimientos/episodios. Por ejemplo: AVERAGE RETURNS FROM START STATE: -0.079260284124. Con el planteamiento del párrafo anterior, si el promedio es negativo consideramos que hemos perdido en el juego, y por el contrario si este valor es positivo consideramos que hemos ganado en el juego. En el caso del ejemplo, vemos que el promedio es negativo, perdemos.
 
 % Pregunta 5
 { \question ¿Qué clase de movimiento realiza el agente anterior?}
 
-El agente desde una posición y salud, siempre que decida moverse en una dirección por el laberinto, lo hace en esa dirección con probabilidad igual a 1, es decir, se mueve una posición.
+El agente desde una posición, siempre que decida moverse en una dirección por el laberinto, lo hace en esa dirección con probabilidad igual a 1, es decir, se mueve una posición.
 
 % Pregunta 6
 { \question ¿Se pueden sacar varias políticas óptimas? Describe todas las políticas óptimas para este problema.} 
 
-\textbf{TODO}
+TODO
 
 % Pregunta 7
 { \question Escribir el método \textit{update} de la clase \textit{QLearningAgent} utilizando las funciones de actualización del algoritmo \textit{Q-Learning}. Para ello, inserta el código necesario allí donde aparezca la etiqueta INSERTA TU CÓDIGO AQUÍ siguiendo las instrucciones que se proporcionan, con el fin de conseguir el comportamiento deseado. }
@@ -198,23 +201,17 @@ En la Figura \ref{image_3} podemos observar que con el código insertado anterio
 { \question Establece en el constructor de la clase \textit{QLearningAgent} el valor de la variable \textit{epsilon} a 0,05. Ejecuta nuevamente con: \textit{python gridworld.py -a q -k 100 -n 0}. ¿Qué sucede?
 }
 
-Si consideramos que un episodio termina si se gana (obtenemos un valor de recompensa positivo) o se pierde (obtenemos un a valor de recompensa negativo), decimos que se gana si el agente alcanza el objetivo, la celda etiquetada con un 1, en el estado TERMINAL\_STATE. Por el contrario decimos que se pierde si el agente no alcanza la celda etiquetada con un 1, alcanza la celda etiquetada con un -1 en el estado TERMINAL\_STATE. En ese caso, cuando \textit{epsilon} es igual a 0,05 (ver Figura \ref{image_4}), se logra llegar más veces a la celda etiquetada con un 1, es decir, existen más episodios donde se gana que donde se pierde. Por el contrario cuando \textit{epsilon} es igual a 1, se logra llegar más veces a la celda etiquetada con un -1, es decir, existen más episodios donde se pierde que donde se gana. 
-
-%Concretamente para cada episodio se devuelve el valor de la política óptima, este valor será positivo si hemos ganado, y negativo si hemos perdido, y al final de la ejecución, después de realizar todos los movimientos, se devuelve el valor: \textit{AVERAGE RETURNS FROM START STATE} que es el promedio de todos ellos. Con este valor podemos saber si después de todos los episodios hemos conseguido ganar o perder más veces, consecuentemente si hemos ganado o hemos perdido. Vemos a continuación este valor cuando la variable \textit{epsilon} es igual a 0,05 y cuando es igual a 1.
-
 Cuando \textit{epsilon} es igual a 0,05:
 \begin{itemize}
-	\item EPISODE 100 COMPLETE: RETURN WAS 0.59049
-	\item AVERAGE RETURNS FROM START STATE: 0.530784257974
+	\item AVERAGE RETURNS FROM START STATE: 0.530784257974.
 \end{itemize}
 
 Cuando \textit{epsilon} es igual a 1:
 \begin{itemize}
-	\item EPISODE 100 COMPLETE: RETURN WAS 0.0119725151826
-	\item AVERAGE RETURNS FROM START STATE: -0.079260284124
-\end{itemize}	
+	\item AVERAGE RETURNS FROM START STATE: -0.079260284124.
+\end{itemize}
 
-Comprobamos que cuando \textit{epsilon} es igual a 0,05 ganamos: 0.530784257974 $>= 0$; y cuando \textit{epsilon} es igual a 1 perdemos: -0.079260284124 $<=$ 0.
+Cuando \textit{epsilon} es igual a 0,05, el promedio de todos los valores máximos de $Q(s,a)$ es positivo, por lo tanto, ganamos la partida después de todos los movimientos/episodios (ver Figura \ref{image_4}). Al contrario, cuando \textit{epsilon} es igual a 1, el promedio de todos los valores máximos de $Q(s,a)$ es negativo, por lo tanto, perdemos la partida después de todos los movimientos/episodios (ver Figura \ref{image_3}). Eso se debe a la estrategia $\epsilon$-greedy comentada anteriormente (ver Pregunta \ref{pregunta_1}), donde si el valor de $\epsilon$ es más pequeño, la probabilidad de que el agente tome decisiones aleatorias será menor. Si la aleatoriedad es menor, menor será la inestabilidad del algoritmo Q-learning.
 
 \begin{figure}[h]
 	\centering
@@ -226,10 +223,9 @@ Comprobamos que cuando \textit{epsilon} es igual a 0,05 ganamos: 0.530784257974 
 % Pregunta 9
 { \question Después de la ejecución anterior, abrir el fichero \textit{qtable.txt}. ¿Qué contiene?}
 
-El fichero \textit{qtable.txt} contiene los valores de $Q(s,a)$ después de todas las actualizaciones en todos los episodios. Podemos ver el contenido del fichero fichero \textit{qtable.txt} a continuación:
+El fichero \textit{qtable.txt} contiene los valores máximos de $Q(s,a)$.
 
 \renewcommand{\tablename}{Tabla}
-
 \begin{table}[h]
 	\centering
 	\begin{tabular}{|c|c|c|c|c|}
@@ -247,11 +243,13 @@ El fichero \textit{qtable.txt} contiene los valores de $Q(s,a)$ después de toda
 		0.0            & 0.9            & 0.148078125    & 0.0            & 0.0   \\ \hline
 		0.0            & 0.0            & 0.0            & 0.0            & 1.0   \\ \hline
 	\end{tabular}
-	\caption{Contenido del fichero \textit{qtable.txt}.}
-	\label{table_2}
+	\caption{Contenido del fichero \textit{qtable.txt} cuando \textit{epsilon} es igual a 0,05.}
+	\label{table_1}
 \end{table}
 
 \end{questions}
+
+\newpage
 
 \section*{Ejercicio 2}
 
@@ -263,9 +261,12 @@ En el ejercicio anterior, siempre que el agente decidía moverse hacia una direc
 { \question Ejecuta y juega un par de partidas con el agente manual: \textit{python gridworld.py -m -n 0.3}. ¿Qué sucede? ¿Crees que el agente \textit{QLearningAgent} será capaz de aprender en este nuevo escenario?
 }
 
+Sucede que a veces, la dirección indicada no resulta la dirección deseada.
+
+Creo que el agente \textit{QLearningAgent} será capaz de aprender en este nuevo escenario, aunque al haber ruido TODO
+
 % Pregunta 2
-{ \question Reiniciar los valores de la tabla Q del fichero \textit{qtable.txt}. Para ello ejecutar desde el terminal: \\ \textit{cp qtable.ini.txt qtable.txt}.
-}
+{ \question Reiniciar los valores de la tabla Q del fichero \textit{qtable.txt}.}
 
 % Pregunta 3
 { \question Ejecutar el agente \textit{QLearningAgent}: \textit{python gridworld.py -a q -k 100 -n 0.3}.}
@@ -273,7 +274,7 @@ En el ejercicio anterior, siempre que el agente decidía moverse hacia una direc
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.5]{image_5}
-	\caption{Interfaz del dominio GridWorld.}
+	\caption{Interfaz del dominio GridWorld cuando \textit{epsilon} es igual a 0,05 y existe ruido.}
 	\label{image_5}
 \end{figure}
 
