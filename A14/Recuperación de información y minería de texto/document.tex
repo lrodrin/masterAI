@@ -120,6 +120,7 @@ class BooksToscrapeSpider(scrapy.Spider):
 \end{lstlisting}
 
 En este momento ya se puede iniciar la araña, pero primero es recomendable modificar el fichero \textit{books/settings.py} para limitar el acceso de la araña al catálogo web, ya que podemos generar un ataque \href{https://es.wikipedia.org/wiki/Ataque_de_denegaci%C3%B3n_de_servicio}{DDoS}. Para ello, debemos descomentar la variable \href{https://docs.scrapy.org/en/latest/topics/settings.html#download-delay}{DOWNLOAD\_DELAY} y darle un valor en segundos (p.ej. DOWNLOAD\_DELAY = 3). 	
+	
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.35]{images/book}
@@ -134,39 +135,55 @@ Finalmente, ya podemos iniciar la araña para que recupere la información del c
 	$ scrapy crawl books.toscrape -o books.json
 \end{lstlisting}
 
-\section{K-means}\label{kmeans} 
-K-Means es un algoritmo no supervisado de Clustering. Se utiliza cuando tenemos un montón de datos sin etiquetar. El objetivo de este algoritmo es el de encontrar "K" grupos (clústers) entre los datos.
+\section{K-Means}\label{kmeans} 
 
-El algoritmo trabaja iterativamente para asignar a cada "punto" (las filas de nuestro conjunto de entrada forman una coordenada) uno de los "K" grupos basado en sus características. Son agrupados en base a la similitud de sus features (las columnas). Como resultado de ejecutar el algoritmo tendremos:
+En esta sección se describe como se ha implementado el proceso de agrupamiento en Python (ver directorio kmeans en~\cite{GitHubRepo}) usando la librería scikit-learn~\cite{scikit-learn}. Existen muchos algoritmos de agrupación, y para esta práctica se ha elegido el algoritmo \href{https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html}{K-Means}. Concretamente, el algoritmo K-Means agrupará los títulos de los libros del catálogo web (recuperados en la sección~\ref{crawler}) en diferentes clústeres.
 
-\begin{itemize}
-	\item Los "centroids" de cada grupo que serán unas "coordenadas" de cada uno de los K conjuntos que se utilizarán para poder etiquetar nuevas muestras.
-	\item Etiquetas para el conjunto de datos de entrenamiento. Cada etiqueta perteneciente a uno de los K grupos formados.
-\end{itemize}
+\subsection{Datos de entrada para K-Means}
 
-Los grupos se van definiendo de manera "orgánica", es decir que se va ajustando su posición en cada iteración del proceso, hasta que converge el algoritmo. Una vez hallados los "centroids" deberemos analizarlos para ver cuales son sus características únicas, frente a la de los otros grupos. Estos grupos son las etiquetas que genera el algoritmo.
+Si nos fijamos en el fichero \textit{kmeans/kmeans.py}, vemos que empieza extrayendo la información de los libros almacenada en el fichero \textit{books/books.json}, que contiene 1000 documentos, y la convierte en un \textit{DataFrame}. Después se eliminan los valores NaN que pudieran existir en él y también es almacenado en un fichero CSV. Para ello, se usa la librería pandas~\cite{jeff_reback_2020_4309786}.
 
-Casos de Uso de K-Means
+\begin{lstlisting}[language=python]
+# create df
+books = open("../books/books.json", "r")
+dict_books = json.load(books)
+df = pd.DataFrame.from_dict(dict_books)
 
-El algoritmo de Clustering K-means es uno de los más usados para encontrar grupos ocultos, o sospechados en teoría sobre un conjunto de datos no etiquetado. Esto puede servir para confirmar -o desterrar- alguna teoría que teníamos asumida de nuestros datos. Y también puede ayudarnos a descubrir relaciones asombrosas entre conjuntos de datos, que de manera manual, no hubiéramos reconocido. Una vez que el algoritmo ha ejecutado y obtenido las etiquetas, será fácil clasificar nuevos valores o muestras entre los grupos obtenidos.
+# remove null values from df
+df = df.dropna()
 
-Nuestro caso de uso es -> Categorización de Inventario: agrupar los libros por categorías.
+# save df to csv
+df.to_csv("books.csv", index=False, sep=",")
+\end{lstlisting}
 
-\subsection{Datos de Entrada para K-Means}
+\begin{definition}
+Un DataFrame es una estructura de datos bidimensional etiquetada que acepta diferentes tipos datos de entrada organizados en columnas. Se puede pensar en un DataFrame como una hoja de cálculo o una tabla SQL.
+\end{definition}
 
-Las "features" o características que utilizaremos como entradas para aplicar el algoritmo k-means deberán ser de valores numéricos, continuos en lo posible. En caso de valores categóricos (por ej. Ciencia Ficción, Terror,etc) se puede intentar pasarlo a valor numérico.
+Las diez primeras líneas que forman el conjunto de datos de entrada:
 
-Categorización de  Ciencia Ficción, Terror...
+\begin{figure}[h]
+	\includegraphics[scale=0.55]{images/data}
+	\caption{Primeras líneas del conjunto de datos de entrada.}
+	\label{data}
+\end{figure}
 
-\section{HOLA}
+\subsection{Extracción de características}
 
-El conjunto de datos contiene diferenciadas 50 categorías - temáticas de libros. Pero alguna de las categorías solo aparece una vez en el conjunto de datos. Así pues, no se considera para el uso del clustering ya que no se podrán formar un grupo de más de un libro. Se eliminan del conjunto de datos. 
+Para cada título del conjunto de datos, calcularemos los valores de \href{https://es.wikipedia.org/wiki/Tf-idf}{TF-IDF}.
 
-Las temáticas a eliminar son: ["Academic", "Adult Fiction", "Crime", "Cultural", "Erotica", "Novels", "Paranormal", "Parenting", "Short Stories", "Suspense"]
+\begin{lstlisting}[language=python]
+vec = TfidfVectorizer(stop_words='english')
+vec.fit(df['title'])
+features = vec.transform(df['title'])
+\end{lstlisting}
 
-Una vez eliminadas tenemos 
+Ahora que tenemos la matriz de características, podemos enviarla al modelo para el entrenamiento.
 
-\newpage
+\subsection{Entrenamiento del algoritmo}
+
+\subsection{Visualización}
+
 \renewcommand{\refname}{Bibliografía}
 \bibliographystyle{unsrt}
 \bibliography{biblio}

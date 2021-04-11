@@ -36,6 +36,7 @@
 \RequirePackage{makecell}
 \RequirePackage{listings}
 \RequirePackage[table,xcdraw]{xcolor}
+\RequirePackage{amsthm}
 
 % Definir estilo para listings
 \definecolor{codegreen}{rgb}{0,0.6,0}
@@ -143,3 +144,6 @@
     \includegraphics[width=#1mm]{#2}
   \end{center}
 }
+
+%Definiciones
+\newtheorem{definition}{Definición}
