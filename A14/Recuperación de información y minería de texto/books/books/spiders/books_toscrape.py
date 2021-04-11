@@ -13,7 +13,8 @@ class BooksToscrapeSpider(scrapy.Spider):
         if next_page:
             yield scrapy.Request(response.urljoin(next_page), callback=self.parse)
 
-    def parse_book_page(self, response):
+    @staticmethod
+    def parse_book_page(response):
         item = {}
         product = response.css("div.product_main")
         item["title"] = product.css("h1 ::text").extract_first()
