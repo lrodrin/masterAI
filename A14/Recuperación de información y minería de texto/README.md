@@ -11,6 +11,7 @@ pip install -r requirements.txt
 
 ## Running the spider
 ```bash
+cd books
 scrapy crawl books.toscrape -o books.json
 ```
 This is a spider to scrape books from [http://books.toscrape.com](http://books.toscrape.com).
