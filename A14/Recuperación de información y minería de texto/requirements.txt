@@ -1,6 +1,9 @@
 Scrapy
 pandas
-scikit-learn
-matplotlib
-numpy
 openpyxl
+itemadapter
+matplotlib
+mpld3
+nltk
+scikit-learn
+numpy
