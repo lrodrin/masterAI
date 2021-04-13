@@ -1,4 +1,4 @@
-# Método de recomendación para grupos
+# Movie Recommendation System
 
 This application is written for Python 3.6 or later.
 
@@ -7,5 +7,5 @@ This application is written for Python 3.6 or later.
 ```bash
 python3 -m venv venv
 source venv/bin/activate
-pip install -r SR/requirements.txt
+pip install -r requirements.txt
 ```
