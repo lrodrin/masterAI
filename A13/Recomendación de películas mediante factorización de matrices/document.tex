@@ -29,7 +29,7 @@
 \frontmatter
 
 %Portada (Centrado todo)
-\centeredtitle{./images/LogoUIMP.png}{Máster Universitario en Investigación en Inteligencia Artificial}{Curso 2020-2021}{Sistemas de Recomendación}{ Recomendación de películas mediante factorización de matrices}
+\centeredtitle{./images/LogoUIMP.png}{Máster Universitario en Investigación en Inteligencia Artificial}{Curso 2020-2021}{Sistemas de Recomendación}{Recomendación para grupos \\ en Python}
 
 \begin{center}
 \large \today
@@ -57,233 +57,18 @@
 
 \section*{Primera parte}
 
-En la hoja Excel \href{https://poliformat.upv.es/access/content/group/ESP_0_2827/movies-users.xlsx}{movies-users.xlsx} aparecen las variables latentes para las películas y usuarios. Se pide que se ordenen las películas por la variable X4 en orden ascendente y que se indique si se aprecia algún tipo de relación entre las películas situadas al principio y al final de esta ordenación. Comprueba esto mismo utilizando otras variables latentes y comenta lo que se observa.
+\begin{tabular}{lrll}
+	\toprule
+	{} &  movieId &                        title &  year \\
+	\midrule
+	0 &        1 &                    Toy Story &  1995 \\
+	1 &        2 &                      Jumanji &  1995 \\
+	2 &        3 &             Grumpier Old Men &  1995 \\
+	3 &        4 &            Waiting to Exhale &  1995 \\
+	4 &        5 &  Father of the Bride Part II &  1995 \\
+	\bottomrule
+\end{tabular}
 
-Las 10 películas situadas al principio y al final ordenadas por la variable X4 en orden ascendente:
-
-\begin{table}[h]
-	\centering
-	\begin{tabular}{|c|l|r|}
-		\hline
-		\textbf{\_ID} & \multicolumn{1}{c|}{\textbf{Título}}                      & \multicolumn{1}{c|}{\textbf{X4}} \\ \hline
-		\textbf{15}   & Lord of the Rings: The Fellowship of the Ring, The (2001) & -1,50213                         \\ \hline
-		\textbf{96} & Incredibles, The (2004)      & -1,499481 \\ \hline
-		\textbf{39} & Schindler's List (1993)      & -1,389097 \\ \hline
-		\textbf{85} & Bourne Supremacy, The (2004) & -1,301435 \\ \hline
-		\textbf{16}   & Lord of the Rings: The Two Towers, The (2002)             & -1,186645                        \\ \hline
-		\textbf{17}   & Lord of the Rings: The Return of the King, The (2003)     & -1,16954                         \\ \hline
-		\textbf{47} & Monsters, Inc, (2001)        & -1,142476 \\ \hline
-		\textbf{28} & Godfather, The (1972)        & -1,00589  \\ \hline
-		\textbf{67} & Shrek 2 (2004)               & -0,955001 \\ \hline
-		\textbf{2}  & Finding Nemo (2003)          & -0,940476 \\ \hline
-		\hline
-		\textbf{100} & True Lies (1994)                        & 0,502973 \\ \hline
-		\textbf{58}   & Harry Potter and the Sorcerer's Stone (a,k,a, Harry Potter and the   Philosopher's Stone) (2001) & 0,532676                         \\ \hline
-		\textbf{30}  & Batman (1989)                           & 0,54508  \\ \hline
-		\textbf{35}  & Terminator 2: Judgment Day (1991)       & 0,552849 \\ \hline
-		\textbf{69}  & Mask, The (1994)                        & 0,636489 \\ \hline
-		\textbf{50}  & Independence Day (a,k,a, ID4) (1996)    & 0,733044 \\ \hline
-		\textbf{42}  & Fight Club (1999)                       & 0,89304  \\ \hline
-		\textbf{75}  & Die Hard: With a Vengeance (1995)       & 1,048333 \\ \hline
-		\textbf{86}  & Ace Ventura: Pet Detective (1994)       & 1,623392 \\ \hline
-		\textbf{91}  & Dumb \& Dumber (Dumb and Dumber) (1994) & 1,852664 \\ \hline
-	\end{tabular}
-	\caption{Las 10 películas situadas al principio y al final por la variable X4.}
-	\label{X4_principio}
-\end{table}
-
-Las 10 películas situadas al principio y al final ordenadas por la variable X1 en orden ascendente:
-
-\begin{table}[h]
-	\centering
-	\begin{tabular}{|c|l|r|}
-		\hline
-		\textbf{\_ID} & \multicolumn{1}{c|}{\textbf{Título}}                  & \multicolumn{1}{c|}{\textbf{X1}} \\ \hline
-		\textbf{25} & Sin City (2005)         & -1,174844 \\ \hline
-		\textbf{51} & Matrix, The (1999)      & -0,971155 \\ \hline
-		\textbf{94} & Unbreakable (2000)      & -0,74914  \\ \hline
-		\textbf{78}   & Star Wars: Episode V - The Empire Strikes Back (1980) & -0,647379                        \\ \hline
-		\textbf{79}   & Star Wars: Episode VI - Return of the Jedi (1983)     & -0,612156                        \\ \hline
-		\textbf{1}    & Star Wars: Episode IV - A New Hope (1977)             & -0,439267                        \\ \hline
-		\textbf{62} & V for Vendetta (2006)   & -0,435419 \\ \hline
-		\textbf{16}   & Lord of the Rings: The Two Towers, The (2002)         & -0,394141                        \\ \hline
-		\textbf{22} & Dark Knight, The (2008) & -0,362395 \\ \hline
-		\textbf{26} & Amelie (2001)           & -0,350705 \\ \hline
-		\hline
-		\textbf{3}  & Forrest Gump (1994)                                 & 0,901322 \\ \hline
-		\textbf{99} & X2: X-Men United (2003)                             & 0,943534 \\ \hline
-		\textbf{27} & Braveheart (1995)                                   & 1,003499 \\ \hline
-		\textbf{90} & Cast Away (2000)                                    & 1,014575 \\ \hline
-		\textbf{80} & Star Wars: Episode II - Attack of the Clones (2002) & 1,052404 \\ \hline
-		\textbf{55} & Catch Me If You Can (2002)                          & 1,205988 \\ \hline
-		\textbf{18} & O Brother, Where Art Thou? (2000)                   & 1,295014 \\ \hline
-		\textbf{58}   & Harry Potter and the Sorcerer's Stone (a,k,a, Harry Potter and the   Philosopher's Stone) (2001) & 1,359601                         \\ \hline
-		\textbf{59} & Harry Potter and the Chamber of Secrets (2002)      & 1,426698 \\ \hline
-		\textbf{41} & Erin Brockovich (2000)                              & 1,581845 \\ \hline
-	\end{tabular}
-	\caption{Las 10 películas situadas al principio y al final por la variable X1.}
-	\label{X1_principio}
-\end{table}
-
-Las 10 películas situadas al principio y al final ordenadas por la variable X2 en orden ascendente:
-
-\begin{table}[h]
-	\centering
-	\begin{tabular}{|c|l|r|}
-		\hline
-		\textbf{\_ID} & \multicolumn{1}{c|}{\textbf{Título}}                                             & \multicolumn{1}{c|}{\textbf{X2}} \\ \hline
-		\textbf{1}  & Star Wars: Episode IV - A New Hope (1977)    & -1,200818 \\ \hline
-		\textbf{89} & Chicken Run (2000)                           & -1,196121 \\ \hline
-		\textbf{97} & Beauty and the Beast (1991)                  & -1,024345 \\ \hline
-		\textbf{18} & O Brother, Where Art Thou? (2000)            & -0,93472  \\ \hline
-		\textbf{96} & Incredibles, The (2004)                      & -0,924104 \\ \hline
-		\textbf{68} & Aladdin (1992)                               & -0,85102  \\ \hline
-		\textbf{79}   & Star Wars: Episode VI - Return of the Jedi (1983)                                & -0,810417                        \\ \hline
-		\textbf{72} & Mission: Impossible (1996)                   & -0,760031 \\ \hline
-		\textbf{7}  & Eternal Sunshine of the Spotless Mind (2004) & -0,756446 \\ \hline
-		\textbf{10}   & Raiders of the Lost Ark (Indiana Jones and the Raiders of the Lost Ark)   (1981) & -0,733017                        \\ \hline
-		\hline
-		\textbf{52} & Matrix Reloaded, The (2003) & 0,45824  \\ \hline
-		\textbf{84} & Bourne Identity, The (2002) & 0,500795 \\ \hline
-		\textbf{55} & Catch Me If You Can (2002)  & 0,509645 \\ \hline
-		\textbf{42} & Fight Club (1999)           & 0,565428 \\ \hline
-		\textbf{56} & Requiem for a Dream (2000)  & 0,620814 \\ \hline
-		\textbf{11} & Gladiator (2000)            & 0,662236 \\ \hline
-		\textbf{80}   & Star Wars: Episode II - Attack of the Clones (2002) & 0,753224                         \\ \hline
-		\textbf{3}  & Forrest Gump (1994)         & 0,865292 \\ \hline
-		\textbf{70} & Saving Private Ryan (1998)  & 1,100681 \\ \hline
-		\textbf{25} & Sin City (2005)             & 1,34822  \\ \hline
-	\end{tabular}
-	\caption{Las 10 películas situadas al principio y al final por la variable X2.}
-	\label{X2_principio}
-\end{table}
-
-Las 10 películas situadas al principio y al final ordenadas por la variable X3 en orden ascendente:
-
-\begin{table}[h]
-	\centering
-	\begin{tabular}{|c|l|r|}
-		\hline
-		\textbf{\_ID} & \multicolumn{1}{c|}{\textbf{Título}}                & \multicolumn{1}{c|}{\textbf{X3}} \\ \hline
-		\textbf{57} & Twister (1996)                & -1,847263 \\ \hline
-		\textbf{73} & Mission: Impossible II (2000) & -1,755887 \\ \hline
-		\textbf{38} & Batman Forever (1995)         & -1,690647 \\ \hline
-		\textbf{64} & Mrs, Doubtfire (1993)         & -1,654256 \\ \hline
-		\textbf{77} & Speed (1994)                  & -1,55715  \\ \hline
-		\textbf{80}   & Star Wars: Episode II - Attack of the Clones (2002) & -1,531839                        \\ \hline
-		\textbf{48} & Titanic (1997)                & -1,513952 \\ \hline
-		\textbf{14} & Pretty Woman (1990)           & -1,462945 \\ \hline
-		\textbf{87} & Charlie's Angels (2000)       & -1,249498 \\ \hline
-		\textbf{52} & Matrix Reloaded, The (2003)   & -1,22588  \\ \hline
-		\hline
-		\textbf{9}  & Memento (2000)             & 0,961245 \\ \hline
-		\textbf{54} & Usual Suspects, The (1995) & 1,01613  \\ \hline
-		\textbf{26} & Amelie (2001)              & 1,027575 \\ \hline
-		\textbf{7}    & Eternal Sunshine of the Spotless Mind (2004) & 1,145716                         \\ \hline
-		\textbf{56} & Requiem for a Dream (2000) & 1,210166 \\ \hline
-		\textbf{21} & Lost in Translation (2003) & 1,298714 \\ \hline
-		\textbf{6}  & Kill Bill: Vol, 1 (2003)   & 1,327262 \\ \hline
-		\textbf{60} & Pulp Fiction (1994)        & 1,442504 \\ \hline
-		\textbf{42} & Fight Club (1999)          & 1,511413 \\ \hline
-		\textbf{37} & Kill Bill: Vol, 2 (2004)   & 1,732061 \\ \hline
-	\end{tabular}
-	\caption{Las 10 películas situadas al principio y al final por la variable X3.}
-	\label{X3_principio}
-\end{table}
-
-Las 10 películas situadas al principio y al final ordenadas por la variable X5 en orden ascendente:
-
-\begin{table}[h]
-	\centering
-	\begin{tabular}{|c|l|r|}
-		\hline
-		\textbf{\_ID} & \multicolumn{1}{c|}{\textbf{Título}} & \multicolumn{1}{c|}{\textbf{X5}} \\ \hline
-		\textbf{87} & Charlie's Angels (2000)       & -1,503001 \\ \hline
-		\textbf{21} & Lost in Translation (2003)    & -1,435582 \\ \hline
-		\textbf{73} & Mission: Impossible II (2000) & -1,39709  \\ \hline
-		\textbf{38} & Batman Forever (1995)         & -1,182924 \\ \hline
-		\textbf{57} & Twister (1996)                & -1,160915 \\ \hline
-		\textbf{86}   & Ace Ventura: Pet Detective (1994)    & -1,117656                        \\ \hline
-		\textbf{67} & Shrek 2 (2004)                & -1,047055 \\ \hline
-		\textbf{52} & Matrix Reloaded, The (2003)   & -0,97848  \\ \hline
-		\textbf{99} & X2: X-Men United (2003)       & -0,94687  \\ \hline
-		\textbf{14} & Pretty Woman (1990)           & -0,909895 \\ \hline
-		\hline
-		\textbf{3}  & Forrest Gump (1994)                                   & 0,988768 \\ \hline
-		\textbf{51} & Matrix, The (1999)                                    & 1,009168 \\ \hline
-		\textbf{1}  & Star Wars: Episode IV - A New Hope (1977)             & 1,058424 \\ \hline
-		\textbf{15}   & Lord of the Rings: The Fellowship of the Ring, The (2001) & 1,063062                         \\ \hline
-		\textbf{79} & Star Wars: Episode VI - Return of the Jedi (1983)     & 1,080815 \\ \hline
-		\textbf{17} & Lord of the Rings: The Return of the King, The (2003) & 1,095531 \\ \hline
-		\textbf{16} & Lord of the Rings: The Two Towers, The (2002)         & 1,096657 \\ \hline
-		\textbf{11} & Gladiator (2000)                                      & 1,112864 \\ \hline
-		\textbf{34} & Shawshank Redemption, The (1994)                      & 1,241398 \\ \hline
-		\textbf{78} & Star Wars: Episode V - The Empire Strikes Back (1980) & 1,256632 \\ \hline
-	\end{tabular}
-	\caption{Las 10 películas situadas al principio y al final por la variable X5.}
-	\label{X5_principio}
-\end{table}
-
-Las 10 películas situadas al principio y al final ordenadas por la variable X6 en orden ascendente:
-
-\begin{table}[h]
-	\centering
-	\begin{tabular}{|c|l|r|}
-		\hline
-		\textbf{\_ID} & \multicolumn{1}{c|}{\textbf{Título}}                          & \multicolumn{1}{c|}{\textbf{X6}} \\ \hline
-		\textbf{37} & Kill Bill: Vol, 2 (2004)    & -1,638298 \\ \hline
-		\textbf{6}  & Kill Bill: Vol, 1 (2003)    & -1,545494 \\ \hline
-		\textbf{90} & Cast Away (2000)            & -1,331613 \\ \hline
-		\textbf{97} & Beauty and the Beast (1991) & -1,079223 \\ \hline
-		\textbf{96} & Incredibles, The (2004)     & -1,02732  \\ \hline
-		\textbf{50}   & Independence Day (a,k,a, ID4) (1996)                          & -0,979442                        \\ \hline
-		\textbf{25} & Sin City (2005)             & -0,974198 \\ \hline
-		\textbf{87} & Charlie's Angels (2000)     & -0,950063 \\ \hline
-		\textbf{5}    & Pirates of the Caribbean: The Curse of the Black Pearl (2003) & -0,82364                         \\ \hline
-		\textbf{2}  & Finding Nemo (2003)         & -0,808264 \\ \hline
-		\hline
-		\textbf{88} & Fugitive, The (1993)        & 0,542654 \\ \hline
-		\textbf{77} & Speed (1994)                & 0,658863 \\ \hline
-		\textbf{59}   & Harry Potter and the Chamber of Secrets (2002) & 0,678092                         \\ \hline
-		\textbf{42} & Fight Club (1999)           & 0,729976 \\ \hline
-		\textbf{65} & Seven (a,k,a, Se7en) (1995) & 0,732908 \\ \hline
-		\textbf{55} & Catch Me If You Can (2002)  & 0,819855 \\ \hline
-		\textbf{8}    & Twelve Monkeys (a,k,a, 12 Monkeys) (1995)      & 0,916936                         \\ \hline
-		\textbf{54} & Usual Suspects, The (1995)  & 0,955644 \\ \hline
-		\textbf{22} & Dark Knight, The (2008)     & 0,987952 \\ \hline
-		\textbf{51} & Matrix, The (1999)          & 1,258047 \\ \hline
-	\end{tabular}
-	\caption{Las 10 películas situadas al principio y al final por la variable X6.}
-	\label{X6_principio}
-\end{table}
-
-La columna C de la pestaña \textit{movies} de la hoja Excel está preparada para que se calcule la valoración de cada película para el usuario número 410. Esta valoración debe calcularse utilizando el producto escalar tal como se explica en el tema de factorización de matrices.
-
-Una vez calculada la valoración para el usuario 410 se debe indicar qué variable latente se ajusta mejor a los gustos del usuario. Apoya las conclusiones gráfica y numéricamente. 
-
-%La hoja Excel que se debe entregar ha de llamarse 'primera_parte.xlsx'
-
-Para la realización de la primera parte de la práctica se ha utilizado un script en Python que se puede encontrar en el siguiente enlace: \href{https://github.com/lrodrin/masterAI/tree/master/A13/Recomendaci%C3%B3n%20de%20pel%C3%ADculas%20mediante%20factorizaci%C3%B3n%20de%20matrices/primera%20parte}{Recomendación de películas mediante factorización de matrices/primera parte/}.
-
-\newpage
-
-\section*{Segunda Parte}
-
-Utilizando la \href{https://poliformat.upv.es/access/content/group/ESP_0_2827/Movielens.zip}{aplicación de recomendación de películas}:
-
-\begin{enumerate}
-	\item Borra las puntuaciones que vienen por defecto precargadas en la aplicación y puntúa, según tus gustos, 5 películas, procurando que haya variedad de puntuaciones, tanto buenas como malas.
-	
-	\item 
-	Entrena el recomendador y obtén las valoraciones del modelo para todas las películas del conjunto. Puedes fijar la semilla para que los experimentos sean reproducibles. Si utilizas un espacio de salida con pocas dimensiones, por ejemplo K=2, es probable que los resultados no sean demasiado buenos. Prueba con espacios mayores como K=100 o K=200.
-	
-	\item Una vez seleccionada la dimensión del espacio de salida, repite el aprendizaje varias veces, añadiendo  cada vez 5 valoraciones más a las anteriores, para tener así 10, 15, 20, 25, y 30 películas valoradas. 
-	%Guarda la valoración del modelo para todas las películas en las distintas fases del experimento en una hoja excel llamada %'valoraciones.xlsx', que deberás entregar junto con la memoria.
-	
-	\item Haz un estudio para analizar los resultados, obtenidos con las distintas ejecuciones, tratando de ver si el modelo converge hacia un ranking más o menos estable. No es importante si el sistema converge hacia una solución más o menos adecuada, sino si converge hacia un ranking estable (bueno o malo). Para ello debes escoger alguna medida para comparar las salidas (rankings) de las distintas ejecuciones y justificar por qué te parece razonable usarla.
-	
-	\item Haz también una valoración del ranking final (con 30 películas valoradas), indicando si te parece aceptable o no, en función de tus gustos.
-\end{enumerate}
 
 %\newpage
 %\renewcommand{\refname}{Bibliografía}

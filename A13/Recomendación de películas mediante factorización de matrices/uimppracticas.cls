@@ -35,6 +35,7 @@
 \RequirePackage{float}
 \RequirePackage{makecell}
 \RequirePackage{listings}
+\RequirePackage{booktabs}
 
 %Poner la fuente como predeterminada
 \renewcommand\familydefault{\sfdefault}
