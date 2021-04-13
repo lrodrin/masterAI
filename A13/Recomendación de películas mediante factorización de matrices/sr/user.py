@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 # Generate random 100 ratings for a user
-movies_df = pd.read_csv('../dataset/movies.csv')
+movies_df = pd.read_csv('../dataset/movies_parsed.csv')
 new_df = pd.DataFrame()
 new_df['title'] = movies_df.title.sample(n=100)
 new_df['rating'] = np.random.randint(1, 5, new_df.shape[0])
