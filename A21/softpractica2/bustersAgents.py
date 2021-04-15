@@ -592,11 +592,12 @@ class RLAgent(BustersAgent):
           state = action => nextState and reward transition.
           You should do your Q-Value update here
         """
-        print "Started in state:"
+        print "Started in state: "
         self.printInfo(state)
         print "Took action: ", action
-        print "Ended in state:"
+        print "Ended in state: "
         self.printInfo(nextState)
+        reward = reward + self.getReward(state, nextState)  # TODO
         print "Got reward: ", reward
         print "---------------------------------"
         ###########################	INSERTA TU CODIGO AQUI ##########################################
@@ -606,12 +607,23 @@ class RLAgent(BustersAgent):
         # Debemos desarrollar este metodo siguiendo un esquema similar al de la practica 1. En este caso,
         # para determinar si nextState es terminal o no, se puede utilizar la funcion nextState.isWin().
         #
-        #################################################################################################
-
-        #################################################################################################
+        ################################################################################################# # TODO
         if nextState.isWin():
             # If a terminal state is reached
             self.writeQtable()
+
+        else:   # Q(state,action) <- (1-self.alpha) * Q(state,action) + self.alpha * (reward + self.discount * max a' Q(nextState, a'))
+            position = self.computePosition(state)
+            action_column = self.actions[action]
+
+            # Compute the current sample, the immediate reward + the discounted maximum
+            # Q-value for the state the agent landed in
+            sample = reward + self.gamma * self.getValue(nextState)
+
+            # Update every Q-value for each action per state, based on the current sample and the stored value of Q(s, a)
+            # Update Q-values
+            self.q_table[position][action_column] = (1 - self.alpha) * self.q_table[position][action_column] + self.alpha * sample
+        #################################################################################################
 
     def getPolicy(self, state):
         """
