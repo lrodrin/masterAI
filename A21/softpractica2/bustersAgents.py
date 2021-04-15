@@ -265,9 +265,9 @@ class RLAgent(BustersAgent):
         # a partir de esa informacion. Despues, hay que seleccionar unos valores adecuados para los parametros self.alpha,
         # self.gamma y self.epsilon.
         #
-        #################################################################################################
-        nRowsQTable = gameState.data.layout.width * gameState.data.layout.height  # TODO
-        print "\tnRowsQTable: ", nRowsQTable
+        ################################################################################################# TODO
+        nRowsQTable = gameState.data.layout.width * gameState.data.layout.height
+        print "\tregisterInitialState - nRowsQTable: ", nRowsQTable
         self.nRowsQTable = 16
         self.alpha = 0.4        # learning rate
         self.gamma = 0.9        # discount factor
@@ -282,7 +282,7 @@ class RLAgent(BustersAgent):
         else:
             self.table_file = open("qtable.txt", "w")
             self.q_table = (np.zeros((self.nRowsQTable, self.nColumnsQTable))*10).tolist()
-            print "\tq_table: ", self.q_table
+            print "\tregisterInitialState - q_table: ", self.q_table
             self.writeQtable()
         #################################################################################################
 
@@ -329,10 +329,11 @@ class RLAgent(BustersAgent):
         print "\tScore: ", gameState.getScore()
 
     def readQtable(self):
-        "Read qtable from disc"
+        """
+        Read qtable from disc
+        """
         table = self.table_file.readlines()
         q_table = []
-
         for i, line in enumerate(table):
             row = line.split()
             row = [float(x) for x in row]
@@ -341,40 +342,116 @@ class RLAgent(BustersAgent):
         return q_table
 
     def writeQtable(self):
-        "Write qtable to disc"
+        """
+        Write qtable to disc
+        """
         self.table_file.seek(0)
         self.table_file.truncate()
-
         for line in self.q_table:
             for item in line:
                 self.table_file.write(str(item) + " ")
+
             self.table_file.write("\n")
+
+    ################################################################################################# TODO
+    @staticmethod
+    def getLivingGhostIndexDistances(gameState):
+        """
+        Get the living ghost index distances
+        """
+        return [(i, distance) for i, (distance, living) in
+                enumerate(zip(gameState.data.ghostDistances, gameState.getLivingGhosts()[1:])) if living]
+
+    @staticmethod
+    def getMinIndex(distances):
+        """
+        Get minimum ghost index distances
+        """
+        return min(distances, key=lambda t: t[1])
+
+    @staticmethod
+    def getDirection(pacman, ghost):
+        """
+        Get directions of pacman and ghosts
+        """
+        direction = []
+
+        if (pacman[1] - ghost[1]) != 0 and (pacman[1] - ghost[1]) > 0:
+            direction.append("South")
+        if (pacman[1] - ghost[1]) != 0 and (pacman[1] - ghost[1]) < 0:
+            direction.append("North")
+        if (pacman[0] - ghost[0]) != 0 and (pacman[0] - ghost[0]) > 0:
+            direction.append("West")
+        if (pacman[0] - ghost[0]) != 0 and (pacman[0] - ghost[0]) < 0:
+            direction.append("East")
+
+        return direction
+
+    def getNearestGhostDirection(self, gameState):
+        pacman_position = gameState.getPacmanPosition()
+        living_ghosts_distances = self.getLivingGhostIndexDistances(gameState)
+        min_distance_ghost_index = self.getMinIndex(living_ghosts_distances)[0]
+        nearest_ghost_position = gameState.getGhostPositions()[min_distance_ghost_index]
+        pacman_ghost_direction = self.getDirection(pacman_position, nearest_ghost_position)
+        return pacman_ghost_direction, nearest_ghost_position
+
+    @staticmethod
+    def directionIsBlocked(gameState, ghost_position):
+        walls = gameState.getWalls()
+        walls_arr = np.array(walls.data)
+        pacman_position = gameState.getPacmanPosition()
+        print "\tdirectionIsBlocked - pacman_position: ", pacman_position
+        x_min = min(pacman_position[0], ghost_position[0])
+        x_max = max(pacman_position[0], ghost_position[0]) + 1
+        y_min = min(pacman_position[1], ghost_position[1])
+        if y_min < 3:
+            y_min = 3
+        y_max = max(pacman_position[1], ghost_position[1]) + 1
+        print "\tdirectionIsBlocked - x_min, x_max, y_min, y_max: ", x_min, x_max, y_min, y_max
+        print "\tdirectionIsBlocked - walls_arr: ", pacman_position
+        grid_beetween = walls_arr[x_min:x_max, y_min:y_max]
+        if len(grid_beetween) == 0:
+            return False
+        print "\tdirectionIsBlocked - grid_beetween: ", grid_beetween
+        return np.any(np.all(grid_beetween, axis=1)) or np.any(np.all(grid_beetween, axis=0))
+    #################################################################################################
 
     def computePosition(self, state):
         """
         Compute the row of the qtable for a given state.
         """
         ###########################	INSERTA TU CODIGO AQUI  #########################################
+        #
+        #
+        # INSTRUCCIONES:
+        #
+        # Dado un estado state hay que determinar que fila de nuestra tabla Q le corresponde. Siguiendo
+        # con el ejemplo anterior, podriamos hacer que:
+        #
+        # nearest_ghost_up, no_wall     -> Fila 0
+        # nearest_ghost_down, no_wall   -> Fila 1
+        # nearest_ghost_right, no_wall  -> Fila 2
+        # nearest_ghost_left, no_wall   -> Fila 3
+        # nearest_ghost_up, wall        -> Fila 4
+        # nearest_ghost_down, wall      -> Fila 5
+        # nearest_ghost_right, wall     -> Fila 6
+        # nearest_ghost_left, wall      -> Fila 7
+        #
+        # Como antes, este es solo un ejemplo, y la transformacion dependera del tipo de representacion
+        # para los estados hayamos utilizado
+        #
+        ################################################################################################# TODO
+        pacman_ghost_direction, ghost_position = self.getNearestGhostDirection(state)
+        hasWall = self.directionIsBlocked(state, ghost_position)
+        pacman_position = state.getPacmanPosition()
+        print "\tpacman_position: ", pacman_position
+        print "\t", (pacman_position[0]-1)+(pacman_position[1]-1)*state.data.layout.width
+        actions_value = 0
+        for i, direction in enumerate(pacman_ghost_direction):
+            actions_value += min(self.actions[direction], 2) + i * 4
 
-    #
-    # INSTRUCCIONES:
-    #
-    # Dado un estado state hay que determinar que fila de nuestra tabla Q le corresponde. Siguiendo
-    # con el ejemplo anterior, podriamos hacer que:
-    #
-    # nearest_ghost_up, no_wall     -> Fila 0
-    # nearest_ghost_down, no_wall   -> Fila 1
-    # nearest_ghost_right, no_wall  -> Fila 2
-    # nearest_ghost_left, no_wall   -> Fila 3
-    # nearest_ghost_up, wall        -> Fila 4
-    # nearest_ghost_down, wall      -> Fila 5
-    # nearest_ghost_right, wall     -> Fila 6
-    # nearest_ghost_left, wall      -> Fila 7
-    #
-    # Como antes, este es solo un ejemplo, y la transformacion dependera del tipo de representacion
-    # para los estados hayamos utilizado
-    #
-    #################################################################################################
+        return int(hasWall) * 8 + actions_value
+        #################################################################################################
 
     def getQValue(self, state, action):
 
