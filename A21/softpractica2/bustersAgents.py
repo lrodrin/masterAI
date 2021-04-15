@@ -24,9 +24,8 @@ import busters
 
 
 class NullGraphics:
-    """
-    Placeholder for graphics
-    """
+    "Placeholder for graphics"
+
     def initialize(self, state, isBlue=False):
         pass
 
@@ -50,10 +49,9 @@ class KeyboardInference(inference.InferenceModule):
     """
     Basic inference module for use with the keyboard.
     """
+
     def initializeUniformly(self, gameState):
-        """
-        Begin with a uniform distribution over ghost positions.
-        """
+        "Begin with a uniform distribution over ghost positions."
         self.beliefs = util.Counter()
         for p in self.legalPositions: self.beliefs[p] = 1.0
         self.beliefs.normalize()
@@ -78,19 +76,17 @@ class KeyboardInference(inference.InferenceModule):
 
 
 class BustersAgent:
-    """
-    An agent that tracks and displays its beliefs about ghost positions.
-    """
-    def __init__(self, index=0, inference="ExactInference", ghostAgents=None, observeEnable=True, elapseTimeEnable=True):
+    "An agent that tracks and displays its beliefs about ghost positions."
+
+    def __init__(self, index=0, inference="ExactInference", ghostAgents=None, observeEnable=True,
+                 elapseTimeEnable=True):
         inferenceType = util.lookup(inference, globals())
         self.inferenceModules = [inferenceType(a) for a in ghostAgents]
         self.observeEnable = observeEnable
         self.elapseTimeEnable = elapseTimeEnable
 
     def registerInitialState(self, gameState):
-        """
-        Initializes beliefs and inference modules
-        """
+        "Initializes beliefs and inference modules"
         import __main__
         self.display = __main__._display
         for inference in self.inferenceModules:
@@ -99,17 +95,13 @@ class BustersAgent:
         self.firstMove = True
 
     def observationFunction(self, gameState):
-        """
-        Removes the ghost states from the gameState
-        """
+        "Removes the ghost states from the gameState"
         agents = gameState.data.agentStates
         gameState.data.agentStates = [agents[0]] + [None for i in range(1, len(agents))]
         return gameState
 
     def getAction(self, gameState):
-        """
-        Updates beliefs, then chooses an action based on updated beliefs.
-        """
+        "Updates beliefs, then chooses an action based on updated beliefs."
         # for index, inf in enumerate(self.inferenceModules):
         #    if not self.firstMove and self.elapseTimeEnable:
         #        inf.elapseTime(gameState)
@@ -121,16 +113,13 @@ class BustersAgent:
         return self.chooseAction(gameState)
 
     def chooseAction(self, gameState):
-        """
-        By default, a BustersAgent just stops.  This should be overridden.
-        """
+        "By default, a BustersAgent just stops.  This should be overridden."
         return Directions.STOP
 
 
 class BustersKeyboardAgent(BustersAgent, KeyboardAgent):
-    """
-    An agent controlled by the keyboard that displays beliefs about ghost positions.
-    """
+    "An agent controlled by the keyboard that displays beliefs about ghost positions."
+
     def __init__(self, index=0, inference="KeyboardInference", ghostAgents=None):
         KeyboardAgent.__init__(self, index)
         BustersAgent.__init__(self, index, inference, ghostAgents)
@@ -148,6 +137,8 @@ from game import Directions
 import random, sys
 
 '''Random PacMan Agent'''
+
+
 class RandomPAgent(BustersAgent):
 
     def registerInitialState(self, gameState):
@@ -155,18 +146,20 @@ class RandomPAgent(BustersAgent):
         self.distancer = Distancer(gameState.data.layout, False)
 
     ''' Example of counting something'''
+
     def countFood(self, gameState):
         food = 0
         for width in gameState.data.food:
             for height in width:
-                if height == True:
+                if (height == True):
                     food = food + 1
         return food
+
     ''' Print the layout'''
 
     def printGrid(self, gameState):
         table = ""
-        # print(gameState.data.layout) ## Print by terminal
+        ##print(gameState.data.layout) ## Print by terminal
         for x in range(gameState.data.layout.width):
             for y in range(gameState.data.layout.height):
                 food, walls = gameState.data.food, gameState.data.layout.walls
@@ -176,7 +169,7 @@ class RandomPAgent(BustersAgent):
 
     def chooseAction(self, gameState):
         move = Directions.STOP
-        legal = gameState.getLegalActions(0)  # Legal position from the pacman
+        legal = gameState.getLegalActions(0)  ##Legal position from the pacman
         move_random = random.randint(0, 3)
         if (move_random == 0) and Directions.WEST in legal:  move = Directions.WEST
         if (move_random == 1) and Directions.EAST in legal: move = Directions.EAST
@@ -186,13 +179,10 @@ class RandomPAgent(BustersAgent):
 
 
 class GreedyBustersAgent(BustersAgent):
-    """
-    An agent that charges the closest ghost.
-    """
+    "An agent that charges the closest ghost."
+
     def registerInitialState(self, gameState):
-        """
-        Pre-computes the distance between every two points.
-        """
+        "Pre-computes the distance between every two points."
         BustersAgent.registerInitialState(self, gameState)
         self.distancer = Distancer(gameState.data.layout, False)
 
@@ -234,9 +224,7 @@ class GreedyBustersAgent(BustersAgent):
 
 
 class RLAgent(BustersAgent):
-    """
-    RL PacMan Agent
-    """
+
     def registerInitialState(self, gameState):
         BustersAgent.registerInitialState(self, gameState)
         self.distancer = Distancer(gameState.data.layout, False)
@@ -267,37 +255,35 @@ class RLAgent(BustersAgent):
         # a partir de esa informacion. Despues, hay que seleccionar unos valores adecuados para los parametros self.alpha,
         # self.gamma y self.epsilon.
         #
-        ################################################################################################# TODO
-        nRowsQTable = gameState.data.layout.width * gameState.data.layout.height
-        print "\tregisterInitialState - nRowsQTable: ", nRowsQTable
+        #################################################################################################   TODO
         self.nRowsQTable = 16
-        self.alpha = 0.4        # learning rate
-        self.gamma = 0.9        # discount factor
-        self.epsilon = 0.05     # exploration rate
-        self.cell_registry = np.zeros((gameState.data.layout.width, gameState.data.layout.height))
-        self.actions = {"North": 0, "East": 1, "South": 2, "West": 3, "Stop": 4, "None": 4}
-
-        self.nColumnsQTable = 5
+        self.alpha = float(0.4)
+        self.gamma = float(0.9)
+        self.epsilon = float(1)
+        self.actions = {"North": 0, "East": 1, "South": 2, "West": 3, "Stop": 4}
+        #################################################################################################
+        self.nColumnsQTable = 4
         if os.path.isfile("qtable.txt"):
             self.table_file = open("qtable.txt", "r+")
             self.q_table = self.readQtable()
         else:
             self.table_file = open("qtable.txt", "w")
-            self.q_table = (np.zeros((self.nRowsQTable, self.nColumnsQTable))*10).tolist()
-            print "\tregisterInitialState - q_table: ", self.q_table
+            self.q_table = (np.zeros((self.nRowsQTable, self.nColumnsQTable))).tolist()
             self.writeQtable()
-        #################################################################################################
 
     ''' Example of counting something'''
-    def countFood(self, gameState):
+
+    @staticmethod
+    def countFood(gameState):
         food = 0
         for width in gameState.data.food:
             for height in width:
-                if height == True:
+                if height:
                     food = food + 1
         return food
 
-    def printInfo(self, gameState):
+    @staticmethod
+    def printInfo(gameState):
         # Dimensiones del mapa
         width, height = gameState.data.layout.width, gameState.data.layout.height
         print "\tWidth: ", width, " Height: ", height
@@ -314,7 +300,8 @@ class RLAgent(BustersAgent):
         # Posicion de los fantasmas
         print "\tGhosts positions: ", gameState.getGhostPositions()
         # Direciones de los fantasmas
-        print "\tGhosts directions: ", [gameState.getGhostDirections().get(i) for i in range(0, gameState.getNumAgents() - 1)]
+        print "\tGhosts directions: ", [gameState.getGhostDirections().get(i) for i in
+                                        range(0, gameState.getNumAgents() - 1)]
         # Distancia de manhattan a los fantasmas
         print "\tGhosts distances: ", gameState.data.ghostDistances
         # Puntos de comida restantes
@@ -336,6 +323,7 @@ class RLAgent(BustersAgent):
         """
         table = self.table_file.readlines()
         q_table = []
+
         for i, line in enumerate(table):
             row = line.split()
             row = [float(x) for x in row]
@@ -349,10 +337,10 @@ class RLAgent(BustersAgent):
         """
         self.table_file.seek(0)
         self.table_file.truncate()
+
         for line in self.q_table:
             for item in line:
                 self.table_file.write(str(item) + " ")
-
             self.table_file.write("\n")
 
     ################################################################################################# TODO
@@ -390,6 +378,9 @@ class RLAgent(BustersAgent):
         return direction
 
     def getNearestGhostDirection(self, gameState):
+        """
+        Get nearest ghost position
+        """
         pacman_position = gameState.getPacmanPosition()
         living_ghosts_distances = self.getLivingGhostIndexDistances(gameState)
         min_distance_ghost_index = self.getMinIndex(living_ghosts_distances)[0]
@@ -399,6 +390,9 @@ class RLAgent(BustersAgent):
 
     @staticmethod
     def directionIsBlocked(gameState, ghost_position):
+        """
+
+        """
         walls = gameState.getWalls()
         walls_arr = np.array(walls.data)
         pacman_position = gameState.getPacmanPosition()
@@ -416,14 +410,15 @@ class RLAgent(BustersAgent):
             return False
         print "\tdirectionIsBlocked - grid_beetween: ", grid_beetween
         return np.any(np.all(grid_beetween, axis=1)) or np.any(np.all(grid_beetween, axis=0))
+
     #################################################################################################
 
     def computePosition(self, state):
         """
         Compute the row of the qtable for a given state.
         """
-        ###########################	INSERTA TU CODIGO AQUI  #########################################
-        #
+        ###########################	INSERTA TU CODIGO AQUI  ######################################### TODO
+
         #
         # INSTRUCCIONES:
         #
@@ -442,18 +437,17 @@ class RLAgent(BustersAgent):
         # Como antes, este es solo un ejemplo, y la transformacion dependera del tipo de representacion
         # para los estados hayamos utilizado
         #
-        ################################################################################################# TODO
+        #################################################################################################
         pacman_ghost_direction, ghost_position = self.getNearestGhostDirection(state)
         hasWall = self.directionIsBlocked(state, ghost_position)
         pacman_position = state.getPacmanPosition()
         print "\tpacman_position: ", pacman_position
-        print "\t", (pacman_position[0]-1)+(pacman_position[1]-1)*state.data.layout.width
+        print "\t", (pacman_position[0] - 1) + (pacman_position[1] - 1) * state.data.layout.width
         actions_value = 0
         for i, direction in enumerate(pacman_ghost_direction):
             actions_value += min(self.actions[direction], 2) + i * 4
 
         return int(hasWall) * 8 + actions_value
-        #################################################################################################
 
     def getQValue(self, state, action):
         """
@@ -476,7 +470,6 @@ class RLAgent(BustersAgent):
         legalActions = state.getLegalActions(0)
         if len(legalActions) == 0:
             return 0
-
         return max(self.q_table[self.computePosition(state)])
 
     def computeActionFromQValues(self, state):
@@ -511,13 +504,14 @@ class RLAgent(BustersAgent):
         """
         legalActions = state.getLegalActions(0)
         action = None
+
         if len(legalActions) == 0:
             return action
 
         flip = util.flipCoin(self.epsilon)
+
         if flip:
             return random.choice(legalActions)
-
         return self.getPolicy(state)
 
     ################################################################################################# TODO
@@ -527,12 +521,13 @@ class RLAgent(BustersAgent):
         Get alive ghost distances
         """
         return list(filter(lambda d: d is not None, distances))
+
     #################################################################################################
 
     def getReward(self, state, nextState):
         """
-        Return a reward value based on the information of state and nextState
-        """
+              Return a reward value based on the information of state and nextState
+            """
         ###########################	INSERTA TU CODIGO AQUI  #########################################
         #
         # INSTRUCCIONES:
@@ -560,24 +555,32 @@ class RLAgent(BustersAgent):
         min_ghost_distances_actual_state = state.data.ghostDistances[min_distance_ghost_index_actual_State]
         number_ghost_actual_state = len(self.getAliveGhostDistances(state.data.ghostDistances))
         number_ghost_next_state = len(self.getAliveGhostDistances(nextState.data.ghostDistances))
-        actual_state_has_walls = self.directionIsBlocked(state, state.getGhostPositions()[min_distance_ghost_index_next_State])
-        next_state_has_walls = self.directionIsBlocked(nextState, nextState.getGhostPositions()[min_distance_ghost_index_next_State])
+        actual_state_has_walls = self.directionIsBlocked(state,
+                                                         state.getGhostPositions()[min_distance_ghost_index_next_State])
+        next_state_has_walls = self.directionIsBlocked(nextState, nextState.getGhostPositions()[
+            min_distance_ghost_index_next_State])
 
         if number_ghost_next_state < number_ghost_actual_state:
             reward += 100
-        print "\tgetReward - actual_state_has_walls: ", actual_state_has_walls
 
-        if min_ghost_distance_next_state < min_ghost_distances_actual_state and not actual_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
+        if min_ghost_distance_next_state < min_ghost_distances_actual_state and not actual_state_has_walls \
+                and number_ghost_next_state == number_ghost_actual_state:
             reward += 3
-        elif min_ghost_distance_next_state > min_ghost_distances_actual_state and actual_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
+
+        elif min_ghost_distance_next_state > min_ghost_distances_actual_state and actual_state_has_walls \
+                and number_ghost_next_state == number_ghost_actual_state:
             reward += 1
-        elif min_ghost_distance_next_state < min_ghost_distances_actual_state and actual_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
+
+        elif min_ghost_distance_next_state < min_ghost_distances_actual_state and actual_state_has_walls \
+                and number_ghost_next_state == number_ghost_actual_state:
             reward += -1
-        elif (min_ghost_distance_next_state > min_ghost_distances_actual_state and not actual_state_has_walls) or (
-                min_ghost_distance_next_state == min_ghost_distances_actual_state and number_ghost_next_state == number_ghost_actual_state):
+
+        elif (min_ghost_distance_next_state > min_ghost_distances_actual_state and not actual_state_has_walls) or \
+                (
+                        min_ghost_distance_next_state == min_ghost_distances_actual_state and number_ghost_next_state == number_ghost_actual_state):
             reward += -min_ghost_distance_next_state
 
-        # if next_state_has_walls
+        # If next_state_has_walls
         if not actual_state_has_walls and next_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
             reward -= 4
         elif actual_state_has_walls and not next_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
@@ -592,12 +595,12 @@ class RLAgent(BustersAgent):
           state = action => nextState and reward transition.
           You should do your Q-Value update here
         """
-        print "Started in state: "
+        reward = reward + self.getReward(state, nextState)  # TODO
+        print "Started in state:"
         self.printInfo(state)
         print "Took action: ", action
-        print "Ended in state: "
+        print "Ended in state:"
         self.printInfo(nextState)
-        reward = reward + self.getReward(state, nextState)  # TODO
         print "Got reward: ", reward
         print "---------------------------------"
         ###########################	INSERTA TU CODIGO AQUI ##########################################
@@ -607,32 +610,25 @@ class RLAgent(BustersAgent):
         # Debemos desarrollar este metodo siguiendo un esquema similar al de la practica 1. En este caso,
         # para determinar si nextState es terminal o no, se puede utilizar la funcion nextState.isWin().
         #
-        ################################################################################################# # TODO
+        ################################################################################################# TODO
+        position = self.computePosition(state)
+        action_column = self.actions[action] - 1
+        sample = reward + self.gamma * self.getValue(nextState)
+
         if nextState.isWin():
             # If a terminal state is reached
             self.writeQtable()
 
-        else:   # Q(state,action) <- (1-self.alpha) * Q(state,action) + self.alpha * (reward + self.discount * max a' Q(nextState, a'))
-            position = self.computePosition(state)
-            action_column = self.actions[action]
-
-            # Compute the current sample, the immediate reward + the discounted maximum
-            # Q-value for the state the agent landed in
-            sample = reward + self.gamma * self.getValue(nextState)
-
-            # Update every Q-value for each action per state, based on the current sample and the stored value of Q(s, a)
-            # Update Q-values
-            self.q_table[position][action_column] = (1 - self.alpha) * self.q_table[position][action_column] + self.alpha * sample
+        else:
+            self.q_table[position][action_column] = (1 - self.alpha) * self.q_table[position][
+                action_column] + self.alpha * sample
+            print self.q_table
         #################################################################################################
 
     def getPolicy(self, state):
-        """
-        Return the best action in the qtable for a given state
-        """
+        "Return the best action in the qtable for a given state"
         return self.computeActionFromQValues(state)
 
     def getValue(self, state):
-        """
-        Return the highest q value for a given state
-        """
+        "Return the highest q value for a given state"
         return self.computeValueFromQValues(state)
