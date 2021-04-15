@@ -267,7 +267,7 @@ class RLAgent(BustersAgent):
         #
         #################################################################################################
         nRowsQTable = gameState.data.layout.width * gameState.data.layout.height  # TODO
-        print "nRowsQTable: {}".format(nRowsQTable)
+        print "\tnRowsQTable: ", nRowsQTable
         self.nRowsQTable = 16
         self.alpha = 0.4        # learning rate
         self.gamma = 0.9        # discount factor
@@ -282,7 +282,7 @@ class RLAgent(BustersAgent):
         else:
             self.table_file = open("qtable.txt", "w")
             self.q_table = (np.zeros((self.nRowsQTable, self.nColumnsQTable))*10).tolist()
-            print "q_table: {}".format(self.q_table)
+            print "\tq_table: ", self.q_table
             self.writeQtable()
         #################################################################################################
 
@@ -312,8 +312,7 @@ class RLAgent(BustersAgent):
         # Posicion de los fantasmas
         print "\tGhosts positions: ", gameState.getGhostPositions()
         # Direciones de los fantasmas
-        print "\tGhosts directions: ", [gameState.getGhostDirections().get(i) for i in
-                                        range(0, gameState.getNumAgents() - 1)]
+        print "\tGhosts directions: ", [gameState.getGhostDirections().get(i) for i in range(0, gameState.getNumAgents() - 1)]
         # Distancia de manhattan a los fantasmas
         print "\tGhosts distances: ", gameState.data.ghostDistances
         # Puntos de comida restantes
