@@ -277,9 +277,9 @@ class RLAgent(BustersAgent):
         #
         #################################################################################################
         self.nRowsQTable = 100
-        self.alpha = 0
-        self.gamma = 0
-        self.epsilon = 1
+        self.alpha = 0.2        # learning rate
+        self.gamma = 0.8        # discount factor
+        self.epsilon = 0.05     # exploration rate
         #################################################################################################
         self.nColumnsQTable = 4
         if os.path.isfile("qtable.txt"):
