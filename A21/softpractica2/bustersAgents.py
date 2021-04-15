@@ -234,7 +234,9 @@ class GreedyBustersAgent(BustersAgent):
 
 
 class RLAgent(BustersAgent):
-
+    """
+    RL PacMan Agent
+    """
     def registerInitialState(self, gameState):
         BustersAgent.registerInitialState(self, gameState)
         self.distancer = Distancer(gameState.data.layout, False)
@@ -454,11 +456,10 @@ class RLAgent(BustersAgent):
         #################################################################################################
 
     def getQValue(self, state, action):
-
         """
-          Returns Q(state,action)
-          Should return 0.0 if we have never seen a state
-          or the Q node value otherwise
+        Returns Q(state,action)
+        Should return 0.0 if we have never seen a state
+        or the Q node value otherwise
         """
         position = self.computePosition(state)
         action_column = self.actions[action]
@@ -467,21 +468,22 @@ class RLAgent(BustersAgent):
 
     def computeValueFromQValues(self, state):
         """
-          Returns max_action Q(state,action)
-          where the max is over legal actions.  Note that if
-          there are no legal actions, which is the case at the
-          terminal state, you should return a value of 0.0.
+        Returns max_action Q(state,action)
+        where the max is over legal actions.  Note that if
+        there are no legal actions, which is the case at the
+        terminal state, you should return a value of 0.0.
         """
         legalActions = state.getLegalActions(0)
         if len(legalActions) == 0:
             return 0
+
         return max(self.q_table[self.computePosition(state)])
 
     def computeActionFromQValues(self, state):
         """
-          Compute the best action to take in a state.  Note that if there
-          are no legal actions, which is the case at the terminal state,
-          you should return None.
+        Compute the best action to take in a state.  Note that if there
+        are no legal actions, which is the case at the terminal state,
+        you should return None.
         """
         legalActions = state.getLegalActions(0)
         if len(legalActions) == 0:
@@ -501,27 +503,35 @@ class RLAgent(BustersAgent):
 
     def getAction(self, state):
         """
-          Compute the action to take in the current state.  With
-          probability self.epsilon, we should take a random action and
-          take the best policy action otherwise.  Note that if there are
-          no legal actions, which is the case at the terminal state, you
-          should choose None as the action.
+        Compute the action to take in the current state.  With
+        probability self.epsilon, we should take a random action and
+        take the best policy action otherwise.  Note that if there are
+        no legal actions, which is the case at the terminal state, you
+        should choose None as the action.
         """
         legalActions = state.getLegalActions(0)
         action = None
-
         if len(legalActions) == 0:
             return action
 
         flip = util.flipCoin(self.epsilon)
-
         if flip:
             return random.choice(legalActions)
+
         return self.getPolicy(state)
+
+    ################################################################################################# TODO
+    @staticmethod
+    def getAliveGhostDistances(distances):
+        """
+        Get alive ghost distances
+        """
+        return list(filter(lambda d: d is not None, distances))
+    #################################################################################################
 
     def getReward(self, state, nextState):
         """
-          Return a reward value based on the information of state and nextState		
+        Return a reward value based on the information of state and nextState
         """
         ###########################	INSERTA TU CODIGO AQUI  #########################################
         #
@@ -535,10 +545,46 @@ class RLAgent(BustersAgent):
         # comido todos los fantasmas. Teniendo en cuenta todo esto, disenya tu propia funcion de refuerzo
         # que premie el comportamiento del agente.
         #
-        #################################################################################################
+        ################################################################################################# TODO
         reward = 0
-        #################################################################################################
+
+        if nextState.isWin():
+            return 1000
+
+        next_state_ghost_index_distances = self.getLivingGhostIndexDistances(nextState)
+        actual_state_ghost_index_distances = self.getLivingGhostIndexDistances(nextState)
+        min_distance_ghost_index_next_State = self.getMinIndex(next_state_ghost_index_distances)[0]
+        min_distance_ghost_index_actual_State = self.getMinIndex(actual_state_ghost_index_distances)[0]
+
+        min_ghost_distance_next_state = nextState.data.ghostDistances[min_distance_ghost_index_next_State]
+        min_ghost_distances_actual_state = state.data.ghostDistances[min_distance_ghost_index_actual_State]
+        number_ghost_actual_state = len(self.getAliveGhostDistances(state.data.ghostDistances))
+        number_ghost_next_state = len(self.getAliveGhostDistances(nextState.data.ghostDistances))
+        actual_state_has_walls = self.directionIsBlocked(state, state.getGhostPositions()[min_distance_ghost_index_next_State])
+        next_state_has_walls = self.directionIsBlocked(nextState, nextState.getGhostPositions()[min_distance_ghost_index_next_State])
+
+        if number_ghost_next_state < number_ghost_actual_state:
+            reward += 100
+        print "\tgetReward - actual_state_has_walls: ", actual_state_has_walls
+
+        if min_ghost_distance_next_state < min_ghost_distances_actual_state and not actual_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
+            reward += 3
+        elif min_ghost_distance_next_state > min_ghost_distances_actual_state and actual_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
+            reward += 1
+        elif min_ghost_distance_next_state < min_ghost_distances_actual_state and actual_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
+            reward += -1
+        elif (min_ghost_distance_next_state > min_ghost_distances_actual_state and not actual_state_has_walls) or (
+                min_ghost_distance_next_state == min_ghost_distances_actual_state and number_ghost_next_state == number_ghost_actual_state):
+            reward += -min_ghost_distance_next_state
+
+        # if next_state_has_walls
+        if not actual_state_has_walls and next_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
+            reward -= 4
+        elif actual_state_has_walls and not next_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
+            reward += 1
+
         return reward
+        #################################################################################################
 
     def update(self, state, action, nextState, reward):
         """
