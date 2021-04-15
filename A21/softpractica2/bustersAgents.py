@@ -27,7 +27,6 @@ class NullGraphics:
     """
     Placeholder for graphics
     """
-
     def initialize(self, state, isBlue=False):
         pass
 
@@ -51,7 +50,6 @@ class KeyboardInference(inference.InferenceModule):
     """
     Basic inference module for use with the keyboard.
     """
-
     def initializeUniformly(self, gameState):
         """
         Begin with a uniform distribution over ghost positions.
@@ -83,9 +81,7 @@ class BustersAgent:
     """
     An agent that tracks and displays its beliefs about ghost positions.
     """
-
-    def __init__(self, index=0, inference="ExactInference", ghostAgents=None, observeEnable=True,
-                 elapseTimeEnable=True):
+    def __init__(self, index=0, inference="ExactInference", ghostAgents=None, observeEnable=True, elapseTimeEnable=True):
         inferenceType = util.lookup(inference, globals())
         self.inferenceModules = [inferenceType(a) for a in ghostAgents]
         self.observeEnable = observeEnable
@@ -135,7 +131,6 @@ class BustersKeyboardAgent(BustersAgent, KeyboardAgent):
     """
     An agent controlled by the keyboard that displays beliefs about ghost positions.
     """
-
     def __init__(self, index=0, inference="KeyboardInference", ghostAgents=None):
         KeyboardAgent.__init__(self, index)
         BustersAgent.__init__(self, index, inference, ghostAgents)
@@ -153,8 +148,6 @@ from game import Directions
 import random, sys
 
 '''Random PacMan Agent'''
-
-
 class RandomPAgent(BustersAgent):
 
     def registerInitialState(self, gameState):
@@ -162,7 +155,6 @@ class RandomPAgent(BustersAgent):
         self.distancer = Distancer(gameState.data.layout, False)
 
     ''' Example of counting something'''
-
     def countFood(self, gameState):
         food = 0
         for width in gameState.data.food:
@@ -170,7 +162,6 @@ class RandomPAgent(BustersAgent):
                 if height == True:
                     food = food + 1
         return food
-
     ''' Print the layout'''
 
     def printGrid(self, gameState):
@@ -198,7 +189,6 @@ class GreedyBustersAgent(BustersAgent):
     """
     An agent that charges the closest ghost.
     """
-
     def registerInitialState(self, gameState):
         """
         Pre-computes the distance between every two points.
@@ -276,22 +266,27 @@ class RLAgent(BustersAgent):
         # self.gamma y self.epsilon.
         #
         #################################################################################################
-        self.nRowsQTable = 100
-        self.alpha = 0.2        # learning rate
-        self.gamma = 0.8        # discount factor
+        nRowsQTable = gameState.data.layout.width * gameState.data.layout.height  # TODO
+        print "nRowsQTable: {}".format(nRowsQTable)
+        self.nRowsQTable = 16
+        self.alpha = 0.4        # learning rate
+        self.gamma = 0.9        # discount factor
         self.epsilon = 0.05     # exploration rate
-        #################################################################################################
-        self.nColumnsQTable = 4
+        self.cell_registry = np.zeros((gameState.data.layout.width, gameState.data.layout.height))
+        self.actions = {"North": 0, "East": 1, "South": 2, "West": 3, "Stop": 4, "None": 4}
+
+        self.nColumnsQTable = 5
         if os.path.isfile("qtable.txt"):
             self.table_file = open("qtable.txt", "r+")
             self.q_table = self.readQtable()
         else:
             self.table_file = open("qtable.txt", "w")
-            self.q_table = (np.zeros((self.nRowsQTable, self.nColumnsQTable))).tolist()
+            self.q_table = (np.zeros((self.nRowsQTable, self.nColumnsQTable))*10).tolist()
+            print "q_table: {}".format(self.q_table)
             self.writeQtable()
+        #################################################################################################
 
     ''' Example of counting something'''
-
     def countFood(self, gameState):
         food = 0
         for width in gameState.data.food:
