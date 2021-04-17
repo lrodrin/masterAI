@@ -37,6 +37,9 @@
 \RequirePackage{listings}
 \RequirePackage[table,xcdraw]{xcolor}
 \RequirePackage{amsthm}
+\RequirePackage{booktabs}
+\RequirePackage{adjustbox}
+\RequirePackage{wrapfig}
 
 % Definir estilo para listings
 \definecolor{codegreen}{rgb}{0,0.6,0}

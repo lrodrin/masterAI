@@ -137,50 +137,126 @@ Finalmente, ya podemos iniciar la araña para que recupere la información del c
 
 \section{K-Means}\label{kmeans} 
 
-En esta sección se describe como se ha implementado el proceso de agrupamiento en Python (ver directorio kmeans en~\cite{GitHubRepo}) usando la librería scikit-learn~\cite{scikit-learn}. Existen muchos algoritmos de agrupación, y para esta práctica se ha elegido el algoritmo \href{https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html}{K-Means}. Concretamente, el algoritmo K-Means agrupará los títulos de los libros del catálogo web (recuperados en la sección~\ref{crawler}) en diferentes clústeres.
+En esta sección se describe como se ha implementado el proceso de agrupamiento en Python (ver directorio kmeans en~\cite{GitHubRepo}) usando la librería scikit-learn~\cite{scikit-learn}. Existen muchos algoritmos de agrupación, y para esta práctica se ha elegido el algoritmo \href{https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html}{K-Means}. Concretamente, el algoritmo K-Means agrupará los títulos de los libros del catálogo web (recuperados en la sección~\ref{crawler}) en diferentes clústeres por sus similitudes.
 
-\subsection{Datos de entrada para K-Means}
+\subsection{Datos de entrada}
 
-Si nos fijamos en el fichero \textit{kmeans/kmeans.py}, vemos que empieza extrayendo la información de los libros almacenada en el fichero \textit{books/books.json}, que contiene 1000 documentos, y la convierte en un \textit{DataFrame}. Después se eliminan los valores NaN que pudieran existir en él y también es almacenado en un fichero CSV. Para ello, se usa la librería pandas~\cite{jeff_reback_2020_4309786}.
+Si nos fijamos en \textit{main} del fichero \textit{kmeans/kmeans.py}, vemos que empieza extrayendo la información de los libros almacenada en el fichero \textit{books/books.json} (1000 documentos) y la convierte en un \textit{DataFrame} (ver Definición~\ref{dataframe}). A continuación, se eliminan los valores NaN que pudieran existir en él y es almacenado en un fichero CSV (\textit{kmeans/books.csv}). Para ello, se usa la librería pandas~\cite{jeff_reback_2020_4309786}.
+
+Las primeras líneas del \textit{DataFrame} que forman los datos de entrada:
+
+\begin{table}[h]
+	\begin{adjustbox}{width=\columnwidth,center}
+		\begin{tabular}{lllll}
+			\toprule
+			title & category & description & price & rating \\
+			\midrule
+			Sapiens: A Brief History of Humankind & History & From a renowned historian... & 54.23 & Five \\
+			Sharp Objects & Mystery & WICKED above her hipbone, GIRL... & 47.82 & Four \\
+			Soumission & Fiction & Dans une France assez... & 50.10 & One \\
+			Tipping the Velvet & Historical Fiction & Erotic and absorbing... & 53.74 & One \\
+			A Light in the Attic & Poetry & It's hard to imagine... & 51.77 & Three \\
+			\bottomrule
+		\end{tabular}
+	\end{adjustbox}
+	\caption{Conjunto de datos de entrada.}
+	\label{table1}
+\end{table}
+
+En este punto, concretamos la estructura de datos que se utilizará para alimentar el algoritmo K-Means. Se crea una lista que contiene los títulos de los libros.
 
 \begin{lstlisting}[language=python]
-# create df
-books = open("../books/books.json", "r")
-dict_books = json.load(books)
-df = pd.DataFrame.from_dict(dict_books)
-
-# remove null values from df
-df = df.dropna()
-
-# save df to csv
-df.to_csv("books.csv", index=False, sep=",")
+titles = df["title"].to_list()
+print(titles[:10])  # first 10 titles
+>> ['Sapiens: A Brief History of Humankind', 'Sharp Objects', 'Soumission', 'Tipping the Velvet', 'A Light in the Attic', "It's Only the Himalayas", 'Libertarianism for Beginners', 'Mesaerion: The Best Science Fiction Stories 1800-1849', 'Olio', 'Our Band Could Be Your Life: Scenes from the American Indie Underground, 1981-1991']
 \end{lstlisting}
 
-\begin{definition}
+\begin{definition}\label{dataframe}
 Un DataFrame es una estructura de datos bidimensional etiquetada que acepta diferentes tipos datos de entrada organizados en columnas. Se puede pensar en un DataFrame como una hoja de cálculo o una tabla SQL.
 \end{definition}
 
-Las diez primeras líneas que forman el conjunto de datos de entrada:
+\subsection{Palabras vacías, derivación y tokenización}
 
-\begin{figure}[h]
-	\includegraphics[scale=0.55]{images/data}
-	\caption{Primeras líneas del conjunto de datos de entrada.}
-	\label{data}
-\end{figure}
-
-\subsection{Extracción de características}
-
-Para cada título del conjunto de datos, calcularemos los valores de \href{https://es.wikipedia.org/wiki/Tf-idf}{TF-IDF}.
+Esta sección se centra en definir algunas funciones para manipular los títulos. Primero, se obtiene la lista de palabras vacías en inglés (ver Definición~\ref{palabras_vacías}), usando la librería NLTK~\cite{bird2009natural}. La lista de palabras vacías es en inglés ya que los títulos de los libros están inglés. Segundo, se obtiene el \textit{Snowball Stemmer}, también usando la librería NLTK, para descomponer las palabras que componen cada título en su raíz.
 
 \begin{lstlisting}[language=python]
-vec = TfidfVectorizer(stop_words='english')
-vec.fit(df['title'])
-features = vec.transform(df['title'])
+# nltk's English stopwords as variable called 'stopwords'	
+stopwords = nltk.corpus.stopwords.words('english')  
+# nltk's SnowballStemmer as variabled 'stemmer'
+stemmer = SnowballStemmer("english")
+print(stopwords[:10])   # first 10 stopwords
+>> ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', "you're"]    
 \end{lstlisting}
 
-Ahora que tenemos la matriz de características, podemos enviarla al modelo para el entrenamiento.
+\begin{definition}\label{palabras_vacías}
+	Las palabras vacías son palabras sin significado como artículos, pronombres, preposiciones, etc. que son filtradas antes o después del procesamiento de datos en lenguaje natural (texto).
+\end{definition}
+
+A continuación se define la función \textit{tokenize\_and\_stem}: 
+
+\begin{lstlisting}[language=python]
+def tokenize_and_stem(text):
+	# first tokenize by sentence, then by word to ensure that punctuation is caught as it's own token
+	tokens = [word for sent in nltk.sent_tokenize(text) for word in nltk.word_tokenize(sent)]
+	filtered_tokens = []
+	# filter out any tokens not containing letters (e.g., numeric tokens, raw punctuation)
+	for token in tokens:
+		if re.search('[a-zA-Z]', token):
+			filtered_tokens.append(token)
+	stems = [stemmer.stem(t) for t in filtered_tokens]
+	return stems  
+\end{lstlisting}
+
+Esta función, que divide los títulos en una lista de tokens y los descompone con su raíz, será usada en la siguiente sección para calcular la matriz tf-idf.
+ 
+\subsection{Extracción de características}
+
+\begin{wrapfigure}{r}{0.4\textwidth}
+	\centering
+	\includegraphics[width=0.4\textwidth]{images/matrix}
+	\caption{Matriz \\ de documentos y términos.}
+	\label{matrix}
+\end{wrapfigure}
+
+En esta sección, se calcula la matriz \href{https://es.wikipedia.org/wiki/Tf-idf}{tf-idf}. Para ello, primero se tienen que contar las apariciones de las palabras por cada documento, que se transforman después en la matriz de documentos y términos (ver Figura~\ref{matrix}). Después, las palabras que aparecen con frecuencia dentro de un documento pero no con frecuencia dentro del \textbf{corpus} reciben una ponderación más alta, ya que se supone que estas palabras contienen más significado en relación con el documento.
+
+\begin{definition}\label{corpus}
+En lingüística, un corpus o corpus de texto es un recurso lingüístico formado por un conjunto grande de textos y estructurados.
+\end{definition}
+
+
+La matriz tf-idf para todos los títulos se calcula usando la librería \href{https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html}{sklearn.feature\_extraction.text.TfidfVectorizer}. 
+
+Un par de cosas a tener en cuenta sobre los parámetros definidos en la función TfidfVectorizer son:
+
+\begin{itemize}
+	\item max\_features: construye un vocabulario que solo considera las características máximas principales ordenadas por frecuencia de términos de todo el corpus (ver Definición~\ref{corpus}).
+	\item use\_idf: habilita la reponderación de frecuencia de documentos inversa.
+	\item ngram\_range: define el límite inferior y superior del rango de n-valores para diferentes n-gramos que se extraerán. Principalmente se usa para observar unigramas, bigramas y trigramas. Ver \href{https://en.wikipedia.org/wiki/N-gram}{n-grams}.
+\end{itemize}
+
+\begin{lstlisting}[language=python]
+# define vectorizer parameters
+tfidf_vectorizer = TfidfVectorizer(max_features=200000, stop_words=stopwords, use_idf=True,
+	tokenizer=tokenize_and_stem, ngram_range=(1, 3))
+tfidf_matrix = tfidf_vectorizer.fit_transform(titles)  # fit the vectorizer to titles
+print(tfidf_matrix.shape)
+>> (998, 7258)
+\end{lstlisting}
+
+Vemos que la matriz tf-idf está formada por 998 documentos y 7258 términos.
 
 \subsection{Entrenamiento del algoritmo}
+
+\subsubsection{Ejecución}
+
+Ejecutamos el algoritmo para 5 clusters y obtenemos las etiquetas y los centroids.
+
+\begin{lstlisting}[language=python]
+# model training
+clusters = KMeans(n_clusters=5, random_state=0)
+clusters.fit(features)
+\end{lstlisting}
 
 \subsection{Visualización}
 
