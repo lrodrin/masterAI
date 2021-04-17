@@ -1,9 +1,9 @@
 Scrapy
 pandas
 openpyxl
-itemadapter
 matplotlib
 mpld3
 nltk
 scikit-learn
 numpy
+tabulate
