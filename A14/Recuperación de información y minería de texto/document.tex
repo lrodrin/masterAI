@@ -248,18 +248,40 @@ Vemos que la matriz tf-idf está formada por 998 documentos y 7258 términos.
 
 \subsection{Entrenamiento del algoritmo}
 
-\subsubsection{Ejecución}
-
-Ejecutamos el algoritmo para 5 clusters y obtenemos las etiquetas y los centroids.
+Ahora pasemos a la parte divertida. Usando la matriz tf-idf, calculada en la sección anterior, se entrena el algoritmo K-Means utilizando \href{https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html}{sklearn.cluster.KMeans}. K-means se inicializa con un número predeterminado de clústeres. Elegí 40 como número predeterminado de clústeres, ya que el conjunto de datos contiene libros que pertenecen a una de las 40 categorías, descartando 10 categorías que solo hacen referencia a un único libro.
 
 \begin{lstlisting}[language=python]
-# model training
-clusters = KMeans(n_clusters=5, random_state=0)
-clusters.fit(features)
+# K-Means clustering
+num_clusters = 40
+km = KMeans(n_clusters=num_clusters)
+km.fit(tfidf_matrix)
+clusters = km.labels_.tolist()
 \end{lstlisting}
 
-\subsection{Visualización}
+Para analizar los resultados del algoritmo, primero creamos un nuevo \textit{Dataframe} con los títulos y su clústeres asignados. Vemos las primeras líneas del contenido del nuevo \textit{Dataframe} a continuación:
 
+\begin{table}[h]
+	\centering
+	\begin{tabular}{cr}
+		\toprule
+		title &  cluster \\
+		\midrule
+		Sapiens: A Brief History of Humankind & 26 \\
+		Sharp Objects & 0 \\
+		Soumission & 12 \\
+		Tipping the Velvet & 12 \\
+		A Light in the Attic & 9 \\
+		\bottomrule
+	\end{tabular}
+	\caption{Dataframe de los títulos \\ y su clústeres asignados.}
+	\label{table2}
+\end{table}
+
+
+\subsection{Evaluación}
+
+
+Para la visualización de los clústeres creados en la sección anterior, se tienen que hacer algún prprocesamiento.
 \renewcommand{\refname}{Bibliografía}
 \bibliographystyle{unsrt}
 \bibliography{biblio}
