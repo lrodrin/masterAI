@@ -177,7 +177,7 @@ print(titles[:10])  # first 10 titles
 Un DataFrame es una estructura de datos bidimensional etiquetada que acepta diferentes tipos datos de entrada organizados en columnas. Se puede pensar en un DataFrame como una hoja de cálculo o una tabla SQL.
 \end{definition}
 
-\subsection{Palabras vacías, stemming y tokenización}
+\subsection{Palabras vacías, stemming y tokenización}\label{stem_token}
 
 Esta sección se centra en definir algunas funciones para transformar el texto de los títulos de los libros para facilitar el entrenamiento del algoritmo K-Means. Para empezar, se obtiene la lista de palabras vacías en inglés (ver Definición~\ref{palabras_vacías}), utilizando la librería NLTK~\cite{bird2009natural}. La lista de palabras vacías es en inglés ya que los títulos de los libros están inglés. Después, se obtiene el \textit{Snowball Stemmer}, también utilizando la librería NLTK, para descomponer las palabras que forman cada título en sus raíces correspondientes.
 
@@ -217,81 +217,154 @@ def tokenize_only(text):
 	return filtered_tokens  
 \end{lstlisting}
 
-Estas funciones son muy parecidas, ya que las dos realizan el mismo proceso de tokenización sobre un texto de entrada, pero además la función \textit{tokenize\_and\_stem} extrae las raíces de las palabras que forman parte del texto. Las funciones se usarán para calcular la matriz tf-idf de siguiente sección y para la visualización de los clústeres resultantes del entrenamiento del algoritmo K-Means.
+Estas funciones son casi iguales, ya que las dos realizan el mismo proceso de tokenización sobre un texto de entrada, pero no son exactamente iguales porqué la función \textit{tokenize\_and\_stem}, además de realizar la tokenización, extrae las raíces de las palabras que forman parte ese texto de entrada. Las funciones se usarán para calcular la matriz tf-idf en la siguiente sección y para la visualización de los clústeres resultantes del entrenamiento del algoritmo K-Means.
 
 \subsection{Extracción de características}
 
-\begin{wrapfigure}{r}{0.4\textwidth}
+\begin{wrapfigure}[10]{r}{0.4\textwidth}
 	\centering
+	\caption{Ejemplo de matriz tf-idf.}
 	\includegraphics[width=0.4\textwidth]{images/matrix}
-	\caption{Matriz \\ de documentos y términos.}
 	\label{matrix}
 \end{wrapfigure}
 
-En esta sección, se calcula la matriz \href{https://es.wikipedia.org/wiki/Tf-idf}{tf-idf}. Para ello, primero se tienen que contar las apariciones de las palabras por cada documento, que se transforman después en la matriz de documentos y términos (ver Figura~\ref{matrix}). Después, las palabras que aparecen con frecuencia dentro de un documento pero no con frecuencia dentro del \textbf{corpus} reciben una ponderación más alta, ya que se supone que estas palabras contienen más significado en relación con el documento.
+En esta sección, se calculará la matriz tf-idf (ver Figura~\ref{matrix}). Pero para ello, primero se tienen que calcular las frecuencias de las palabras que contienen los títulos, y el método más popular para hacerlo es el llamado \href{https://es.wikipedia.org/wiki/Tf-idf}{TF-IDF}. Este es un acrónimo que significa \textit{Frecuencia de Término – Frecuencia Inversa de Documento} que son los componentes de las puntuaciones resultantes asignadas a cada palabra. Sin entrar en la matemática, TF-IDF son puntuaciones de frecuencia de palabras que tratan de resaltar las palabras que son más interesantes y/o frecuentes. En el caso de la práctica usamos \href{https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html}{sklearn.feature\_extraction.text.TfidfVectorizer}.
 
-\begin{definition}\label{corpus}
-En lingüística, un corpus o corpus de texto es un recurso lingüístico formado por un conjunto grande de textos y estructurados.
-\end{definition}
-
-
-La matriz tf-idf para todos los títulos se calcula usando la librería \href{https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html}{sklearn.feature\_extraction.text.TfidfVectorizer}. 
-
-Un par de cosas a tener en cuenta sobre los parámetros definidos en la función TfidfVectorizer son:
-
-\begin{itemize}
-	\item max\_features: construye un vocabulario que solo considera las características máximas principales ordenadas por frecuencia de términos de todo el corpus (ver Definición~\ref{corpus}).
-	\item use\_idf: habilita la reponderación de frecuencia de documentos inversa.
-	\item ngram\_range: define el límite inferior y superior del rango de n-valores para diferentes n-gramos que se extraerán. Principalmente se usa para observar unigramas, bigramas y trigramas. Ver \href{https://en.wikipedia.org/wiki/N-gram}{n-grams}.
-\end{itemize}
+\newpage 
 
 \begin{lstlisting}[language=python]
-# define vectorizer parameters
-tfidf_vectorizer = TfidfVectorizer(max_features=200000, stop_words=stopwords, use_idf=True,
+tfidf_vectorizer = TfidfVectorizer(stop_words=stopwords, use_idf=True, 
 	tokenizer=tokenize_and_stem, ngram_range=(1, 3))
-tfidf_matrix = tfidf_vectorizer.fit_transform(titles)  # fit the vectorizer to titles
+									
+# tokenize and build coded vocabulary
+tfidf_matrix = tfidf_vectorizer.fit_transform(titles)
 print(tfidf_matrix.shape)
 >> (998, 7258)
 \end{lstlisting}
 
-Vemos que la matriz tf-idf está formada por 998 documentos y 7258 términos.
+La matriz tf-idf está formada por 998 términos y 7258 documentos. También se puede observar el vocabulario (nombrado \textit{terms}) que ha usado \textit{TfidfVectorizer} en la construcción de la matriz:
+
+\begin{lstlisting}[language=python]
+terms = tfidf_vectorizer.get_feature_names()
+print(terms[:20])    # first 20 terms
+>> ["'d", "'d go", "'d go bernadett", "'m", "'m gone", "'m home", "'m lie", "'m lie tell", "'s", "'s alic", "'s alic wonderland", "'s astound", "'s astound stori", "'s autobiographi", "'s babi", "'s babi ice", "'s berlin", "'s call", "'s call cormoran", "'s childhood"]
+\end{lstlisting}
+
+\begin{definition}\label{n_grama}
+Un n-grama es una secuencia contigua de n elementos de una muestra determinada de texto o de un discurso. Los elementos pueden ser fonemas, sílabas, letras o palabras según la aplicación. Los n-gramas normalmente se recopilan de un texto.
+\end{definition}
+
+Un par de cosas a tener en cuenta sobre los parámetros definidos en la función \textit{TfidfVectorizer}:
+
+\begin{itemize}
+	\item use\_idf: habilita la reponderación de frecuencia de documentos inversa.
+	\item ngram\_range: define el límite inferior y superior del rango de n-valores para diferentes n-gramas que se extraerán. Ver Definición~\ref{n_grama}.
+\end{itemize}
 
 \subsection{Entrenamiento del algoritmo}
 
-Ahora pasemos a la parte divertida. Usando la matriz tf-idf, calculada en la sección anterior, se entrena el algoritmo K-Means utilizando \href{https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html}{sklearn.cluster.KMeans}. K-means se inicializa con un número predeterminado de clústeres. Elegí 40 como número predeterminado de clústeres, ya que el conjunto de datos contiene libros que pertenecen a una de las 40 categorías, descartando 10 categorías que solo hacen referencia a un único libro.
+Ahora pasamos a la parte divertida. Usando la matriz tf-idf calculada en la sección anterior, se puede ejecutar el algoritmo K-Means utilizando \href{https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html}{sklearn.cluster.KMeans}, para comprender mejor la estructura oculta dentro de los títulos de los libros. El algoritmo K-Means se inicializa con un número predeterminado de clústeres. Elegí el número 40 como número predeterminado de clústeres, ya que el conjunto de datos de entrada contiene libros que pertenecen al menos a más de dos de las 50 categorías existentes en el conjunto de datos, descartando 10 categorías que solo hacen referencia a un único libro.
 
 \begin{lstlisting}[language=python]
-# K-Means clustering
 num_clusters = 40
 km = KMeans(n_clusters=num_clusters)
 km.fit(tfidf_matrix)
 clusters = km.labels_.tolist()
 \end{lstlisting}
 
-Para analizar los resultados del algoritmo, primero creamos un nuevo \textit{Dataframe} con los títulos y su clústeres asignados. Vemos las primeras líneas del contenido del nuevo \textit{Dataframe} a continuación:
+Para analizar los resultados y visualizar los clústeres (\textit{clusters}), ha sido necesario crear dos nuevos dataframes. Uno que contenga los títulos y sus clústeres asignados (\textit{frame}), y otro que contenga las raíces de los títulos con sus palabras asignadas (\textit{vocab\_frame}). Para crear el segundo, además, ha sido necesario crear dos nuevos vocabularios: uno que contenga los títulos tokanizados y otro que contenga las raíces de los títulos tokanizados. Para ello se han usado las funciones: \textit{tokenize\_and\_stem} y \textit{tokenize\_only}, ya nombradas anteriormente (ver Sección~\ref{stem_token}).
 
-\begin{table}[h]
+\begin{lstlisting}[language=python]
+# new df with titles and clusters
+frame = pd.DataFrame({'title': titles, 'cluster': clusters}, index=[clusters], 
+	columns=['title', 'cluster'])
+\end{lstlisting}
+
+\newpage
+\begin{lstlisting}[language=python]
+# new two vocabularies: stemmed and tokenized
+totalvocab_stemmed = []
+totalvocab_tokenized = []
+for i in titles:
+	allwords_stemmed = tokenize_and_stem(i)  # for each item in 'titles', tokenize/stem
+	totalvocab_stemmed.extend(allwords_stemmed)  # extend the 'totalvocab_stemmed' list
+
+	allwords_tokenized = tokenize_only(i)
+	totalvocab_tokenized.extend(allwords_tokenized)
+	
+vocab_frame = pd.DataFrame({'words': totalvocab_tokenized}, index=totalvocab_stemmed)
+print('There are ' + str(vocab_frame.shape[0]) + ' items in vocab_frame')
+>> There are 6371 items in vocab_frame
+\end{lstlisting}
+
+El beneficio de este procedimiento es que proporciona una forma eficiente de buscar una raíz y devolver la palabra que la contiene muy rápidamente. La desventaja es que hay demasiadas raíces, concretamente 6371. Por ejemplo, la raíz 'run' podría estar asociada con 'ran', 'runs', 'running', etc. Aunque para mi propósito de visualización de los clústeres está bien. A continuación podemos observar las primeras líneas del contenido de los dos nuevos dataframes.
+
+\begin{table}[!htb]
 	\centering
-	\begin{tabular}{cr}
-		\toprule
-		title &  cluster \\
-		\midrule
-		Sapiens: A Brief History of Humankind & 26 \\
-		Sharp Objects & 0 \\
-		Soumission & 12 \\
-		Tipping the Velvet & 12 \\
-		A Light in the Attic & 9 \\
-		\bottomrule
-	\end{tabular}
-	\caption{Dataframe de los títulos \\ y su clústeres asignados.}
-	\label{table2}
+	\caption{\textit{frame} y \textit{vocab\_frame} dataframes.}
+	\begin{minipage}{.6\linewidth}
+		\centering
+		\begin{tabular}{lc}
+			\toprule
+			title &  cluster \\
+			\midrule
+			Sapiens: A Brief History of Humankind & 26 \\
+			Sharp Objects & 0 \\
+			Soumission & 12 \\
+			Tipping the Velvet & 12 \\
+			A Light in the Attic & 9 \\
+			\bottomrule
+		\end{tabular}
+	\end{minipage}%
+	\begin{minipage}{.4\linewidth}
+		\centering
+		\begin{tabular}{lc}
+			\toprule
+			& words \\
+			\midrule
+			sapien & sapiens \\
+			a & a \\
+			brief & brief \\
+			histori & history \\
+			of & of \\
+			\bottomrule
+		\end{tabular}
+	\end{minipage} 
 \end{table}
 
+Finalmente, vemos la función implementada que muestra los resultados por clúster, identificando las $n$ primeras palabras (elegí $n$=10) que están más cerca de los centroides de cada uno de ellos, y también vemos el resultado de su ejecución (ver Figura~\ref{results}). 
+
+\begin{lstlisting}[language=python]
+# sort cluster centers by proximity to centroid	
+order_centroids = km.cluster_centers_.argsort()[:, ::-1] 
+
+for i in range(num_clusters):
+	print("Cluster {} words:".format(i), end='')
+	for ind in order_centroids[i, :10]:  # replace 10 with n words per cluster
+		print(' {}'.format(vocab_frame.loc[terms[ind].split(' ')].values.tolist()[0][0]), 
+			end=',')
+	
+	print()
+	print()
+	
+	print("Cluster {} titles:".format(i), end='')
+	for title in frame.loc[i]['title'].values.tolist():
+		print(' {},'.format(title), end='')
+	
+	print()
+	print()
+\end{lstlisting}
+
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.35]{images/results}
+	\caption{Resultados del proceso de \textit{clustering}.}
+	\label{results}
+\end{figure}
 
 \subsection{Evaluación}
 
 
-Para la visualización de los clústeres creados en la sección anterior, se tienen que hacer algún prprocesamiento.
 \renewcommand{\refname}{Bibliografía}
 \bibliographystyle{unsrt}
 \bibliography{biblio}
