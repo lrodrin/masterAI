@@ -2,7 +2,6 @@ import json
 import re
 import nltk
 import pandas as pd
-import matplotlib.pyplot as plt
 
 from nltk.stem.snowball import SnowballStemmer
 from sklearn.metrics import silhouette_score
@@ -10,9 +9,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import KMeans
 from tabulate import tabulate
 
-# configurations
-plt.rcParams['figure.figsize'] = (16, 9)
-plt.style.use('ggplot')
+
 pd.set_option('display.max_columns', None)
 
 
@@ -51,7 +48,7 @@ if __name__ == '__main__':
     print(df.head().to_latex(index=False))  # convert table to latex format
 
     # select titles and their values
-    titles = df["title"].to_list()  # another use-case is use the descriptions
+    titles = df["title"].to_list()  # another use-case is use the descriptions (not working well)
     print(titles[:10])  # first 10 titles
 
     # stopwords, stemming, and tokenizing
