@@ -355,15 +355,28 @@ for i in range(num_clusters):
 	print()
 \end{lstlisting}
 
-\begin{figure}
+\subsection{Evaluación}
+
+Finalmente en esta sección, se intentan evaluar los resultados del proceso de agrupamiento de la sección anterior. Decimos que se intentan evaluar, ya que normalmente la evaluación de algoritmos de aprendizaje no supervisados es un poco difícil y requiere de ojo humano, que en mi caso no está muy bien entrenado.
+ 
+Para la mayoría de los problemas de agrupación en clústeres es usual el uso de dos tipos de métricas: \textit{homogeneity\_score} y \textit{silhouette\_score}. En el caso de la práctica usamos \href{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.silhouette_score.html}{silhouette\_score}, que calculará el coeficiente de \href{https://es.wikipedia.org/wiki/Silhouette_(clustering)}{Silhouette}.
+
+El mejor valor del coeficiente de Silhouette es 1, y el peor valor es -1. Los valores cercanos a 0 indican grupos superpuestos. Los valores negativos generalmente indican que se han asignado bastantes clústeres de manera incorrecta.
+
+\begin{lstlisting}[language=python]
+silhouette_coefficient = silhouette_score(tfidf_matrix, labels=km.predict(tfidf_matrix))
+print(silhouette_coefficient)
+>> 0.02250733514584242
+\end{lstlisting}
+
+Entonces, este valor significa que nuestros clústeres se superponen. 
+
+\begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.35]{images/results}
 	\caption{Resultados del proceso de \textit{clustering}.}
 	\label{results}
 \end{figure}
-
-\subsection{Evaluación}
-
 
 \renewcommand{\refname}{Bibliografía}
 \bibliographystyle{unsrt}

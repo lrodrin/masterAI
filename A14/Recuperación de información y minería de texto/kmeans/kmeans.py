@@ -48,7 +48,8 @@ if __name__ == '__main__':
     print(df.head().to_latex(index=False))  # convert table to latex format
 
     # select titles and their values
-    titles = df["title"].to_list()  # another use-case is use the descriptions (not working well)
+    titles = df["title"].to_list()
+    # another use-case is use the descriptions (but is not working well, need to clean text)
     print(titles[:10])  # first 10 titles
 
     # stopwords, stemming, and tokenizing
