@@ -1,12 +1,11 @@
 import json
 import re
 import nltk
-import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
 from nltk.stem.snowball import SnowballStemmer
-from sklearn.decomposition import PCA
+from sklearn.metrics import silhouette_score
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import KMeans
 from tabulate import tabulate
@@ -27,6 +26,7 @@ def tokenize_and_stem(text):
             filtered_tokens.append(token)
     stems = [stemmer.stem(t) for t in filtered_tokens]
     return stems
+
 
 def tokenize_only(text):
     tokens = [word.lower() for sent in nltk.sent_tokenize(text) for word in nltk.word_tokenize(sent)]
@@ -59,7 +59,7 @@ if __name__ == '__main__':
     stopwords = nltk.corpus.stopwords.words('english')
     # nltk's SnowballStemmer as variabled 'stemmer'
     stemmer = SnowballStemmer("english")
-    print(stopwords[:10])   # first 10 stopwords
+    print(stopwords[:10])  # first 10 stopwords
 
     # tf-idf matrix
     tfidf_vectorizer = TfidfVectorizer(stop_words=stopwords, use_idf=True, tokenizer=tokenize_and_stem,
@@ -71,7 +71,7 @@ if __name__ == '__main__':
 
     # vocabulary
     terms = tfidf_vectorizer.get_feature_names()
-    print(terms[:20])    # first 20 terms
+    print(terms[:20])  # first 20 terms
 
     # nCategories
     # categories = df.groupby('category').size()
@@ -122,5 +122,6 @@ if __name__ == '__main__':
         print()
         print()
 
-    # Evaluation
-    # TODO evaluation https://sanjayasubedi.com.np/nlp/nlp-with-python-document-clustering/
+    # Evaluation with silhouette coefficient
+    silhouette_coefficient = silhouette_score(tfidf_matrix, labels=km.predict(tfidf_matrix))
+    print(silhouette_coefficient)
