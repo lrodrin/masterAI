@@ -57,7 +57,7 @@
 
 \section{Resumen}
 
-En esta práctica se ha implementado un rastreador web (crawler) en Python~\cite{GitHubRepo} (ver sección~\ref{crawler}), que se complementa con un proceso de agrupamiento, también implementado en Python, de la información extraída de las páginas web que ha recopilado (ver sección~\ref{kmeans}). 
+En esta práctica se ha implementado un rastreador web (crawler) en Python~\cite{GitHubRepo} (ver Sección~\ref{crawler}), que se complementa con un proceso de agrupamiento (ver Sección~\ref{kmeans}), también implementado en Python, de la información extraída por el rastreador web. 
 
 \section{Rastreador web (crawler)}\label{crawler}
 
@@ -67,13 +67,12 @@ En esta sección se describe como se ha implementado el rastreador web (crawler)
 $ scrapy startproject books
 \end{lstlisting}
 
-Este comando crea un proyecto Scrapy en el directorio books, siguiendo la \href{https://docs.scrapy.org/en/latest/topics/commands.html#default-structure-of-scrapy-projects}{estructura por defecto} común para todos los proyectos Scrapy, y el fichero \textit{scrapy.cfg} que contiene el nombre del módulo de Python que define la configuración del proyecto books (\textit{books.settings}). El proyecto lo he nombrado books, porqué se rastreará el catálogo de libros que se encuentra en la página web: \url{http://books.toscrape.com}.
+Este comando crea un proyecto Scrapy en el directorio books, siguiendo la \href{https://docs.scrapy.org/en/latest/topics/commands.html#default-structure-of-scrapy-projects}{estructura por defecto}, común para todo proyecto Scrapy. También crea el fichero \textit{scrapy.cfg}, que contiene el nombre del módulo en Python que define la configuración del proyecto books (\textit{books.settings}). El proyecto lo he nombrado books, porqué se rastreará y se recuperará información de un catálogo de libros que se encuentra en la página web: \url{http://books.toscrape.com}.
 
-Una vez se ha creado el proyecto, se definen los ítems de cada libro que se quieren extraer del catálogo. En este caso los ítems que se van a extraer son: el título, la categoría, la descripción, el precio y la valoración de cada libro. Para ello, se tiene que modificar el fichero \textit{books/items.py}, para incluir los cinco ítems que se quieren extraer. Vemos el contenido de \textit{items.py} a continuación:
+Una vez se ha creado el proyecto, se tienen que definir los ítems de cada libro que se quieran extraer del catálogo. En este caso los ítems que se van a extraer son: el título, la categoría, la descripción, el precio y la valoración de cada libro. Para ello, se tiene que modificar el fichero \textit{books/items.py}, para incluir los cinco ítems que se quieren extraer. Vemos el contenido de \textit{items.py} a continuación:
 
 \begin{lstlisting}[language=python]
 import scrapy
-
 
 class BooksItem(scrapy.Item):
 	# define the fields for your item here like:
@@ -85,13 +84,23 @@ class BooksItem(scrapy.Item):
 	rating = scrapy.Field()
 \end{lstlisting}
 
-El siguiente paso es describir la manera de extraer la información definida en el fichero \textit{items.py}. Para ello, se utilizarán reglas de expresión \href{https://www.w3.org/TR/xpath/all/}{XPath} y \href{https://www.w3.org/TR/selectors/}{CSS}. Por ejemplo, si nos fijamos en el código HTML de uno de los libros que se van rastrear (ver Figura \ref{book}), veremos que el título del libro es fácil de extraer con la siguiente regla de expresión CSS: \textbf{"h1 ::text"}. Cuando la extracción de información se complica un poco más, se usan reglas de expresión XPath. Por ejemplo, para extraer las descripciones de todos los libros se usará la regla de expresión: \textbf{"//div[@id='product\_description']/following-sibling::p/text()"}. Una vez, definidas todas las reglas de expresión para cada ítem que se va a rastrear, se crea la araña \textit{books/spiders/books\_toscrape.py}.
+El siguiente paso es describir la manera de extraer la información definida en el fichero \textit{items.py}. Para ello, se utilizan reglas de expresión \href{https://www.w3.org/TR/xpath/all/}{XPath} y \href{https://www.w3.org/TR/selectors/}{CSS}. Por ejemplo, si nos fijamos en el código HTML de uno de los libros que se van rastrear (ver Figura \ref{book}), veremos que el título del libro es fácil de extraer con la siguiente regla de expresión CSS: \textbf{"h1 ::text"}. Pero cuando la extracción de información se complica un poco más, se usan reglas de expresión XPath. Por ejemplo, para extraer las descripciones de todos los libros se usará la regla de expresión: \textbf{"//div[@id='product\_description']/following-sibling::p/text()"}. Una vez, definidas todas las reglas de expresión para cada ítem que se va a rastrear, se crea la araña \textit{books/spiders/books\_toscrape.py}.
 
-Las arañas son clases que definen cómo se rastrea una página web determinada (o un grupo de páginas web), incluido cómo realizar el rastreo y cómo extraer la información deseada. En otras palabras, las arañas son el lugar donde se define el comportamiento personalizado para rastrear y analizar las páginas web. En el caso de la práctica, en la araña \textit{books.toscrape} será el lugar donde se definen las reglas de expresión. En las arañas también se tienen que especificar las solicitudes iniciales para rastrear las URLs y una función de devolución de llamada (\textit{parse}) a la que se llamará para generar los ítems de respuesta de esas solicitudes. Por último, los ítems devueltos por las arañas normalmente se conservan en una base de datos o se escriben en un archivo. En el caso de la práctica, en la araña \textit{books.toscrape}, los ítems (título, categoría, descripción, precio y valoración de cada libro) serán guardados en el fichero \textit{books.json}. Esta araña que procesa todas las URLs descubiertas de la \href{http://books.toscrape.com}{práctica} utilizando la función \textit{parse}, que a su vez llama a la función \textit{parse\_book\_page} donde son definidas todas las reglas de expresión de cómo extraer la información deseada, se muestra a continuación:
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.33]{images/book}
+	\caption{Ejemplo de libro a rastrear.}
+	\label{book}
+\end{figure}
+
+\begin{definition}\label{spider}
+Las arañas son clases que definen cómo se rastrea una página web determinada (o un grupo de páginas web), incluido cómo realizar el rastreo y cómo extraer la información deseada. En otras palabras, las arañas son el lugar donde se define el comportamiento personalizado para rastrear y analizar las páginas web.
+\end{definition}
+
+En el caso de la práctica, la araña \textit{books.toscrape} representará el lugar donde se definen las reglas de expresión. En las arañas también se tienen que especificar las solicitudes iniciales para rastrear las URLs y una función de devolución de llamada (\textit{parse}) a la que se llamará para generar los ítems de respuesta de esas solicitudes. Por último, los ítems devueltos por las arañas normalmente se conservan en una base de datos o se escriben en un archivo. En el caso de la práctica, los ítems (título, categoría, descripción, precio y valoración de cada libro) devueltos por la araña serán guardados en el fichero \textit{books.json}. La araña \textit{books.toscrape} que procesa todas las URLs descubiertas de \url{http://books.toscrape.com}, utilizando la función \textit{parse} que a su vez llama a la función \textit{parse\_book\_page} donde son definidas todas las reglas de expresión de cómo extraer la información deseada, se muestra a continuación:
 
 \begin{lstlisting}[language=python]
 import scrapy
-
 
 class BooksToscrapeSpider(scrapy.Spider):
 	name = 'books.toscrape'
@@ -119,17 +128,10 @@ class BooksToscrapeSpider(scrapy.Spider):
 		yield item
 \end{lstlisting}
 
-En este momento ya se puede iniciar la araña, pero primero es recomendable modificar el fichero \textit{books/settings.py} para limitar el acceso de la araña al catálogo web, ya que podemos generar un ataque \href{https://es.wikipedia.org/wiki/Ataque_de_denegaci%C3%B3n_de_servicio}{DDoS}. Para ello, debemos descomentar la variable \href{https://docs.scrapy.org/en/latest/topics/settings.html#download-delay}{DOWNLOAD\_DELAY} y darle un valor en segundos (p.ej. DOWNLOAD\_DELAY = 3). 	
+En este momento ya podemos iniciar la araña para que recupere la información del catálogo web y la guarde en el fichero \textit{books.json}, aunque primero es recomendable modificar el fichero \textit{books/settings.py} para limitar el acceso de la araña al catálogo web, ya que podemos generar un ataque \href{https://es.wikipedia.org/wiki/Ataque_de_denegaci%C3%B3n_de_servicio}{DDoS}. Para ello, debemos descomentar la variable \href{https://docs.scrapy.org/en/latest/topics/settings.html#download-delay}{DOWNLOAD\_DELAY} y darle un valor en segundos (p.ej. DOWNLOAD\_DELAY = 3). 
 	
-\begin{figure}[h]
-	\centering
-	\includegraphics[scale=0.35]{images/book}
-	\caption{Ejemplo de libro a rastrear.}
-	\label{book}
-\end{figure}
-
-Finalmente, ya podemos iniciar la araña para que recupere la información del catálogo y la guarde en el fichero \textit{books.json}:
-
+Para iniciar la araña se debe ejecutar el siguiente comando:	
+	
 \begin{lstlisting}[language=bash]
 	$ cd books
 	$ scrapy crawl books.toscrape -o books.json
