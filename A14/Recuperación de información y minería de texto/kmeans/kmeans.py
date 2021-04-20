@@ -1,14 +1,13 @@
 import json
 import re
+
 import nltk
 import pandas as pd
-
 from nltk.stem.snowball import SnowballStemmer
-from sklearn.metrics import silhouette_score
-from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import KMeans
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics import silhouette_score
 from tabulate import tabulate
-
 
 pd.set_option('display.max_columns', None)
 
@@ -85,6 +84,7 @@ if __name__ == '__main__':
     frame = pd.DataFrame({'title': titles, 'cluster': clusters}, index=[clusters], columns=['title', 'cluster'])
     print(tabulate(frame.head(), headers='keys', tablefmt='psql'))
     print(frame.head().to_latex(index=False))  # convert table to latex format
+    frame.to_csv("clusters.csv", index=False)    # save titles per cluster
 
     # new two vocabularies: stemmed and tokenized
     totalvocab_stemmed = []
@@ -105,20 +105,22 @@ if __name__ == '__main__':
     # sort cluster centers by proximity to centroid
     order_centroids = km.cluster_centers_.argsort()[:, ::-1]
 
-    for i in range(num_clusters):
-        print("Cluster {} words:".format(i), end='')
-        for ind in order_centroids[i, :10]:  # replace 10 with n words per cluster
-            print(' {}'.format(vocab_frame.loc[terms[ind].split(' ')].values.tolist()[0][0]), end=',')
+    with open('top_terms_per_cluster.txt', 'w') as out_file:    # top terms per cluster
+        for i in range(num_clusters):
+            print("Cluster {} words:".format(i), end='', file=out_file)
+            for ind in order_centroids[i, :10]:  # replace 10 with n words per cluster
+                print(' {}'.format(vocab_frame.loc[terms[ind].split(' ')].values.tolist()[0][0]), end=',',
+                      file=out_file)
 
-        print()
-        print()
+            print(file=out_file)
+            print(file=out_file)
 
-        print("Cluster {} titles:".format(i), end='')
-        for title in frame.loc[i]['title'].values.tolist():
-            print(' {},'.format(title), end='')
+            print("Cluster {} titles:".format(i), end='', file=out_file)
+            for title in frame.loc[i]['title'].values.tolist():
+                print(' {},'.format(title), end='', file=out_file)
 
-        print()
-        print()
+            print(file=out_file)
+            print(file=out_file)
 
     # Evaluation with silhouette coefficient
     silhouette_coefficient = silhouette_score(tfidf_matrix, labels=km.predict(tfidf_matrix))
