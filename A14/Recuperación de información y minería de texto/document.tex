@@ -139,13 +139,11 @@ Finalmente, para iniciar la araña se deben ejecutar los comandos siguientes:
 
 \section{K-Means}\label{kmeans} 
 
-En esta sección se describe como se ha implementado el proceso de agrupamiento en Python usando la librería scikit-learn~\cite{scikit-learn}. La implementación llevada a cabo se encuentra en el directorio kmeans en~\cite{GitHubRepo}. Concretamente, el algoritmo de agrupación elegido para esta práctica ha sido:  \href{https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html}{K-Means}. K-Means es un algoritmo no supervisado de \textit{clustering} que usualmente se utiliza cuando tenemos un montón de datos sin etiquetar, con el objetivo de encontrar "K" grupos (clústeres) entre los datos. En el caso de la práctica, el algoritmo K-Means agrupará los títulos de los libros del catálogo web, recuperados en la Sección~\ref{crawler}, en diferentes clústeres.
+En esta sección se describe como se ha desarrollado el proceso de agrupamiento en Python, de los datos recuperados por el rastreador web (crawler) usando la librería scikit-learn~\cite{scikit-learn}. El código llevado a cabo se encuentra en el directorio kmeans de~\cite{GitHubRepo}, que contiene el algoritmo de agrupación elegido para esta práctica:  \href{https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html}{el algoritmo K-Means}. K-Means es un algoritmo no supervisado de clustering, que usualmente se utiliza cuando tenemos un montón de datos sin etiquetar, con el objetivo de encontrar "K" grupos o clústers entre el conjunto de datos. En el caso de la práctica, el algoritmo K-Means agrupará los títulos de los libros del catálogo web en diferentes clústers, y en este caso, el tipo de agrupamiento se denomina \href{https://en.wikipedia.org/wiki/Document_clustering}{\textit{clustering}} de textos.
 
 \subsection{Datos de entrada}
 
-Si nos fijamos en la implementación del fichero \textit{kmeans/kmeans.py}, concretamente en el \textit{main}, vemos que empezamos extrayendo la información de los libros del catálogo web, almacenada en el fichero \textit{books/books.json}, y la convertimos en un \textit{DataFrame} (ver Definición~\ref{dataframe}). A continuación, se eliminan los valores NaN que pudieran existir en \textit{DataFrame} y este es almacenado en un fichero CSV (\textit{kmeans/books.csv}). Para este proceso se usa la librería pandas~\cite{jeff_reback_2020_4309786}.
-
-Las primeras líneas del \textit{DataFrame} que forman los datos de entrada:
+En esta sección se concreta el conjunto de datos que utilizaremos para alimentar el algoritmo K-Means. Para ello, primero se empieza extrayendo la información de los libros almacenada en el fichero \textit{books/books.json}. Segundo, convertimos esta información en un \textit{DataFrame} (ver Definición~\ref{dataframe}). Además, eliminamos los valores no válidos que pudieran existir en el \textit{DataFrame} y finalmente, este es almacenado en un fichero CSV (\textit{kmeans/books.csv}). Para este procedimiento se ha usado la librería pandas~\cite{jeff_reback_2020_4309786}. A continuación, podemos observar las primeras líneas del contenido del \textit{DataFrame} que forman los datos de entrada:
 
 \begin{table}[h]
 	\begin{adjustbox}{width=\columnwidth,center}
@@ -165,7 +163,7 @@ Las primeras líneas del \textit{DataFrame} que forman los datos de entrada:
 	\label{table1}
 \end{table}
 
-Llegados a este punto, se concreta la estructura de datos que se utilizará para alimentar el algoritmo K-Means. Se crea una lista que contiene los títulos de los libros.
+Concretamente, la estructura de datos que se utilizará para alimentar el algoritmo K-Means, está formada por la siguiente lista que contiene los títulos de los libros. Vemos los diez primeros:
 
 \begin{lstlisting}[language=python]
 titles = df["title"].to_list()
@@ -174,12 +172,14 @@ print(titles[:10])  # first 10 titles
 \end{lstlisting}
 
 \begin{definition}\label{dataframe}
-Un DataFrame es una estructura de datos bidimensional etiquetada que acepta diferentes tipos datos de entrada organizados en columnas. Se puede pensar en un DataFrame como una hoja de cálculo o una tabla SQL.
+Un DataFrame es una estructura de datos etiquetada bidimensional que acepta diferentes tipos datos de entrada organizados en columnas. Se puede pensar en un DataFrame como una hoja de cálculo o una tabla SQL.
 \end{definition}
 
 \subsection{Palabras vacías, stemming y tokenización}\label{stem_token}
 
-Esta sección se centra en definir algunas funciones para transformar el texto de los títulos de los libros para facilitar el entrenamiento del algoritmo K-Means. Para empezar, se obtiene la lista de palabras vacías en inglés (ver Definición~\ref{palabras_vacías}), utilizando la librería NLTK~\cite{bird2009natural}. La lista de palabras vacías es en inglés ya que los títulos de los libros están inglés. Después, se obtiene el \textit{Snowball Stemmer}, también utilizando la librería NLTK, para descomponer las palabras que forman cada título en sus raíces correspondientes.
+Esta sección se centra en describir algunas funciones para transformar el conjunto de datos de entrada y así facilitar la ejecución del algoritmo K-Means. Porqué siempre es una buena idea normalizar el conjunto de datos, en este caso de textos, a la hora de realizar un procedimiento de agrupamiento. Hay, por supuesto, muchos tipos de transformaciones, y a continuación se describe la transformación del conjunto de datos que se usa en esta práctica.
+
+Para poder realizar un proceso de transformación de los títulos, se obtienen la lista de palabras vacías en inglés (ver Definición~\ref{palabras_vacías}), y el \href{https://www.nltk.org/_modules/nltk/stem/snowball.html}{Snowball Stemmer} con la ayuda de la librería NLTK~\cite{bird2009natural}. Tanto para la lista de las palabras vacías (\textit{stopwords}) o para el Snowball Stemmer se indica el idioma: inglés; ya que los títulos de los libros están inglés. 
 
 \begin{lstlisting}[language=python]
 # nltk's English stopwords as variable called 'stopwords'	
@@ -194,7 +194,9 @@ print(stopwords[:10])   # first 10 stopwords
 Las palabras vacías son palabras sin significado como artículos, pronombres, preposiciones, etc. que son filtradas antes o después del procesamiento de datos en lenguaje natural (texto). Por ejemplo: "a", "the", o "in" que no transmiten un significado significativo.
 \end{definition}
 
-A continuación se definen las funciones \textit{tokenize\_and\_stem} y \textit{tokenize\_only}: 
+La obtención de estos dos elementos es necesaria para realizar los procesos de transformación: tokenización y stemming sobre los títulos. Concretamente, el proceso de tokenización divide las cadenas de texto más largas de los títulos en cadenas más pequeñas o tokens. Y el proceso de stemming extrae las raíces de los tokens. El proceso de stemming se realiza porque las raíces de los tokens pueden aparecer repetidamente en diferentes los títulos.
+
+A continuación vemos las funciones \textit{tokenize\_and\_stem} y \textit{tokenize\_only} que se han desarrollado para el proceso de transformación de esta práctica: 
 
 \begin{lstlisting}[language=python]
 def tokenize_and_stem(text):
@@ -217,7 +219,7 @@ def tokenize_only(text):
 	return filtered_tokens  
 \end{lstlisting}
 
-Estas funciones son casi iguales, ya que las dos realizan el mismo proceso de tokenización sobre un texto de entrada, pero no son exactamente iguales porqué la función \textit{tokenize\_and\_stem}, además de realizar la tokenización, extrae las raíces de las palabras que forman parte ese texto de entrada. Las funciones se usarán para calcular la matriz tf-idf en la siguiente sección y para la visualización de los clústeres resultantes del entrenamiento del algoritmo K-Means.
+Estas funciones son casi iguales, ya que las dos realizan el mismo proceso de tokenización sobre un texto de entrada, pero no son exactamente iguales porqué la función \textit{tokenize\_and\_stem}, además, realiza un proceso de stemming. Las funciones se usan para calcular la matriz tf-idf de la siguiente sección y para la visualización de los clústers resultantes de la ejecución del algoritmo K-Means.
 
 \subsection{Extracción de características}
 
@@ -225,7 +227,7 @@ El clustering es una técnica de aprendizaje automático no-supervisada. Esto im
 
 Por ejemplo, si estamos usando clustering para segmentar clientes … seguramente no es buena idea incluir el color de los ojos de los clientes. Esta es una característica posiblemente irrelevante que hará que las distancias entre los puntos multidimensionales que representan cada dato sea menos informativa … excepto si estamos vendiendo lentillas para cambiar el color de ojos!
 
-Además, siempre es buena idea usar el menor número atributos posible debido a los que se conoce como la \href{https://www.iartificial.net/la-maldicion-de-la-dimension-en-machine-learning/}{maldición de la dimensionalidad}. En esencia se refiere a que a medida que el número de dimensiones (atributos) aumenta, la distancia discrimina cada vez menos. Una práctica común antes de hacer clustering es reducir la dimensionalidad del problema. Hay varias técnicas para este propósito tales como Principal Components Analysis (PCA), auto-enconders, etc.
+
 
 
 
@@ -237,8 +239,6 @@ Además, siempre es buena idea usar el menor número atributos posible debido a 
 \end{wrapfigure}
 
 En esta sección, se calculará la matriz tf-idf (ver Figura~\ref{matrix}). Pero para ello, primero se tienen que calcular las frecuencias de las palabras que contienen los títulos, y el método más popular para hacerlo es el llamado \href{https://es.wikipedia.org/wiki/Tf-idf}{TF-IDF}. Este es un acrónimo que significa \textit{Frecuencia de Término – Frecuencia Inversa de Documento} que son los componentes de las puntuaciones resultantes asignadas a cada palabra. Sin entrar en la matemática, TF-IDF son puntuaciones de frecuencia de palabras que tratan de resaltar las palabras que son más interesantes y/o frecuentes. En el caso de la práctica usamos \href{https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html}{sklearn.feature\_extraction.text.TfidfVectorizer}.
-
-\newpage 
 
 \begin{lstlisting}[language=python]
 tfidf_vectorizer = TfidfVectorizer(stop_words=stopwords, use_idf=True, 
@@ -303,7 +303,6 @@ frame = pd.DataFrame({'title': titles, 'cluster': clusters}, index=[clusters],
 	columns=['title', 'cluster'])
 \end{lstlisting}
 
-\newpage
 \begin{lstlisting}[language=python]
 # new two vocabularies: stemmed and tokenized
 totalvocab_stemmed = []

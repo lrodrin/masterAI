@@ -11,8 +11,20 @@ from tabulate import tabulate
 
 pd.set_option('display.max_columns', None)
 
+def create_inputData(json_file):
+    """
+    Create input data as dataframe
+    """
+    dict_books = json.load(json_file)
+    df_books = pd.DataFrame.from_dict(dict_books)
+    df_books = df_books.dropna()    # remove null values in df
+    return df_books
+
 
 def tokenize_and_stem(text):
+    """
+    Tokenization and stemming
+    """
     # first tokenize by sentence, then by word to ensure that punctuation is caught as it's own token
     tokens = [word for sent in nltk.sent_tokenize(text) for word in nltk.word_tokenize(sent)]
     filtered_tokens = []
@@ -25,6 +37,9 @@ def tokenize_and_stem(text):
 
 
 def tokenize_only(text):
+    """
+    Only tokenization
+    """
     tokens = [word.lower() for sent in nltk.sent_tokenize(text) for word in nltk.word_tokenize(sent)]
     filtered_tokens = []
     for token in tokens:
@@ -34,28 +49,22 @@ def tokenize_only(text):
 
 
 if __name__ == '__main__':
-    # create df
     books = open("../books/books.json", "r")
-    dict_books = json.load(books)
-    df = pd.DataFrame.from_dict(dict_books)
-
-    # remove null values in df
-    df = df.dropna()
+    df = create_inputData(books)    # create input data as dataframe
 
     # print df as table
     print(tabulate(df.head(), headers='keys', tablefmt='psql'))
     print(df.head().to_latex(index=False))  # convert table to latex format
 
-    # select titles and their values
+    # select titles from dataframe
     titles = df["title"].to_list()
-    # another use-case is use the descriptions (but is not working well, need to clean text)
     print(titles[:10])  # first 10 titles
 
-    # stopwords, stemming, and tokenizing
+    language = "english"
     # nltk's English stopwords as variable called 'stopwords'
-    stopwords = nltk.corpus.stopwords.words('english')
+    stopwords = nltk.corpus.stopwords.words(language)
     # nltk's SnowballStemmer as variabled 'stemmer'
-    stemmer = SnowballStemmer("english")
+    stemmer = SnowballStemmer(language)
     print(stopwords[:10])  # first 10 stopwords
 
     # tf-idf matrix
