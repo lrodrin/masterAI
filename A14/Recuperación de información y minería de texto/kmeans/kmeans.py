@@ -11,13 +11,14 @@ from tabulate import tabulate
 
 pd.set_option('display.max_columns', None)
 
+
 def create_inputData(json_file):
     """
     Create input data as dataframe
     """
     dict_books = json.load(json_file)
     df_books = pd.DataFrame.from_dict(dict_books)
-    df_books = df_books.dropna()    # remove null values in df
+    df_books = df_books.dropna()  # remove null values in df
     return df_books
 
 
@@ -48,13 +49,42 @@ def tokenize_only(text):
     return filtered_tokens
 
 
+def tfidf_matrix(stopwords, titles):
+    """
+    Calculates the TF-IDF matrix
+    """
+    tfidf_vectorizer = TfidfVectorizer(stop_words=stopwords,
+                                       use_idf=True,
+                                       tokenizer=tokenize_and_stem,
+                                       ngram_range=(1, 3))
+
+    tfidf_matrix = tfidf_vectorizer.fit_transform(titles)
+    return tfidf_vectorizer, tfidf_matrix
+
+
+def print_df(dataframe):
+    """
+    Print dataframe as table
+    """
+    print(tabulate(dataframe.head(), headers='keys', tablefmt='psql'))
+    print(dataframe.head().to_latex(index=False))  # convert table to latex format
+
+
+def kmeans_clustering(num_clusters, tfidf_matrix):
+    """
+    K-Means clustering
+    """
+    kmeans = KMeans(n_clusters=num_clusters)
+    kmeans.fit(tfidf_matrix)
+    clusters = kmeans.labels_.tolist()
+    centroids = kmeans.cluster_centers_.argsort()[:, ::-1]
+    return kmeans, clusters, centroids
+
+
 if __name__ == '__main__':
     books = open("../books/books.json", "r")
-    df = create_inputData(books)    # create input data as dataframe
-
-    # print df as table
-    print(tabulate(df.head(), headers='keys', tablefmt='psql'))
-    print(df.head().to_latex(index=False))  # convert table to latex format
+    df = create_inputData(books)  # create input data as dataframe
+    print_df(df)
 
     # select titles from dataframe
     titles = df["title"].to_list()
@@ -68,32 +98,27 @@ if __name__ == '__main__':
     print(stopwords[:10])  # first 10 stopwords
 
     # tf-idf matrix
-    tfidf_vectorizer = TfidfVectorizer(stop_words=stopwords, use_idf=True, tokenizer=tokenize_and_stem,
-                                       ngram_range=(1, 3))
-    # tokenize and build coded vocabulary
-    tfidf_matrix = tfidf_vectorizer.fit_transform(titles)
+    tfidf_vectorizer, tfidf_matrix = tfidf_matrix(stopwords, titles)
     # print(tfidf_matrix)
     print(tfidf_matrix.shape)
 
-    # vocabulary
+    # vocabulary of terms
     terms = tfidf_vectorizer.get_feature_names()
     print(terms[:20])  # first 20 terms
 
-    # nCategories
-    # categories = df.groupby('category').size()
-    # print(categories)
+    # Ncategories
+    categories = df.groupby('category').size()
+    print(categories)
 
     # K-Means clustering
     num_clusters = 40
-    km = KMeans(n_clusters=num_clusters)
-    km.fit(tfidf_matrix)
-    clusters = km.labels_.tolist()
+    kmeans, clusters, centroids = kmeans_clustering(num_clusters, tfidf_matrix)
 
     # new df with titles and clusters
     frame = pd.DataFrame({'title': titles, 'cluster': clusters}, index=[clusters], columns=['title', 'cluster'])
     print(tabulate(frame.head(), headers='keys', tablefmt='psql'))
     print(frame.head().to_latex(index=False))  # convert table to latex format
-    frame.to_csv("clusters.csv", index=False)    # save titles per cluster
+    frame.to_csv("clusters.csv", index=False)  # save titles per cluster
 
     # new two vocabularies: stemmed and tokenized
     totalvocab_stemmed = []
@@ -111,13 +136,10 @@ if __name__ == '__main__':
     print('There are ' + str(vocab_frame.shape[0]) + ' items in vocab_frame')
 
     print("Top terms per cluster:")
-    # sort cluster centers by proximity to centroid
-    order_centroids = km.cluster_centers_.argsort()[:, ::-1]
-
-    with open('top_terms_per_cluster.txt', 'w') as out_file:    # top terms per cluster
+    with open('top_terms_per_cluster.txt', 'w') as out_file:  # top terms per cluster
         for i in range(num_clusters):
             print("Cluster {} words:".format(i), end='', file=out_file)
-            for ind in order_centroids[i, :10]:  # replace 10 with n words per cluster
+            for ind in centroids[i, :10]:  # replace 10 with n words per cluster
                 print(' {}'.format(vocab_frame.loc[terms[ind].split(' ')].values.tolist()[0][0]), end=',',
                       file=out_file)
 
@@ -132,5 +154,5 @@ if __name__ == '__main__':
             print(file=out_file)
 
     # Evaluation with silhouette coefficient
-    silhouette_coefficient = silhouette_score(tfidf_matrix, labels=km.predict(tfidf_matrix))
+    silhouette_coefficient = silhouette_score(tfidf_matrix, labels=kmeans.predict(tfidf_matrix))
     print(silhouette_coefficient)
