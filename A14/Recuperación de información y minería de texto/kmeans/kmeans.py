@@ -81,6 +81,22 @@ def kmeans_clustering(num_clusters, tfidf_matrix):
     return kmeans, clusters, centroids
 
 
+def create_vocabularies(titles):
+    """
+    Create stemmed and tokenized vocabularies
+    """
+    totalvocab_stemmed = []
+    totalvocab_tokenized = []
+    for i in titles:
+        allwords_stemmed = tokenize_and_stem(i)  # for each item in 'titles', tokenize/stem
+        totalvocab_stemmed.extend(allwords_stemmed)  # extend the 'totalvocab_stemmed' list
+
+        allwords_tokenized = tokenize_only(i)
+        totalvocab_tokenized.extend(allwords_tokenized)
+
+    return totalvocab_stemmed, totalvocab_tokenized
+
+
 if __name__ == '__main__':
     books = open("../books/books.json", "r")
     df = create_inputData(books)  # create input data as dataframe
@@ -114,25 +130,17 @@ if __name__ == '__main__':
     num_clusters = 40
     kmeans, clusters, centroids = kmeans_clustering(num_clusters, tfidf_matrix)
 
-    # new df with titles and clusters
+    # cluster visualization
+
+    # create frame df
     frame = pd.DataFrame({'title': titles, 'cluster': clusters}, index=[clusters], columns=['title', 'cluster'])
-    print(tabulate(frame.head(), headers='keys', tablefmt='psql'))
-    print(frame.head().to_latex(index=False))  # convert table to latex format
-    frame.to_csv("clusters.csv", index=False)  # save titles per cluster
+    print_df(frame)
+    frame.to_csv("clusters.csv", index=False)  # save titles per cluster to CSV file
 
-    # new two vocabularies: stemmed and tokenized
-    totalvocab_stemmed = []
-    totalvocab_tokenized = []
-    for i in titles:
-        allwords_stemmed = tokenize_and_stem(i)  # for each item in 'titles', tokenize/stem
-        totalvocab_stemmed.extend(allwords_stemmed)  # extend the 'totalvocab_stemmed' list
-
-        allwords_tokenized = tokenize_only(i)
-        totalvocab_tokenized.extend(allwords_tokenized)
-
+    # create vocab_frame df
+    totalvocab_stemmed, totalvocab_tokenized = create_vocabularies(titles)
     vocab_frame = pd.DataFrame({'words': totalvocab_tokenized}, index=totalvocab_stemmed)
-    print(tabulate(vocab_frame.head(), headers='keys', tablefmt='psql'))
-    print(vocab_frame.head().to_latex(index=False))  # convert table to latex format
+    print_df(vocab_frame)
     print('There are ' + str(vocab_frame.shape[0]) + ' items in vocab_frame')
 
     print("Top terms per cluster:")
