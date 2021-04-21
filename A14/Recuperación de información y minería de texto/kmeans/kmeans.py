@@ -143,7 +143,7 @@ if __name__ == '__main__':
     print_df(vocab_frame)
     print('There are ' + str(vocab_frame.shape[0]) + ' items in vocab_frame')
 
-    print("Top terms per cluster:")
+    # Ttp terms per cluster
     with open('top_terms_per_cluster.txt', 'w') as txt_file:
         for i in range(num_clusters):
             print("Cluster {} words:".format(i), end='', file=txt_file)
