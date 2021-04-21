@@ -8,23 +8,23 @@
 
 %Declarar formato de encabezado y pie de página de las páginas del documento
 \fancypagestyle{doc}{
-  %Pie de Página
-  \footerpr{}{}{{\thepage} de \pageref{LastPage}}
+%Pie de Página
+\footerpr{}{}{{\thepage} de \pageref{LastPage}}
 }
 
 %Declarar formato de encabezado y pie del título e indice
 \fancypagestyle{titu}{%
-  %Cabecera
-  \headerpr{}{}{}
-  %Pie de Página
-  \footerpr{}{}{}
+%Cabecera
+\headerpr{}{}{}
+%Pie de Página
+\footerpr{}{}{}
 }
 
 \appto\frontmatter{\pagestyle{titu}}
 \appto\mainmatter{\pagestyle{doc}}
 
 \begin{document}
-	
+
 %Comienzo formato título
 \frontmatter
 
@@ -32,15 +32,15 @@
 \centeredtitle{./images/LogoUIMP.png}{Máster Universitario en Investigación en Inteligencia Artificial}{Curso 2020-2021}{Recuperación y extracción de información, \\ grafos y redes sociales}{Práctica Bloque II: Recuperación de información y minería de texto}
 
 \begin{center}
-\large \today
+	\large \today
 \end{center}
 
 \vspace{40mm}
 
 \begin{flushright}
- 	{\bf Laura Rodríguez Navas}\\
- 	\textbf{DNI:} 43630508Z\\
- 	\textbf{e-mail:} \href{rodrigueznavas@posgrado.uimp.es}{rodrigueznavas@posgrado.uimp.es}
+	{\bf Laura Rodríguez Navas}\\
+	\textbf{DNI:} 43630508Z\\
+	\textbf{e-mail:} \href{rodrigueznavas@posgrado.uimp.es}{rodrigueznavas@posgrado.uimp.es}
 \end{flushright}
 
 \newpage
@@ -84,7 +84,7 @@ class BooksItem(scrapy.Item):
 
 El siguiente paso es describir la manera de extraer la información de estos ítems. Para ello, se utilizan reglas de expresión \href{https://www.w3.org/TR/xpath/all/}{XPath} y \href{https://www.w3.org/TR/selectors/}{CSS}. Por ejemplo, si nos fijamos en el código HTML de uno de los libros que se van rastrear (ver Figura \ref{book}), veremos que el título del libro es fácil de extraer con la siguiente regla de expresión CSS: \textbf{"h1 ::text"}. Por otro lado, cuando la extracción de información se complica un poco más, se usan reglas de expresión XPath. Por ejemplo, para extraer las descripciones de todos los libros se usa la regla de expresión: \textbf{"//div[@id='product\_description']/following-sibling::p/text()"}. 
 
-En este documento no se describen todas las reglas de expresión que se han desarrollado, pero se pueden consultar en~\cite{GitHubRepo}, concretamente en el fichero \textit{books/spiders/books\_toscrape.py}. Este fichero es la araña o más comúnmente llamada en inglés \textit{spider}, que contiene todas las reglas de expresión de cada uno de los ítems de \textit{items.py}, para definir como se va a rastrear y cómo se va a extraer la información del catálogo de libros en la web.
+En este documento no se describen todas las reglas de expresión que se han desarrollado, pero se pueden consultar en~\cite{GitHubRepo}, concretamente en el fichero \textit{books/spiders/books\_toscrape.py}. Este fichero es la araña o más comúnmente llamada en inglés \textit{spider}, que contiene todas las reglas de expresión de cada uno de los ítems de \textit{items.py}, para definir cómo se va a rastrear y cómo se va a extraer la información del catálogo de libros en la web.
 
 \begin{figure}[h]
 	\centering
@@ -94,7 +94,7 @@ En este documento no se describen todas las reglas de expresión que se han desa
 \end{figure}
 
 \begin{definition}\label{spider}
-Las arañas son clases en Python que definen cómo se rastrea una página web determinada (o un grupo de páginas web), incluido cómo realizar el rastreo y cómo extraer la información deseada. En otras palabras, las arañas son el lugar donde se define el comportamiento personalizado para rastrear y analizar las páginas web.
+	Las arañas son clases en Python que definen cómo se rastrea una página web determinada (o un grupo de páginas web), incluido cómo realizar el rastreo y cómo extraer la información deseada. En otras palabras, las arañas son el lugar donde se define el comportamiento personalizado para rastrear y analizar las páginas web.
 \end{definition}
 
 En las arañas también se tienen que especificar las solicitudes iniciales de todas las URLs a rastrear y crear una función de devolución de llamada (\textit{parse}), a la que se llamará para generar los ítems de respuesta de esas solicitudes. Por último, la información devuelta por las arañas, normalmente se conserva en una base de datos o se escribe en un archivo. En el caso de la práctica, la información de los ítems: título, categoría, descripción, precio y valoración de cada libro, que son devueltos por la araña \textit{books.toscrape}, se guardan en el archivo \textit{books.json}. 
@@ -128,18 +128,18 @@ class BooksToscrapeSpider(scrapy.Spider):
 		yield item
 \end{lstlisting}
 
-Apartir de este momento, ya podemos iniciar la araña para que recupere la información de los libros del catálogo web y la escriba en el archivo \textit{books.json}, aunque primero es recomendable modificar el fichero \textit{books/settings.py}, para limitar el acceso de la araña, ya que podemos generar un ataque \href{https://es.wikipedia.org/wiki/Ataque\_de\_denegaci\%C3\%B3n_de_servicio}{DDoS}. Para no provocar un ataque de este tipo, debemos descomentar la variable \href{https://docs.scrapy.org/en/latest/topics/settings.html#download-delay}{DOWNLOAD\_DELAY} del fichero \textit{books/settings.py}  y darle un valor en segundos (p.ej. DOWNLOAD\_DELAY = 3). 
-	
+A partir de este momento, ya podemos iniciar la araña para que recupere la información de los libros del catálogo web y la escriba en el archivo \textit{books.json}, aunque primero es recomendable modificar el fichero \textit{books/settings.py}, para limitar el acceso de la araña, ya que podemos generar un ataque \href{https://es.wikipedia.org/wiki/Ataque\_de\_denegaci\%C3\%B3n_de_servicio}{DDoS}. Para no provocar un ataque de este tipo, debemos descomentar la variable \href{https://docs.scrapy.org/en/latest/topics/settings.html#download-delay}{DOWNLOAD\_DELAY} del fichero \textit{books/settings.py}  y darle un valor en segundos (p.ej. DOWNLOAD\_DELAY = 3). 
+
 Finalmente, para iniciar la araña se deben ejecutar los comandos siguientes:	
-	
+
 \begin{lstlisting}[language=bash]
-	$ cd books
-	$ scrapy crawl books.toscrape -o books.json
+$ cd books
+$ scrapy crawl books.toscrape -o books.json
 \end{lstlisting}
 
 \section{K-Means}\label{kmeans} 
 
-En esta sección se describe como se ha desarrollado el proceso de agrupamiento en Python, de los datos recuperados por el rastreador web (crawler) usando la librería scikit-learn~\cite{scikit-learn}. El código llevado a cabo se encuentra en el directorio kmeans de~\cite{GitHubRepo}, que contiene el algoritmo de agrupación elegido para esta práctica:  \href{https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html}{el algoritmo K-Means}. K-Means es un algoritmo no supervisado de clustering, que usualmente se utiliza cuando tenemos un montón de datos sin etiquetar, con el objetivo de encontrar "K" grupos o clústers entre el conjunto de datos. En el caso de la práctica, el algoritmo K-Means agrupará los títulos de los libros del catálogo web en diferentes clústers, y en este caso, el tipo de agrupamiento se denomina \href{https://en.wikipedia.org/wiki/Document_clustering}{\textit{clustering}} de textos.
+En esta sección se describe como se ha desarrollado el proceso de agrupamiento en Python, de los datos recuperados por el rastreador web (crawler) usando la librería scikit-learn~\cite{scikit-learn}. El código llevado a cabo se encuentra en el directorio kmeans de~\cite{GitHubRepo}, que contiene el algoritmo de agrupación elegido para esta práctica:  \href{https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html}{el algoritmo K-Means}. K-Means es un algoritmo no supervisado de clustering, que usualmente se utiliza cuando tenemos un montón de datos sin etiquetar, con el objetivo de encontrar "K" grupos o clústeres entre el conjunto de datos. En el caso de la práctica, el algoritmo K-Means agrupará los títulos de los libros del catálogo web en diferentes clústeres, y en este caso, el tipo de agrupamiento se denomina \href{https://en.wikipedia.org/wiki/Document_clustering}{\textit{clustering}} de textos.
 
 \subsection{Datos de entrada}
 
@@ -172,14 +172,14 @@ print(titles[:10])  # first 10 titles
 \end{lstlisting}
 
 \begin{definition}\label{dataframe}
-Un DataFrame es una estructura de datos etiquetada bidimensional que acepta diferentes tipos datos de entrada organizados en columnas. Se puede pensar en un DataFrame como una hoja de cálculo o una tabla SQL.
+	Un DataFrame es una estructura de datos etiquetada bidimensional que acepta diferentes tipos datos de entrada organizados en columnas. Se puede pensar en un DataFrame como una hoja de cálculo o una tabla SQL.
 \end{definition}
 
-\subsection{Palabras vacías, stemming y tokenización}\label{stem_token}
+\subsection{Palabras vacías, segmentación y tokenización}\label{stem_token}
 
-Esta sección se centra en describir algunas funciones para transformar el conjunto de datos de entrada y así facilitar la ejecución del algoritmo K-Means. Porqué siempre es una buena idea normalizar el conjunto de datos, en este caso de textos, a la hora de realizar un procedimiento de agrupamiento. Hay, por supuesto, muchos tipos de transformaciones, y a continuación se describe la transformación del conjunto de datos que se usa en esta práctica.
+Esta sección se centra en describir algunas funciones para transformar el conjunto de datos de entrada y así facilitar la ejecución del algoritmo K-Means. Porqué siempre es una buena idea indexar el conjunto de datos, en este caso de textos, a la hora de realizar un procedimiento de agrupamiento. Hay, por supuesto, muchos tipos de indexaciones, y a continuación se describe la transformación del conjunto de datos que se usa en esta práctica.
 
-Para poder realizar un proceso de transformación de los títulos, se obtienen la lista de palabras vacías en inglés (ver Definición~\ref{palabras_vacías}), y el \href{https://www.nltk.org/_modules/nltk/stem/snowball.html}{Snowball Stemmer} con la ayuda de la librería NLTK~\cite{bird2009natural}. Tanto para la lista de las palabras vacías (\textit{stopwords}) o para el Snowball Stemmer se indica el idioma: inglés; ya que los títulos de los libros están inglés. 
+Para poder realizar un proceso de indexación de los títulos, se obtienen la lista de palabras vacías en inglés (ver Definición~\ref{palabras_vacías}), y el \href{https://www.nltk.org/_modules/nltk/stem/snowball.html}{Snowball Stemmer} con la ayuda de la librería NLTK~\cite{bird2009natural}. Tanto para la lista de las palabras vacías (\textit{stopwords}) o para el Snowball Stemmer se indica el idioma: inglés; ya que los títulos de los libros están inglés. 
 
 \begin{lstlisting}[language=python]
 # nltk's English stopwords as variable called 'stopwords'	
@@ -191,25 +191,23 @@ print(stopwords[:10])   # first 10 stopwords
 \end{lstlisting}
 
 \begin{definition}\label{palabras_vacías}
-Las palabras vacías son palabras sin significado como artículos, pronombres, preposiciones, etc. que son filtradas antes o después del procesamiento de datos en lenguaje natural (texto). Por ejemplo: "a", "the", o "in" que no transmiten un significado significativo.
+	Las palabras vacías son palabras sin significado como artículos, pronombres, preposiciones, etc. que son filtradas antes o después del procesamiento de datos en lenguaje natural (texto). Por ejemplo: "a", "the", o "in" que no transmiten un significado significativo.
 \end{definition}
 
-La obtención de estos dos elementos es necesaria para realizar los procesos de transformación: tokenización y stemming sobre los títulos. Concretamente, el proceso de tokenización divide las cadenas de texto más largas de los títulos en cadenas más pequeñas o tokens. Y el proceso de stemming extrae las raíces de los tokens. El proceso de stemming se realiza porque las raíces de los tokens pueden aparecer repetidamente en diferentes los títulos.
+La obtención de estos dos elementos es necesaria para realizar los procesos de indexación: tokenización y segmentación (stemming) sobre los títulos. Concretamente, el proceso de tokenización divide las cadenas de texto más largas de los títulos en cadenas más pequeñas o tokens. Y el proceso de segmentación extrae las raíces de los tokens. El proceso de segmentación se realiza porque las raíces de los tokens pueden aparecer repetidamente en diferentes los títulos.
 
-A continuación vemos las funciones \textit{tokenize\_and\_stem} y \textit{tokenize\_only} que se han desarrollado para el proceso de transformación de esta práctica: 
+A continuación, vemos las funciones \textit{tokenize\_and\_stem} y \textit{tokenize\_only} que se han desarrollado para el proceso de indexación de esta práctica: 
 
 \begin{lstlisting}[language=python]
 def tokenize_and_stem(text):
-	# first tokenize by sentence, then by word to ensure that punctuation is caught as it's own token
 	tokens = [word for sent in nltk.sent_tokenize(text) for word in nltk.word_tokenize(sent)]
 	filtered_tokens = []
-	# filter out any tokens not containing letters (e.g., numeric tokens, raw punctuation)
 	for token in tokens:
 		if re.search('[a-zA-Z]', token):
 			filtered_tokens.append(token)
 	stems = [stemmer.stem(t) for t in filtered_tokens]
 	return stems
-	
+
 def tokenize_only(text):
 	tokens = [word.lower() for sent in nltk.sent_tokenize(text) for word in nltk.word_tokenize(sent)]
 	filtered_tokens = []
@@ -219,38 +217,65 @@ def tokenize_only(text):
 	return filtered_tokens  
 \end{lstlisting}
 
-Estas funciones son casi iguales, ya que las dos realizan el mismo proceso de tokenización sobre un texto de entrada, pero no son exactamente iguales porqué la función \textit{tokenize\_and\_stem}, además, realiza un proceso de stemming. Las funciones se usan para calcular la matriz tf-idf de la siguiente sección y para la visualización de los clústers resultantes de la ejecución del algoritmo K-Means.
+Estas funciones son casi iguales, ya que las dos realizan el mismo proceso de tokenización sobre un texto de entrada, pero no son exactamente iguales porqué la función \textit{tokenize\_and\_stem}, además, realiza un proceso de segmentación. Las funciones se usan para calcular la matriz tf-idf de la siguiente sección y para la visualización de los clústeres resultantes de la ejecución del algoritmo K-Means.
 
-\subsection{Extracción de características}
+\newpage 
 
-El clustering es una técnica de aprendizaje automático no-supervisada. Esto implica que no es capaz de establecer la relación entre los atributos de entrada y los resultados … sencillamente porque no hay resultados. Así que la responsabilidad de identificar qué atributos son relevantes recae sobre nosotros.
+\subsection{Extracción de características}\label{características}
 
-Por ejemplo, si estamos usando clustering para segmentar clientes … seguramente no es buena idea incluir el color de los ojos de los clientes. Esta es una característica posiblemente irrelevante que hará que las distancias entre los puntos multidimensionales que representan cada dato sea menos informativa … excepto si estamos vendiendo lentillas para cambiar el color de ojos!
-
-
-
-
-
-\begin{wrapfigure}[10]{r}{0.4\textwidth}
+\begin{wrapfigure}[13]{r}{0.4\textwidth}
 	\centering
-	\caption{Ejemplo de matriz tf-idf.}
 	\includegraphics[width=0.4\textwidth]{images/matrix}
+	\caption{Ejemplo de matriz tf-idf.}
 	\label{matrix}
 \end{wrapfigure}
 
-En esta sección, se calculará la matriz tf-idf (ver Figura~\ref{matrix}). Pero para ello, primero se tienen que calcular las frecuencias de las palabras que contienen los títulos, y el método más popular para hacerlo es el llamado \href{https://es.wikipedia.org/wiki/Tf-idf}{TF-IDF}. Este es un acrónimo que significa \textit{Frecuencia de Término – Frecuencia Inversa de Documento} que son los componentes de las puntuaciones resultantes asignadas a cada palabra. Sin entrar en la matemática, TF-IDF son puntuaciones de frecuencia de palabras que tratan de resaltar las palabras que son más interesantes y/o frecuentes. En el caso de la práctica usamos \href{https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html}{sklearn.feature\_extraction.text.TfidfVectorizer}.
+En esta sección calcularemos la matriz \href{https://es.wikipedia.org/wiki/Tf-idf}{TF-IDF} (ver Figura~\ref{matrix}), porqué nos será muy útil para la agrupación de los títulos en clústeres, ya que nos ayudará a comprender qué tipo de títulos tenemos. El principal motivo para calcularla es por el proceso de agrupamiento en sí mismo. El clustering, como ya sabemos, es una técnica de aprendizaje automático no-supervisada. Esto implica que no es capaz de establecer la relación entre los conjuntos de datos de entrada y los resultados, sencillamente porque no hay resultados. Así que la responsabilidad de identificar qué atributos son relevantes recae sobre nosotros. 
+
+El acrónimo TF-IDF significa en inglés \textit{Term Frequency-Inverse Document Frequency}, y representa una estadística numérica que demuestra la importancia de las palabras teniendo en cuenta los siguientes dos efectos:
+
+\begin{itemize}
+	\item Importancia del término en el documento (TF): un término que aparece muchas veces en un documento
+	es más importante que otro que sólo aparece una vez.
+	\begin{equation}
+		TF_{ix} = \frac{n_{ix}}{max_{l} n_{l,x}}
+	\end{equation}
+	
+	\item Importancia del término en la colección (IDF): un término que aparece pocas veces en la colección
+	tiene un mayor poder discriminador que un término que aparece en todos los documentos.
+	\begin{equation}
+		IDF_i = log \frac{N}{n_{i}}
+	\end{equation}
+\end{itemize}
+
+Donde $TD-IDF_{i,x}$ es igual al producto de $TF_{ix}$ con $IDF_{i}$.
+
+\begin{equation}
+	TD-IDF_{i,x} = TF_{ix} * IDF_{i}
+\end{equation}
+
+Para calcular los valores de la matriz TF-IDF por título se utiliza \href{https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html}{sklearn.feature\_extraction.text.TfidfVectorizer}, que una vez calculada, la podremos usar para alimentar el algoritmo K-Means. Pero antes, comentar un par de cosas a tener en cuenta sobre los parámetros definidos en la función \textit{TfidfVectorizer}:
+
+\begin{itemize}
+	\item use\_idf: habilitará la reponderación de frecuencia de documentos inversa.
+	\item ngram\_range: define el límite inferior y superior del rango de n-valores para diferentes n-gramas que se extraerán. Ver Definición~\ref{n_grama}.
+\end{itemize}
 
 \begin{lstlisting}[language=python]
-tfidf_vectorizer = TfidfVectorizer(stop_words=stopwords, use_idf=True, 
-	tokenizer=tokenize_and_stem, ngram_range=(1, 3))
-									
-# tokenize and build coded vocabulary
+tfidf_vectorizer = TfidfVectorizer(stop_words=stopwords, use_idf=True, tokenizer=tokenize_and_stem, ngram_range=(1, 3))
+
 tfidf_matrix = tfidf_vectorizer.fit_transform(titles)
 print(tfidf_matrix.shape)
 >> (998, 7258)
 \end{lstlisting}
 
-La matriz tf-idf está formada por 998 términos y 7258 documentos. También se puede observar el vocabulario (nombrado \textit{terms}) que ha usado \textit{TfidfVectorizer} en la construcción de la matriz:
+Vemos que la matriz TD-IDF está formada por 998 términos y 7258 documentos. Es grande y seguramente tendremos problemas para mostrar visualmente los clústeres después de ejecutar K-Means.
+
+\begin{definition}\label{n_grama}
+	Un n-grama es una secuencia contigua de n elementos de una muestra determinada de texto o de un discurso. Los elementos pueden ser fonemas, sílabas, letras o palabras según la aplicación. Los n-gramas normalmente se recopilan de un texto.
+\end{definition}
+
+A continuación, mostramos que durante el proceso de creación de la matriz, la función \textit{TfidfVectorizer} ha creado un vocabulario de términos. Los primeros veinte términos del vocabulario son:
 
 \begin{lstlisting}[language=python]
 terms = tfidf_vectorizer.get_feature_names()
@@ -258,72 +283,66 @@ print(terms[:20])    # first 20 terms
 >> ["'d", "'d go", "'d go bernadett", "'m", "'m gone", "'m home", "'m lie", "'m lie tell", "'s", "'s alic", "'s alic wonderland", "'s astound", "'s astound stori", "'s autobiographi", "'s babi", "'s babi ice", "'s berlin", "'s call", "'s call cormoran", "'s childhood"]
 \end{lstlisting}
 
-\begin{definition}\label{n_grama}
-Un n-grama es una secuencia contigua de n elementos de una muestra determinada de texto o de un discurso. Los elementos pueden ser fonemas, sílabas, letras o palabras según la aplicación. Los n-gramas normalmente se recopilan de un texto.
-\end{definition}
-
-Un par de cosas a tener en cuenta sobre los parámetros definidos en la función \textit{TfidfVectorizer}:
-
-\begin{itemize}
-	\item use\_idf: habilita la reponderación de frecuencia de documentos inversa.
-	\item ngram\_range: define el límite inferior y superior del rango de n-valores para diferentes n-gramas que se extraerán. Ver Definición~\ref{n_grama}.
-\end{itemize}
-
 \subsection{Entrenamiento del algoritmo}
 
-Ahora pasamos a la parte divertida. Usando la matriz tf-idf calculada en la sección anterior, se puede ejecutar el algoritmo K-Means utilizando \href{https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html}{sklearn.cluster.KMeans}, para comprender mejor la estructura oculta dentro de los títulos de los libros del catálogo web. El algoritmo K-Means se inicializa con un número predeterminado de clústeres. Elegí el número 40 como número predeterminado de clústeres, ya que el conjunto de datos de entrada contiene libros que pertenecen al menos a más de dos de las 50 categorías existentes en el conjunto de datos, descartando 10 categorías que solo hacen referencia a un único libro. No se ha utilizado metodo del codo
-
-Algunas técnicas de agrupamiento, tales como K-Means, necesitan que especifiquemos el número de clusters (grupos) que queremos encontrar. No es obvio, a priori, saber qué número de grupos es mejor.
-
-
-El algoritmo K-Means sigue los siguientes pasos:
+Ahora pasamos a la parte divertida. Con la matriz TD-IDF calculada en la sección anterior, se puede ejecutar el algoritmo K-Means utilizando \href{https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html}{sklearn.cluster.KMeans}, para agrupar en diferentes clústeres los títulos por las palabras que contienen. Para ello, K-Means utiliza una proceso iterativo en el que se van ajustando los clústeres para producir el resultado final siguiendo los siguientes pasos:
 
 \begin{itemize}
-	\item Inicialización: se elige la localización de los centroides de los K grupos aleatoriamente
-	\item Asignación: se asigna cada dato al centroide más cercano
-	\item Actualización: se actualiza la posición del centroide a la media aritmética de las posiciones de los datos asignados al grupo
+	\item Inicialización: se elige la localización de los centroides iniciales de los K clústeres aleatoriamente.
+	\item Asignación: se asigna cada título al centroide más cercano.
+	\item Actualización: se actualiza la posición del centroide a la media aritmética de las posiciones de los títulos asignados al clúster.
+	\item Finalización: si el criterio de finalización se cumple, entonces se obtiene el resultado final. En caso contrario, ir se vuelve al paso 2 (Asignación).
 \end{itemize}
 
-Los pasos 2 y 3 se siguen iterativamente hasta que no haya más cambios. Vamos a verlo con se ha implementado.
-
-La intención de este ejercicio es agrupar los titulos por las palabras que contienen.
+A continuación, vemos como el algoritmo K-Means se ha implementado en Python, teniendo que indicar el número de clústeres que queremos encontrar.
 
 \begin{lstlisting}[language=python]
 num_clusters = 40
-km = KMeans(n_clusters=num_clusters)
-km.fit(tfidf_matrix)
-clusters = km.labels_.tolist()
+kmeans = KMeans(n_clusters=num_clusters)
+kmeans.fit(tfidf_matrix)
+clusters = kmeans.labels_.tolist()
+centroids = kmeans.cluster_centers_.argsort()[:, ::-1]
 \end{lstlisting}
 
-Para analizar los resultados y visualizar los clústeres (\textit{clusters}), ha sido necesario crear dos nuevos dataframes. Uno que contenga los títulos y sus clústeres asignados (\textit{frame}), y otro que contenga las raíces de los títulos con sus palabras asignadas (\textit{vocab\_frame}). Para crear el segundo, además, ha sido necesario crear dos nuevos vocabularios: uno que contenga los títulos tokanizados y otro que contenga las raíces de los títulos tokanizados. Para ello se han usado las funciones: \textit{tokenize\_and\_stem} y \textit{tokenize\_only}, ya nombradas anteriormente (ver Sección~\ref{stem_token}).
+No es obvio, a priori, saber qué número de clústeres "K" es mejor. Por ejemplo, yo elegí 40, porqué el conjunto de datos de entrada contiene títulos que pertenecen al menos a una de las 50 categorías existentes del catálogo de libros, descartando 10 categorías que solo hacen referencia a un único libro. Pero para elegir el valor de "K", en general, no hay un modo exacto para determinar su valor, pero se puede estimar el valor con aceptable precisión siguiendo métodos más objetivos como: \href{https://en.wikipedia.org/wiki/Silhouette_(clustering)}{el método de la silueta} y \href{https://en.wikipedia.org/wiki/Elbow_method_(clustering)}{el método del codo}. Aunque en el caso de la práctica se ha probado el método del codo, pero al no devolver un valor aceptable se ha descartado.  
+
+Así, como se comenta brevemente en la sección~\ref{características}, la preocupación de no poder representar gráficamente los resultados y visualizar los clústeres a causa del gran volumen de datos se cumple. No he encontrado una manera aceptable de visualizar los clústeres gráficamente y he optado por otra opción: mostrar los diez términos más frecuentes de cada clúster.
+
+Para ello, primero crearemos dos nuevos dataframes. Uno que contenga los títulos y sus clústeres asignados (llamado \textit{frame}), y otro que contenga las raíces de los títulos y sus palabras asignadas (llamado \textit{vocab\_frame}). Para crear el segundo \textit{Dataframe}, además, será necesario crear dos nuevos vocabularios: uno que contenga los títulos tokanizados y otro que contenga los títulos tokanizados y segmentados. Se vuelven a usar las funciones: \textit{tokenize\_and\_stem} y \textit{tokenize\_only}, ya nombradas anteriormente en la Sección~\ref{stem_token}. Vemos como se ha implementado en Python a continuación.
 
 \begin{lstlisting}[language=python]
-# new df with titles and clusters
-frame = pd.DataFrame({'title': titles, 'cluster': clusters}, index=[clusters], 
-	columns=['title', 'cluster'])
+# create frame df
+frame = pd.DataFrame({'title': titles, 'cluster': clusters}, index=[clusters], columns=['title', 'cluster'])
 \end{lstlisting}
 
 \begin{lstlisting}[language=python]
-# new two vocabularies: stemmed and tokenized
-totalvocab_stemmed = []
-totalvocab_tokenized = []
-for i in titles:
-	allwords_stemmed = tokenize_and_stem(i)  # for each item in 'titles', tokenize/stem
-	totalvocab_stemmed.extend(allwords_stemmed)  # extend the 'totalvocab_stemmed' list
-
-	allwords_tokenized = tokenize_only(i)
-	totalvocab_tokenized.extend(allwords_tokenized)
+def create_vocabularies(titles):
+	"""
+	Create stemmed and tokenized vocabularies
+	"""
+	totalvocab_stemmed = []
+	totalvocab_tokenized = []
+	for i in titles:
+		allwords_stemmed = tokenize_and_stem(i)  # for each item in 'titles', tokenize/stem
+		totalvocab_stemmed.extend(allwords_stemmed)  # extend the 'totalvocab_stemmed' list
 	
+		allwords_tokenized = tokenize_only(i)
+		totalvocab_tokenized.extend(allwords_tokenized)
+	
+	return totalvocab_stemmed, totalvocab_tokenized
+
+# create vocab_frame df
+totalvocab_stemmed, totalvocab_tokenized = create_vocabularies(titles)
 vocab_frame = pd.DataFrame({'words': totalvocab_tokenized}, index=totalvocab_stemmed)
 print('There are ' + str(vocab_frame.shape[0]) + ' items in vocab_frame')
 >> There are 6371 items in vocab_frame
 \end{lstlisting}
 
-El beneficio de este procedimiento es que proporciona una forma eficiente de buscar una raíz y devolver la palabra que la contiene muy rápidamente. La desventaja es que hay demasiadas raíces, concretamente 6371. Por ejemplo, la raíz 'run' podría estar asociada con 'ran', 'runs', 'running', etc. Aunque para mi propósito de visualización de los clústeres está bien. A continuación podemos observar las primeras líneas del contenido de los dos nuevos dataframes.
+El beneficio de este procedimiento es que proporciona una forma eficiente de buscar una palabra y devolver el clúster que la contiene muy rápidamente. La desventaja es que hay demasiadas palabras, concretamente 6371. Además, nos podemos encontrar que la raíz 'run' esté asociada con 'ran', 'runs', 'running', etc. Aunque para mi propósito de visualización de los clústeres está bien. Vemos primero las primeras líneas del contenido de los dos nuevos dataframes que hemos creado.
 
 \begin{table}[!htb]
 	\centering
-	\caption{\textit{frame} y \textit{vocab\_frame} dataframes.}
+	\caption{Contenido de los dataframes \textit{frame} y \textit{vocab\_frame}.}
 	\begin{minipage}{.6\linewidth}
 		\centering
 		\begin{tabular}{lc}
@@ -354,46 +373,26 @@ El beneficio de este procedimiento es que proporciona una forma eficiente de bus
 	\end{minipage} 
 \end{table}
 
-Finalmente, vemos la función implementada que muestra los resultados por clúster, identificando las $n$ primeras palabras (elegí $n$=10) que están más cerca de los centroides de cada uno de ellos, y también vemos el resultado de su ejecución (ver Figura~\ref{results}). 
+Finalmente, vemos la función implementada para mostrar los resultados, donde se identifican las n primeras palabras (n=10) que están más cerca de los centroides de cada uno de los clústeres. Los resultados se almacenan en el archivo \textit{kmeans/top\_terms\_per\_cluster.txt}, aunque podemos ver parte del resultado en la Figura~\ref{results}. 
 
 \begin{lstlisting}[language=python]
-# sort cluster centers by proximity to centroid	
-order_centroids = km.cluster_centers_.argsort()[:, ::-1] 
-
-for i in range(num_clusters):
-	print("Cluster {} words:".format(i), end='')
-	for ind in order_centroids[i, :10]:  # replace 10 with n words per cluster
-		print(' {}'.format(vocab_frame.loc[terms[ind].split(' ')].values.tolist()[0][0]), 
-			end=',')
+with open('top_terms_per_cluster.txt', 'w') as txt_file:
+	for i in range(num_clusters):
+		print("Cluster {} words:".format(i), end='', file=txt_file)
+		for ind in centroids[i, :10]:  # replace 10 with n words per cluster
+			print(' {}'.format(vocab_frame.loc[terms[ind].split(' ')].values.tolist()[0][0]), 
+				end=',', file=txt_file)
 	
-	print()
-	print()
+		print(file=txt_file)
+		print(file=txt_file)
 	
-	print("Cluster {} titles:".format(i), end='')
-	for title in frame.loc[i]['title'].values.tolist():
-		print(' {},'.format(title), end='')
+		print("Cluster {} titles:".format(i), end='', file=txt_file)
+		for title in frame.loc[i]['title'].values.tolist():
+			print(' {},'.format(title), end='', file=txt_file)
 	
-	print()
-	print()
+		print(file=txt_file)
+		print(file=txt_file)
 \end{lstlisting}
-
-Podemos ver cada uno de los clústeres las diez palabras más usadas palabras (las palabras que están más cerca a los centroids de cada clúster) y los títulos de cada clúster a las que estan asignadas. Para ver el resultado completo con los 40 clústeres, ver fichero ...
-
-\subsection{Evaluación}
-
-Finalmente en esta sección, se intentan evaluar los resultados del proceso de agrupamiento de la sección anterior. Decimos que se intentan evaluar, ya que normalmente la evaluación de algoritmos de aprendizaje no supervisados es un poco difícil y requiere de ojo humano, que en mi caso no está muy bien entrenado.
- 
-Para la mayoría de los problemas de agrupación en clústeres es usual el uso de dos tipos de métricas: \textit{homogeneity\_score} y \textit{silhouette\_score}. En el caso de la práctica usamos \href{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.silhouette_score.html}{silhouette\_score}, que calculará el coeficiente de \href{https://es.wikipedia.org/wiki/Silhouette_(clustering)}{Silhouette}.
-
-El mejor valor del coeficiente de Silhouette es 1, y el peor valor es -1. Los valores cercanos a 0 indican grupos superpuestos. Los valores negativos generalmente indican que se han asignado bastantes clústeres de manera incorrecta.
-
-\begin{lstlisting}[language=python]
-silhouette_coefficient = silhouette_score(tfidf_matrix, labels=km.predict(tfidf_matrix))
-print(silhouette_coefficient)
->> 0.02250733514584242
-\end{lstlisting}
-
-Entonces, este valor significa que nuestros clústeres se superponen. 
 
 \begin{figure}[h]
 	\centering
@@ -402,9 +401,29 @@ Entonces, este valor significa que nuestros clústeres se superponen.
 	\label{results}
 \end{figure}
 
+\subsection{Evaluación}
+
+En esta sección se intentan evaluar los resultados del proceso de clustering de la sección anterior. Decimos que se intentan evaluar, ya que normalmente la evaluación de un algoritmo de aprendizaje no supervisado es un poco difícil y requiere de ojo humano, que en mi caso no está del todo bien entrenado.
+
+A pesar de ello, con el uso de la librería scikit-learn es usual utilizar dos tipos de métricas para la evaluación de los algoritmos de clustering. Estas dos métricas son: la métrica \textit{homogeneity\_score} y la métrica \textit{silhouette\_score}. En el caso de la práctica usamos la métrica \href{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.silhouette_score.html}{\textit{silhouette\_score}}, que calcula el coeficiente de \href{https://es.wikipedia.org/wiki/Silhouette_(clustering)}{Silhouette}.
+
+El coeficiente de Silhouette toma valores entre -1 y 1. El mejor valor del coeficiente de Silhouette es 1 y el peor valor es -1. Los valores cercanos a 0 nos indicará de la presencia de clústeres superpuestos. Los valores negativos generalmente indican que se han asignado bastantes clústeres de manera incorrecta. Vemos que valor toma a continuación:
+
+\begin{lstlisting}[language=python]
+silhouette_coefficient = silhouette_score(tfidf_matrix, labels=kmeans.predict(tfidf_matrix))
+print(silhouette_coefficient)
+>> 0.024864817391747306
+\end{lstlisting}
+
+Entonces, el valor del coeficiente de Silhouette nos indica que los clústeres resultantes de la ejecución de K-Means se superponen. Quizás el ajuste de diferentes parámetros para la extracción de características y el uso de otro algoritmo de clustering aumente esta puntuación.
+
 \section{Conclusiones}
 
-Hemos visto que el algoritmo de K-Means nos ayuda a crear clusters cuando tenemos grandes grupos de datos sin etiquetar.
+En esta práctica se mostró cómo rastrear contenido de Internet y como agruparlo utilizando el algoritmo K-Means. Hemos podido observar que algoritmo K-Means puede agrupar cualquier tipo de datos, no solo texto, y puede usarse para una amplia variedad de problemas. Si bien la evaluación de los algoritmos de agrupación en clústeres no es tan fácil en comparación con los algoritmos de aprendizaje supervisado, es deseable tener una idea del rendimiento del algoritmo con anterioridad. Sin embargo, es importante saber qué están midiendo las métricas y si están sesgadas o tienen alguna limitación. 
+
+Puede que el algoritmo elegido no sea el más adecuado para el conjunto de datos de entrada obtenidos por el rastreador, ya que cuando el grupo de datos es grande no hemos obtenido resultados de nuestro agrado. Seguramente para que el clustering sea más efectivo sería recomendable reducir al mínimo el número de atributos, usar atributos relevantes y poner los datos en una escala similar.
+
+Personalmente mi valoración personal en esta práctica es que me ha parecido muy interesante poder implementar en Python un rastreador web. No lo había hecho nunca y he podido observar con que facilidad y rapidez se puede realizar con el uso de la librería Scrapy. También me ha parecido muy interesante el desarrollo en Python del algoritmo K-Means. Estoy más familiarizada con el desarrollo de modelos de aprendizaje no supervisado en R, y poderlo hacer por primera vez en Python con la librería scikit-learn ha sido muy constructivo. Seguramente ampliaré el uso de esta librería en mis futuros proyectos.
 
 \renewcommand{\refname}{Bibliografía}
 \bibliographystyle{unsrt}
