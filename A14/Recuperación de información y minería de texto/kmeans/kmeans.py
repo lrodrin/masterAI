@@ -144,22 +144,22 @@ if __name__ == '__main__':
     print('There are ' + str(vocab_frame.shape[0]) + ' items in vocab_frame')
 
     print("Top terms per cluster:")
-    with open('top_terms_per_cluster.txt', 'w') as out_file:  # top terms per cluster
+    with open('top_terms_per_cluster.txt', 'w') as txt_file:
         for i in range(num_clusters):
-            print("Cluster {} words:".format(i), end='', file=out_file)
+            print("Cluster {} words:".format(i), end='', file=txt_file)
             for ind in centroids[i, :10]:  # replace 10 with n words per cluster
                 print(' {}'.format(vocab_frame.loc[terms[ind].split(' ')].values.tolist()[0][0]), end=',',
-                      file=out_file)
+                      file=txt_file)
 
-            print(file=out_file)
-            print(file=out_file)
+            print(file=txt_file)
+            print(file=txt_file)
 
-            print("Cluster {} titles:".format(i), end='', file=out_file)
+            print("Cluster {} titles:".format(i), end='', file=txt_file)
             for title in frame.loc[i]['title'].values.tolist():
-                print(' {},'.format(title), end='', file=out_file)
+                print(' {},'.format(title), end='', file=txt_file)
 
-            print(file=out_file)
-            print(file=out_file)
+            print(file=txt_file)
+            print(file=txt_file)
 
     # Evaluation with silhouette coefficient
     silhouette_coefficient = silhouette_score(tfidf_matrix, labels=kmeans.predict(tfidf_matrix))
