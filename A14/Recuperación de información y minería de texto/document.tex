@@ -57,23 +57,21 @@
 
 \section{Resumen}
 
-En esta práctica se ha implementado un rastreador web (crawler) en Python~\cite{GitHubRepo} (ver Sección~\ref{crawler}), que se complementa con un proceso de agrupamiento (ver Sección~\ref{kmeans}), también implementado en Python, de la información extraída por el rastreador web. 
+En esta práctica se ha implementado un rastreador web (crawler) en Python (ver Sección~\ref{crawler}), que se complementa con un proceso de agrupamiento (ver Sección~\ref{kmeans}), también implementado en Python, de la información extraída por el rastreador web. En este documento se describe el desarrollo paso a paso, que se puede descargar de~\cite{GitHubRepo}.
 
-\section{Rastreador web (crawler)}\label{crawler}
+\section{Rastreador web}\label{crawler}
 
-En esta sección se describe como se ha implementado el rastreador web (crawler) en Python usando la librería \href{https://scrapy.org/}{Scrapy}. Para empezar con la implementación se debe ejecutar el siguiente comando:
+En esta sección se describe como se ha implementado el rastreador web (crawler) en Python usando la librería \href{https://scrapy.org/}{Scrapy}, y para empezar este desarrollo se ejecutó el siguiente comando:
 
 \begin{lstlisting}[language=bash]
 $ scrapy startproject books
 \end{lstlisting}
 
-Este comando crea un proyecto Scrapy en el directorio books, siguiendo la \href{https://docs.scrapy.org/en/latest/topics/commands.html#default-structure-of-scrapy-projects}{estructura por defecto}, común para todo proyecto Scrapy. También crea el fichero \textit{scrapy.cfg}, que contiene el nombre del módulo en Python que define la configuración del proyecto books (\textit{books.settings}). El proyecto lo he nombrado books, porqué se rastreará y se recuperará información de un catálogo de libros que se encuentra en la página web: \url{http://books.toscrape.com}.
+Este comando crea un proyecto Scrapy en el directorio books, siguiendo la \href{https://docs.scrapy.org/en/latest/topics/commands.html#default-structure-of-scrapy-projects}{estructura por defecto} común para todo proyecto Scrapy. El comando también crea el fichero \textit{scrapy.cfg}, que contiene el nombre del módulo en Python que define la configuración del proyecto books. El proyecto Scrapy de la práctica lo he llamado books, porqué se rastrea y recupera información de un catálogo de libros, que podemos encontrar en el siguiente enlace a la página web: \url{http://books.toscrape.com}.
 
-Una vez se ha creado el proyecto, se tienen que definir los ítems de cada libro que se quieran extraer del catálogo. En este caso los ítems que se van a extraer son: el título, la categoría, la descripción, el precio y la valoración de cada libro. Para ello, se tiene que modificar el fichero \textit{books/items.py}, para incluir los cinco ítems que se quieren extraer. Vemos el contenido de \textit{items.py} a continuación:
+Una vez se ha creado el proyecto con el comando anterior, se deben que definir los ítems de cada libro que se quieran extraer del catálogo web. En este caso los ítems que se extraen son: el título, la categoría, la descripción, el precio y la valoración de cada libro. Para que el rastreador lo tenga en cuenta, se tiene que modificar el fichero \textit{books/items.py}, para incluir los cinco ítems que se quieren extraer. A continuación, podemos ver los ítems añadidos en el fichero \textit{items.py}:
 
 \begin{lstlisting}[language=python]
-import scrapy
-
 class BooksItem(scrapy.Item):
 	# define the fields for your item here like:
 	# name = scrapy.Field()
@@ -84,7 +82,9 @@ class BooksItem(scrapy.Item):
 	rating = scrapy.Field()
 \end{lstlisting}
 
-El siguiente paso es describir la manera de extraer la información definida en el fichero \textit{items.py}. Para ello, se utilizan reglas de expresión \href{https://www.w3.org/TR/xpath/all/}{XPath} y \href{https://www.w3.org/TR/selectors/}{CSS}. Por ejemplo, si nos fijamos en el código HTML de uno de los libros que se van rastrear (ver Figura \ref{book}), veremos que el título del libro es fácil de extraer con la siguiente regla de expresión CSS: \textbf{"h1 ::text"}. Pero cuando la extracción de información se complica un poco más, se usan reglas de expresión XPath. Por ejemplo, para extraer las descripciones de todos los libros se usará la regla de expresión: \textbf{"//div[@id='product\_description']/following-sibling::p/text()"}. Una vez, definidas todas las reglas de expresión para cada ítem que se va a rastrear, se crea la araña \textit{books/spiders/books\_toscrape.py}.
+El siguiente paso es describir la manera de extraer la información de estos ítems. Para ello, se utilizan reglas de expresión \href{https://www.w3.org/TR/xpath/all/}{XPath} y \href{https://www.w3.org/TR/selectors/}{CSS}. Por ejemplo, si nos fijamos en el código HTML de uno de los libros que se van rastrear (ver Figura \ref{book}), veremos que el título del libro es fácil de extraer con la siguiente regla de expresión CSS: \textbf{"h1 ::text"}. Por otro lado, cuando la extracción de información se complica un poco más, se usan reglas de expresión XPath. Por ejemplo, para extraer las descripciones de todos los libros se usa la regla de expresión: \textbf{"//div[@id='product\_description']/following-sibling::p/text()"}. 
+
+En este documento no se describen todas las reglas de expresión que se han desarrollado, pero se pueden consultar en~\cite{GitHubRepo}, concretamente en el fichero \textit{books/spiders/books\_toscrape.py}. Este fichero es la araña o más comúnmente llamada en inglés \textit{spider}, que contiene todas las reglas de expresión de cada uno de los ítems de \textit{items.py}, para definir como se va a rastrear y cómo se va a extraer la información del catálogo de libros en la web.
 
 \begin{figure}[h]
 	\centering
@@ -94,14 +94,14 @@ El siguiente paso es describir la manera de extraer la información definida en 
 \end{figure}
 
 \begin{definition}\label{spider}
-Las arañas son clases que definen cómo se rastrea una página web determinada (o un grupo de páginas web), incluido cómo realizar el rastreo y cómo extraer la información deseada. En otras palabras, las arañas son el lugar donde se define el comportamiento personalizado para rastrear y analizar las páginas web.
+Las arañas son clases en Python que definen cómo se rastrea una página web determinada (o un grupo de páginas web), incluido cómo realizar el rastreo y cómo extraer la información deseada. En otras palabras, las arañas son el lugar donde se define el comportamiento personalizado para rastrear y analizar las páginas web.
 \end{definition}
 
-En el caso de la práctica, la araña \textit{books.toscrape} representará el lugar donde se definen las reglas de expresión. En las arañas también se tienen que especificar las solicitudes iniciales para rastrear las URLs y una función de devolución de llamada (\textit{parse}) a la que se llamará para generar los ítems de respuesta de esas solicitudes. Por último, los ítems devueltos por las arañas normalmente se conservan en una base de datos o se escriben en un archivo. En el caso de la práctica, los ítems (título, categoría, descripción, precio y valoración de cada libro) devueltos por la araña serán guardados en el fichero \textit{books.json}. La araña \textit{books.toscrape} que procesa todas las URLs descubiertas de \url{http://books.toscrape.com}, utilizando la función \textit{parse} que a su vez llama a la función \textit{parse\_book\_page} donde son definidas todas las reglas de expresión de cómo extraer la información deseada, se muestra a continuación:
+En las arañas también se tienen que especificar las solicitudes iniciales de todas las URLs a rastrear y crear una función de devolución de llamada (\textit{parse}), a la que se llamará para generar los ítems de respuesta de esas solicitudes. Por último, la información devuelta por las arañas, normalmente se conserva en una base de datos o se escribe en un archivo. En el caso de la práctica, la información de los ítems: título, categoría, descripción, precio y valoración de cada libro, que son devueltos por la araña \textit{books.toscrape}, se guardan en el archivo \textit{books.json}. 
+
+La araña desarrollada en esta práctica (\textit{books.toscrape}), que procesa todas las URLs descubiertas de \url{http://books.toscrape.com}, utilizando la función \textit{parse}, que a su vez llama a la función \textit{parse\_book\_page} donde se definen todas las reglas de expresión, se muestra a continuación:
 
 \begin{lstlisting}[language=python]
-import scrapy
-
 class BooksToscrapeSpider(scrapy.Spider):
 	name = 'books.toscrape'
 	allowed_domains = ['books.toscrape.com']
@@ -128,9 +128,9 @@ class BooksToscrapeSpider(scrapy.Spider):
 		yield item
 \end{lstlisting}
 
-En este momento ya podemos iniciar la araña para que recupere la información del catálogo web y la guarde en el fichero \textit{books.json}, aunque primero es recomendable modificar el fichero \textit{books/settings.py} para limitar el acceso de la araña al catálogo web, ya que podemos generar un ataque \href{https://es.wikipedia.org/wiki/Ataque_de_denegaci%C3%B3n_de_servicio}{DDoS}. Para ello, debemos descomentar la variable \href{https://docs.scrapy.org/en/latest/topics/settings.html#download-delay}{DOWNLOAD\_DELAY} y darle un valor en segundos (p.ej. DOWNLOAD\_DELAY = 3). 
+Apartir de este momento, ya podemos iniciar la araña para que recupere la información de los libros del catálogo web y la escriba en el archivo \textit{books.json}, aunque primero es recomendable modificar el fichero \textit{books/settings.py}, para limitar el acceso de la araña, ya que podemos generar un ataque \href{https://es.wikipedia.org/wiki/Ataque\_de\_denegaci\%C3\%B3n_de_servicio}{DDoS}. Para no provocar un ataque de este tipo, debemos descomentar la variable \href{https://docs.scrapy.org/en/latest/topics/settings.html#download-delay}{DOWNLOAD\_DELAY} del fichero \textit{books/settings.py}  y darle un valor en segundos (p.ej. DOWNLOAD\_DELAY = 3). 
 	
-Para iniciar la araña se debe ejecutar el siguiente comando:	
+Finalmente, para iniciar la araña se deben ejecutar los comandos siguientes:	
 	
 \begin{lstlisting}[language=bash]
 	$ cd books
@@ -139,7 +139,7 @@ Para iniciar la araña se debe ejecutar el siguiente comando:
 
 \section{K-Means}\label{kmeans} 
 
-En esta sección se describe como se ha implementado el proceso de agrupamiento en Python, usando la librería scikit-learn~\cite{scikit-learn}. La implementación llevada a cabo se encuentra en el directorio kmeans en~\cite{GitHubRepo}. Concretamente, el algoritmo de agrupación elegido para esta práctica ha sido:  \href{https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html}{K-Means}. En el caso de la práctica, el algoritmo K-Means agrupará los títulos de los libros del catálogo web, recuperados en la Sección~\ref{crawler}, en diferentes clústeres.
+En esta sección se describe como se ha implementado el proceso de agrupamiento en Python usando la librería scikit-learn~\cite{scikit-learn}. La implementación llevada a cabo se encuentra en el directorio kmeans en~\cite{GitHubRepo}. Concretamente, el algoritmo de agrupación elegido para esta práctica ha sido:  \href{https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html}{K-Means}. K-Means es un algoritmo no supervisado de \textit{clustering} que usualmente se utiliza cuando tenemos un montón de datos sin etiquetar, con el objetivo de encontrar "K" grupos (clústeres) entre los datos. En el caso de la práctica, el algoritmo K-Means agrupará los títulos de los libros del catálogo web, recuperados en la Sección~\ref{crawler}, en diferentes clústeres.
 
 \subsection{Datos de entrada}
 
@@ -221,6 +221,14 @@ Estas funciones son casi iguales, ya que las dos realizan el mismo proceso de to
 
 \subsection{Extracción de características}
 
+El clustering es una técnica de aprendizaje automático no-supervisada. Esto implica que no es capaz de establecer la relación entre los atributos de entrada y los resultados … sencillamente porque no hay resultados. Así que la responsabilidad de identificar qué atributos son relevantes recae sobre nosotros.
+
+Por ejemplo, si estamos usando clustering para segmentar clientes … seguramente no es buena idea incluir el color de los ojos de los clientes. Esta es una característica posiblemente irrelevante que hará que las distancias entre los puntos multidimensionales que representan cada dato sea menos informativa … excepto si estamos vendiendo lentillas para cambiar el color de ojos!
+
+Además, siempre es buena idea usar el menor número atributos posible debido a los que se conoce como la \href{https://www.iartificial.net/la-maldicion-de-la-dimension-en-machine-learning/}{maldición de la dimensionalidad}. En esencia se refiere a que a medida que el número de dimensiones (atributos) aumenta, la distancia discrimina cada vez menos. Una práctica común antes de hacer clustering es reducir la dimensionalidad del problema. Hay varias técnicas para este propósito tales como Principal Components Analysis (PCA), auto-enconders, etc.
+
+
+
 \begin{wrapfigure}[10]{r}{0.4\textwidth}
 	\centering
 	\caption{Ejemplo de matriz tf-idf.}
@@ -263,7 +271,22 @@ Un par de cosas a tener en cuenta sobre los parámetros definidos en la función
 
 \subsection{Entrenamiento del algoritmo}
 
-Ahora pasamos a la parte divertida. Usando la matriz tf-idf calculada en la sección anterior, se puede ejecutar el algoritmo K-Means utilizando \href{https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html}{sklearn.cluster.KMeans}, para comprender mejor la estructura oculta dentro de los títulos de los libros. El algoritmo K-Means se inicializa con un número predeterminado de clústeres. Elegí el número 40 como número predeterminado de clústeres, ya que el conjunto de datos de entrada contiene libros que pertenecen al menos a más de dos de las 50 categorías existentes en el conjunto de datos, descartando 10 categorías que solo hacen referencia a un único libro.
+Ahora pasamos a la parte divertida. Usando la matriz tf-idf calculada en la sección anterior, se puede ejecutar el algoritmo K-Means utilizando \href{https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html}{sklearn.cluster.KMeans}, para comprender mejor la estructura oculta dentro de los títulos de los libros del catálogo web. El algoritmo K-Means se inicializa con un número predeterminado de clústeres. Elegí el número 40 como número predeterminado de clústeres, ya que el conjunto de datos de entrada contiene libros que pertenecen al menos a más de dos de las 50 categorías existentes en el conjunto de datos, descartando 10 categorías que solo hacen referencia a un único libro. No se ha utilizado metodo del codo
+
+Algunas técnicas de agrupamiento, tales como K-Means, necesitan que especifiquemos el número de clusters (grupos) que queremos encontrar. No es obvio, a priori, saber qué número de grupos es mejor.
+
+
+El algoritmo K-Means sigue los siguientes pasos:
+
+\begin{itemize}
+	\item Inicialización: se elige la localización de los centroides de los K grupos aleatoriamente
+	\item Asignación: se asigna cada dato al centroide más cercano
+	\item Actualización: se actualiza la posición del centroide a la media aritmética de las posiciones de los datos asignados al grupo
+\end{itemize}
+
+Los pasos 2 y 3 se siguen iterativamente hasta que no haya más cambios. Vamos a verlo con se ha implementado.
+
+La intención de este ejercicio es agrupar los titulos por las palabras que contienen.
 
 \begin{lstlisting}[language=python]
 num_clusters = 40
@@ -355,6 +378,8 @@ for i in range(num_clusters):
 	print()
 \end{lstlisting}
 
+Podemos ver cada uno de los clústeres las diez palabras más usadas palabras (las palabras que están más cerca a los centroids de cada clúster) y los títulos de cada clúster a las que estan asignadas. Para ver el resultado completo con los 40 clústeres, ver fichero ...
+
 \subsection{Evaluación}
 
 Finalmente en esta sección, se intentan evaluar los resultados del proceso de agrupamiento de la sección anterior. Decimos que se intentan evaluar, ya que normalmente la evaluación de algoritmos de aprendizaje no supervisados es un poco difícil y requiere de ojo humano, que en mi caso no está muy bien entrenado.
@@ -377,6 +402,10 @@ Entonces, este valor significa que nuestros clústeres se superponen.
 	\caption{Resultados del proceso de \textit{clustering}.}
 	\label{results}
 \end{figure}
+
+\section{Conclusiones}
+
+Hemos visto que el algoritmo de K-Means nos ayuda a crear clusters cuando tenemos grandes grupos de datos sin etiquetar.
 
 \renewcommand{\refname}{Bibliografía}
 \bibliographystyle{unsrt}
