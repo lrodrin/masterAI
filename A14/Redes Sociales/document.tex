@@ -57,11 +57,11 @@
 
 \section*{La Red}
 
-La red \textit{Diseasome}\cite{Goh8685} seleccionada para realizar esta práctica, es una red no dirigida de trastornos y genes de diferentes enfermedades vinculadas por asociaciones conocidas entre trastornos y genes, que indican el origen genético común de muchas enfermedades. La red está formada por 526 enfermedades y 903 genes, donde los genes asociados con trastornos similares muestran una mayor probabilidad de interacciones físicas entre sus diagnósticos y una mayor similitud de perfiles de expresión para sus tratamientos, lo que respalda la existencia de distintos clústers funcionales específicos de cada enfermedad. 
+La red \textit{Diseasome}~\cite{Goh8685} seleccionada para realizar esta práctica, es una red no dirigida de trastornos y genes de diferentes enfermedades vinculadas por asociaciones conocidas entre trastornos y genes, que indican el origen genético común de muchas enfermedades. La red está formada por 526 enfermedades y 903 genes, donde los genes asociados con trastornos similares muestran una mayor probabilidad de interacciones físicas entre sus diagnósticos y una mayor similitud de perfiles de expresión para sus tratamientos, lo que respalda la existencia de distintos clústers funcionales específicos de cada enfermedad. 
 
-El conjunto de datos de \textit{Diseasome} viene como un archivo \textit{.zip}, que se puede descargar \href{http://gephi.org/datasets/diseasome.gexf.zip}{aquí}. Que una vez se ha descargado y descomprimido, obtenemos un archivo \textit{.gexf}, un archivo de grafos. Importamos el archivo de grafos a \textit{Gephi}\cite{Gephi} y empezamos a probar diferentes opciones de visualización.
+El conjunto de datos de \textit{Diseasome} viene como un archivo \textit{.zip}, que se puede descargar \href{http://gephi.org/datasets/diseasome.gexf.zip}{aquí}. Que una vez se ha descargado y descomprimido, obtenemos un archivo \textit{.gexf}, un archivo de grafos. Importamos el archivo de grafos a \textit{Gephi}~\cite{Gephi} y empezamos a probar diferentes opciones de visualización.
 
-Después de probar diferentes visualizaciones nos decidimos por el algoritmo de distribución: \href{https://github.com/gephi/gephi/wiki/Fruchterman-Reingold}{Fruchterman Reingold}\cite{fruchterman1991graph} (en la ventana \textit{Distribución}). Para evitar que las componentes conexas queden fuera de la vista principal, fijamos el valor del parámetro \textit{Gravedad} a 20 y también marcamos las opciones \textit{Disuadir Hubs y/o Evitar el solapamiento}. Esto convertirá nuestra visualización de la red en un círculo y colocará la red alrededor de una misma área (ver Figura \ref{completa_negro_FR}). 
+Después de probar diferentes visualizaciones nos decidimos por el algoritmo de distribución: \href{https://github.com/gephi/gephi/wiki/Fruchterman-Reingold}{Fruchterman Reingold}~\cite{fruchterman1991graph} (en la ventana \textit{Distribución}). Para evitar que las componentes conexas queden fuera de la vista principal, fijamos el valor del parámetro \textit{Gravedad} a 20 y también marcamos las opciones \textit{Disuadir Hubs y/o Evitar el solapamiento}. Esto convertirá nuestra visualización de la red en un círculo y colocará la red alrededor de una misma área (ver Figura \ref{completa_negro_FR}). 
 
 \begin{figure}[H]
 	\centering
@@ -70,7 +70,7 @@ Después de probar diferentes visualizaciones nos decidimos por el algoritmo de 
 	\label{completa_negro_FR}
 \end{figure}
 
-De una primera visualización pasamos a la detección de comunidades para colorear los clústers de la red. \textit{Gephi} implementa el método de \href{http://perso.uclouvain.be/vincent.blondel/research/louvain.html}{Louvain}\cite{Blondel2008} para la detección de comunidades (disponible en el panel de \textit{Estadísticas}). Para ello, damos clic en ejecutar \textit{Modularidad} y veremos como el algoritmo de detección de comunidades nos ha creado un nuevo parámetro de particionamiento llamado \textit{Modularity Class}. Si seleccionamos este nuevo parámetro podremos observar las comunidades encontradas y si finalmente pulsamos \textit{Aplicar} colorearemos los nodos según las comunidades encontradas. Esto hace que la visualización sea más colorida y se vea bien donde se encuentra cada comunidad. También añadimos etiquetas a los nodos (ver Figura \ref{completa_FR_labels}). 
+De una primera visualización pasamos a la detección de comunidades para colorear los clústers de la red. \textit{Gephi} implementa el método de \href{http://perso.uclouvain.be/vincent.blondel/research/louvain.html}{Louvain}~\cite{Blondel2008} para la detección de comunidades (disponible en el panel de \textit{Estadísticas}). Para ello, damos clic en ejecutar \textit{Modularidad} y veremos como el algoritmo de detección de comunidades nos ha creado un nuevo parámetro de particionamiento llamado \textit{Modularity Class}. Si seleccionamos este nuevo parámetro podremos observar las comunidades encontradas y si finalmente pulsamos \textit{Aplicar} colorearemos los nodos según las comunidades encontradas. Esto hace que la visualización sea más colorida y se vea bien donde se encuentra cada comunidad. También añadimos etiquetas a los nodos (ver Figura \ref{completa_FR_labels}). 
 
 \begin{figure}[H]
 	\centering
@@ -147,19 +147,19 @@ A continuación, mostramos la tabla que resume los valores de las medidas calcul
 	\begin{tabular}{|l|r|}
 		\hline
 		\textbf{Medida}                                            & \textbf{Valor} \\ \hline\hline
-		Número de nodos N                                          & 1419           \\ \hline
-		Número de enlaces L                                        & 3926           \\ \hline
-		Número máximo de enlaces Lmax                              & 1006071        \\ \hline
-		Densidad del grafo L/Lmax                                  & 0.004          \\ \hline
-		Grado medio \textless{}k\textgreater{}                     & 5.533          \\ \hline
-		Diámetro dmax                                              & 15             \\ \hline
-		Distancia media d                                          & 6.783          \\ \hline
-		Coeficiente medio de clustering \textless{}C\textgreater{} & 0.819          \\ \hline
-		Número de componentes conexas                              & 1              \\ \hline
-		Número de nodos componente gigante                         & 1419           \\ \hline
-		Número de aristas componente gigante                       & 3926           \\ \hline
+		Número de nodos $N$                                          & 1419           \\ \hline
+		Número de enlaces $L$                                        & 3926           \\ \hline
+		Número máximo de enlaces $Lmax$                              & 1006071        \\ \hline
+		Densidad del grafo $L/Lmax$                                  & 0.004          \\ \hline
+		Grado medio \textless{}$k$\textgreater{}                     & 5.533          \\ \hline
+		Diámetro $dmax$                                              & 15             \\ \hline
+		Distancia media $d$                                          & 6.783          \\ \hline
+		Coeficiente medio de clustering \textless{}$C$\textgreater{} & 0.819          \\ \hline
+		Número de componentes conexas                               & 1              \\ \hline
+		Número de nodos componente gigante                          & 1419           \\ \hline
+		Número de aristas componente gigante                        & 3926           \\ \hline
 	\end{tabular}
-	\caption{Tabla con los valores de las medidas estudiadas.}
+	\caption{Tabla con los valores \\ de las medidas estudiadas.}
 	\label{tabla}
 \end{table}
 
@@ -313,8 +313,6 @@ if __name__ == '__main__':
 	for colName in colNames:
 		createGraph(df_disease, colName)
 \end{lstlisting}
-
-\newpage
 
 \renewcommand{\refname}{Bibliografía}
 \bibliographystyle{unsrt}
