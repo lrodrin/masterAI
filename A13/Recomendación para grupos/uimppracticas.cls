@@ -35,7 +35,39 @@
 \RequirePackage{float}
 \RequirePackage{makecell}
 \RequirePackage{listings}
+\RequirePackage[table,xcdraw]{xcolor}
+\RequirePackage{amsthm}
 \RequirePackage{booktabs}
+\RequirePackage{adjustbox}
+\RequirePackage{wrapfig}
+
+% Definir estilo para listings
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},   
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{magenta},
+	%numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codepurple},
+	basicstyle=\ttfamily\footnotesize,
+	breakatwhitespace=false,         
+	breaklines=true,                 
+	captionpos=b,                    
+	keepspaces=true,                 
+	%numbers=left,                    
+	%numbersep=5pt,                  
+	showspaces=false,                
+	showstringspaces=false,
+	showtabs=false,                  
+	tabsize=2,
+	literate={£}{{\pounds}}1
+}
+
+\lstset{style=mystyle}
 
 %Poner la fuente como predeterminada
 \renewcommand\familydefault{\sfdefault}
@@ -115,3 +147,6 @@
     \includegraphics[width=#1mm]{#2}
   \end{center}
 }
+
+%Definiciones
+\newtheorem{definition}{Definición}

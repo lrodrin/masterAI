@@ -46,33 +46,54 @@
 \newpage
 
 %Índice
-%\tableofcontents
+\tableofcontents
 
-%\newpage
+\newpage
 
 %Comienzo formato documento general
 \mainmatter
 
 \setlength\parskip{2.5ex}
 
-\section*{Primera parte}
+\section{Introducción}
 
-\begin{tabular}{lrll}
-	\toprule
-	{} &  movieId &                        title &  year \\
-	\midrule
-	0 &        1 &                    Toy Story &  1995 \\
-	1 &        2 &                      Jumanji &  1995 \\
-	2 &        3 &             Grumpier Old Men &  1995 \\
-	3 &        4 &            Waiting to Exhale &  1995 \\
-	4 &        5 &  Father of the Bride Part II &  1995 \\
-	\bottomrule
-\end{tabular}
+\section{Conjunto de datos}
 
+Para descargar el conjunto de datos: \href{https://www.kaggle.com/abhikjha/movielens-100k/download}{MovieLens 100k}.
 
-%\newpage
-%\renewcommand{\refname}{Bibliografía}
-%\bibliographystyle{unsrt}
-%\bibliography{biblio}
+Crearemos dos dataframes utilizando la librería pandas~\cite{jeff_reback_2020_4309786}, a partir de los archivos descargados: \textit{movies.csv} y \textit{ratings.csv}.
+
+\begin{lstlisting}[language=python]
+movies_df = pd.read_csv('dataset/movies.csv')
+ratings_df = pd.read_csv('dataset/ratings.csv')
+\end{lstlisting}
+
+Observamos el contenido de \textit{movies\_df} a continuación:
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{rll}
+		\toprule
+		movieId &                               title &                                       genres \\
+		\midrule
+		1 &                    Toy Story (1995) &  Adventure|Animation|Children|Comedy|Fantasy \\
+		2 &                      Jumanji (1995) &                   Adventure|Children|Fantasy \\
+		3 &             Grumpier Old Men (1995) &                               Comedy|Romance \\
+		4 &            Waiting to Exhale (1995) &                         Comedy|Drama|Romance \\
+		5 &  Father of the Bride Part II (1995) &                                       Comedy \\
+		\bottomrule
+	\end{tabular}
+	\caption{Contenido del dataframe \textit{movies\_df}.}
+	\label{movies_df}
+\end{table}
+
+\begin{definition}\label{dataframe}
+Un DataFrame es una estructura de datos etiquetada bidimensional que acepta diferentes tipos datos de entrada organizados en columnas. Se puede pensar en un DataFrame como una hoja de cálculo o una tabla SQL.
+\end{definition}
+
+\newpage
+\renewcommand{\refname}{Bibliografía}
+\bibliographystyle{unsrt}
+\bibliography{biblio}
 
 \end{document}
