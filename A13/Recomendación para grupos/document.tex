@@ -59,16 +59,16 @@
 
 \section{Conjunto de datos}
 
-Para descargar el conjunto de datos: \href{https://www.kaggle.com/abhikjha/movielens-100k/download}{MovieLens 100k}.
+El conjunto de datos que se ha usado en esta práctica se encuentra disponible públicamente para su descarga en el siguiente enlace: \url{https://www.kaggle.com/abhikjha/movielens-100k/download}. Este conjunto de datos llamado \textit{ml-latest-small}, describe las calificaciones (entre 1 y 5 estrellas) y la actividad del etiquetado de \href{http://movielens.org}{MovieLens}~\cite{MovieLens}, un servicio de recomendación de películas. Concretamente, el conjunto de datos contiene 100836 clasificaciones y 3683 etiquetas de 9742 películas. Los datos fueron creados por 610 usuarios que fueron seleccionados al azar. Cada usuario clasificó al menos 20 películas y está representado por una identificación.
 
-Crearemos dos dataframes utilizando la librería pandas~\cite{jeff_reback_2020_4309786}, a partir de los archivos descargados: \textit{movies.csv} y \textit{ratings.csv}.
+Una vez descargado el conjunto de datos veremos que está contenido en los archivos \textit{links.csv}, \textit{movies.csv}, \textit{ratings.csv} y \textit{tags.csv}. Pero para el desarrollo de esta práctica solo se utilizan los archivos \textit{movies.csv} y \textit{ratings.csv}. A continuación cargamos cada archivo dentro de su dataframe (ver Definición~\ref{dataframe}) con el uso de la librería pandas~\cite{pandas}.
 
 \begin{lstlisting}[language=python]
 movies_df = pd.read_csv('dataset/movies.csv')
 ratings_df = pd.read_csv('dataset/ratings.csv')
 \end{lstlisting}
 
-Observamos el contenido de \textit{movies\_df} a continuación:
+Observamos el contenido de \textit{movies\_df} para ver como ha quedado organizado:
 
 \begin{table}[h]
 	\centering
@@ -83,15 +83,69 @@ Observamos el contenido de \textit{movies\_df} a continuación:
 		5 &  Father of the Bride Part II (1995) &                                       Comedy \\
 		\bottomrule
 	\end{tabular}
-	\caption{Contenido del dataframe \textit{movies\_df}.}
+	\caption{Contenido del dataframe \textit{movies\_df} inicial.}
 	\label{movies_df}
+\end{table}
+
+Cada película tiene un único identificador, un título con su año de estreno y diferentes géneros. Como los años contienen caracteres \textit{unicode} y para que no haya problemas más adelante, los sacaremos de la columna de los títulos y los ubicaremos en su propia columna que nombraremos \textit{year}. Para ello, primero utilizamos una expresión regular para encontrar los años guardados entre paréntesis, y con la función \textit{extract} de la librería pandas los extraemos de la columna de los títulos para guardarlos en su propia columna. Después borramos los años de la columna de los títulos y con la función \textit{strip} nos aseguramos de sacar los espacios finales que pudieran haber.
+
+\begin{lstlisting}[language=python]
+regular_expression = r'\((.*?)\)'
+movies_df['year'] = movies_df.title.str.lower().str.extract(regular_expression)
+movies_df['title'] = movies_df.title.str.replace(regular_expression, '', regex=True)
+movies_df['title'] = movies_df['title'].apply(lambda x: x.strip())
+\end{lstlisting}
+
+\newpage
+
+Vemos el resultado:
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{rlll}
+		\toprule
+		movieId &                        title &                                       genres &  year \\
+		\midrule
+		1 &                    Toy Story &  Adventure|Animation|Children|Comedy|Fantasy &  1995 \\
+		2 &                      Jumanji &                   Adventure|Children|Fantasy &  1995 \\
+		3 &             Grumpier Old Men &                               Comedy|Romance &  1995 \\
+		4 &            Waiting to Exhale &                         Comedy|Drama|Romance &  1995 \\
+		5 &  Father of the Bride Part II &                                       Comedy &  1995 \\
+		\bottomrule
+	\end{tabular}
+\caption{Contenido del dataframe \textit{movies\_df} con la columna \textit{year}.}
+\label{movies_df_years}
 \end{table}
 
 \begin{definition}\label{dataframe}
 Un DataFrame es una estructura de datos etiquetada bidimensional que acepta diferentes tipos datos de entrada organizados en columnas. Se puede pensar en un DataFrame como una hoja de cálculo o una tabla SQL.
 \end{definition}
 
-\newpage
+Sacamos la columna de los géneros, ya que no los usaremos para este sistema de recomendaciones.
+
+\begin{lstlisting}[language=python]
+movies_df = movies_df.drop('genres', 1)
+\end{lstlisting}
+
+Y así queda el dataframe \textit{movies\_df} final:
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{rll}
+		\toprule
+		movieId &                        title &  year \\
+		\midrule
+		1 &                    Toy Story &  1995 \\
+		2 &                      Jumanji &  1995 \\
+		3 &             Grumpier Old Men &  1995 \\
+		4 &            Waiting to Exhale &  1995 \\
+		5 &  Father of the Bride Part II &  1995 \\
+		\bottomrule
+	\end{tabular}
+	\caption{Contenido del dataframe \textit{movies\_df} final.}
+	\label{movies_df_final}
+\end{table}
+
 \renewcommand{\refname}{Bibliografía}
 \bibliographystyle{unsrt}
 \bibliography{biblio}

@@ -17,15 +17,18 @@ def print_df(dataframe):
 # Create movies and ratings dataframes
 movies_df = pd.read_csv('dataset/movies.csv')
 ratings_df = pd.read_csv('dataset/ratings.csv')
-print_df(movies_df)
-print_df(ratings_df)
+# print_df(movies_df)
+# print_df(ratings_df)
 
-# Take the year out of the title column and save it in the new year column
+# Take the year out of the title column and save it in a new column
 regular_expression = r'\((.*?)\)'
 movies_df['year'] = movies_df.title.str.lower().str.extract(regular_expression)
 movies_df['title'] = movies_df.title.str.replace(regular_expression, '', regex=True)
 movies_df['title'] = movies_df['title'].apply(lambda x: x.strip())
-movies_df = movies_df.drop('genres', 1)  # Remove genres column
+# print_df(movies_df)
+
+# Remove genres column
+movies_df = movies_df.drop('genres', 1)
 # print_df(movies_df)
 
 ratings_df = ratings_df.drop('timestamp', 1)  # Remove timestamp column
