@@ -1,7 +1,7 @@
 from math import sqrt
-from tabulate import tabulate
 
 import pandas as pd
+from tabulate import tabulate
 
 pd.set_option('display.max_columns', None)
 
@@ -13,30 +13,28 @@ def print_df(dataframe):
     print(tabulate(dataframe.head(), headers='keys', tablefmt='psql'))
     print(dataframe.head().to_latex(index=False))  # convert table to latex format
 
-
 # Create movies and ratings dataframes
 movies_df = pd.read_csv('dataset/movies.csv')
 ratings_df = pd.read_csv('dataset/ratings.csv')
-# print_df(movies_df)
-# print_df(ratings_df)
+print_df(movies_df)
 
 # Take the year out of the title column and save it in a new column
 regular_expression = r'\((.*?)\)'
 movies_df['year'] = movies_df.title.str.lower().str.extract(regular_expression)
 movies_df['title'] = movies_df.title.str.replace(regular_expression, '', regex=True)
 movies_df['title'] = movies_df['title'].apply(lambda x: x.strip())
-# print_df(movies_df)
+print_df(movies_df)
 
-# Remove genres column
+# Remove genres column and save movies_df
 movies_df = movies_df.drop('genres', 1)
-# print_df(movies_df)
+print_df(movies_df)
 
-ratings_df = ratings_df.drop('timestamp', 1)  # Remove timestamp column
-# print(ratings_df.head())
+# Remove timestamp column and save ratings_df
+ratings_df = ratings_df.drop('timestamp', 1)
+print_df(ratings_df)
 
-# Create user
+# Create new user
 user_df = pd.read_csv('dataset/user_ratings.csv')
-# print(user_df.head())
 
 # Filter movies by title
 titles = movies_df[movies_df['title'].isin(user_df['title'].tolist())]
