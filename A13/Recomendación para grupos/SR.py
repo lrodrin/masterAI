@@ -33,28 +33,25 @@ print_df(movies_df)
 ratings_df = ratings_df.drop('timestamp', 1)
 print_df(ratings_df)
 
-# Create new user
+# Create user dataframe
 user_df = pd.read_csv('dataset/user_ratings.csv')
 
 # Filter movies by title
 titles = movies_df[movies_df['title'].isin(user_df['title'].tolist())]
 user_df = pd.merge(titles, user_df)
 user_df = user_df.drop('year', 1)  # Remove year column
-# print(user_df.head())
+print_df(user_df)
 
 # Filtering the users who have seen the movies
 user_titles = ratings_df[ratings_df['movieId'].isin(user_df['movieId'].tolist())]
-# print(user_titles.head())
-
 # Grouping the rows by user ID
 user_groups = user_titles.groupby(['userId'])
 
 # User 525
-# print(user_groups.get_group(525))
+print_df(user_groups.get_group(525))
 
-# Sort so that users with the most movies in common have priority
+# Sort with high priority the users with the most movies in common
 user_groups = sorted(user_groups, key=lambda x: len(x[1]), reverse=True)
-# print(user_groups[0:3])  # First user
 
 # Pearson
 user_groups = user_groups[0:100]  # to iterate

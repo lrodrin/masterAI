@@ -85,7 +85,7 @@ Observamos el contenido de \textit{movies\_df} para ver como ha quedado organiza
 		5 &  Father of the Bride Part II (1995) &                                       Comedy \\
 		\bottomrule
 	\end{tabular}
-	\caption{Contenido del dataframe \textit{movies\_df} inicial.}
+	\caption{Contenido del dataframe \textit{movies\_df} inicialmente.}
 	\label{movies_df}
 \end{table}
 
@@ -192,7 +192,80 @@ El proceso para crear el sistema de recomendación sigue los siguientes pasos:
 	\item Recomendar películas al nuevo usuario con las puntuaciones más altas.
 \end{itemize}
 
-Así, comenzamos creando un nuevo usuario a quien recomendar películas. Para ello, creamos el fichero \textit{dataset/user\_ratings.csv} que contiene 100 películas elegidas aleatoriamente del conjunto de datos, y a continuación las valoramos. En este caso, he valorado las películas según mi criterio. Este archivo se puede modificar como se desee para realizar tantas recomendaciones como se quiera, solo nos debemos asegurar de escribir los títulos de las películas en mayúsculas y si una película comienza con un "The", como "The Matrix" entonces escribirlo así: "Matrix, The".
+Así, comenzamos creando un nuevo usuario a quien recomendar películas. Para ello, creamos el archivo \textit{dataset/user\_ratings.csv} que contiene 100 películas elegidas aleatoriamente del conjunto de datos, y a continuación las valoramos. En este caso, he valorado las películas según mi criterio. Este archivo se puede modificar como se desee para realizar tantas recomendaciones como se quiera, solo nos debemos asegurar de escribir los títulos de las películas en mayúsculas y si una película comienza con un "The", como "The Matrix" entonces escribirlo así: "Matrix, The". Para finalizar con la creación del nuevo usuario, el archivo \textit{dataset/user\_ratings.csv} se carga dentro de un nuevo dataframe:
+
+\begin{lstlisting}[language=python]
+user_df = pd.read_csv('dataset/user_ratings.csv')
+\end{lstlisting}
+
+Con los datos del nuevo usuario en el sistema de recomendación, extraeremos los identificadores de las películas del dataframe de películas, para agregarlos con los nuevos datos añadidos por el usuario. Para ello, primero se extraen los títulos de las películas que el usuario haya visto para luego juntarlas con los datos del usuario. En este punto también, vamos a aprovechar a eliminar información que no se utilizará más adelante en el sistema de recomendación, como la columna \textit{year}, para ahorrar espacio de memoria.
+
+\begin{lstlisting}[language=python]
+titles = movies_df[movies_df['title'].isin(user_df['title'].tolist())]
+user_df = pd.merge(titles, user_df)
+user_df = user_df.drop('year', 1)
+\end{lstlisting}
+
+\newpage
+
+Vemos el resultado:
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{rlr}
+		\toprule
+		movieId &                        title &  rating \\
+		\midrule
+		1 &                    Toy Story &     5.0 \\
+		2 &                      Jumanji &     5.0 \\
+		3 &             Grumpier Old Men &     1.0 \\
+		4 &            Waiting to Exhale &     1.0 \\
+		5 &  Father of the Bride Part II &     1.0 \\
+		\bottomrule
+	\end{tabular}
+	\caption{Contenido del dataframe \textit{user\_df}.}
+	\label{user_df}
+\end{table}
+
+Ahora, que hemos añadido los identificadores de las películas con los datos del nuevo usuario, podemos obtener el subconjunto de usuarios que han visto las mismas películas. Además, también agruparemos las filas por el identificador de usuario.
+
+\begin{lstlisting}[language=python]
+user_titles = ratings_df[ratings_df['movieId'].isin(user_df['movieId'].tolist())]
+user_groups = user_titles.groupby(['userId'])
+\end{lstlisting}
+
+Observaremos a uno de los usuarios, por ejemplo, el usuario 525.
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{rrr}
+		\toprule
+		userId &  movieId &  rating \\
+		\midrule
+		525 &        1 &     4.0 \\
+		525 &        2 &     3.5 \\
+		525 &       34 &     3.0 \\
+		525 &       39 &     4.5 \\
+		525 &       48 &     3.0 \\
+		\bottomrule
+	\end{tabular}
+\caption{Contenido del dataframe \textit{user\_df}.}
+\label{user_525}
+\end{table}
+
+Finalmente, ordenaremos el conjunto de datos de tal forma que los usuarios que compartan la mayor cantidad de películas tengan prioridad. Esto nos brindaré una mejor recomendación ya que no será necesario pasar por todos los usuarios. 
+
+\begin{lstlisting}[language=python]
+user_groups = sorted(user_groups, key=lambda x: len(x[1]), reverse=True)
+\end{lstlisting}
+
+\subsection{Similitud entre los usuarios y el nuevo usuario}
+
+\newpage
+
+\section{Conclusiones}
+
+Automatizar la creación del archivo \textit{dataset/user\_ratings.csv}.
 
 \newpage
 
