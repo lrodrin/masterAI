@@ -261,11 +261,61 @@ user_groups = sorted(user_groups, key=lambda x: len(x[1]), reverse=True)
 
 \subsection{Similitud entre los usuarios y el nuevo usuario}
 
+En esta sección, buscamos las similitudes de todos los usuarios con el nuevo usuario para encontrar aquellos que se le parecen más. Tendremos que ver como se relacionan entre sí, y para ello usaremos el \href{https://es.wikipedia.org/wiki/Coeficiente_de_correlaci\%C3\%B3n_de_Pearson}{coeficiente de correlación de Pearson}. La fórmula para calcular este coeficiente se puede ver a continuación:
+
+\begin{equation}\label{formula}
+	r = \frac{\sum_{1}^{n} \; (x_{i} - \bar{x}) (y_{i} - \bar{y})}{\sqrt{\sum_{1}^{n}(x_{i} - \bar{x})^2} \; \sqrt{\sum_{1}^{n}(y_{i} - \bar{y})^2}}
+\end{equation}
+
+Se ha decidido usar el coeficiente de correlación de Pearson por una de sus propiedades. La propiedad dice que, si se multiplican todos los elementos por una constante distinta a cero o si se agrega cualquier constante a todos los elementos del coeficiente, este no cambia con la escala. Por ejemplo, si tenemos dos vectores $X$ e $Y$, entonces, $pearson(X,Y) = pearson(X,2\cdot Y+3)$. Esta es una propiedad muy importante en los sistemas de recomendación porqué si dos usuarios valoran dos series de elementos de manera completamente diferente, pero son usuarios muy parecidos (con ideas similares) contamos con valoraciones muy parecidas en escalas variadas.
+
+Los valores brindados por la fórmula(~\ref{formula}) pueden variar de $r=-1$ a $r=1$, donde 1 se correlaciona directamente entre dos entidades (esto sería una correlación positiva perfecta) y -1 forma una correlación negativa perfecta. En el caso de la práctica, un 1 se refiere a que dos usuarios tendrán gustos parecidos, mientras que -1 será lo opuesto.
+
+\begin{lstlisting}[language=python]
+	pearsonCorrelationDict = {}
+	
+	for name, group in user_groups:     # For each user
+	
+	# Sorting the current user in such a way that the values don't get mixed up later
+	user = group.sort_values(by='movieId')
+	movies = user_df.sort_values(by='movieId')
+	
+	# Get the number of elements (N) for the formula
+	nRatings = len(user)
+	
+	# Set ratings for movies in common in a list
+	temp_df = movies[movies['movieId'].isin(user['movieId'].tolist())]
+	tempRatingList = temp_df['rating'].tolist()
+	
+	# Set user ratings in a list
+	tempGroupList = user['rating'].tolist()
+	
+	# Calculate the Pearson Correlation between two users, x and y
+	Uxx = sum([i ** 2 for i in tempRatingList]) - pow(sum(tempRatingList), 2) 
+	/ float(nRatings)
+	Uyy = sum([i ** 2 for i in tempGroupList]) - pow(sum(tempGroupList), 2) 
+	/ float(nRatings)
+	Uxy = sum(i * j for i, j in zip(tempRatingList, tempGroupList)) - sum(tempRatingList)  
+	* sum(tempGroupList) / float(nRatings)
+	
+	# If the denominator is nonzero, then we divide, otherwise the correlation is 0
+	if Uxx != 0 and Uyy != 0:
+	pearsonCorrelationDict[name] = Uxy / sqrt(Uxx * Uyy)
+	
+	else:
+	pearsonCorrelationDict[name] = 0
+\end{lstlisting}
+
 \newpage
 
 \section{Conclusiones}
 
 Automatizar la creación del archivo \textit{dataset/user\_ratings.csv}.
+
+El enlace al vídeo debéis incluirlo en la memoria. Trabajo práctico: la idea es que vayáis explicando el porqué de las decisiones que habéis tomado (qué me llevó a utilizar unos determinados hiperparámetros, por qué he utilizado esta manera de medir la calidad de la solución,...) y hagáis un razonamiento sobre los resultados obtenidos.
+
+Ahora, calculemos el coeficiente de correlación de Pearson entre el nuevo usuario y el resto de los usuarios del conjunto de datos. El resultado lo vamos a almacenar en un diccionario, donde la clave es el identificador del usuario y el valor es el coeficiente.
+
 
 \newpage
 
