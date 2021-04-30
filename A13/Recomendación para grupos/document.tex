@@ -249,8 +249,8 @@ Observaremos a uno de los usuarios, por ejemplo, el usuario 525.
 		525 &       48 &     3.0 \\
 		\bottomrule
 	\end{tabular}
-\caption{Contenido del dataframe \textit{user\_df}.}
-\label{user_525}
+	\caption{Contenido del dataframe \textit{user\_df}.}
+	\label{user_525}
 \end{table}
 
 Finalmente, ordenaremos el conjunto de datos de tal forma que los usuarios que compartan la mayor cantidad de películas tengan prioridad. Esto nos brindaré una mejor recomendación ya que no será necesario pasar por todos los usuarios. 
@@ -306,6 +306,31 @@ Los valores brindados por la fórmula(~\ref{formula}) pueden variar de $r=-1$ a 
 	pearsonCorrelationDict[name] = 0
 \end{lstlisting}
 
+\begin{lstlisting}[language=python]
+pearson_df = pd.DataFrame.from_dict(pearsonCorrelationDict, orient='index')
+pearson_df.columns = ['similarityIndex']
+pearson_df['userId'] = pearson_df.index
+pearson_df.index = range(len(pearson_df))
+\end{lstlisting}
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{rr}
+		\toprule
+		similarityIndex &  userId \\
+		\midrule
+		0.171034 &     414 \\
+		0.401235 &     599 \\
+		0.203293 &       6 \\
+		0.210447 &     474 \\
+		0.353077 &     274 \\
+		\bottomrule
+	\end{tabular}
+	\caption{Contenido del dataframe \textit{pearson\_df}.}
+	\label{pearson}
+\end{table}
+
+Ahora obtenemos los 50 primeros usuarios más parecidos al nuevo usuario.
 \newpage
 
 \section{Conclusiones}

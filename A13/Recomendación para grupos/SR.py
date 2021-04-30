@@ -82,15 +82,15 @@ for name, group in user_groups:     # For each user
     else:
         pearsonCorrelationDict[name] = 0
 
-print(pearsonCorrelationDict.items())
+# print(pearsonCorrelationDict.items())
 
-pearsonDF = pd.DataFrame.from_dict(pearsonCorrelationDict, orient='index')
-pearsonDF.columns = ['similarityIndex']
-pearsonDF['userId'] = pearsonDF.index
-pearsonDF.index = range(len(pearsonDF))
-# print(pearsonDF.head())
+pearson_df = pd.DataFrame.from_dict(pearsonCorrelationDict, orient='index')
+pearson_df.columns = ['similarityIndex']
+pearson_df['userId'] = pearson_df.index
+pearson_df.index = range(len(pearson_df))
+print_df(pearson_df)
 
-topUsers = pearsonDF.sort_values(by='similarityIndex', ascending=False)[0:50]
+topUsers = pearson_df.sort_values(by='similarityIndex', ascending=False)[0:50]
 # print(topUsers.head())
 
 topUsersRating = topUsers.merge(ratings_df, left_on='userId', right_on='userId', how='inner')
