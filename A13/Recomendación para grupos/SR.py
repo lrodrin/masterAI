@@ -54,34 +54,35 @@ print_df(user_groups.get_group(525))
 user_groups = sorted(user_groups, key=lambda x: len(x[1]), reverse=True)
 
 # Pearson
-user_groups = user_groups[0:100]  # to iterate
 pearsonCorrelationDict = {}
-# For each group of users in our subset
-for name, group in user_groups:
-    # Let's start by sorting the current and entered user in such a way that the values don't get mixed up later
-    group = group.sort_values(by='movieId')
-    inputMovies = user_df.sort_values(by='movieId')
-    # Get the N for the formula
-    nRatings = len(group)
-    # Get review scores for movies in common
-    temp_df = inputMovies[inputMovies['movieId'].isin(group['movieId'].tolist())]
-    # Save them to a temporary variable in list format to facilitate future calculations
-    tempRatingList = temp_df['rating'].tolist()
-    # Let's also list user group reviews
-    tempGroupList = group['rating'].tolist()
-    # Let's calculate the Pearson Correlation between two users, x and y
-    Sxx = sum([i ** 2 for i in tempRatingList]) - pow(sum(tempRatingList), 2) / float(nRatings)
-    Syy = sum([i ** 2 for i in tempGroupList]) - pow(sum(tempGroupList), 2) / float(nRatings)
-    Sxy = sum(i * j for i, j in zip(tempRatingList, tempGroupList)) - sum(tempRatingList) * sum(tempGroupList) / float(
-        nRatings)
+for name, group in user_groups:     # For each user
+    # Sorting the current user in such a way that the values don't get mixed up later
+    user = group.sort_values(by='movieId')
+    movies = user_df.sort_values(by='movieId')
 
-    # Si el denominador es diferente a cero, entonces dividir, sino, la correlación es 0.
-    if Sxx != 0 and Syy != 0:
-        pearsonCorrelationDict[name] = Sxy / sqrt(Sxx * Syy)
+    # Get the number of elements (N) for the formula
+    nRatings = len(user)
+
+    # Set ratings for movies in common in a list
+    temp_df = movies[movies['movieId'].isin(user['movieId'].tolist())]
+    tempRatingList = temp_df['rating'].tolist()
+
+    # Set user ratings in a list
+    tempGroupList = user['rating'].tolist()
+
+    # Calculate the Pearson Correlation between two users, x and y
+    Uxx = sum([i ** 2 for i in tempRatingList]) - pow(sum(tempRatingList), 2) / float(nRatings)
+    Uyy = sum([i ** 2 for i in tempGroupList]) - pow(sum(tempGroupList), 2) / float(nRatings)
+    Uxy = sum(i * j for i, j in zip(tempRatingList, tempGroupList)) - sum(tempRatingList) * sum(tempGroupList) / float(nRatings)
+
+    # If the denominator is nonzero, then we divide, otherwise the correlation is 0
+    if Uxx != 0 and Uyy != 0:
+        pearsonCorrelationDict[name] = Uxy / sqrt(Uxx * Uyy)
+
     else:
         pearsonCorrelationDict[name] = 0
 
-# print(pearsonCorrelationDict)
+print(pearsonCorrelationDict.items())
 
 pearsonDF = pd.DataFrame.from_dict(pearsonCorrelationDict, orient='index')
 pearsonDF.columns = ['similarityIndex']
