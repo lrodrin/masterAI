@@ -57,28 +57,51 @@
 
 \section{Introducción}\label{introducción}
 
-En este documento se describe el desarrollo práctico en Python sobre un sistema de recomendación. 
-La implementación se puede encontrar en~\cite{GitHubRepo}, la cual está formada por el desarrollo de un programa que implementa un sistema de recomendación de \href{https://es.wikipedia.org/wiki/Filtrado_colaborativo}{Filtrado Colaborativo}.
+El crecimiento de Internet y de la información disponible en línea ha hecho que sea mucho más difícil extraer información útil de manera efectiva. La abrumadora cantidad de datos requiere mecanismos de filtrado de información eficientes. Uno de los sistemas utilizados para hacer frente a este problema son los sistemas de recomendación.
 
-El documento se divide en diferentes secciones donde se va describiendo el trabajo realizado. En la primera parte del documento se empieza describiendo la técnica de Filtrado Colaborativo, utilizada por el sistema de recomendación, con sus ventajas y desventajas (ver secciones~\ref{filtro_colaborativo} y~\ref{ventajas_desventajas}). El documento sigue con la descripción del conjunto de datos que usa el sistema y cómo podemos adquirirlo (ver sección~\ref{conjunto_datos}).
+En este documento se describe el desarrollo práctico en Python de un sistema de recomendación. El sistema de recomendación elegido se denomina de Filtrado Colaborativo (Usuario-Usuario). La implementación se puede encontrar en~\cite{GitHubRepo}, la cual está formada por el desarrollo de un programa que implementa el sistema de recomendación de \href{https://es.wikipedia.org/wiki/Filtrado_colaborativo}{Filtrado Colaborativo}. El documento se divide en diferentes secciones donde se va describiendo paso a paso el trabajo realizado. 
 
-En la sección~\ref{sistema_recomendacion} del documento se describe paso a paso la implementación en Python del sistema de recomendación. En esta sección también se describe cómo funciona el \href{https://es.wikipedia.org/wiki/Coeficiente_de_correlaci\%C3\%B3n_de_Pearson}{coeficiente de correlación de Pearson} y porqué se ha elegido como medida para encontrar las similitudes entre los usuarios representados en el conjunto de datos y un nuevo usuario que he creado manualmente (ver sección~\ref{correlacion_pearson}). Además, en esta sección también se aportan los resultados y su evaluación.
+En la primera parte del documento se empieza describiendo la técnica de Filtrado Colaborativo, con sus ventajas y desventajas (ver secciones~\ref{filtro_colaborativo} y~\ref{ventajas_desventajas}). El documento sigue con la descripción del conjunto de datos que usa el sistema de recomendación, y cómo podemos adquirirlo (ver sección~\ref{conjunto_datos}).
+
+En la sección~\ref{sistema_recomendacion} del documento se describe paso a paso la implementación en Python del sistema de recomendación de Filtrado Colaborativo. En esta sección también se describe el \href{https://es.wikipedia.org/wiki/Coeficiente_de_correlaci\%C3\%B3n_de_Pearson}{coeficiente de correlación de Pearson} y porqué se ha elegido como medida para encontrar las similitudes entre los usuarios representados en el conjunto de datos y un nuevo usuario que he creado manualmente (ver sección~\ref{correlacion_pearson}). Además, también se aportan los resultados y su evaluación.
 
 Finalmente, en la parte final del documento se añaden las conclusiones y la bibliografía.
 
 \subsection{Filtrado Colaborativo}\label{filtro_colaborativo}
 
+El Filtrado Colaborativo (FC) es una técnica utilizada por algunos sistemas de recomendación para predecir el grado en que, a un usuario U le gustaría un producto X. Esta técnica nos permite crear recomendaciones personalizadas, ayudar a los usuarios a encontrar productos de su interés, etc. analizando datos de muchos usuarios; asumiendo que los usuarios con gustos parecidos tienden a valorar los productos de forma similar. Es decir, si un usuario A tiene la misma opinión que un usuario B sobre un tema, el usuario A es más probable que tenga la misma opinión que el usuario B en otro tema diferente que la opinión que tendría un usuario elegido al azar. En resumen, el Filtrado Colaborativo es un método para hacer predicciones automáticas (filtrado) sobre los intereses de un usuario mediante la recopilación de las preferencias o gustos de información de muchos usuarios (colaboradores). 
+
+Los sistemas de filtrado colaborativos basados en los usuarios, siguen una metodología que puede reducirse en los dos pasos siguientes:
+
+\begin{itemize}
+	\item En la búsqueda de usuarios que comparten los mismos patrones de valoración con el usuario activo (el usuario para el que se está haciendo la predicción).
+	\item En utilizar las valoraciones por parte de aquellos usuarios afines que se encuentran en el paso 1 para calcular una predicción para el usuario activo.
+\end{itemize}
+
+En la sección~\ref{sistema_recomendacion} podremos ver detalladamente la metodología usada por el sistema de recomendación que se ha implementado en esta práctica.
+
 \subsection{Ventajas y Desventajas del Filtrado Colaborativo}\label{ventajas_desventajas}
 
-Ventajas
-Tiene en cuenta el puntaje de otros usuarios
-No necesita estudiar o extraer la información del elemento recomendado
-Se adapta al interés del usuario mientras cambia
-Desventajas
-La función de aproximación puede ser lenta
-Podriá surgir una cantidad baja de usuarios para aproximar
-Temas de privacidad cuando se intenta aprender de las preferencias del usuario
+Algunas ventajas de un sistema de recomendación de Filtrado Colaborativo son:
 
+\begin{itemize}
+	\item Tiene en cuenta las valoraciones de otros usuarios.
+	\item No necesita estudiar o extraer la información de los elementos recomendados.
+	\item Se adapta a los intereses del usuario si estos cambian con el tiempo.
+\end{itemize}
+
+Algunas desventajas de un sistema de recomendación de Filtrado Colaborativo son:
+
+\begin{itemize}
+	\item Difícil de aplicar con grandes cantidades de usuarios.
+	\item Difícil para encontrar suficientes vecinos para recomendar.
+	\item Predice peor cuando existen pocas valoraciones.
+	\item Difícil de aplicar cuando tenemos pocos datos de un nuevo producto (no ha sido valorado o ha sido poco valorado por los usuarios); o de un nuevo usuario (desconocemos sus valoraciones). Este problema se denomina el problema del \href{https://es.wikipedia.org/wiki/Arranque_en_fr\%C3\%ADo}{arranque frío}.
+\end{itemize}
+
+Para aliviar las desventajas se suele recurrir a sistemas de recomendación híbridos, que utilizan a la vez sistemas de recomendación de filtrado colaborativo y sistemas de recomendación basados en contenido. Los sistemas de recomendación basados en contenido son aquellos que tomando en cuenta algunos datos del historial del usuario intenta predecir que busca el usuario y que sugerencias similares puede mostrar. Este tipo de sistemas es uno de los que tiene mayor presencia en la actualidad.
+
+En esta práctica no me ha parecido necesario el uso de un sistema de recomendación híbrido.
 
 \newpage
 
@@ -203,6 +226,12 @@ Cada fila del dataframe \textit{ratings\_df} tiene un identificador de usuario a
 
 En esta sección, describiremos el sistema de recomendación basado en usuarios que ha sido desarrollado en Python~\cite{GitHubRepo}.
 
+Típicamente, el flujo de trabajo de un sistema de filtrado colaborativo es:
+
+El usuario expresa sus preferencias evaluando elementos (por ejemplo, libros, películas o CDs) del sistema. Estas calificaciones pueden ser vistas como una representación aproximada del interés del usuario en el dominio correspondiente.
+El sistema compara las evaluaciones de este usuario con las de otros usuarios y encuentra las personas con gustos "similares".
+Con los usuarios similares, el sistema recomienda elementos que los estos han evaluado de su preferencia pero todavía no han sido evaluados por este usuario (la ausencia de evaluación es a menudo considerada como el desconocimiento de un elemento).
+
 Como hemos comentado en la sección de Introducción (ver sección~\ref{introducción}), la técnica que usaremos y que hemos desarrollado para el sistema de recomendación se llama \href{https://es.wikipedia.org/wiki/Filtrado_colaborativo}{Filtrado Colaborativo}. El Filtrado Colaborativo también es conocido como Filtrado de Usuario a Usuario. Con esta técnica utilizaremos los usuarios del conjunto de datos para recomendar películas a un nuevo usuario que añadirá nuevos datos al sistema. Para ello, el sistema de recomendación intentará encontrar usuarios que tengan valoraciones parecidas a las del nuevo usuario, y entonces recomendarle al nuevo usuario películas acordes a sus valoraciones. Para encontrar usuarios parecidos existen varios métodos, en el caso de la práctica el método elegido se basa en el \href{https://es.wikipedia.org/wiki/Coeficiente_de_correlaci\%C3\%B3n_de_Pearson}{coeficiente de correlación de Pearson}. 
 
 El proceso para crear el sistema de recomendación sigue los siguientes pasos:
@@ -284,6 +313,8 @@ user_groups = sorted(user_groups, key=lambda x: len(x[1]), reverse=True)
 
 \subsection{Coeficiente de Correlación de Pearson}\label{correlacion_pearson}
 
+El sistema de recomendación desarrollado se basa en un mecanismo que utiliza los datos de las valoraciones de los usuarios para calcular la similitud entre los usuarios, y que se utiliza para hacer las recomendaciones.
+
 En esta sección, buscamos las similitudes de todos los usuarios con el nuevo usuario para encontrar aquellos que se le parecen más. Tendremos que ver como se relacionan entre sí, y para ello usaremos el \href{https://es.wikipedia.org/wiki/Coeficiente_de_correlaci\%C3\%B3n_de_Pearson}{coeficiente de correlación de Pearson}. La fórmula para calcular este coeficiente se puede ver a continuación:
 
 \begin{equation}\label{formula}
@@ -345,6 +376,8 @@ pearson_df.index = range(len(pearson_df))
 \newpage
 
 \subsection{Resultado y Evaluación}
+
+
 
 Vemos el resultado:
 
@@ -462,6 +495,8 @@ Luego, ordenemos y veamos las primeras 20 películas que el algoritmo recomendó
 
 
 
+
+Después de obtener las recomendaciones vamos a valorarlas. 
 
 \newpage
 
