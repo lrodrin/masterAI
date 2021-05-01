@@ -206,36 +206,37 @@ Así es cómo queda el dataframe \textit{ratings\_df} definitivo:
 	\label{ratings_df_final}
 \end{table}
 
-Cada fila del dataframe \textit{ratings\_df} tiene un identificador de usuario asociado con al menos una película y una valoración de esta. 
+Cada fila del dataframe \textit{ratings\_df} tiene un identificador de usuario asociado con al menos una película y una valoración de esta. Por ejemplo, en la Tabla~\ref{ratings_df_final} vemos como que el usuario 1 ha visto y valorado diferentes películas.
 
 \section{Sistema de Recomendación}\label{sistema_recomendacion}
 
-En esta sección, describiremos el sistema de recomendación basado en usuarios que ha sido desarrollado en Python~\cite{GitHubRepo}.
+En esta sección describimos el sistema de recomendación, que como se ha comentado en la sección~\ref{filtro_colaborativo}, utiliza la técnica de Filtrado Colaborativo o también conocida como técnica de Filtrado de Usuario a Usuario. Con esta técnica el sistema de recomendación va a predecir recomendaciones de películas a un nuevo usuario acordes a sus gustos después de añadir nuevos datos al sistema. Para predecir las recomendaciones, el sistema de recomendación buscará las similitudes entre los datos introducidos por el nuevo usuario y los datos de los usuarios ya existentes en el sistema. Es decir, el sistema de recomendación intentará encontrar usuarios que tengan valoraciones parecidas a las del nuevo usuario, y entonces recomendarle al nuevo usuario películas acordes a sus valoraciones. Existen varios métodos para encontrar las similitudes entre los diferentes usuarios del sistema, y en el caso de este sistema, el método elegido se basa en el \href{https://es.wikipedia.org/wiki/Coeficiente_de_correlaci\%C3\%B3n_de_Pearson}{coeficiente de correlación de Pearson} (ver sección~\ref{correlacion_pearson}).
 
-Típicamente, el flujo de trabajo de un sistema de filtrado colaborativo es:
+El flujo de trabajo de este sistema de recomendación sigue estos pasos:
 
-El usuario expresa sus preferencias evaluando elementos (por ejemplo, libros, películas o CDs) del sistema. Estas calificaciones pueden ser vistas como una representación aproximada del interés del usuario en el dominio correspondiente.
-El sistema compara las evaluaciones de este usuario con las de otros usuarios y encuentra las personas con gustos "similares".
-Con los usuarios similares, el sistema recomienda elementos que los estos han evaluado de su preferencia pero todavía no han sido evaluados por este usuario (la ausencia de evaluación es a menudo considerada como el desconocimiento de un elemento).
+\begin{enumerate}
+	\item Crea un nuevo usuario con las películas del conjunto de datos que el usuario a mirado.
+	\item Basándose en el índice de selección de películas del nuevo usuario, encuentra a sus vecinos (usuarios similares a él).
+	\item Obtiene los identificadores de las películas donde el nuevo usuario y los vecinos coinciden, es decir, obtiene los identificadores de las películas que tanto el nuevo usuario como sus vecinos hayan visto.
+	\item Calcula las similitudes entre el nuevo usuario y sus vecinos.
+	\item Recomienda películas al nuevo usuario según las similitudes con sus vecinos.
+\end{enumerate}
 
-Como hemos comentado en la sección de Introducción (ver sección~\ref{introducción}), la técnica que usaremos y que hemos desarrollado para el sistema de recomendación se llama \href{https://es.wikipedia.org/wiki/Filtrado_colaborativo}{Filtrado Colaborativo}. El Filtrado Colaborativo también es conocido como Filtrado de Usuario a Usuario. Con esta técnica utilizaremos los usuarios del conjunto de datos para recomendar películas a un nuevo usuario que añadirá nuevos datos al sistema. Para ello, el sistema de recomendación intentará encontrar usuarios que tengan valoraciones parecidas a las del nuevo usuario, y entonces recomendarle al nuevo usuario películas acordes a sus valoraciones. Para encontrar usuarios parecidos existen varios métodos, en el caso de la práctica el método elegido se basa en el \href{https://es.wikipedia.org/wiki/Coeficiente_de_correlaci\%C3\%B3n_de_Pearson}{coeficiente de correlación de Pearson}. 
+Así, siguiendo el flujo de trabajo anterior, comenzamos creando un nuevo usuario a quien recomendar películas. Para ello, hemos creado el archivo \textit{new\_user.csv} dentro de la carpeta \textit{dataset}, y le hemos añadido los títulos de 100 películas elegidas aleatoriamente del conjunto de datos con una nueva valoración. En este caso, he valorado las películas según mi criterio. Este archivo se puede modificar como se desee para realizar tantas recomendaciones como se quiera, solo debemos asegurarnos de escribir bien los títulos de las películas, igual que aparecen en el archivo \textit{dataset/movies.csv}. A continuación, visualizamos como se organiza parte del contenido del archivo \textit{new\_user.csv}:
 
-El proceso para crear el sistema de recomendación sigue los siguientes pasos:
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.7]{images/new_user}
+	\caption{Nuevo usuario del sistema.}
+\end{figure}
 
-\begin{itemize}
-	\item Crear un nuevo usuario con las películas del conjunto de datos que el usuario a mirado.
-	\item Basado en su índice de selección de películas, encontrar a los primeros X vecinos.
-	\item Obtener el identificador de las películas que miró el nuevo usuario por cada vecino.
-	\item Calcular las similitudes entre los usuarios existentes y el nuevo usuario.
-	\item Recomendar películas al nuevo usuario con las puntuaciones más altas.
-\end{itemize}
-
-Así, comenzamos creando un nuevo usuario a quien recomendar películas. Para ello, creamos el archivo \textit{dataset/user\_ratings.csv} que contiene 100 películas elegidas aleatoriamente del conjunto de datos, y a continuación las valoramos. En este caso, he valorado las películas según mi criterio. Este archivo se puede modificar como se desee para realizar tantas recomendaciones como se quiera, solo nos debemos asegurar de escribir los títulos de las películas en mayúsculas y si una película comienza con un "The", como "The Matrix" entonces escribirlo así: "Matrix, The". Para finalizar con la creación del nuevo usuario, el archivo \textit{dataset/user\_ratings.csv} se carga dentro de un nuevo dataframe:
+Para finalizar con la creación del nuevo usuario, el archivo \textit{new\_user.csv} se carga dentro de un nuevo dataframe que llamaremos \textit{user\_df}:
 
 \begin{lstlisting}[language=python]
-user_df = pd.read_csv('dataset/user_ratings.csv')
+user_df = pd.read_csv('dataset/new_user.csv')
 \end{lstlisting}
 
+% HERE
 Con los datos del nuevo usuario en el sistema de recomendación, extraeremos los identificadores de las películas del dataframe de películas, para agregarlos con los nuevos datos añadidos por el usuario. Para ello, primero se extraen los títulos de las películas que el usuario haya visto para luego juntarlas con los datos del usuario. En este punto también, vamos a aprovechar a eliminar información que no se utilizará más adelante en el sistema de recomendación, como la columna \textit{year}, para ahorrar espacio de memoria.
 
 \begin{lstlisting}[language=python]
