@@ -103,85 +103,69 @@ Para aliviar las desventajas se suele recurrir a sistemas de recomendación híb
 
 En esta práctica no me ha parecido necesario el uso de un sistema de recomendación híbrido.
 
-\newpage
-
 \section{Conjunto de datos}\label{conjunto_datos}
 
-El conjunto de datos que se ha usado en esta práctica se encuentra disponible públicamente para su descarga en el siguiente enlace: \url{https://www.kaggle.com/abhikjha/movielens-100k/download}. Este conjunto de datos llamado \textit{ml-latest-small}, describe las valoraciones (entre 1 y 5 estrellas) y la actividad del etiquetado de \href{http://movielens.org}{MovieLens}~\cite{MovieLens}, un servicio de recomendación de películas. Concretamente, el conjunto de datos contiene 100836 clasificaciones y 3683 etiquetas de 9742 películas. Los datos fueron creados por 610 usuarios que fueron seleccionados al azar. Cada usuario clasificó al menos 20 películas y está representado por una identificación.
+El conjunto de datos que se ha usado en esta práctica se encuentra disponible públicamente para su descarga en el siguiente enlace: \url{https://www.kaggle.com/abhikjha/movielens-100k/download}. Este conjunto de datos llamado \textit{ml-latest-small}, describe las valoraciones (entre 1 y 5 estrellas) y la actividad del etiquetado de \href{http://movielens.org}{MovieLens}~\cite{MovieLens}, un servicio de recomendación de películas. El conjunto de datos contiene 100836 valoraciones y 3683 etiquetas de 9742 películas. Los datos fueron creados por 610 usuarios que se seleccionaron al azar. Cada usuario clasificó al menos 20 películas diferentes y está representado por un identificador.
 
-Una vez descargado el conjunto de datos veremos que está contenido en los archivos \textit{links.csv}, \textit{movies.csv}, \textit{ratings.csv} y \textit{tags.csv}. Pero para el desarrollo de esta práctica solo se utilizan los archivos \textit{movies.csv} y \textit{ratings.csv}. A continuación, cargamos cada archivo dentro de su dataframe (ver Definición~\ref{dataframe}) con el uso de la librería pandas~\cite{pandas}.
+Una vez descargado el conjunto de datos podemos ver que está contenido en los archivos \textit{links.csv}, \textit{movies.csv}, \textit{ratings.csv} y \textit{tags.csv}. Aunque para esta práctica solo se utilizan los archivos \textit{movies.csv} y \textit{ratings.csv}, y estos se encuentran en la carpeta \textit{dataset} de~\cite{GitHubRepo}. Para mejorar las recomendaciones del sistema de recomendación, primero realizaremos un seguido de transformaciones en el conjunto de datos. Inicialmente empezamos cargando los archivos \textit{movies.csv} y \textit{ratings.csv} dentro de un dataframe (ver Definición~\ref{dataframe}) con el uso de la librería pandas~\cite{pandas}.
 
 \begin{lstlisting}[language=python]
 movies_df = pd.read_csv('dataset/movies.csv')
 ratings_df = pd.read_csv('dataset/ratings.csv')
 \end{lstlisting}
 
-Observamos el contenido de \textit{movies\_df} para ver como ha quedado organizado:
+Miramos el contenido de \textit{movies\_df} para ver cómo está organizado:
 
-\begin{table}[h]
+\begin{table}[H]
 	\centering
 	\begin{tabular}{rll}
 		\toprule
-		movieId &                               title &                                       genres \\
+		movieId &                         title &                                       genres \\
 		\midrule
 		1 &                    Toy Story (1995) &  Adventure|Animation|Children|Comedy|Fantasy \\
 		2 &                      Jumanji (1995) &                   Adventure|Children|Fantasy \\
 		3 &             Grumpier Old Men (1995) &                               Comedy|Romance \\
 		4 &            Waiting to Exhale (1995) &                         Comedy|Drama|Romance \\
 		5 &  Father of the Bride Part II (1995) &                                       Comedy \\
+		6 &                         Heat (1995) &                        Action|Crime|Thriller \\
+		7 &                      Sabrina (1995) &                               Comedy|Romance \\
+		8 &                 Tom and Huck (1995) &                           Adventure|Children \\
+		9 &                 Sudden Death (1995) &                                       Action \\
+		10 &                    GoldenEye (1995) &                    Action|Adventure|Thriller \\
 		\bottomrule
 	\end{tabular}
 	\caption{Contenido del dataframe \textit{movies\_df} inicialmente.}
 	\label{movies_df}
 \end{table}
 
-Cada película tiene un único identificador, un título con su año de estreno y diferentes géneros. Como los años contienen caracteres \textit{unicode} y para que no haya problemas más adelante, los sacaremos de la columna de los títulos y los ubicaremos en su propia columna que nombraremos \textit{year}. Para ello, primero utilizamos una expresión regular para encontrar los años guardados entre paréntesis, y con la función \textit{extract} de la librería pandas los extraemos de la columna de los títulos para guardarlos en su propia columna. Después borramos los años de la columna de los títulos y con la función \textit{strip} nos aseguramos de sacar los espacios finales que pudiera haber.
+Cada película tiene un único identificador (\textit{movieId}), un título con su año de estreno y diferentes géneros. Como los años contienen caracteres \textit{unicode} y para que no haya problemas más adelante, los sacaremos de la columna de los títulos y los ubicaremos en su propia columna que nombraremos \textit{year}. Para ello, primero creamos una expresión regular para encontrar los años guardados entre paréntesis, y con la función \textit{extract} de la librería pandas los extraemos de la columna de los títulos para guardarlos en su propia columna. Después borramos los años de la columna de los títulos y con la función \textit{strip} nos aseguramos de sacar los espacios finales que pudiera haber. También eliminamos la columna de los géneros, ya que no la tendremos en cuenta en el sistema de recomendación.
 
 \begin{lstlisting}[language=python]
 regular_expression = r'\((.*?)\)'
 movies_df['year'] = movies_df.title.str.lower().str.extract(regular_expression)
 movies_df['title'] = movies_df.title.str.replace(regular_expression, '', regex=True)
 movies_df['title'] = movies_df['title'].apply(lambda x: x.strip())
-\end{lstlisting}
-
-Vemos el resultado:
-
-\begin{table}[h]
-	\centering
-	\begin{tabular}{rlll}
-		\toprule
-		movieId &                        title &                                       genres &  year \\
-		\midrule
-		1 &                    Toy Story &  Adventure|Animation|Children|Comedy|Fantasy &  1995 \\
-		2 &                      Jumanji &                   Adventure|Children|Fantasy &  1995 \\
-		3 &             Grumpier Old Men &                               Comedy|Romance &  1995 \\
-		4 &            Waiting to Exhale &                         Comedy|Drama|Romance &  1995 \\
-		5 &  Father of the Bride Part II &                                       Comedy &  1995 \\
-		\bottomrule
-	\end{tabular}
-	\caption{Contenido del dataframe \textit{movies\_df} con la columna \textit{year}.}
-	\label{movies_df_years}
-\end{table}
-
-Eliminamos la columna de los géneros, ya que no los tendremos en cuenta para el sistema de recomendación.
-
-\begin{lstlisting}[language=python]
 movies_df = movies_df.drop('genres', 1)
 \end{lstlisting}
 
-Finalmente, así queda el dataframe \textit{movies\_df}:
+Vemos el resultado final:
 
-\begin{table}[h]
+\begin{table}[H]
 	\centering
 	\begin{tabular}{rll}
 		\toprule
-		movieId &                        title &  year \\
+		movieId &                  title &  year \\
 		\midrule
 		1 &                    Toy Story &  1995 \\
 		2 &                      Jumanji &  1995 \\
 		3 &             Grumpier Old Men &  1995 \\
 		4 &            Waiting to Exhale &  1995 \\
 		5 &  Father of the Bride Part II &  1995 \\
+		6 &                         Heat &  1995 \\
+		7 &                      Sabrina &  1995 \\
+		8 &                 Tom and Huck &  1995 \\
+		9 &                 Sudden Death &  1995 \\
+		10 &                    GoldenEye &  1995 \\
 		\bottomrule
 	\end{tabular}
 	\caption{Contenido del dataframe \textit{movies\_df} final.}
@@ -192,15 +176,15 @@ Finalmente, así queda el dataframe \textit{movies\_df}:
 	Un DataFrame es una estructura de datos etiquetada bidimensional que acepta diferentes tipos datos de entrada organizados en columnas. Se puede pensar en un DataFrame como una hoja de cálculo o una tabla SQL.
 \end{definition}
 
-Ahora, veremos cómo se ha organizado el dataframe \textit{ratings\_df}. En este caso también hemos eliminado una columna, la columna \textit{timestamp}, ya que tampoco se tendrá en cuenta en el sistema de recomendación.
+Ahora, miraremos cómo está organizado el dataframe \textit{ratings\_df}. En este caso también eliminamos una columna, la columna \textit{timestamp}, porqué que tampoco se tendrá en cuenta en el sistema de recomendación.
 
 \begin{lstlisting}[language=python]
 ratings_df = ratings_df.drop('timestamp', 1)
 \end{lstlisting}
 
-Finalmente, así queda el dataframe \textit{ratings\_df}:
+Así es cómo queda el dataframe \textit{ratings\_df} definitivo:
 
-\begin{table}[h]
+\begin{table}[H]
 	\centering
 	\begin{tabular}{rrr}
 		\toprule
@@ -211,16 +195,18 @@ Finalmente, así queda el dataframe \textit{ratings\_df}:
 		1 &        6 &     4.0 \\
 		1 &       47 &     5.0 \\
 		1 &       50 &     5.0 \\
+		1 &       70 &     3.0 \\
+		1 &      101 &     5.0 \\
+		1 &      110 &     4.0 \\
+		1 &      151 &     5.0 \\
+		1 &      157 &     5.0 \\
 		\bottomrule
 	\end{tabular}
 	\caption{Contenido del dataframe \textit{ratings\_df} final.}
 	\label{ratings_df_final}
 \end{table}
 
-
-Cada fila del dataframe \textit{ratings\_df} tiene un identificador de usuario asociado con al menos una película, el identificador de la película y una valoración de esta. 
-
-\newpage
+Cada fila del dataframe \textit{ratings\_df} tiene un identificador de usuario asociado con al menos una película y una valoración de esta. 
 
 \section{Sistema de Recomendación}\label{sistema_recomendacion}
 
