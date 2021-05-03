@@ -10,8 +10,13 @@ def print_df(dataframe, nrows):
     """
     Print dataframe rows specified by nrows as table
     """
-    print(tabulate(dataframe.head(nrows), headers='keys', tablefmt='psql'))
-    print(dataframe.head(nrows).to_latex(index=False))  # convert table to latex format
+    if isinstance(nrows, int):
+        lines_to_print = dataframe.head(nrows)
+    else:
+        lines_to_print = dataframe  # print all lines of dataframe
+
+    print(tabulate(lines_to_print, headers='keys', tablefmt='psql'))
+    print(lines_to_print.to_latex(index=False))  # convert table to latex format
 
 # Create movies and ratings dataframes
 movies_df = pd.read_csv('dataset/movies.csv')
@@ -38,27 +43,28 @@ print_df(ratings_df, 10)
 user_df = pd.read_csv('dataset/new_user.csv')
 # print_df(user_df)
 
-# Filter movies by title
+# Add movieId to user dataframe
 titles = movies_df[movies_df['title'].isin(user_df['title'].tolist())]
 user_df = pd.merge(titles, user_df)
 user_df = user_df.drop('year', 1)  # Remove year column
-#print_df(user_df)
+print("[new user dataframe]")
+print_df(user_df, 10)
 
-# Filtering the users who have seen the movies
-user_titles = ratings_df[ratings_df['movieId'].isin(user_df['movieId'].tolist())]
-# Grouping the rows by user ID
-user_groups = user_titles.groupby(['userId'])
+# Users who have seen the same movies
+movies = ratings_df[ratings_df['movieId'].isin(user_df['movieId'].tolist())]
+users = movies.groupby(['userId'])    # Grouping users by userId
 
 # User 525
-#print_df(user_groups.get_group(525))
+print("[user 525]")
+print_df(users.get_group(525), "all")
 
-# Sort with high priority the users with the most movies in common
-user_groups = sorted(user_groups, key=lambda x: len(x[1]), reverse=True)
+# Users who have more movies in common have more priority
+relevant_users = sorted(users, key=lambda x: len(x[1]), reverse=True)
 
 # Pearson
-user_groups = user_groups[0:100]  # Choosing a subset of users to do the iterations.
+relevant_users = relevant_users[0:100]  # Choosing a subset of users to do the iterations.
 pearsonCorrelationDict = {}
-for name, group in user_groups:  # For each user
+for name, group in relevant_users:  # For each user
     # Sorting the current user in such a way that the values don't get mixed up later
     user = group.sort_values(by='movieId')
     movies = user_df.sort_values(by='movieId')
@@ -120,3 +126,7 @@ recommendation_df['movieId'] = tempTopUsersRating.index
 recommendation_df = recommendation_df.sort_values(by='weighted average recommendation score', ascending=False)
 recommendation_df = movies_df.loc[movies_df['movieId'].isin(recommendation_df.head(10)['movieId'].tolist())]
 #print_df(recommendation_df)
+
+# Save recommendations to CSV file
+recommendation_df[['title', 'year']].to_csv("recommendation.csv", index=False)
+

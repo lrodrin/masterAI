@@ -217,7 +217,7 @@ El flujo de trabajo de este sistema de recomendación sigue estos pasos:
 \begin{enumerate}
 	\item Crea un nuevo usuario con las películas del conjunto de datos que el usuario a mirado.
 	\item Basándose en el índice de selección de películas del nuevo usuario, encuentra a sus vecinos (usuarios similares a él).
-	\item Obtiene los identificadores de las películas donde el nuevo usuario y los vecinos coinciden, es decir, obtiene los identificadores de las películas que tanto el nuevo usuario como sus vecinos hayan visto.
+	\item Obtiene los identificadores de las películas (movieId) donde el nuevo usuario y los vecinos coinciden, es decir, obtiene los identificadores de las películas que tanto el nuevo usuario como sus vecinos hayan visto.
 	\item Calcula las similitudes entre el nuevo usuario y sus vecinos.
 	\item Recomienda películas al nuevo usuario según las similitudes con sus vecinos.
 \end{enumerate}
@@ -236,8 +236,7 @@ Para finalizar con la creación del nuevo usuario, el archivo \textit{new\_user.
 user_df = pd.read_csv('dataset/new_user.csv')
 \end{lstlisting}
 
-% HERE
-Con los datos del nuevo usuario en el sistema de recomendación, extraeremos los identificadores de las películas del dataframe de películas, para agregarlos con los nuevos datos añadidos por el usuario. Para ello, primero se extraen los títulos de las películas que el usuario haya visto para luego juntarlas con los datos del usuario. En este punto también, vamos a aprovechar a eliminar información que no se utilizará más adelante en el sistema de recomendación, como la columna \textit{year}, para ahorrar espacio de memoria.
+Con los datos del nuevo usuario en el sistema de recomendación, extraemos los títulos de las películas que el usuario haya visto, los guardamos en la variable \textit{titles} y los unimos a los datos del usuario almacenados en el dataframe \textit{user\_df}. En este punto para ahorrar un poco de espacio de memoria, aprovechamos a eliminar la columna \textit{year} del dataframe del nuevo usuario, por qué no se utilizará más adelante en el sistema de recomendación.
 
 \begin{lstlisting}[language=python]
 titles = movies_df[movies_df['title'].isin(user_df['title'].tolist())]
@@ -245,37 +244,40 @@ user_df = pd.merge(titles, user_df)
 user_df = user_df.drop('year', 1)
 \end{lstlisting}
 
-\newpage
+Así queda organizado el dataframe \textit{user\_df}:
 
-Vemos el resultado:
-
-\begin{table}[h]
+\begin{table}[H]
 	\centering
 	\begin{tabular}{rlr}
 		\toprule
-		movieId &                        title &  rating \\
+		movieId &                  title &  rating \\
 		\midrule
 		1 &                    Toy Story &     5.0 \\
 		2 &                      Jumanji &     5.0 \\
 		3 &             Grumpier Old Men &     1.0 \\
 		4 &            Waiting to Exhale &     1.0 \\
 		5 &  Father of the Bride Part II &     1.0 \\
+		6 &                         Heat &     3.0 \\
+		7 &                      Sabrina &     2.0 \\
+		915 &                      Sabrina &     2.0 \\
+		8 &                 Tom and Huck &     1.0 \\
+		9 &                 Sudden Death &     1.0 \\
 		\bottomrule
 	\end{tabular}
 	\caption{Contenido del dataframe \textit{user\_df}.}
 	\label{user_df}
 \end{table}
 
-Ahora, que hemos añadido los identificadores de las películas con los datos del nuevo usuario, podemos obtener el subconjunto de usuarios que han visto las mismas películas. Además, también agruparemos las filas por el identificador de usuario.
+Ahora que hemos añadido los identificadores de las películas con los datos del nuevo usuario, podemos obtener todos los usuarios que hayan visto las mismas películas, que además agruparemos por su identificador de usuario (userId).
 
 \begin{lstlisting}[language=python]
-user_titles = ratings_df[ratings_df['movieId'].isin(user_df['movieId'].tolist())]
-user_groups = user_titles.groupby(['userId'])
+movies = ratings_df[ratings_df['movieId'].isin(user_df['movieId'].tolist())]
+users = movies.groupby(['userId'])
 \end{lstlisting}
 
-Observaremos a uno de los usuarios, por ejemplo, el usuario 525.
+Observemos a uno de los usuarios, por ejemplo, el usuario 525.
 
-\begin{table}[h]
+\begin{table}[H]
 	\centering
 	\begin{tabular}{rrr}
 		\toprule
@@ -286,16 +288,25 @@ Observaremos a uno de los usuarios, por ejemplo, el usuario 525.
 		525 &       34 &     3.0 \\
 		525 &       39 &     4.5 \\
 		525 &       48 &     3.0 \\
+		525 &       62 &     3.5 \\
+		525 &      107 &     3.5 \\
+		525 &      150 &     4.0 \\
+		525 &      223 &     3.5 \\
+		525 &      377 &     3.5 \\
+		525 &      480 &     4.0 \\
+		525 &      595 &     3.5 \\
+		525 &      915 &     3.5 \\
+		525 &     1196 &     4.5 \\
 		\bottomrule
 	\end{tabular}
-	\caption{Contenido del dataframe \textit{user\_df}.}
+	\caption{Valoraciones del usuario 525.}
 	\label{user_525}
 \end{table}
 
-Finalmente, ordenaremos el conjunto de datos de tal forma que los usuarios que compartan la mayor cantidad de películas tengan prioridad. Esto nos brindaré una mejor recomendación ya que no será necesario pasar por todos los usuarios. 
+El usuario 525 en total ha valorado 14 películas, 12 de las cuales no han sido valoradas por el nuevo usuario del sistema (ver Tabla~\ref{user_df}). Este hecho podría entorpecer la predicción de las recomendaciones, así que, para una mejor recomendación, donde no será necesario pasar por todos los usuarios, ordenaremos el conjunto de datos de tal forma que los usuarios que compartan la mayor cantidad de películas tengan prioridad (usuarios relevantes).
 
 \begin{lstlisting}[language=python]
-user_groups = sorted(user_groups, key=lambda x: len(x[1]), reverse=True)
+relevant_users = sorted(users, key=lambda x: len(x[1]), reverse=True)
 \end{lstlisting}
 
 \subsection{Coeficiente de Correlación de Pearson}\label{correlacion_pearson}
