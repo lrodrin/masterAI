@@ -303,16 +303,17 @@ Observemos a uno de los usuarios, por ejemplo, el usuario 525.
 	\label{user_525}
 \end{table}
 
-El usuario 525 en total ha valorado 14 películas, 12 de las cuales no han sido valoradas por el nuevo usuario del sistema (ver Tabla~\ref{user_df}). Este hecho podría entorpecer la predicción de las recomendaciones, así que, para una mejor recomendación, donde no será necesario pasar por todos los usuarios, ordenaremos el conjunto de datos de tal forma que los usuarios que compartan la mayor cantidad de películas tengan prioridad (usuarios relevantes).
+El usuario 525 en total ha valorado 14 películas, 12 de las cuales no han sido valoradas por el nuevo usuario del sistema (ver Tabla~\ref{user_df}). Este hecho podría entorpecer la predicción de las recomendaciones, así que, para una mejor recomendación, donde no será necesario pasar por todos los usuarios, ordenaremos el conjunto de datos de tal forma que los usuarios que compartan la mayor cantidad de películas tengan prioridad (usuarios comunes).
 
 \begin{lstlisting}[language=python]
-relevant_users = sorted(users, key=lambda x: len(x[1]), reverse=True)
+common_users = sorted(users, key=lambda x: len(x[1]), reverse=True)
 \end{lstlisting}
 
 \subsection{Coeficiente de Correlación de Pearson}\label{correlacion_pearson}
 
-El sistema de recomendación desarrollado se basa en un mecanismo que utiliza los datos de las valoraciones de los usuarios para calcular la similitud entre los usuarios, y que se utiliza para hacer las recomendaciones.
+Una vez encontrados los usuarios comunes o similares del sistema, podemos medir la similitud entre ellos para predecir las recomendaciones. Para ello, el sistema de recomendación buscará correlaciones entre patrones de valoración sobre las películas que han valorado los usuarios.
 
+%HERE
 En esta sección, buscamos las similitudes de todos los usuarios con el nuevo usuario para encontrar aquellos que se le parecen más. Tendremos que ver como se relacionan entre sí, y para ello usaremos el \href{https://es.wikipedia.org/wiki/Coeficiente_de_correlaci\%C3\%B3n_de_Pearson}{coeficiente de correlación de Pearson}. La fórmula para calcular este coeficiente se puede ver a continuación:
 
 \begin{equation}\label{formula}

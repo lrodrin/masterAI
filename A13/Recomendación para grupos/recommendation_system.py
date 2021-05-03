@@ -59,12 +59,12 @@ print("[user 525]")
 print_df(users.get_group(525), "all")
 
 # Users who have more movies in common have more priority
-relevant_users = sorted(users, key=lambda x: len(x[1]), reverse=True)
+common_users = sorted(users, key=lambda x: len(x[1]), reverse=True)
 
 # Pearson
-relevant_users = relevant_users[0:100]  # Choosing a subset of users to do the iterations.
+common_users = common_users[0:100]  # Choosing a subset of users to do the iterations.
 pearsonCorrelationDict = {}
-for name, group in relevant_users:  # For each user
+for name, group in common_users:  # For each user
     # Sorting the current user in such a way that the values don't get mixed up later
     user = group.sort_values(by='movieId')
     movies = user_df.sort_values(by='movieId')
