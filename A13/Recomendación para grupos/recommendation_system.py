@@ -62,11 +62,11 @@ print_df(users.get_group(525), 'all')
 common_users = sorted(users, key=lambda x: len(x[1]), reverse=True)
 
 # Neighborhood selection
-neighborhood = common_users[0:100]  # Choosing 100 users to do the iterations
+usersSubset = common_users[0:100]  # Choosing 100 users to do the iterations
 
 # Pearson
 pearsonCorrelationDict = {}
-for id, group in neighborhood:
+for id, group in usersSubset:
     # The current user and the new user are ordered in the same way
     user = group.sort_values(by='movieId')
     movies = user_df.sort_values(by='movieId')
@@ -94,7 +94,7 @@ for id, group in neighborhood:
 
 print(pearsonCorrelationDict.items())
 
-# Create pearson dataframe
+# Create Pearson dataframe
 pearson_df = pd.DataFrame.from_dict(pearsonCorrelationDict, orient='index')
 pearson_df.columns = ['similarityIndex']
 pearson_df['userId'] = pearson_df.index
@@ -103,7 +103,7 @@ print_df(pearson_df, 10)
 
 # Get the top 50 most similar users
 topUsers = pearson_df.sort_values(by='similarityIndex', ascending=False)[0:50]
-# print_df(topUsers)
+# print(topUsers)
 
 # Merge ratings and top users dataframe
 topUsersRating = topUsers.merge(ratings_df, left_on='userId', right_on='userId', how='inner')

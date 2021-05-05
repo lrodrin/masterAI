@@ -328,25 +328,19 @@ Los valores dados por la fórmula (\ref{formula}) pueden variar entre [-1,1].
 	\item Si $r=-1$ (correlación negativa perfecta), entonces las valoraciones estarán inversamente correlacionadas. Los usuarios no tendrán los mismos gustos.
 \end{itemize}
 
-Se ha decidido usar el coeficiente de Correlación de Pearson por una de sus propiedades. Esta propiedad nos dice que, si se multiplican todos los elementos por una constante distinta a cero o si se agrega cualquier constante a todos los elementos del coeficiente, este no cambiará con la escala. Por ejemplo, si tenemos dos vectores $X$ e $Y$, entonces $pearson(X,Y) = pearson(X,2\cdot Y+3)$. Esta es una propiedad muy importante en los sistemas de recomendación porqué si dos usuarios valoran dos elementos de manera completamente diferente, pero son usuarios muy parecidos (con gustos similares) contaríamos con valoraciones muy parecidas en escalas variadas y esto crearía grandes problemas en la predicción de las recomendaciones. 
-
-El coeficiente de Correlación de Pearson es la medida más utilizada cuando hay variaciones entre magnitudes y escala de las valoraciones, aunque podríamos obtener valores altos de correlación si existen pocos usuarios con valoraciones en común.
+Se ha decidido usar el coeficiente de Correlación de Pearson por una de sus propiedades. Esta propiedad nos dice que, si se multiplican todos los elementos por una constante distinta a cero o si se agrega cualquier constante a todos los elementos del coeficiente, este no cambiará con la escala. Por ejemplo, si tenemos dos vectores $X$ e $Y$, entonces $pearson(X,Y) = pearson(X,2\cdot Y+3)$. Esta es una propiedad muy importante en los sistemas de recomendación porqué si dos usuarios valoran dos elementos de manera completamente diferente, pero son usuarios muy parecidos (con gustos similares) contaríamos con valoraciones muy parecidas en escalas variadas y esto crearía grandes problemas en la predicción de las recomendaciones. El coeficiente de Correlación de Pearson es la medida más utilizada cuando hay variaciones entre magnitudes y escala de las valoraciones, aunque podríamos obtener valores altos de correlación si existen pocos usuarios con valoraciones en común.
 
 \begin{definition}\label{estadístico_muestral}
 En estadística un estadístico muestral es una medida cuantitativa, derivada de un conjunto de datos de una muestra, con el objetivo de estimar o inferir características de una población o modelo estadístico.
 \end{definition}
 
-Como tenemos ordenado el conjunto de datos de tal forma que los usuarios que comparten la mayor cantidad de películas tienen más prioridad, podemos realizar una selección del vecindario. La selección del vecindario o la selección de los $K$ vecinos más cercanos, es la aproximación más común para seleccionar los $K$ usuarios más relevantes o mejores. $K$ es el número de vecinos que vamos a seleccionar, en teoría cuantos más vecinos seleccionamos para nuestro vecindario, mejores correlaciones entre ellos. Porqué aplicando una selección del vecindario conseguiremos penalizar aquellas situaciones donde el cálculo de la similitud de los usuarios haya obtenido pocas valoraciones comunes. Además, también ahorraremos coste computacional al reducir el número de usuarios, ya que no tendremos que desperdiciar mucho tiempo pasando por cada usuario. En este caso, seleccionamos $K$=100 (100 usuarios).
+A continuación, mostramos el código para calcular los coeficientes de Correlación Pearson. Los coeficientes los almacenaremos en el diccionario \textit{pearsonCorrelationDict}, donde las claves serán los identificadores de los usuarios y los valores de cada clave serán los coeficientes. Elegimos un subconjunto de usuarios (\textit{usersSubset}) para hacer las iteraciones, no he querido añadir demasiado sobrecoste computacional pasando por cada usuario.
 
 \begin{lstlisting}[language=python, basicstyle=\small]
-neighborhood = common_users[0:100]	
-\end{lstlisting}
-
-Finalmente, mostramos el código para calcular los coeficientes de Correlación Pearson. Los coeficientes los almacenaremos en el diccionario \textit{pearsonCorrelationDict}, donde las claves serán los identificadores de los usuarios y los valores de cada clave serán los coeficientes. 
-
-\begin{lstlisting}[language=python, basicstyle=\small]
+usersSubset = common_users[0:100]	
 pearsonCorrelationDict = {}
-for id, group in neighborhood:
+
+for id, group in usersSubset:
 	# The current user and the new user are ordered in the same way
 	user = group.sort_values(by='movieId')
 	movies = user_df.sort_values(by='movieId')
@@ -368,9 +362,9 @@ for id, group in neighborhood:
 	
 	# If the denominator is nonzero, then we divide, otherwise the correlation is 0
 	if Uxx != 0 and Uyy != 0:
-	pearsonCorrelationDict[id] = Uxy / sqrt(Uxx * Uyy)
+		pearsonCorrelationDict[id] = Uxy / sqrt(Uxx * Uyy)
 	else:
-	pearsonCorrelationDict[id] = 0
+		pearsonCorrelationDict[id] = 0
 \end{lstlisting}
 
 Inicialmente, se ordenan los datos de cada usuario instanciado y los datos del nuevo usuario de la misma manera, para que los valores no se mezclen más adelante. Después se obtiene el número de valoraciones del usuario instanciado y se obtienen las valoraciones en común de este con el nuevo usuario, y todo se almacena en una lista temporal llamada \textit{tempRatingList}. Guardamos también en una lista temporal las valoraciones del usuario instanciado (\textit{tempUserList}). Esto lo hacemos porqué siempre es mucho más fácil recorrer una lista que un dataframe. A continuación, calculamos el coeficiente de correlación de Pearson de cada usuario instanciado con el nuevo usuario con la fórmula (\ref{formula}), comprobando que el dominador sea diferente a cero, sino el valor del coeficiente será 0.
@@ -389,6 +383,8 @@ pearson_df.columns = ['similarityIndex']
 pearson_df['userId'] = pearson_df.index
 pearson_df.index = range(len(pearson_df))
 \end{lstlisting}
+
+\newpage
 
 Así queda organizado el resultado en el nuevo dataframe \textit{pearson\_df}:
 
@@ -415,7 +411,11 @@ Así queda organizado el resultado en el nuevo dataframe \textit{pearson\_df}:
 \end{table}
 
 
-\subsection{Resultado y Evaluación}
+\subsection{Predicción y Resultado}
+
+Como tenemos ordenado el conjunto de datos de tal forma que los usuarios que comparten la mayor cantidad de películas tienen más prioridad, podemos realizar una selección del vecindario. La selección del vecindario o la selección de los $K$ vecinos más cercanos, es la aproximación más común para seleccionar los $K$ usuarios más relevantes o mejores. $K$ es el número de vecinos que vamos a seleccionar, en teoría cuantos más vecinos seleccionamos para nuestro vecindario, mejores correlaciones entre ellos. Porqué aplicando una selección del vecindario conseguiremos penalizar aquellas situaciones donde el cálculo de la similitud de los usuarios haya obtenido pocas valoraciones comunes. Además, también ahorraremos coste computacional al reducir el número de usuarios, ya que no tendremos que desperdiciar mucho tiempo pasando por cada usuario. En este caso, seleccionamos $K$=50 (50 usuarios).
+
+
 
 % HERE
 Vemos el resultado:
