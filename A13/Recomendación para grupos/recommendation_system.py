@@ -61,10 +61,8 @@ print_df(users.get_group(525), 'all')
 # Users who have more movies in common have more priority
 common_users = sorted(users, key=lambda x: len(x[1]), reverse=True)
 
-# Neighborhood selection
-usersSubset = common_users[0:100]  # Choosing 100 users to do the iterations
-
 # Pearson
+usersSubset = common_users[0:100]  # Choosing 100 users to do the iterations
 pearsonCorrelationDict = {}
 for id, group in usersSubset:
     # The current user and the new user are ordered in the same way
@@ -103,17 +101,18 @@ print_df(pearson_df, 10)
 
 # Get the top 50 most similar users
 topUsers = pearson_df.sort_values(by='similarityIndex', ascending=False)[0:50]
-# print(topUsers)
+print_df(topUsers, 10)
 
-# Merge ratings and top users dataframe
+# Prediction calculating the weighted average
 topUsersRating = topUsers.merge(ratings_df, left_on='userId', right_on='userId', how='inner')
-# The similarity of user ratings is multiplied
+print_df(topUsersRating, 10)
+# The similarity of user scores is multiplied
 topUsersRating['weightedRating'] = topUsersRating['similarityIndex'] * topUsersRating['rating']
-#print_df(topUsersRating)
-# A sum is applied to the top users after grouping them by userId
+print_df(topUsersRating, 10)
+# A sum is applied to the topUsers after grouping them by movieId
 tempTopUsersRating = topUsersRating.groupby('movieId').sum()[['similarityIndex', 'weightedRating']]
 tempTopUsersRating.columns = ['sum_similarityIndex', 'sum_weightedRating']
-#print_df(topUsersRating)
+print_df(tempTopUsersRating, 10)
 
 # Recommend movies to new user
 recommendation_df = pd.DataFrame()

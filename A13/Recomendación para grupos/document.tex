@@ -413,12 +413,13 @@ Así queda organizado el resultado en el nuevo dataframe \textit{pearson\_df}:
 
 \subsection{Predicción y Resultado}
 
-Como tenemos ordenado el conjunto de datos de tal forma que los usuarios que comparten la mayor cantidad de películas tienen más prioridad, podemos realizar una selección del vecindario. La selección del vecindario o la selección de los $K$ vecinos más cercanos, es la aproximación más común para seleccionar los $K$ usuarios más relevantes o mejores. $K$ es el número de vecinos que vamos a seleccionar, en teoría cuantos más vecinos seleccionamos para nuestro vecindario, mejores correlaciones entre ellos. Porqué aplicando una selección del vecindario conseguiremos penalizar aquellas situaciones donde el cálculo de la similitud de los usuarios haya obtenido pocas valoraciones comunes. Además, también ahorraremos coste computacional al reducir el número de usuarios, ya que no tendremos que desperdiciar mucho tiempo pasando por cada usuario. En este caso, seleccionamos $K$=50 (50 usuarios).
+Como tenemos ordenado el conjunto de datos de tal forma que los usuarios que comparten la mayor cantidad de películas tienen más prioridad, podemos realizar una selección del vecindario. La selección del vecindario o la selección de los $K$ vecinos más cercanos, es la aproximación más común para seleccionar los $K$ usuarios más similares o mejores. $K$ es el número de vecinos que vamos a seleccionar, en teoría cuantos más vecinos seleccionamos para nuestro vecindario, mejores recomendaciones vamos a predecir. Porqué aplicando una selección del vecindario conseguiremos penalizar aquellas situaciones donde el cálculo de la similitud de los usuarios haya obtenido pocas valoraciones comunes. En este caso, seleccionamos $K$=50 (50 usuarios).
 
+\begin{lstlisting}[language=python, basicstyle=\small]
+topUsers = pearson_df.sort_values(by='similarityIndex', ascending=False)[0:50]
+\end{lstlisting}
 
-
-% HERE
-Vemos el resultado:
+Veamos los primeros 10 usuarios más parecidos al nuevo usuario, que en este caso como yo he valorado las películas según mi criterio, son los primeros 10 usuarios más parecidos a mí.
 
 \begin{table}[h]
 	\centering
@@ -426,86 +427,123 @@ Vemos el resultado:
 		\toprule
 		similarityIndex &  userId \\
 		\midrule
-		0.171034 &     414 \\
+		0.577426 &      94 \\
+		0.573225 &     584 \\
+		0.554931 &     524 \\
+		0.529648 &     385 \\
+		0.486203 &     219 \\
+		0.477746 &     294 \\
+		0.450127 &     380 \\
+		0.431985 &     387 \\
+		0.418447 &     411 \\
 		0.401235 &     599 \\
-		0.203293 &       6 \\
-		0.210447 &     474 \\
-		0.353077 &     274 \\
 		\bottomrule
 	\end{tabular}
-	\caption{Contenido del dataframe \textit{pearson\_df}.}
-	\label{pearson}
+	\caption{Los 50 usuarios más similares.}
+	\label{top_50}
 \end{table}
 
-Ahora obtenemos los 50 primeros usuarios más parecidos:
+Parece que mis gustos no son muy parecidos a los de los otros usuarios que forman el conjunto de datos. Los coeficientes de Correlación de Pearson resultantes que podemos observar en la Tabla~\ref{top_50} no son muy altos. Por ejemplo, el valor de similitud con el usuario más parecido a mí, el usuario 94, es igual a 0.577426. Aun así, vamos a recomendar películas al nuevo usuario, es decir, a mí misma.
+
+Para calcular las recomendaciones tomaremos el promedio ponderado de las valoraciones de las películas utilizando los coeficientes de la Correlación de Pearson. Se ha elegido el promedio ponderado porqué se considera fácil de calcular y suele funcionar bastante bien, aunque no tiene en cuenta el sesgo en las valoraciones de los usuarios si tienden a valorar alto o bajo. 
+
+El promedio ponderado lo calcularemos aplicando la siguiente fórmula:
+
+\begin{equation}\label{promedio_ponderado}
+	\large \hat{r}_{u,i} = \frac{1}{\sum_{a\in K}sim(u,a)} \sum_{a\in K }sim(u,a) r_{a,i}
+\end{equation}
+
+A fin de calcular el promedio ponderado, primero debemos unir las valoraciones de todas las películas del dataframe \textit{ratings\_df}, con los usuarios más similares al nuevo usuario (\textit{topUsers}). Esto logra organizar un nuevo dataframe que llamamos \textit{topUsersRating}.
 
 \begin{lstlisting}[language=python, basicstyle=\small]
-topUsers = pearson_df.sort_values(by='similarityIndex', ascending=False)[0:50])
+topUsersRating = topUsers.merge(ratings_df, left_on='userId', right_on='userId', 
+	how='inner')
 \end{lstlisting}
 
-\begin{table}[h]
-	\centering
-	\begin{tabular}{rr}
-		\toprule
-		similarityIndex &  userId \\
-		\midrule
-		1.0 &     551 \\
-		1.0 &     513 \\
-		1.0 &     409 \\
-		1.0 &     257 \\
-		1.0 &     335 \\
-		\bottomrule
-	\end{tabular}
-	\caption{Los 50 primeros usuarios más parecidos.}
-	\label{usuarios_parecidos}
-\end{table}
+Vemos como queda organizado el nuevo dataframe:
 
-Recomendemos películas al nuevo usuario puntuando a los usuarios elegidos para todas las películas. Haremos esto tomando el peso promedio de los ratings de las películas utilizando la Correlación Pearson. Pero para hacer esto, primero necesitamos que los usuarios vean las películas en nuestro \textit{pearson\_df} a partir del dataframe de valoraciones y luego guardar su correlación en una nueva columna llamada similarityIndex. Estos se logra juntando estas dos tablas de debajo.
-
-\begin{lstlisting}[language=python, basicstyle=\small]
-topUsersRating = topUsers.merge(ratings_df, left_on='userId', right_on='userId', how='inner')
-\end{lstlisting}
-
-\begin{table}[h]
+\begin{table}[H]
 	\centering
 	\begin{tabular}{rrrr}
 		\toprule
 		similarityIndex &  userId &  movieId &  rating \\
 		\midrule
-		1.0 &     551 &       47 &     4.5 \\
-		1.0 &     551 &      110 &     3.5 \\
-		1.0 &     551 &      260 &     3.5 \\
-		1.0 &     551 &      293 &     4.5 \\
-		1.0 &     551 &      296 &     3.5 \\
+		0.577426 &      94 &        2 &     4.0 \\
+		0.577426 &      94 &       10 &     3.0 \\
+		0.577426 &      94 &       11 &     3.0 \\
+		0.577426 &      94 &       17 &     1.0 \\
+		0.577426 &      94 &       19 &     2.0 \\
+		0.577426 &      94 &       21 &     3.0 \\
+		0.577426 &      94 &       32 &     5.0 \\
+		0.577426 &      94 &       34 &     4.0 \\
+		0.577426 &      94 &       39 &     1.0 \\
+		0.577426 &      94 &       44 &     1.0 \\
 		\bottomrule
 	\end{tabular}
-	\caption{Los 50 primeros usuarios más parecidos.}
-	\label{usuarios_parecidos}
+	\caption{Union del dataframe \textit{ratings\_df} con los usuarios más similares.}
+	\label{ratings_similares}
 \end{table}
 
-Ahora todo lo que se necesita hacer es multiplicar el puntaje de la película por su peso (El índice de similitud), luego se suman los nuevos puntajes y dividen por la suma de los pesos.
-Esto se logra sencillamente multiplicando dos columnas, luego agrupando el dataframe por la columna movieId y luego dividiendo dos columnas:
-Aqui se muestra la idea de todos los usuarios similares respecto de las películas candidatas para el usuario ingresado:
+Ahora ya podemos calcular el promedio ponderado aplicando la fórmula (\ref{promedio_ponderado}). Esto se logra sencillamente multiplicando las dos columnas del dataframe \textit{topUsersRating}, las columnas \textit{similarityIndex} y \textit{rating}, y guardando el resultado en una nueva columna: \textit{weightedRating}. Ver la Tabla~\ref{weightedRating}.
 
 \begin{lstlisting}[language=python, basicstyle=\small]
 topUsersRating['weightedRating'] = topUsersRating['similarityIndex'] * topUsersRating['rating']
+\end{lstlisting} 
+
+Después se suman los valores de las columnas \textit{similarityIndex} y \textit{weightedRating}, y se agrupan por la columna \textit{movieId}. Finalmente, separamos el resultado en dos columnas: la columna \textit{sum\_similarityIndex} que representan la suma de los coeficientes de Correlación de Pearson, y la columna \textit{ sum\_weightedRating} que representa la suma de las valoraciones de los usuarios por sus coeficientes. Ver la Tabla~\ref{sums}.
+
+\begin{lstlisting}[language=python, basicstyle=\small]
 tempTopUsersRating = topUsersRating.groupby('movieId').sum()[['similarityIndex', 'weightedRating']]
 tempTopUsersRating.columns = ['sum_similarityIndex', 'sum_weightedRating']
-\end{lstlisting}
+\end{lstlisting} 
 
-\begin{tabular}{rr}
-	\toprule
-	sum\_similarityIndex &  sum\_weightedRating \\
-	&                     \\
-	\midrule
-	9.903247 &           40.868223 \\
-	2.453957 &            9.295957 \\
-	1.654654 &            4.463961 \\
-	2.415235 &            4.745706 \\
-	1.866025 &            7.464102 \\
-	\bottomrule
-\end{tabular}
 
+\begin{table}[H]
+	\centering
+	\begin{tabular}{rrrrr}
+		\toprule
+		similarityIndex &  userId &  movieId &  rating &  weightedRating \\
+		\midrule
+		0.577426 &      94 &        2 &     4.0 &        2.309703 \\
+		0.577426 &      94 &       10 &     3.0 &        1.732277 \\
+		0.577426 &      94 &       11 &     3.0 &        1.732277 \\
+		0.577426 &      94 &       17 &     1.0 &        0.577426 \\
+		0.577426 &      94 &       19 &     2.0 &        1.154852 \\
+		0.577426 &      94 &       21 &     3.0 &        1.732277 \\
+		0.577426 &      94 &       32 &     5.0 &        2.887129 \\
+		0.577426 &      94 &       34 &     4.0 &        2.309703 \\
+		0.577426 &      94 &       39 &     1.0 &        0.577426 \\
+		0.577426 &      94 &       44 &     1.0 &        0.577426 \\
+		\bottomrule
+	\end{tabular}
+	\caption{Multiplicación de las columnas \textit{similarityIndex} y \textit{rating}.}
+	\label{weightedRating}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{rr}
+		\toprule
+		sum\_similarityIndex &  sum\_weightedRating \\
+		&                     \\
+		\midrule
+		11.302189 &           43.880774 \\
+		9.326976 &           30.408888 \\
+		4.882914 &           12.700033 \\
+		0.621741 &            1.446775 \\
+		2.796576 &            8.189528 \\
+		8.893940 &           34.706954 \\
+		3.739738 &           10.699062 \\
+		0.727404 &            2.182212 \\
+		1.353227 &            4.100684 \\
+		11.269351 &           40.952455 \\
+		\bottomrule
+	\end{tabular}
+	\caption{Las columnas \textit{sum\_weightedRating} y \textit{ sum\_weightedRating}}
+	\label{sums}
+\end{table}
+
+% HERE
 Se crea un dataframe vacío
 Ahora se toma el promedio ponderado
 
