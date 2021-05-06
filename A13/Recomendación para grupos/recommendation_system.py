@@ -18,6 +18,7 @@ def print_df(dataframe, nrows):
     print(tabulate(lines_to_print, headers='keys', tablefmt='psql'))
     print(lines_to_print.to_latex(index=False))  # convert table to latex format
 
+
 # Create movies and ratings dataframes
 movies_df = pd.read_csv('dataset/movies.csv')
 ratings_df = pd.read_csv('dataset/ratings.csv')
@@ -52,7 +53,7 @@ print_df(user_df, 10)
 
 # Users who have seen the same movies
 movies = ratings_df[ratings_df['movieId'].isin(user_df['movieId'].tolist())]
-users = movies.groupby(['userId'])    # Grouping users by userId
+users = movies.groupby(['userId'])  # Grouping users by userId
 
 # User 525
 print('[user 525]')
@@ -82,7 +83,8 @@ for id, group in usersSubset:
     # Calculate the Pearson Correlation between the current user and new user
     Uxx = sum([i ** 2 for i in tempRatingList]) - pow(sum(tempRatingList), 2) / float(nRatings)
     Uyy = sum([i ** 2 for i in tempUserList]) - pow(sum(tempUserList), 2) / float(nRatings)
-    Uxy = sum(i * j for i, j in zip(tempRatingList, tempUserList)) - sum(tempRatingList) * sum(tempUserList) / float(nRatings)
+    Uxy = sum(i * j for i, j in zip(tempRatingList, tempUserList)) - sum(tempRatingList) * sum(tempUserList) / float(
+        nRatings)
 
     # If the denominator is nonzero, then we divide, otherwise the correlation is 0
     if Uxx != 0 and Uyy != 0:
@@ -112,20 +114,16 @@ print_df(topUsersRating, 10)
 # A sum is applied to the topUsers after grouping them by movieId
 tempTopUsersRating = topUsersRating.groupby('movieId').sum()[['similarityIndex', 'weightedRating']]
 tempTopUsersRating.columns = ['sum_similarityIndex', 'sum_weightedRating']
-print_df(tempTopUsersRating, 10)
+print_df(tempTopUsersRating, 8)
 
-# Recommend movies to new user
+# Calculate the weighted average with sum_weightedRating and sum_similarityIndex columns
 recommendation_df = pd.DataFrame()
-# Calculate the weighted average
-recommendation_df['weighted average recommendation score'] = tempTopUsersRating['sum_weightedRating'] / \
-                                                             tempTopUsersRating['sum_similarityIndex']
+recommendation_df['weighted_average_score'] = tempTopUsersRating['sum_weightedRating'] / tempTopUsersRating[
+    'sum_similarityIndex']
 recommendation_df['movieId'] = tempTopUsersRating.index
 
-# The first 20 movies the algorithm recommends
-recommendation_df = recommendation_df.sort_values(by='weighted average recommendation score', ascending=False)
+# The first 20 movies that the algorithm recommends
+recommendation_df = recommendation_df.sort_values(by='weighted_average_score', ascending=False)
 recommendation_df = movies_df.loc[movies_df['movieId'].isin(recommendation_df.head(10)['movieId'].tolist())]
-#print_df(recommendation_df)
-
-# Save recommendations to CSV file
+print_df(recommendation_df, 10)
 recommendation_df[['title', 'year']].to_csv('recommendation.csv', index=False)
-
