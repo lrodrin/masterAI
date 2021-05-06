@@ -599,27 +599,16 @@ recommendation_df = movies_df.loc[movies_df['movieId'].isin(recommendation_df.he
 	\label{recomendaciones_finales}
 \end{table}
 
+% EVALUAR RESULTADOS
+
 
 \section{Conclusiones}
 
-Automatizar la creación del archivo \textit{dataset/user\_ratings.csv}.
+En este documento se ha descrito una sencilla implementación de un sistema de recomendación de filtrado colaborativo con el fin de predecir películas a un nuevo usuario según el interés de este. Paso a paso se describe el diseño del sistema de recomendación basado en la Correlación de Pearson. Las recomendaciones resultantes son aceptables, aunque seguramente el sistema de recomendación se podría mejorar con estrategias de hibridación, añadiendo técnicas basadas en contenido. No me ha parecido que en este sistema apareciera el problema del comienzo frío.
 
-El enlace al vídeo debéis incluirlo en la memoria. Trabajo práctico: la idea es que vayáis explicando el porqué de las decisiones que habéis tomado (qué me llevó a utilizar unos determinados hiperparámetros, por qué he utilizado esta manera de medir la calidad de la solución,...) y hagáis un razonamiento sobre los resultados obtenidos.
+Como valoración personal, he elegido la realización de hacer un ejercicio práctico para llevar a cabo la teoría aprendida durante el aprendizaje. Siempre me parece muy interesante llevar a la práctica conocimiento nuevo para acabar de entender y comprender como se puede llevar a la práctica cierto conocimiento y ver su utilidad. He escogido el filtrado colaborativo, porque me ha parecido el razonamiento más sencillo para llevar a la práctica. Sé que existen muchísimos sistemas de recomendación ya implementados, pero me pareció muy interesante desarrollar un sistema muy simple y básico. Además, nunca había intentado implementar un sistema de recomendación.
 
-Ahora, calculemos el coeficiente de correlación de Pearson entre el nuevo usuario y el resto de los usuarios del conjunto de datos. El resultado lo vamos a almacenar en un diccionario, donde la clave es el identificador del usuario y el valor es el coeficiente.
-
-
-Este estudio presenta una aproximación a la recomendación que muestra
-noticias ordenadas según el interés de los usuarios, expresados mediante
-visitas previas y los términos contenidos en dichos artículos, así como en sus
-categorías.
-Se han diseñado dos modelos probabilísticos basados en el Aspect Model.
-Los resultados muestran que cuando se considera la clasificación de las
-noticias al general el modelo, ayuda mejor al usuario a acceder a las mismas.
-Esta propuesta es interesante y una alternativa competitiva en el contexto de
-los modelos de recomendación de noticias.
-El modelo Triadic es mejor que el Diadic cuando se combina con la cuenta de
-números de accesos, términos y categorías.
+La implementación es muy sencilla, las primeras mejoras del sistema seria que se pudiera generar automáticamente un nuevo usuario, o que sea menos costoso y modularizar. Supongo que no sería muy difícil crear una UI, pequeñita. Que en este caso no se ha dado a cabo ya que me ha parecido más interesante y que también por falta de tiempo creo que no era asumible para mí.
 
 \renewcommand{\refname}{Bibliografía}
 \bibliographystyle{unsrt}
