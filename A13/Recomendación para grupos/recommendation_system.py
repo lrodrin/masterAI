@@ -92,17 +92,20 @@ for id, group in usersSubset:
     else:
         pearsonCorrelationDict[id] = 0
 
-print(pearsonCorrelationDict.items())
+print('[pearson correlation dictionary]')
+print(pearsonCorrelationDict.items(), '\n')
 
 # Create Pearson dataframe
 pearson_df = pd.DataFrame.from_dict(pearsonCorrelationDict, orient='index')
 pearson_df.columns = ['similarityIndex']
 pearson_df['userId'] = pearson_df.index
 pearson_df.index = range(len(pearson_df))
+print('[pearson dataframe]')
 print_df(pearson_df, 10)
 
 # Get the top 50 most similar users
 topUsers = pearson_df.sort_values(by='similarityIndex', ascending=False)[0:50]
+print('[top 50 most similar users]')
 print_df(topUsers, 10)
 
 # Prediction calculating the weighted average
@@ -125,5 +128,6 @@ recommendation_df['movieId'] = tempTopUsersRating.index
 # The first 20 movies that the algorithm recommends
 recommendation_df = recommendation_df.sort_values(by='weighted_average_score', ascending=False)
 recommendation_df = movies_df.loc[movies_df['movieId'].isin(recommendation_df.head(10)['movieId'].tolist())]
+print('[first 20 movies that the algorithm recommends]')
 print_df(recommendation_df, 10)
 recommendation_df[['title', 'year']].to_csv('recommendation.csv', index=False)
