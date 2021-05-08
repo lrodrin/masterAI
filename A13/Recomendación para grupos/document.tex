@@ -448,11 +448,11 @@ Veamos los primeros 10 usuarios más parecidos al nuevo usuario, que en este cas
 		0.401235 &     599 \\
 		\bottomrule
 	\end{tabular}
-	\caption{Los 50 usuarios más similares.}
+	\caption{Los 50 usuarios más similares al nuevo usuario.}
 	\label{top_50}
 \end{table}
 
-Parece ser que mis intereses no son muy similares a los de los otros usuarios que forman el conjunto de datos. Los coeficientes de correlación Pearson que podemos observar en la Tabla~\ref{top_50} no son muy altos. Por ejemplo, el valor de similitud con el usuario que más se parece a mí, el usuario 94, es igual a 0.577426. Aun así, vamos a calcular las recomendaciones. Para ello, tomaremos la media ponderada de las valoraciones de las películas utilizando los coeficientes de la correlación Pearson. Se ha elegido la media ponderada como medida de predicción porqué se considera fácil de calcular y suele funcionar bastante bien, aunque no tiene en cuenta el sesgo en las valoraciones de los usuarios si tienden a valorar alto o bajo. 
+Parece ser que mis intereses no son muy similares a los de los otros usuarios que forman el conjunto de datos. Los coeficientes de correlación Pearson que podemos observar en la Tabla~\ref{top_50} no son muy altos. Por ejemplo, el valor de similitud con el usuario que más se parece a mí, el usuario 94, es igual a 0.577426. Aun así, vamos a calcular las recomendaciones. Aún así, tomaremos la media ponderada de las valoraciones de las películas utilizando los coeficientes de la correlación Pearson. Se ha elegido la media ponderada como medida de predicción porqué se considera fácil de calcular y suele funcionar bastante bien, aunque no tiene en cuenta el sesgo en las valoraciones de los usuarios si tienden a valorar alto o bajo. 
 
 La media ponderada se calcula aplicando la siguiente fórmula:
 
@@ -460,7 +460,7 @@ La media ponderada se calcula aplicando la siguiente fórmula:
 	\large \hat{r}_{u,i} = \frac{1}{\sum_{a\in K}sim(u,a)} \sum_{a\in K }sim(u,a) r_{a,i}
 \end{equation}
 
-A fin de calcular la media ponderada en el sistema de recomendación, primero debemos unir las valoraciones de todas las películas del dataframe \textit{ratings\_df} con los usuarios más similares al nuevo usuario (\textit{topUsers}). Esto logra organizar un nuevo dataframe que llamamos \textit{topUsersRating}. A la hora de realizar la unión usamos la función \textit{merge} de la librería pandas, que permite realizar la unión de los dos dataframes (\textit{ratings\_df} y \textit{topUsersRating}). Esta unión se realiza sobre las columnas \textit{userId} considerando solo las filas con etiquetas comunes (\textit{inner}). 
+A fin de calcular la media ponderada, primero debemos unir las valoraciones de todas las películas del dataframe \textit{ratings\_df} con los usuarios más similares al nuevo usuario (\textit{topUsers}). Guardamos el resultado de la unión en un nuevo dataframe que llamamos \textit{topUsersRating}. A la hora de realizar esta unión usamos la función \textit{merge} de la librería pandas, que nos permite realizar la unión de los dos dataframes (\textit{ratings\_df} y \textit{topUsersRating}) sobre las columnas \textit{userId}, considerando solo las filas con etiquetas comunes (\textit{inner}). 
 
 \begin{lstlisting}[language=python, basicstyle=\small]
 topUsersRating = topUsers.merge(ratings_df, left_on='userId', right_on='userId', 
@@ -491,13 +491,13 @@ Vemos como queda organizado el contenido de \textit{topUsersRating}:
 	\label{ratings_similares}
 \end{table}
 
-A continuación, calculamos la media ponderada aplicando la fórmula (\ref{media_ponderada}). Se realiza sencillamente multiplicando las dos columnas del dataframe \textit{topUsersRating}, las columnas \textit{similarityIndex} y \textit{rating}; y guardando el resultado de la multiplicación en una nueva columna: \textit{weightedRating}. Ver el resultado en la Tabla~\ref{weightedRating}.
+A continuación, calculamos la media ponderada aplicando la fórmula (\ref{media_ponderada}). El cálculo se realiza sencillamente multiplicando las columnas \textit{similarityIndex} y \textit{rating} del dataframe \textit{topUsersRating}; y guardando el resultado en una nueva columna (\textit{weightedRating}). Ver la Tabla~\ref{weightedRating}.
 
 \begin{lstlisting}[language=python, basicstyle=\small]
 topUsersRating['weightedRating'] = topUsersRating['similarityIndex'] * topUsersRating['rating']
 \end{lstlisting} 
 
-Después se suman los valores de las columnas \textit{similarityIndex} y \textit{weightedRating}, y se agrupan por la columna \textit{movieId}. Por último, separamos el resultado en dos columnas: la columna \textit{sum\_similarityIndex} que representa la suma de los coeficientes de correlación Pearson, y la columna \textit{sum\_weightedRating} que representa la suma de las valoraciones de los usuarios por sus coeficientes. Ver el resultado en la Tabla~\ref{sums}.
+Después se suman los valores de las columnas \textit{similarityIndex} y \textit{weightedRating}, y se agrupan por la columna \textit{movieId}. Por último, separamos el resultado en dos columnas: la columna \textit{sum\_similarityIndex} que contiene las sumas de los coeficientes de correlación Pearson, y la columna \textit{sum\_weightedRating} que contiene las sumas de las valoraciones de los usuarios por los coeficientes. Ver la Tabla~\ref{sums}.
 
 \begin{lstlisting}[language=python, basicstyle=\small]
 tempTopUsersRating = topUsersRating.groupby('movieId').sum()[['similarityIndex', 'weightedRating']]
@@ -548,7 +548,7 @@ tempTopUsersRating.columns = ['sum_similarityIndex', 'sum_weightedRating']
 	\label{sums}
 \end{table}
 
-Por último, se divide el contenido de las columnas \textit{sum\_weightedRating} y \textit{sum\_weightedRating}. Como resultado de ello obtenemos los valores de la media ponderada que se almacenan en la columna \textit{weighted\_average\_score} de un nuevo dataframe llamado \textit{recommendation\_df}, junto con los identificadores de las películas de la columna \textit{movieId}. Ver el resultado en la Tabla~\ref{promedio_ponderado_resultado}.
+Por último, se divide el contenido de las columnas \textit{sum\_weightedRating} y \textit{sum\_weightedRating}. Como resultado de ello obtenemos los valores de la media ponderada que se almacenan en la columna \textit{weighted\_average\_score} de un nuevo dataframe que llamamos \textit{recommendation\_df}. Junto con los valores de la media ponderada también se almacenan los identificadores de las películas (movieId).
 
 \begin{lstlisting}[language=python, basicstyle=\small]
 recommendation_df = pd.DataFrame()
@@ -573,11 +573,11 @@ Vemos como queda organizado el contenido de \textit{recommendation\_df}:
 		2.860912 &        7 \\
 		\bottomrule
 	\end{tabular}
-	\caption{Media ponderada.}
+	\caption{Media ponderada por película.}
 	\label{promedio_ponderado_resultado}
 \end{table}
 
-Se ordenan los valores de la media ponderada de forma ascendente para mostrar como recomendaciones las 10 películas con mayor valor. Podemos observar estas recomendaciones en la Tabla~\ref{recomendaciones_finales}.
+Una vez calculados los valores de la media ponderada, se ordenan de forma ascendente para mostrar los primeros 10 valores más altos, o que es lo mismo, las primeras 10 películas que recomienda el sistema de recomendación al nuevo usuario. Podemos observar estas recomendaciones en la Tabla~\ref{recomendaciones_finales}.
 
 \begin{lstlisting}[language=python, basicstyle=\small]
 recommendation_df = recommendation_df.sort_values(by='weighted_average_score', ascending=False)
@@ -602,22 +602,21 @@ recommendation_df = movies_df.loc[movies_df['movieId'].isin(recommendation_df.he
 		173145 &   War for the Planet of the Apes &  2017 \\
 		\bottomrule
 	\end{tabular}
-	\caption{Las 10 mejores recomendaciones para el nuevo usuario.}
+	\caption{Las 10 mejores recomendaciones.}
 	\label{recomendaciones_finales}
 \end{table}
 
-% EVALUAR RESULTADOS
-
+A pesar de una estimación inicial que parecía poco realista y que podríamos llegar a intuir que el sistema podría no dar una buena recomendación a causa de que mis intereses no se parecían mucho a los de los otros usuarios, el sistema de recomendación des de mi punto de vista me ha dado una buena recomendación. Me gustan mucho las películas de superhéroes i de ciencia ficción. También me gustan bastante las películas de temática policíaca. Aunque el sistema de recomendación ha patinado un poco al recomendarme la película "Room, The", no le vería nunca.
 
 \section{Conclusiones}
 
-En este documento se ha descrito una sencilla implementación de un sistema de recomendación de filtrado colaborativo con el fin de predecir películas a un nuevo usuario según el interés de este. Paso a paso se describe el diseño del sistema de recomendación basado en la Correlación de Pearson. Las recomendaciones resultantes son aceptables, aunque seguramente el sistema de recomendación se podría mejorar con estrategias de hibridación, añadiendo técnicas basadas en contenido. No me ha parecido que en este sistema apareciera el problema del comienzo frío.
+En este documento se ha descrito una sencilla implementación en Python de un sistema de recomendación de filtrado colaborativo basado en usuarios, con el fin de recomendar películas a un nuevo usuario según sus intereses. Paso a paso se ha ido describiendo el desarrollo del sistema de recomendación, hasta obtener las recomendaciones que han sido buenas. Llegando a la conclusión que, aunque seguramente el sistema de recomendación se podría mejorar adoptando un enfoque híbrido y así aprovechar las ventajas de los sistemas colaborativos y los no colaborativos, contar con sistemas de recomendación que ayuden a los usuarios a buscar información y tomar decisiones en este entorno es un tema muy útil y de crucial importancia.
 
-Como valoración personal, he elegido la realización de hacer un ejercicio práctico para llevar a cabo la teoría aprendida durante el aprendizaje. Siempre me parece muy interesante llevar a la práctica conocimiento nuevo para acabar de entender y comprender como se puede llevar a la práctica cierto conocimiento y ver su utilidad. He escogido el filtrado colaborativo, porque me ha parecido el razonamiento más sencillo para llevar a la práctica. Sé que existen muchísimos sistemas de recomendación ya implementados, pero me pareció muy interesante desarrollar un sistema muy simple y básico. Además, nunca había intentado implementar un sistema de recomendación.
+Quiero destacar como valoración personal, que he elegido hacer un ejercicio práctico para llevar a cabo la teoría aprendida durante el aprendizaje teórico. Siempre me parece muy interesante llevar a la práctica conocimiento nuevo para ver su utilidad. He escogido un sistema de recomendación de filtrado colaborativo basado en usuarios, porque me ha parecido el adecuado y más sencillo de llevar a la práctica. 
 
-La implementación es muy sencilla, las primeras mejoras del sistema seria que se pudiera generar automáticamente un nuevo usuario, o que sea menos costoso y modularizar. Supongo que no sería muy difícil crear una UI, pequeñita. Que en este caso no se ha dado a cabo ya que me ha parecido más interesante y que también por falta de tiempo creo que no era asumible para mí.
+Sé que existen muchísimos sistemas de recomendación ya implementados, pero me pareció muy interesante desarrollar un sistema de recomendación propio, muy básico y simple de entender. Además, nunca había intentado implementar un sistema de recomendación en ningún tipo de lenguaje de programación. Decidí que fuera en Python, ya que es el lenguaje que uso más a diario y es uno de los lenguajes de programación más utilizados en el mundo, además uno de los mayores aliados para la Ciencia de Datos. 
 
-He decidido utilizar Python
+Se podrían consideran muchas mejoras en el sistema de recomendación desarrollado en esta práctica, seguramente las primeras que realizaría en un futuro con más tiempo, serían la automatización de la creación de un nuevo usuario y añadir la modularización.
 
 \renewcommand{\refname}{Bibliografía}
 \bibliographystyle{unsrt}
