@@ -12,19 +12,21 @@
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
 
-import util
 import os
 import os.path
+
 import numpy as np
-from game import Agent
-from game import Directions
-from keyboardAgents import KeyboardAgent
-import inference
+
 import busters
+import inference
+import util
+from keyboardAgents import KeyboardAgent
 
 
 class NullGraphics:
-    "Placeholder for graphics"
+    """
+    Placeholder for graphics
+    """
 
     def initialize(self, state, isBlue=False):
         pass
@@ -51,7 +53,9 @@ class KeyboardInference(inference.InferenceModule):
     """
 
     def initializeUniformly(self, gameState):
-        "Begin with a uniform distribution over ghost positions."
+        """
+        Begin with a uniform distribution over ghost positions.
+        """
         self.beliefs = util.Counter()
         for p in self.legalPositions: self.beliefs[p] = 1.0
         self.beliefs.normalize()
@@ -76,7 +80,9 @@ class KeyboardInference(inference.InferenceModule):
 
 
 class BustersAgent:
-    "An agent that tracks and displays its beliefs about ghost positions."
+    """
+    An agent that tracks and displays its beliefs about ghost positions.
+    """
 
     def __init__(self, index=0, inference="ExactInference", ghostAgents=None, observeEnable=True,
                  elapseTimeEnable=True):
@@ -86,7 +92,9 @@ class BustersAgent:
         self.elapseTimeEnable = elapseTimeEnable
 
     def registerInitialState(self, gameState):
-        "Initializes beliefs and inference modules"
+        """
+        Initializes beliefs and inference modules.
+        """
         import __main__
         self.display = __main__._display
         for inference in self.inferenceModules:
@@ -94,14 +102,19 @@ class BustersAgent:
         self.ghostBeliefs = [inf.getBeliefDistribution() for inf in self.inferenceModules]
         self.firstMove = True
 
-    def observationFunction(self, gameState):
-        "Removes the ghost states from the gameState"
+    @staticmethod
+    def observationFunction(gameState):
+        """
+        Removes the ghost states from the gameState.
+        """
         agents = gameState.data.agentStates
         gameState.data.agentStates = [agents[0]] + [None for i in range(1, len(agents))]
         return gameState
 
     def getAction(self, gameState):
-        "Updates beliefs, then chooses an action based on updated beliefs."
+        """
+        Updates beliefs, then chooses an action based on updated beliefs.
+        """
         # for index, inf in enumerate(self.inferenceModules):
         #    if not self.firstMove and self.elapseTimeEnable:
         #        inf.elapseTime(gameState)
@@ -113,12 +126,16 @@ class BustersAgent:
         return self.chooseAction(gameState)
 
     def chooseAction(self, gameState):
-        "By default, a BustersAgent just stops.  This should be overridden."
+        """
+        By default, a BustersAgent just stops.  This should be overridden.
+        """
         return Directions.STOP
 
 
 class BustersKeyboardAgent(BustersAgent, KeyboardAgent):
-    "An agent controlled by the keyboard that displays beliefs about ghost positions."
+    """
+    An agent controlled by the keyboard that displays beliefs about ghost positions.
+    """
 
     def __init__(self, index=0, inference="KeyboardInference", ghostAgents=None):
         KeyboardAgent.__init__(self, index)
@@ -132,9 +149,8 @@ class BustersKeyboardAgent(BustersAgent, KeyboardAgent):
 
 
 from distanceCalculator import Distancer
-from game import Actions
 from game import Directions
-import random, sys
+import random
 
 '''Random PacMan Agent'''
 
@@ -147,19 +163,21 @@ class RandomPAgent(BustersAgent):
 
     ''' Example of counting something'''
 
-    def countFood(self, gameState):
+    @staticmethod
+    def countFood(gameState):
         food = 0
         for width in gameState.data.food:
             for height in width:
-                if (height == True):
+                if height is True:
                     food = food + 1
         return food
 
     ''' Print the layout'''
 
-    def printGrid(self, gameState):
+    @staticmethod
+    def printGrid(gameState):
         table = ""
-        ##print(gameState.data.layout) ## Print by terminal
+        # print(gameState.data.layout) # Print by terminal
         for x in range(gameState.data.layout.width):
             for y in range(gameState.data.layout.height):
                 food, walls = gameState.data.food, gameState.data.layout.walls
@@ -169,7 +187,7 @@ class RandomPAgent(BustersAgent):
 
     def chooseAction(self, gameState):
         move = Directions.STOP
-        legal = gameState.getLegalActions(0)  ##Legal position from the pacman
+        legal = gameState.getLegalActions(0)  # Legal position from the pacman
         move_random = random.randint(0, 3)
         if (move_random == 0) and Directions.WEST in legal:  move = Directions.WEST
         if (move_random == 1) and Directions.EAST in legal: move = Directions.EAST
@@ -179,10 +197,14 @@ class RandomPAgent(BustersAgent):
 
 
 class GreedyBustersAgent(BustersAgent):
-    "An agent that charges the closest ghost."
+    """
+    An agent that charges the closest ghost.
+    """
 
     def registerInitialState(self, gameState):
-        "Pre-computes the distance between every two points."
+        """
+        Pre-computes the distance between every two points.
+        """
         BustersAgent.registerInitialState(self, gameState)
         self.distancer = Distancer(gameState.data.layout, False)
 
@@ -596,6 +618,7 @@ class RLAgent(BustersAgent):
           You should do your Q-Value update here
         """
         reward = reward + self.getReward(state, nextState)  # TODO
+
         print "Started in state:"
         self.printInfo(state)
         print "Took action: ", action
@@ -622,13 +645,16 @@ class RLAgent(BustersAgent):
         else:
             self.q_table[position][action_column] = (1 - self.alpha) * self.q_table[position][
                 action_column] + self.alpha * sample
-            print self.q_table
         #################################################################################################
 
     def getPolicy(self, state):
-        "Return the best action in the qtable for a given state"
+        """
+        Return the best action in the qtable for a given state.
+        """
         return self.computeActionFromQValues(state)
 
     def getValue(self, state):
-        "Return the highest q value for a given state"
+        """
+        Return the highest q value for a given state.
+        """
         return self.computeValueFromQValues(state)
