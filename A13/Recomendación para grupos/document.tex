@@ -111,7 +111,7 @@ Una vez descargado el conjunto de datos podemos ver que está contenido en los a
 
 Con la finalidad de mejorar las recomendaciones del sistema de recomendación, realizaremos un seguido de transformaciones en el conjunto de datos. Para empezar, cargamos los archivos \textit{movies.csv} y \textit{ratings.csv} dentro de un dataframe (ver Definición~\ref{dataframe}) con el uso de la librería pandas~\cite{pandas} de Python. Se ha decidido trabajar con esta librería porqué permite leer y escribir fácilmente ficheros en formato CSV, acceder a los datos mediante índices o nombres para filas y columnas, ofrece métodos para reordenar, dividir y combinar conjuntos de datos, etc. y todo ello de forma muy eficiente.
 
-\begin{lstlisting}[language=python, basicstyle=\small]
+\begin{lstlisting}[language=python, basicstyle=\footnotesize, belowskip=-0.5 \baselineskip]
 movies_df = pd.read_csv('dataset/movies.csv')
 ratings_df = pd.read_csv('dataset/ratings.csv')
 \end{lstlisting}
@@ -144,7 +144,7 @@ Observando la Tabla~\ref{movies_df}, vemos que cada película tiene un único id
 
 \newpage
 
-\begin{lstlisting}[language=python, basicstyle=\small]
+\begin{lstlisting}[language=python, basicstyle=\footnotesize, belowskip=-0.5 \baselineskip]
 regular_expression = r'\((.*?)\)'
 movies_df['year'] = movies_df.title.str.lower().str.extract(regular_expression)
 movies_df['title'] = movies_df.title.str.replace(regular_expression, '', regex=True)
@@ -182,7 +182,7 @@ Vemos el resultado:
 
 Ahora, miramos el contenido de \textit{ratings\_df} para ver cómo ha quedado organizado. Pero antes, eliminamos la columna \textit{timestamp}, porqué tampoco la tendremos en cuenta más adelante en el sistema de recomendación.
 
-\begin{lstlisting}[language=python, basicstyle=\small]
+\begin{lstlisting}[language=python, basicstyle=\footnotesize, belowskip=-0.5 \baselineskip]
 ratings_df = ratings_df.drop('timestamp', 1)
 \end{lstlisting}
 
@@ -234,7 +234,7 @@ El objetivo de este sistema de recomendación es recomendar 10 películas a un n
 
 Afín de seguir la estrategia anterior, comenzamos creando un nuevo usuario a quien recomendar películas. Para ello, hemos creado el archivo \textit{new\_user.csv} dentro de la carpeta \textit{dataset}, y le hemos añadido los títulos de 100 películas elegidas aleatoriamente del conjunto de datos con una nueva valoración, que, en este caso, he valorado según mi criterio. El archivo textit{new\_user.csv} se puede modificar como se desee para realizar tantas recomendaciones como se quiera, solo debemos asegurarnos de escribir bien los títulos de las películas, igual que aparecen en el archivo \textit{dataset/movies.csv}, y que valoramos las películas con un valor entre 1 y 5 estrellas. En la Figura~\ref{new_user}, podemos observar cómo se organiza parte del contenido del archivo \textit{new\_user.csv}, y que cargamos en un nuevo dataframe que nombramos \textit{user\_df}.
 
-\begin{lstlisting}[language=python, basicstyle=\small]
+\begin{lstlisting}[language=python, basicstyle=\footnotesize, belowskip=-0.5 \baselineskip]
 user_df = pd.read_csv('dataset/new_user.csv')
 \end{lstlisting}
 
@@ -247,7 +247,7 @@ user_df = pd.read_csv('dataset/new_user.csv')
 
 Después de crear un nuevo dataframe con los datos del nuevo usuario, extraemos los títulos de las películas del conjunto de datos que el nuevo usuario haya visto, los guardamos en la variable \textit{titles}, y los unimos a los datos del nuevo usuario almacenados en el dataframe \textit{user\_df}. En este punto para ahorrar un poco de espacio en memoria, aprovechamos a eliminar la columna \textit{year} de \textit{user\_df}, ya que no se utilizará más adelante en el sistema de recomendación.
 
-\begin{lstlisting}[language=python, basicstyle=\small]
+\begin{lstlisting}[language=python, basicstyle=\footnotesize, belowskip=-0.5 \baselineskip]
 titles = movies_df[movies_df['title'].isin(user_df['title'].tolist())]
 user_df = pd.merge(titles, user_df)
 user_df = user_df.drop('year', 1)
@@ -281,7 +281,7 @@ Observando la Tabla~\ref{user_df}, vemos que cada fila del dataframe \textit{use
 
 Siguiendo con la estrategia y una vez añadidos los títulos de las películas a los datos del nuevo usuario, podemos obtener todos los usuarios que hayan visto las mismas películas, que además agruparemos por su identificador de usuario (userId) con el método \textit{groupby}. En la Tabla~\ref{user_525}, se observan todas las películas valoradas por uno de los usuarios, concretamente las películas valoradas por el usuario 525.
 
-\begin{lstlisting}[language=python, basicstyle=\small]
+\begin{lstlisting}[language=python, basicstyle=\footnotesize, belowskip=-0.5 \baselineskip]
 movies = ratings_df[ratings_df['movieId'].isin(user_df['movieId'].tolist())]
 users = movies.groupby(['userId'])
 \end{lstlisting}
@@ -314,7 +314,7 @@ users = movies.groupby(['userId'])
 
 Vemos que en total el usuario 525 ha valorado 14 películas, 12 de las cuales no han sido valoradas por el nuevo usuario (ver Tabla~\ref{user_df}). Este hecho podría entorpecer la predicción de las recomendaciones, así que, para una mejor predicción, ordenaremos a los usuarios de tal forma que los que compartan la mayor cantidad de películas tengan más prioridad (usuarios comunes).
 
-\begin{lstlisting}[language=python, basicstyle=\small]
+\begin{lstlisting}[language=python, basicstyle=\footnotesize, belowskip=-0.5 \baselineskip]
 common_users = sorted(users, key=lambda x: len(x[1]), reverse=True)
 \end{lstlisting}
 
@@ -343,7 +343,7 @@ En estadística un estadístico muestral es una medida cuantitativa, derivada de
 
 A continuación, mostramos el código para calcular las similitudes entre los usuarios que se basa en los coeficientes de correlación Pearson. Los coeficientes los almacenaremos en un diccionario que llamaremos \textit{pearsonCorrelationDict}, donde las claves serán los identificadores de los usuarios y los valores de cada clave serán los coeficientes. Elegimos un subconjunto de usuarios (\textit{usersSubset}) para realizar menos iteraciones y no añadir demasiado sobrecoste computacional. El subconjunto de usuarios está formado por 100 usuarios.
 
-\begin{lstlisting}[language=python, basicstyle=\small]
+\begin{lstlisting}[language=python, basicstyle=\footnotesize]
 usersSubset = common_users[0:100]	
 pearsonCorrelationDict = {}
 
@@ -363,9 +363,9 @@ for id, group in usersSubset:
 	tempUserList = user['rating'].tolist()
 	
 	# Calculate the Pearson Correlation between the current user and new user
-	Uxx = sum([i ** 2 for i in tempRatingList])-pow(sum(tempRatingList), 2) / float(nRatings)
-	Uyy = sum([i ** 2 for i in tempUserList])-pow(sum(tempUserList), 2) / float(nRatings)
-	Uxy = sum(i * j for i, j in zip(tempRatingList, tempUserList))-sum(tempRatingList) * sum(tempUserList) / float(nRatings)
+	Uxx = sum([i ** 2 for i in tempRatingList]) - pow(sum(tempRatingList), 2) / float(nRatings)
+	Uyy = sum([i ** 2 for i in tempUserList]) - pow(sum(tempUserList), 2) / float(nRatings)
+	Uxy = sum(i * j for i, j in zip(tempRatingList, tempUserList)) - sum(tempRatingList) * sum(tempUserList) / float(nRatings)
 	
 	# If the denominator is nonzero, then we divide, otherwise the correlation is 0
 	if Uxx != 0 and Uyy != 0:
@@ -376,26 +376,22 @@ for id, group in usersSubset:
 
 Inicialmente en cada iteración, se ordenan los datos de cada usuario instanciado y los datos del nuevo usuario de la misma manera, para que los valores no se mezclen más adelante. Después se obtiene el número de valoraciones del usuario instanciado y se obtienen las valoraciones en común de este con el nuevo usuario, y todo se almacena en una lista temporal llamada \textit{tempRatingList}. Guardamos también en una lista temporal las valoraciones del usuario instanciado (\textit{tempUserList}). 
 
-\newpage 
+En definitiva, la finalidad de esta parte del código es calcular los coeficientes de correlación Pearson de cada usuario instanciado con el nuevo usuario basándonos en la fórmula (\ref{formula}), siempre comprobando que el dominador sea diferente a cero, sino el valor del coeficiente será 0. El contenido del diccionario \textit{pearsonCorrelationDict} después de realizar todas las iteraciones lo podemos ver en la página siguiente.
 
-En definitiva, la finalidad de esta parte del código es calcular los coeficientes de correlación Pearson de cada usuario instanciado con el nuevo usuario basándonos en la fórmula (\ref{formula}), siempre comprobando que el dominador sea diferente a cero, sino el valor del coeficiente será 0. El contenido del diccionario \textit{pearsonCorrelationDict} después de realizar todas las iteraciones es el siguiente:
+\newpage
 
-\begin{lstlisting}[language=bash, basicstyle=\small]
+\begin{lstlisting}[language=bash, basicstyle=\footnotesize, belowskip=-0.5 \baselineskip]
 dict_items([(414, 0.1710335374313876), (599, 0.40123525382704545), (6, 0.20329349941761546), (474, 0.21044663004441924), (274, 0.3530769675354643), (68, 0.33059489678211385), (608, 0.3260682075724168), (182, -0.23109387695394956), (19, 0.3133595303614617), (307, -0.18843150346003273), (91, 0.31180055592445977), (314, -0.1855577860558229), (380, 0.45012727283065757), (84, 0.012277750762966397), (117, -0.06953551887224728), (480, 0.16458728710301657), (217, 0.3252127201443157), (483, -0.16673896789941262), (372, 0.05020839625891806), (470, 0.32705689114535186), (489, -0.025392998342644958), (600, 0.042693983860009506), (240, 0.05131981034870924), (337, 0.3214285714285713), (448, 0.3145474121592105), (559, 0.17567351114860863), (602, -0.01953661662911384), (603, -0.12466125165644129), (604, -0.11070047639148746), (226, -0.08878401871687391), (43, -0.4295675016629953), (57, 0.05739773181955021), (160, -0.23053561726821561), (181, -0.025450425803285343), (411, 0.4184472097595221), (492, 0.009531160645787254), (524, 0.554930806561758), (45, 0.38256520195621246), (58, 0.06698696164390111), (109, -0.08767933833518694), (288, 0.040138052643118996), (304, -0.05079155413724917), (438, 0.1689463508123878), (592, 0.06429719695335717), (597, -0.04354691441125118), (40, -0.046609537669447546), (64, 0.027500104500595552), (446, -0.29551933110701833), (501, -0.021239769762143604), (590, 0.1779059797601214), (191, -0.5019578060538685), (219, 0.48620274802831803), (284, -0.00550473542118167), (353, 0.20638197410277853), (386, -0.1111123018786146), (140, -0.08363570955493667), (357, -0.009026976808426818), (373, -0.13235807087846027), (42, -0.010032434901514608), (136, -0.1711753075974906), (177, 0.1690569419933152), (179, 0.09896799408051585), (249, 0.25782317138405986), (330, -0.0750008147037369), (368, 0.2405974233356921), (437, 0.04624821484746095), (477, 0.31049173032627525), (594, 0.008390572815346994), (18, 0.019351013185103308), (103, -0.003498129001342704), (112, 0.38778864063592566), (385, 0.5296480205051889), (387, 0.43198485996958375), (425, 0.09288282368076137), (541, 0.25728140367086977), (566, 0.0679837639353997), (584, 0.573224999318389), (32, -0.04999999999999922), (235, -0.30774536098405614), (266, 0.177355756021643), (391, -0.3687156994355351), (428, -0.24008629652200658), (458, 0.0843349010400103), (469, 0.10400998543792594), (555, -0.006953000128056482), (570, 0.2575275846563296), (580, 0.31742024784266926), (94, 0.5774257546144353), (144, -0.25560087159134015), (294, 0.4777456720827587), (318, -0.40396888282756127), (323, 0.2786429232355919), (381, 0.07479684684631624), (453, 0.0), (486, 0.3959797974644654), (534, 0.23281019568466926), (588, -0.16115829864721526), (606, -0.4177121530460993), (82, 0.3263157894736842), (121, -0.1532100435348196)])
 \end{lstlisting}
 
-Aunque hemos incluido los usuarios más comunes a la hora de calcular la similitud entre usuarios, vemos que la estimación no es muy realista, los valores de los coeficientes son bajos. Puede que el valor de iteraciones límite determinado en función de los datos disponibles y de su robustez no sea el adecuado. Esto puede deberse a que, para algunas películas, no haya suficientes usuarios que las hayan valorado. A pesar de esta estimación se sigue con la construcción del sistema de recomendación y guardamos el contenido del diccionario \textit{pearsonCorrelationDict}, para una mejor visualización, en un nuevo dataframe que llamaremos \textit{pearson\_df}. El nuevo dataframe tiene dos columnas, la columna \textit{similarityIndex} que contiene los coeficientes de correlación Pearson y la columna \textit{userId} que contiene los identificadores de los usuarios.
+Aunque hemos incluido los usuarios más comunes a la hora de calcular la similitud entre usuarios, vemos que la estimación no es muy realista, los valores de los coeficientes son bajos. Puede que el valor de iteraciones límite determinado en función de los datos disponibles y de su robustez no sea el adecuado. Esto puede deberse a que, para algunas películas, no haya suficientes usuarios que las hayan valorado. A pesar de esta estimación se sigue con la construcción del sistema de recomendación y guardamos el contenido del diccionario \textit{pearsonCorrelationDict}, para una mejor visualización, en un nuevo dataframe que llamaremos \textit{pearson\_df}. El nuevo dataframe tiene dos columnas, la columna \textit{similarityIndex} que contiene los coeficientes de correlación Pearson y la columna \textit{userId} que contiene los identificadores de los usuarios. Ver Tabla~\ref{pearson_df}.
 
-\begin{lstlisting}[language=python, basicstyle=\small]
+\begin{lstlisting}[language=python, basicstyle=\footnotesize, belowskip=-0.5 \baselineskip]
 pearson_df = pd.DataFrame.from_dict(pearsonCorrelationDict, orient='index')
 pearson_df.columns = ['similarityIndex']
 pearson_df['userId'] = pearson_df.index
 pearson_df.index = range(len(pearson_df))
 \end{lstlisting}
-
-\newpage
-
-Así queda organizado el contenido en \textit{pearson\_df}:
 
 \begin{table}[H]
 	\centering
@@ -424,7 +420,7 @@ Así queda organizado el contenido en \textit{pearson\_df}:
 
 Como tenemos ordenado el conjunto de datos de tal forma que los usuarios que comparten la mayor cantidad de películas tienen más prioridad, podemos realizar una selección de vecindario. La selección de vecindario o la selección de los $K$ vecinos más cercanos, es la aproximación más común para seleccionar los $K$ usuarios más similares de un nuevo usuario. $K$ es el número de vecinos que vamos a seleccionar, en teoría cuantos más vecinos seleccionemos para nuestro vecindario mejores recomendaciones realizará el sistema de recomendación. Porqué aplicando una selección de vecindario conseguiremos penalizar aquellas situaciones donde el cálculo de la similitud entre los usuarios haya obtenido pocas valoraciones en común, como parece ser que hemos observado en la sección anterior. En este caso, seleccionamos el valor de $K$ igual a 50. Los 50 usuarios seleccionados son ordenados por sus coeficientes de forma ascendente, así en las primeras posiciones tendremos los usuarios más parecidos al nuevo usuario.
 
-\begin{lstlisting}[language=python, basicstyle=\small]
+\begin{lstlisting}[language=python, basicstyle=\footnotesize, belowskip=-0.5 \baselineskip]
 topUsers = pearson_df.sort_values(by='similarityIndex', ascending=False)[0:50]
 \end{lstlisting}
 
@@ -462,9 +458,10 @@ La media ponderada se calcula aplicando la siguiente fórmula:
 
 A fin de calcular la media ponderada, primero debemos unir las valoraciones de todas las películas del dataframe \textit{ratings\_df} con los usuarios más similares al nuevo usuario (\textit{topUsers}). Guardamos el resultado de la unión en un nuevo dataframe que llamamos \textit{topUsersRating}. A la hora de realizar esta unión usamos la función \textit{merge} de la librería pandas, que nos permite realizar la unión de los dos dataframes (\textit{ratings\_df} y \textit{topUsersRating}) sobre las columnas \textit{userId}, considerando solo las filas con etiquetas comunes (\textit{inner}). 
 
-\begin{lstlisting}[language=python, basicstyle=\small]
-topUsersRating = topUsers.merge(ratings_df, left_on='userId', right_on='userId', 
-	how='inner')
+\newpage
+
+\begin{lstlisting}[language=python, basicstyle=\footnotesize]
+topUsersRating = topUsers.merge(ratings_df, left_on='userId', right_on='userId', how='inner')
 \end{lstlisting}
 
 Vemos como queda organizado el contenido de \textit{topUsersRating}:
@@ -491,18 +488,20 @@ Vemos como queda organizado el contenido de \textit{topUsersRating}:
 	\label{ratings_similares}
 \end{table}
 
-A continuación, calculamos la media ponderada aplicando la fórmula (\ref{media_ponderada}). El cálculo se realiza sencillamente multiplicando las columnas \textit{similarityIndex} y \textit{rating} del dataframe \textit{topUsersRating}; y guardando el resultado en una nueva columna (\textit{weightedRating}). Ver la Tabla~\ref{weightedRating}.
+A continuación, calculamos la media ponderada aplicando la fórmula (\ref{media_ponderada}). El cálculo se realiza sencillamente multiplicando las columnas \textit{similarityIndex} y \textit{rating} del dataframe \textit{topUsersRating}; y guardando el resultado en una nueva columna (\textit{weightedRating}). 
 
-\begin{lstlisting}[language=python, basicstyle=\small]
+\begin{lstlisting}[language=python, basicstyle=\footnotesize, belowskip=-0.5 \baselineskip]
 topUsersRating['weightedRating'] = topUsersRating['similarityIndex'] * topUsersRating['rating']
 \end{lstlisting} 
 
-Después se suman los valores de las columnas \textit{similarityIndex} y \textit{weightedRating}, y se agrupan por la columna \textit{movieId}. Por último, separamos el resultado en dos columnas: la columna \textit{sum\_similarityIndex} que contiene las sumas de los coeficientes de correlación Pearson, y la columna \textit{sum\_weightedRating} que contiene las sumas de las valoraciones de los usuarios por los coeficientes. Ver la Tabla~\ref{sums}.
+Después se suman los valores de las columnas \textit{similarityIndex} y \textit{weightedRating}, y se agrupan por la columna \textit{movieId}. Por último, separamos el resultado en dos columnas: la columna \textit{sum\_similarityIndex} que contiene las sumas de los coeficientes de correlación Pearson, y la columna \textit{sum\_weightedRating} que contiene las sumas de las valoraciones de los usuarios por los coeficientes. Ver la Tabla~\ref{sums} de la página siguiente.
 
-\begin{lstlisting}[language=python, basicstyle=\small]
+\begin{lstlisting}[language=python, basicstyle=\footnotesize]
 tempTopUsersRating = topUsersRating.groupby('movieId').sum()[['similarityIndex', 'weightedRating']]
 tempTopUsersRating.columns = ['sum_similarityIndex', 'sum_weightedRating']
 \end{lstlisting} 
+
+Vemos el contenido de la columna \textit{weightedRating}:
 
 \begin{table}[H]
 	\centering
@@ -525,6 +524,10 @@ tempTopUsersRating.columns = ['sum_similarityIndex', 'sum_weightedRating']
 	\caption{Multiplicación de las columnas \textit{similarityIndex} y \textit{rating}.}
 	\label{weightedRating}
 \end{table}
+
+\newpage
+
+Vemos el contenido de las columnas \textit{sum\_similarityIndex} y textit{sum\_weightedRating}:
 
 \begin{table}[H]
 	\centering
@@ -550,9 +553,9 @@ tempTopUsersRating.columns = ['sum_similarityIndex', 'sum_weightedRating']
 
 Por último, se divide el contenido de las columnas \textit{sum\_weightedRating} y \textit{sum\_weightedRating}. Como resultado de ello obtenemos los valores de la media ponderada que se almacenan en la columna \textit{weighted\_average\_score} de un nuevo dataframe que llamamos \textit{recommendation\_df}. Junto con los valores de la media ponderada también se almacenan los identificadores de las películas (movieId).
 
-\begin{lstlisting}[language=python, basicstyle=\small]
+\begin{lstlisting}[language=python, basicstyle=\footnotesize]
 recommendation_df = pd.DataFrame()
-recommendation_df['weighted_average_score'] = tempTopUsersRating['sum_weightedRating']/tempTopUsersRating['sum_similarityIndex']
+recommendation_df['weighted_average_score'] = tempTopUsersRating['sum_weightedRating'] / tempTopUsersRating['sum_similarityIndex']
 recommendation_df['movieId'] = tempTopUsersRating.index
 \end{lstlisting}
 
@@ -577,9 +580,9 @@ Vemos como queda organizado el contenido de \textit{recommendation\_df}:
 	\label{promedio_ponderado_resultado}
 \end{table}
 
-Una vez calculados los valores de la media ponderada, se ordenan de forma ascendente para mostrar los primeros 10 valores más altos, o que es lo mismo, las primeras 10 películas que recomienda el sistema de recomendación al nuevo usuario. Podemos observar estas recomendaciones en la Tabla~\ref{recomendaciones_finales}.
+Una vez calculados los valores de la media ponderada, se ordenan de forma ascendente para mostrar los primeros 10 valores más altos, o que es lo mismo, las primeras 10 películas que recomienda el sistema de recomendación al nuevo usuario. Podemos observar estas recomendaciones en la Tabla~\ref{recomendaciones_finales} de la página siguiente.
 
-\begin{lstlisting}[language=python, basicstyle=\small]
+\begin{lstlisting}[language=python, basicstyle=\footnotesize, belowskip=-0.5 \baselineskip]
 recommendation_df = recommendation_df.sort_values(by='weighted_average_score', ascending=False)
 recommendation_df = movies_df.loc[movies_df['movieId'].isin(recommendation_df.head(10)['movieId'].tolist())]
 \end{lstlisting}
