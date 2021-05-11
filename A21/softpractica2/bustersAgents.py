@@ -238,12 +238,10 @@ class RLAgent(BustersAgent):
 	# self.gamma y self.epsilon.
 	#
 	#################################################################################################
-        #self.nRowsQTable =  gameState.data.layout.width*gameState.data.layout.height
         self.nRowsQTable = 16
         self.alpha = 0.2
         self.gamma = 0.8
         self.epsilon = 0.05
-        self.cell_registry = np.zeros((gameState.data.layout.width, gameState.data.layout.height))
         #################################################################################################
         self.actions = {"North": 0, "East": 1, "South": 2, "West": 3, "Stop": 4, "None": 4}
         self.nColumnsQTable = 5
@@ -252,7 +250,7 @@ class RLAgent(BustersAgent):
             self.q_table = self.readQtable()
         else:
             self.table_file = open("qtable.txt", "w")
-            self.q_table = (np.ones((self.nRowsQTable, self.nColumnsQTable))*10).tolist()
+            self.q_table = (np.ones((self.nRowsQTable, self.nColumnsQTable))).tolist()
             self.writeQtable()
         
     ''' Example of counting something'''
