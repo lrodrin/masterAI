@@ -240,8 +240,8 @@ class RLAgent(BustersAgent):
 	#################################################################################################
         #self.nRowsQTable =  gameState.data.layout.width*gameState.data.layout.height
         self.nRowsQTable = 16
-        self.alpha = 0.4
-        self.gamma = 0.9
+        self.alpha = 0.2
+        self.gamma = 0.8
         self.epsilon = 0.05
         self.cell_registry = np.zeros((gameState.data.layout.width, gameState.data.layout.height))
         #################################################################################################
