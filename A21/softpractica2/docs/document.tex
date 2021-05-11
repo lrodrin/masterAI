@@ -7,6 +7,7 @@
 \usepackage{float}
 \usepackage[table,xcdraw]{xcolor}
 \usepackage{graphicx}
+\usepackage{parcolumns}
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
@@ -17,15 +18,12 @@
 	backgroundcolor=\color{backcolour},   
 	commentstyle=\color{codegreen},
 	keywordstyle=\color{magenta},
-	%numberstyle=\tiny\color{codegray},
 	stringstyle=\color{codepurple},
 	basicstyle=\ttfamily\footnotesize,
 	breakatwhitespace=false,         
 	breaklines=true,                 
 	captionpos=b,                    
-	keepspaces=true,                 
-	%numbers=left,                    
-	%numbersep=5pt,                  
+	keepspaces=true,                                   
 	showspaces=false,                
 	showstringspaces=false,
 	showtabs=false,                  
@@ -46,40 +44,82 @@
 
 \section{Introducción}\label{introduccion}
 
-{\setlength{\parindent}{0cm}
 Esta práctica se apoya en una plataforma que recrea el videojuego clásico \href{1https://en.wikipedia.org/wiki/Pac-Man}{Pac-Man}. Utiliza una versión muy simplificada del juego para poder desarrollar un sistema de control automático y explorar algunas capacidades del Aprendizaje por Refuerzo aprendidas durante la asignatura. Especialmente, en esta práctica se aplica el algoritmo \textit{Q-learning} para construir un agente que funcione de forma automática en los tres mapas disponibles: \textit{lab1.lay, lab2.lay y lab3.lay}. El objetivo de este agente será maximizar la puntuación obtenida en una partida.
-}
 
 Asimismo, en este documento se describen las tareas realizadas, que se dividen en distintas fases (definición de los estados, función de refuerzo, construcción del agente y evaluación), y que se detallan a continuación.
 
 En la sección~\ref{estados} se justifica el conjunto de atributos elegido y su rango para la definición de los estados. Una vez se ha elegido el conjunto de atributos que se van a utilizar para representar cada estado, en la sección~\ref{refuerzo} se detalla el diseño de la función de refuerzo que vamos a emplear y que permitirá al agente lograr su objetivo de maximizar la puntuación obtenida en una partida. Después de esto, en la sección~\ref{codigo} se explica cómo se ha procedido a la construcción del agente con el fin de funcionar bien en todos los laberintos. Cuando se obtiene el agente, en la sección~\ref{resultados} se presentan los resultados de las puntuaciones que ha obtenido en los mapas proporcionados y se añaden comentarios sobre su comportamiento. Finalmente, en la parte final del documento se añaden las conclusiones (sección~\ref{conclusiones}) y un apéndice que contiene métodos auxiliares del código desarrollado en las secciones~\ref{refuerzo} y \ref{codigo}.
 
-%\begin{figure}[!htb]
-%	\minipage{0.32\textwidth}
-%	\includegraphics[width=\linewidth]{figures/lab1}
-%	\caption{A really Awesome Image}\label{fig:awesome_image1}
-%	\endminipage\hfill
-%	\minipage{0.32\textwidth}
-%	\includegraphics[width=\linewidth]{figures/lab2}
-%	\caption{A really Awesome Image}\label{fig:awesome_image2}
-%	\endminipage\hfill
-%	\minipage{0.32\textwidth}%
-%	\includegraphics[width=\linewidth]{figures/lab3}
-%	\caption{A really Awesome Image}\label{fig:awesome_image3}
-%	\endminipage
-%\end{figure}
-
 \section{Definición de los estados}\label{estados}
+
+En esta sección, a fin de definir los estados, hay que seleccionar unos valores adecuados para los parámetros: \textit{self.nRowsQTable, self.alpha, self.gamma y self.epsilon}. Primero intentaremos descubrir el valor del parámetro \textit{self.nRowsQTable}, o que es lo mismo, intentaremos descubrir cuántas filas debe tener la \textit{QTable}. Este valor dependerá de las características seleccionadas para representar los estados, ya que según estas características tendremos un número diferente de filas en nuestra \textit{QTable}. Nos fijamos en la información que nos proporciona la función \textit{printInfo}, concretamente en la información de los mapas \textit{Walls} y \textit{Food}. Según esta información y las acciones que puede ejecutar el agente, las características que se han elegido son:
+
+\begin{parcolumns}{2}
+	\colplacechunks
+	\colchunk{
+		\begin{itemize}
+			\item nearest\_ghost\_north, no\_wall
+			\item nearest\_ghost\_south, no\_wall
+			\item nearest\_ghost\_east, no\_wall
+			\item nearest\_ghost\_west, no\_wall
+			\item nearest\_ghost\_north, wall
+			\item nearest\_ghost\_south, wall
+			\item nearest\_ghost\_east, wall
+			\item nearest\_ghost\_west, wall
+		\end{itemize}}
+	\colchunk{
+		\begin{itemize}
+			\item nearest\_ghost\_north, no\_food
+			\item nearest\_ghost\_south, no\_food
+			\item nearest\_ghost\_east, no\_food
+			\item nearest\_ghost\_west, no\_food
+			\item nearest\_ghost\_north, food
+			\item nearest\_ghost\_south, food
+			\item nearest\_ghost\_east, food
+			\item nearest\_ghost\_west, food
+		\end{itemize}}
+\end{parcolumns}
+\vspace*{3mm}
+
+Vemos que se han elegido 16 características, así que el valor del parámetro \textit{self.nRowsQTable} será igual a 16. Modificaremos su valor en la función \textit{registerInitialState} de la clase \textit{RLAgent(BustersAgent)} del archivo \textit{bustersAgents.py}, como se puede observar a continuación:
 
 \begin{lstlisting}[language=python, basicstyle=\footnotesize]
 self.nRowsQTable = 16
-self.alpha = float(0.4)
-self.gamma = float(0.9)
-self.epsilon = float(1)
-self.actions = {"North": 0, "East": 1, "South": 2, "West": 3, "Stop": 4}	
 \end{lstlisting}
 
+A la hora de dar valor al resto de parámetros (\textit{self.alpha, self.gamma y self.epsilon}), entrenaremos a un agente \textit{Q-Learning} completamente aleatorio, con una tasa de aprendizaje determinada durante 50 episodios y observaremos si encuentra la política óptima. Para ello, haremos uso de la \href{https://poliformat.upv.es/portal/site/ESP_0_2835/tool/c07b745a-0cfd-44f0-a7a2-9bb22f80c3f7?panel=Main}{práctica 1} de la asignatura, pero esta vez solo usaremos 50 episodios para no tardar demasiado en encontrar la política óptima. Empezamos cambiando el valor predeterminado de aprendizaje (\textit{epsilon}) y de descuento (\textit{gamma}) a 0.05 y 0.8 respectivamente, copiándolos de la función \textit{\_\_init\_\_} de la clase \textit{PacmanQAgent(QLearningAgent)} del fichero \textit{qlearningAgents.py}, porqué me pareció una buena elección. Modificados los valores, entrenamos el agente con el siguiente comando:
 
+\begin{lstlisting}[language=bash, basicstyle=\footnotesize]
+python gridworld.py -a q -k 50 -n 0.2
+\end{lstlisting}
+
+Vemos el resultado con una tasa de ruido igual a 0.2:
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/50_0.05}
+	\caption{Interfaz del dominio GridWorld cuando \textit{epsilon} es igual a 0.05.}
+	\label{fig:50_0.05}
+\end{figure}
+
+Volvemos a ejecutar el mismo comando, pero con otro valor de aprendizaje. La Figura~\ref{fig:50_1} muestra el resultado de la ejecución con una tasa de aprendizaje igual a 1.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/50_1}
+	\caption{Interfaz del dominio GridWorld cuando \textit{epsilon} es igual a 1.}
+	\label{fig:50_1}
+\end{figure}
+
+Igual que descubrimos en la práctica 1, vemos que con un valor de aprendizaje menor (Figura~\ref{fig:50_0.05}), el agente no explora tanto y elige una ruta óptima mejor. En consecuencia modificaremos los valores de \textit{self.alpha, self.gamma y self.epsilon} en el archivo \textit{bustersAgents.py} como se puede observar a continuación:
+
+\begin{lstlisting}[language=python, basicstyle=\footnotesize]
+self.alpha = float(0.2)
+self.gamma = float(0.8)
+self.epsilon = float(0.05)
+\end{lstlisting}
+
+Con este procedimiento nos aseguramos de elegir unos valores adecuados para Pac-Man.
 
 \section{Función de refuerzo}\label{refuerzo}
 
@@ -177,6 +217,8 @@ características de los estados, donde muchos estados pueden compartir las misma
 \section{Resultados}\label{resultados}
 
 \section{Conclusiones}\label{conclusiones}
+
+Todo el contenido de esta práctica se puede encontrar en el repositorio personal de GitHub: \url{https://github.com/lrodrin/masterAI/tree/master/A21/softpractica2}.
 
 \section{Apéndice}\label{apendice}
 
