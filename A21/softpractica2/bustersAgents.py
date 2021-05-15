@@ -22,25 +22,34 @@ from keyboardAgents import KeyboardAgent
 import inference
 import busters
 
+
 class NullGraphics:
     "Placeholder for graphics"
-    def initialize(self, state, isBlue = False):
+
+    def initialize(self, state, isBlue=False):
         pass
+
     def update(self, state):
         pass
+
     def pause(self):
         pass
+
     def draw(self, state):
         pass
+
     def updateDistributions(self, dist):
         pass
+
     def finish(self):
         pass
+
 
 class KeyboardInference(inference.InferenceModule):
     """
     Basic inference module for use with the keyboard.
     """
+
     def initializeUniformly(self, gameState):
         "Begin with a uniform distribution over ghost positions."
         self.beliefs = util.Counter()
@@ -69,7 +78,8 @@ class KeyboardInference(inference.InferenceModule):
 class BustersAgent:
     "An agent that tracks and displays its beliefs about ghost positions."
 
-    def __init__( self, index = 0, inference = "ExactInference", ghostAgents = None, observeEnable = True, elapseTimeEnable = True):
+    def __init__(self, index=0, inference="ExactInference", ghostAgents=None, observeEnable=True,
+                 elapseTimeEnable=True):
         inferenceType = util.lookup(inference, globals())
         self.inferenceModules = [inferenceType(a) for a in ghostAgents]
         self.observeEnable = observeEnable
@@ -92,24 +102,25 @@ class BustersAgent:
 
     def getAction(self, gameState):
         "Updates beliefs, then chooses an action based on updated beliefs."
-        #for index, inf in enumerate(self.inferenceModules):
+        # for index, inf in enumerate(self.inferenceModules):
         #    if not self.firstMove and self.elapseTimeEnable:
         #        inf.elapseTime(gameState)
         #    self.firstMove = False
         #    if self.observeEnable:
         #        inf.observeState(gameState)
         #    self.ghostBeliefs[index] = inf.getBeliefDistribution()
-        #self.display.updateDistributions(self.ghostBeliefs)
+        # self.display.updateDistributions(self.ghostBeliefs)
         return self.chooseAction(gameState)
 
     def chooseAction(self, gameState):
         "By default, a BustersAgent just stops.  This should be overridden."
         return Directions.STOP
 
+
 class BustersKeyboardAgent(BustersAgent, KeyboardAgent):
     "An agent controlled by the keyboard that displays beliefs about ghost positions."
 
-    def __init__(self, index = 0, inference = "KeyboardInference", ghostAgents = None):
+    def __init__(self, index=0, inference="KeyboardInference", ghostAgents=None):
         KeyboardAgent.__init__(self, index)
         BustersAgent.__init__(self, index, inference, ghostAgents)
 
@@ -119,28 +130,33 @@ class BustersKeyboardAgent(BustersAgent, KeyboardAgent):
     def chooseAction(self, gameState):
         return KeyboardAgent.getAction(self, gameState)
 
+
 from distanceCalculator import Distancer
 from game import Actions
 from game import Directions
 import random, sys
 
 '''Random PacMan Agent'''
+
+
 class RandomPAgent(BustersAgent):
 
     def registerInitialState(self, gameState):
         BustersAgent.registerInitialState(self, gameState)
         self.distancer = Distancer(gameState.data.layout, False)
-        
+
     ''' Example of counting something'''
+
     def countFood(self, gameState):
         food = 0
         for width in gameState.data.food:
             for height in width:
-                if(height == True):
+                if (height == True):
                     food = food + 1
         return food
-    
-    ''' Print the layout'''  
+
+    ''' Print the layout'''
+
     def printGrid(self, gameState):
         table = ""
         ##print(gameState.data.layout) ## Print by terminal
@@ -150,17 +166,18 @@ class RandomPAgent(BustersAgent):
                 table = table + gameState.data._foodWallStr(food[x][y], walls[x][y]) + ","
         table = table[:-1]
         return table
-        
+
     def chooseAction(self, gameState):
         move = Directions.STOP
-        legal = gameState.getLegalActions(0) ##Legal position from the pacman
+        legal = gameState.getLegalActions(0)  ##Legal position from the pacman
         move_random = random.randint(0, 3)
-        if   ( move_random == 0 ) and Directions.WEST in legal:  move = Directions.WEST
-        if   ( move_random == 1 ) and Directions.EAST in legal: move = Directions.EAST
-        if   ( move_random == 2 ) and Directions.NORTH in legal:   move = Directions.NORTH
-        if   ( move_random == 3 ) and Directions.SOUTH in legal: move = Directions.SOUTH
+        if (move_random == 0) and Directions.WEST in legal:  move = Directions.WEST
+        if (move_random == 1) and Directions.EAST in legal: move = Directions.EAST
+        if (move_random == 2) and Directions.NORTH in legal:   move = Directions.NORTH
+        if (move_random == 3) and Directions.SOUTH in legal: move = Directions.SOUTH
         return move
-        
+
+
 class GreedyBustersAgent(BustersAgent):
     "An agent that charges the closest ghost."
 
@@ -202,8 +219,9 @@ class GreedyBustersAgent(BustersAgent):
         livingGhosts = gameState.getLivingGhosts()
         livingGhostPositionDistributions = \
             [beliefs for i, beliefs in enumerate(self.ghostBeliefs)
-             if livingGhosts[i+1]]
+             if livingGhosts[i + 1]]
         return Directions.EAST
+
 
 class RLAgent(BustersAgent):
 
@@ -252,13 +270,14 @@ class RLAgent(BustersAgent):
             self.table_file = open("qtable.txt", "w")
             self.q_table = (np.ones((self.nRowsQTable, self.nColumnsQTable))).tolist()
             self.writeQtable()
-        
+
     ''' Example of counting something'''
+
     def countFood(self, gameState):
         food = 0
         for width in gameState.data.food:
             for height in width:
-                if(height == True):
+                if (height == True):
                     food = food + 1
         return food
 
@@ -279,7 +298,8 @@ class RLAgent(BustersAgent):
         # Posicion de los fantasmas
         print "\tGhosts positions: ", gameState.getGhostPositions()
         # Direciones de los fantasmas
-        print "\tGhosts directions: ", [gameState.getGhostDirections().get(i) for i in range(0, gameState.getNumAgents() - 1)]
+        print "\tGhosts directions: ", [gameState.getGhostDirections().get(i) for i in
+                                        range(0, gameState.getNumAgents() - 1)]
         # Distancia de manhattan a los fantasmas
         print "\tGhosts distances: ", gameState.data.ghostDistances
         # Puntos de comida restantes
@@ -295,61 +315,6 @@ class RLAgent(BustersAgent):
         # Puntuacion
         print "\tScore: ", gameState.getScore()
 
-    def getMinumumIndex(self, distances):
-        return min(distances, key = lambda t: t[1])
-    
-    def getLivingGhostIndexDistances(self, gameState):
-
-         return [(i, distance) for i, (distance, living) in enumerate(zip(gameState.data.ghostDistances, gameState.getLivingGhosts()[1:])) if living]
-
-    def getManhattanDistance(self, pointa, pointb):
-        return abs(pointa[0]-pointb[0]) + abs(pointa[1]+pointb[1])
-    
-    def getDirection(self, pacman, ghost):
-
-        direction = []
-        if (pacman[1] - ghost[1]) != 0 and (pacman[1] - ghost[1]) > 0:
-            direction.append("South")
-        if (pacman[1] - ghost[1]) != 0 and (pacman[1] - ghost[1]) < 0:
-            direction.append("North")
-        if (pacman[0] - ghost[0]) != 0 and (pacman[0] - ghost[0]) > 0:
-            direction.append("West")
-        if (pacman[0] - ghost[0]) != 0 and (pacman[0] - ghost[0]) < 0:
-            direction.append("East")
-        return direction
-        
-    def getNearestGhostDirection(self, gameState):
-        pacman_position = gameState.getPacmanPosition()
-
-        living_ghosts_distances = self.getLivingGhostIndexDistances(gameState)
-        min_distance_ghost_index = self.getMinumumIndex(living_ghosts_distances)[0]
-
-        nearest_ghost_position = gameState.getGhostPositions()[min_distance_ghost_index]
-
-        pacman_ghost_direction = self.getDirection(pacman_position, nearest_ghost_position)
-
-        return pacman_ghost_direction, nearest_ghost_position
-
-
-    def directionIsBlocked(self, gameState, ghost_position):
-        walls = gameState.getWalls()
-        walls_arr = np.array(walls.data)
-        pacman_position = gameState.getPacmanPosition()
-        #print pacman_position
-        x_min = min(pacman_position[0], ghost_position[0])
-        x_max = max(pacman_position[0], ghost_position[0]) + 1
-        y_min = min(pacman_position[1], ghost_position[1])
-        if y_min < 3:
-            y_min = 3
-        y_max = max(pacman_position[1], ghost_position[1]) + 1
-        #print x_min, x_max, y_min, y_max
-        #print walls_arr
-        grid_beetween = walls_arr[x_min:x_max, y_min:y_max]
-        if len(grid_beetween) == 0:
-            return False
-        #print grid_beetween
-        return np.any(np.all(grid_beetween, axis=1)) or np.any(np.all(grid_beetween, axis=0))
-	
     def readQtable(self):
         "Read qtable from disc"
         table = self.table_file.readlines()
@@ -360,7 +325,7 @@ class RLAgent(BustersAgent):
             row = [float(x) for x in row]
             q_table.append(row)
 
-        return q_table       
+        return q_table
 
     def writeQtable(self):
         "Write qtable to disc"
@@ -369,7 +334,7 @@ class RLAgent(BustersAgent):
 
         for line in self.q_table:
             for item in line:
-                self.table_file.write(str(item)+" ")
+                self.table_file.write(str(item) + " ")
             self.table_file.write("\n")
 
     def computePosition(self, state):
@@ -398,12 +363,13 @@ class RLAgent(BustersAgent):
         #################################################################################################
         pacman_ghost_direction, ghost_position = self.getNearestGhostDirection(state)
         hasWall = self.directionIsBlocked(state, ghost_position)
-        #pacman_position = state.getPacmanPosition()
-        #return (pacman_position[0]-1)+(pacman_position[1]-1)*state.data.layout.width
+        # pacman_position = state.getPacmanPosition()
+        # return (pacman_position[0]-1)+(pacman_position[1]-1)*state.data.layout.width
         actions_value = 0
         for i, direction in enumerate(pacman_ghost_direction):
-            actions_value += min(self.actions[direction], 2) + i*(4)
-        return int(hasWall)*8+actions_value
+            actions_value += min(self.actions[direction], 2) + i * (4)
+        return int(hasWall) * 8 + actions_value
+        #################################################################################################
 
     def getQValue(self, state, action):
 
@@ -417,7 +383,6 @@ class RLAgent(BustersAgent):
 
         return self.q_table[position][action_column]
 
-
     def computeValueFromQValues(self, state):
         """
           Returns max_action Q(state,action)
@@ -426,8 +391,8 @@ class RLAgent(BustersAgent):
           terminal state, you should return a value of 0.0.
         """
         legalActions = state.getLegalActions(0)
-        if len(legalActions)==0:
-          return 0
+        if len(legalActions) == 0:
+            return 0
         return max(self.q_table[self.computePosition(state)])
 
     def computeActionFromQValues(self, state):
@@ -437,8 +402,8 @@ class RLAgent(BustersAgent):
           you should return None.
         """
         legalActions = state.getLegalActions(0)
-        if len(legalActions)==0:
-          return None
+        if len(legalActions) == 0:
+            return None
 
         best_actions = [legalActions[0]]
         best_value = self.getQValue(state, legalActions[0])
@@ -464,17 +429,13 @@ class RLAgent(BustersAgent):
         action = None
 
         if len(legalActions) == 0:
-             return action
+            return action
 
         flip = util.flipCoin(self.epsilon)
 
         if flip:
             return random.choice(legalActions)
         return self.getPolicy(state)
-
-    def getAliveGhostDistances(self, distances):
-
-        return list(filter(lambda d: d is not None,distances))
 
     def getReward(self, state, nextState):
         """
@@ -507,28 +468,29 @@ class RLAgent(BustersAgent):
         min_ghost_distances_actual_state = state.data.ghostDistances[min_distance_ghost_index_actual_State]
         number_ghost_actual_state = len(self.getAliveGhostDistances(state.data.ghostDistances))
         number_ghost_next_state = len(self.getAliveGhostDistances(nextState.data.ghostDistances))
-        actual_state_has_walls = self.directionIsBlocked(state, state.getGhostPositions()[min_distance_ghost_index_next_State])
-        next_state_has_walls = self.directionIsBlocked(nextState, nextState.getGhostPositions()[min_distance_ghost_index_next_State])
+        actual_state_has_walls = self.directionIsBlocked(state,
+                                                         state.getGhostPositions()[min_distance_ghost_index_next_State])
+        next_state_has_walls = self.directionIsBlocked(nextState, nextState.getGhostPositions()[
+            min_distance_ghost_index_next_State])
 
         if number_ghost_next_state < number_ghost_actual_state:
             reward += 100
-        print actual_state_has_walls
         if min_ghost_distance_next_state < min_ghost_distances_actual_state and not actual_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
             reward += 3
         elif min_ghost_distance_next_state > min_ghost_distances_actual_state and actual_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
             reward += 1
         elif min_ghost_distance_next_state < min_ghost_distances_actual_state and actual_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
             reward += -1
-        elif (min_ghost_distance_next_state > min_ghost_distances_actual_state and not actual_state_has_walls) or (min_ghost_distance_next_state == min_ghost_distances_actual_state and number_ghost_next_state == number_ghost_actual_state):
+        elif (min_ghost_distance_next_state > min_ghost_distances_actual_state and not actual_state_has_walls) or \
+                (min_ghost_distance_next_state == min_ghost_distances_actual_state and number_ghost_next_state == number_ghost_actual_state):
             reward += -min_ghost_distance_next_state
 
         if not actual_state_has_walls and next_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
             reward -= 4
         elif actual_state_has_walls and not next_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
             reward += 1
-	
-	#################################################################################################
-	return reward
+        #################################################################################################
+        return reward
 
     def update(self, state, action, nextState, reward):
         """
@@ -554,12 +516,14 @@ class RLAgent(BustersAgent):
         #################################################################################################
         state_position = self.computePosition(state)
         action_position = self.actions[action]
-        self.q_table[state_position][action_position] = (1-self.alpha) * self.q_table[state_position][action_position] + self.alpha * (reward + self.gamma * self.getValue(nextState))
-	    #################################################################################################
+        self.q_table[state_position][action_position] = (1 - self.alpha) * self.q_table[state_position][
+            action_position] + self.alpha * (reward + self.gamma * self.getValue(nextState))
+        #################################################################################################
         if nextState.isWin():
             # If a terminal state is reached
             self.writeQtable()
 
+        #################################################################################################
 
     def getPolicy(self, state):
         "Return the best action in the qtable for a given state"
@@ -569,3 +533,61 @@ class RLAgent(BustersAgent):
         "Return the highest q value for a given state"
         return self.computeValueFromQValues(state)
 
+    def getMinumumIndex(self, distances):
+        return min(distances, key=lambda t: t[1])
+
+    def getLivingGhostIndexDistances(self, gameState):
+
+        return [(i, distance) for i, (distance, living) in
+                enumerate(zip(gameState.data.ghostDistances, gameState.getLivingGhosts()[1:])) if living]
+
+    def getManhattanDistance(self, pointa, pointb):
+        return abs(pointa[0] - pointb[0]) + abs(pointa[1] + pointb[1])
+
+    def getDirection(self, pacman, ghost):
+
+        direction = []
+        if (pacman[1] - ghost[1]) != 0 and (pacman[1] - ghost[1]) > 0:
+            direction.append("South")
+        if (pacman[1] - ghost[1]) != 0 and (pacman[1] - ghost[1]) < 0:
+            direction.append("North")
+        if (pacman[0] - ghost[0]) != 0 and (pacman[0] - ghost[0]) > 0:
+            direction.append("West")
+        if (pacman[0] - ghost[0]) != 0 and (pacman[0] - ghost[0]) < 0:
+            direction.append("East")
+        return direction
+
+    def getNearestGhostDirection(self, gameState):
+        pacman_position = gameState.getPacmanPosition()
+
+        living_ghosts_distances = self.getLivingGhostIndexDistances(gameState)
+        min_distance_ghost_index = self.getMinumumIndex(living_ghosts_distances)[0]
+
+        nearest_ghost_position = gameState.getGhostPositions()[min_distance_ghost_index]
+
+        pacman_ghost_direction = self.getDirection(pacman_position, nearest_ghost_position)
+
+        return pacman_ghost_direction, nearest_ghost_position
+
+    def directionIsBlocked(self, gameState, ghost_position):
+        walls = gameState.getWalls()
+        walls_arr = np.array(walls.data)
+        pacman_position = gameState.getPacmanPosition()
+        # print pacman_position
+        x_min = min(pacman_position[0], ghost_position[0])
+        x_max = max(pacman_position[0], ghost_position[0]) + 1
+        y_min = min(pacman_position[1], ghost_position[1])
+        if y_min < 3:
+            y_min = 3
+        y_max = max(pacman_position[1], ghost_position[1]) + 1
+        # print x_min, x_max, y_min, y_max
+        # print walls_arr
+        grid_beetween = walls_arr[x_min:x_max, y_min:y_max]
+        if len(grid_beetween) == 0:
+            return False
+        # print grid_beetween
+        return np.any(np.all(grid_beetween, axis=1)) or np.any(np.all(grid_beetween, axis=0))
+
+    def getAliveGhostDistances(self, distances):
+
+        return list(filter(lambda d: d is not None, distances))
