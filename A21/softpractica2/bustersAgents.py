@@ -210,38 +210,38 @@ class RLAgent(BustersAgent):
     def registerInitialState(self, gameState):
         BustersAgent.registerInitialState(self, gameState)
         self.distancer = Distancer(gameState.data.layout, False)
-	###########################	INSERTA TU CODIGO AQUI  #########################################
-	#
-	# INSTRUCCIONES:
-	# 
-	# Dependiendo de las caracteristicas que hayamos seleccionado para representar los estados, 
-	# tendremos un numero diferente de filas en nuestra tabla Q. Por ejemplo, imagina que hemos seleccionado
-	# como caracteristicas de estado la direccion en la que se encuentra el fantasma mas cercano con respecto
-	# a pacman, y si hay una pared en esa direccion. La primera caracteristica tiene 4 posibles valores: el 
-	# fantasma esta encima de pacman, por debajo, a la izquierda o a la derecha. La segunda tiene solo dos: hay 
-	# una pared en esa direccion o no. El numero de combinaciones posibles seria de 8 y por lo tanto tendriamos 8 estados:
-	#
-	# nearest_ghost_up, no_wall
-	# nearest_ghost_down, no_wall
-	# nearest_ghost_right, no_wall
-	# nearest_ghost_left, no_wall
-	# nearest_ghost_up, wall
-	# nearest_ghost_down, wall
-	# nearest_ghost_right, wall
-	# nearest_ghost_left, wall
-	#
-	# Entonces, en este caso, estableceriamos que self.nRowsQTable = 8. Este es simplemente un ejemplo, 
-	# y es tarea del alumno seleccionar las caracteristicas que van a tener estos estados. Para ello, se puede utilizar
-	# la informacion que se imprime en printInfo. La idea es seleccionar unas caracteristicas que representen
-	# perfectamente en cada momento la situacion del juego, de forma que pacman pueda decidir que accion ejecutar
-	# a partir de esa informacion. Despues, hay que seleccionar unos valores adecuados para los parametros self.alpha, 
-	# self.gamma y self.epsilon.
-	#
-	#################################################################################################
+        ###########################	INSERTA TU CODIGO AQUI  #########################################
+        #
+        # INSTRUCCIONES:
+        #
+        # Dependiendo de las caracteristicas que hayamos seleccionado para representar los estados,
+        # tendremos un numero diferente de filas en nuestra tabla Q. Por ejemplo, imagina que hemos seleccionado
+        # como caracteristicas de estado la direccion en la que se encuentra el fantasma mas cercano con respecto
+        # a pacman, y si hay una pared en esa direccion. La primera caracteristica tiene 4 posibles valores: el
+        # fantasma esta encima de pacman, por debajo, a la izquierda o a la derecha. La segunda tiene solo dos: hay
+        # una pared en esa direccion o no. El numero de combinaciones posibles seria de 8 y por lo tanto tendriamos 8 estados:
+        #
+        # nearest_ghost_up, no_wall
+        # nearest_ghost_down, no_wall
+        # nearest_ghost_right, no_wall
+        # nearest_ghost_left, no_wall
+        # nearest_ghost_up, wall
+        # nearest_ghost_down, wall
+        # nearest_ghost_right, wall
+        # nearest_ghost_left, wall
+        #
+        # Entonces, en este caso, estableceriamos que self.nRowsQTable = 8. Este es simplemente un ejemplo,
+        # y es tarea del alumno seleccionar las caracteristicas que van a tener estos estados. Para ello, se puede utilizar
+        # la informacion que se imprime en printInfo. La idea es seleccionar unas caracteristicas que representen
+        # perfectamente en cada momento la situacion del juego, de forma que pacman pueda decidir que accion ejecutar
+        # a partir de esa informacion. Despues, hay que seleccionar unos valores adecuados para los parametros self.alpha,
+        # self.gamma y self.epsilon.
+        #
+        #################################################################################################
         self.nRowsQTable = 16
         self.alpha = 0.2
-        self.gamma = 0.8
-        self.epsilon = 0.05
+        self.gamma = 0.7
+        self.epsilon = 0.01
         #################################################################################################
         self.actions = {"North": 0, "East": 1, "South": 2, "West": 3, "Stop": 4, "None": 4}
         self.nColumnsQTable = 5
@@ -478,8 +478,8 @@ class RLAgent(BustersAgent):
 
     def getReward(self, state, nextState):
         """
-              Return a reward value based on the information of state and nextState
-            """
+        Return a reward value based on the information of state and nextState
+        """
         ###########################	INSERTA TU CODIGO AQUI  #########################################
         #
         # INSTRUCCIONES:
@@ -507,7 +507,6 @@ class RLAgent(BustersAgent):
         min_ghost_distances_actual_state = state.data.ghostDistances[min_distance_ghost_index_actual_State]
         number_ghost_actual_state = len(self.getAliveGhostDistances(state.data.ghostDistances))
         number_ghost_next_state = len(self.getAliveGhostDistances(nextState.data.ghostDistances))
-        pacman_ghost_direction, ghost_position = self.getNearestGhostDirection(state)
         actual_state_has_walls = self.directionIsBlocked(state, state.getGhostPositions()[min_distance_ghost_index_next_State])
         next_state_has_walls = self.directionIsBlocked(nextState, nextState.getGhostPositions()[min_distance_ghost_index_next_State])
 
@@ -521,29 +520,12 @@ class RLAgent(BustersAgent):
         elif min_ghost_distance_next_state < min_ghost_distances_actual_state and actual_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
             reward += -1
         elif (min_ghost_distance_next_state > min_ghost_distances_actual_state and not actual_state_has_walls) or (min_ghost_distance_next_state == min_ghost_distances_actual_state and number_ghost_next_state == number_ghost_actual_state):
-            print("PALO")
             reward += -min_ghost_distance_next_state
 
-        #if next_state_has_walls
-        #pacman_position_next_state = nextState.getPacmanPosition()
-        #reward -= self.cell_registry[pacman_position_next_state[0]][pacman_position_next_state[1]]
-
         if not actual_state_has_walls and next_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
-            print("PALO3")
             reward -= 4
         elif actual_state_has_walls and not next_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
-            print("PALO2")
             reward += 1
-
-        #if min_ghost_distance_next_state < min_ghost_distances_actual_state and number_ghost_next_state == number_ghost_actual_state:
-        #    reward += 1
-        #elif min_ghost_distance_next_state > min_ghost_distances_actual_state and number_ghost_next_state == number_ghost_actual_state:
-        #    reward -= -1
-
-        #if actual_state_has_walls and next_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
-            #reward -= 1
-        #if state.getPacmanPosition() == nextState.getPacmanPosition():
-            #reward -= 10
 	
 	#################################################################################################
 	return reward
