@@ -464,33 +464,32 @@ class RLAgent(BustersAgent):
         # distancia minima al fantasma en el siguiente estado
         min_position_ghost_next_state = min(next_state_ghost_position, key=lambda t: t[1])[0]
         # fantasma en el estado actual
-        number_ghost_actual_state = len(self.getGhostDistances(state.data.ghostDistances))
+        nghost_actual_state = len(self.getGhostDistances(state.data.ghostDistances))
         # fantasma en el estado siguiente
-        number_ghost_next_state = len(self.getGhostDistances(nextState.data.ghostDistances))
+        nghost_next_state = len(self.getGhostDistances(nextState.data.ghostDistances))
         # paredes en el estado actual
-        actual_state_has_walls = self.directionIsBlocked(state,
-                                                         state.getGhostPositions()[min_position_ghost_next_state])
+        actual_state_has_walls = self.directionIsBlocked(state, state.getGhostPositions()[min_position_ghost_next_state])
         # paredes en el estado siguiente
-        next_state_has_walls = self.directionIsBlocked(nextState,
-                                                       nextState.getGhostPositions()[min_position_ghost_next_state])
+        next_state_has_walls = self.directionIsBlocked(nextState, nextState.getGhostPositions()[min_position_ghost_next_state])
 
-        if number_ghost_next_state < number_ghost_actual_state:     # no fantasma en el siguiente estado
+        # no fantasma en el siguiente estado
+        if nghost_next_state < nghost_actual_state:
             reward += 100
 
         # fantasma en el siguiente estado y no paredes
-        if not actual_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
+        if not actual_state_has_walls and nghost_next_state == nghost_actual_state:
             reward += 3
         # fantasma en el siguiente y paredes
-        elif actual_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
+        elif actual_state_has_walls and nghost_next_state == nghost_actual_state:
             reward += -1
 
         # fantasma - paredes y en el estado siguiente hay paredes
         if not actual_state_has_walls and next_state_has_walls \
-                and number_ghost_next_state == number_ghost_actual_state:
+                and nghost_next_state == nghost_actual_state:
             reward -= 4
         # fantasma + paredes y en el estado siguiente no hay paredes
         elif actual_state_has_walls and not next_state_has_walls \
-                and number_ghost_next_state == number_ghost_actual_state:
+                and nghost_next_state == nghost_actual_state:
             reward += 1
 
         return reward
