@@ -52,7 +52,7 @@ En la sección~\ref{estados} se justifica el conjunto de atributos elegido y su 
 
 \section{Definición de los estados}\label{estados}
 
-En esta sección, a fin de definir los estados, hay que seleccionar unos valores adecuados para los parámetros: \textit{self.nRowsQTable, self.alpha, self.gamma y self.epsilon}. Primero intentaremos descubrir el valor del parámetro \textit{self.nRowsQTable}, o que es lo mismo, intentaremos descubrir cuántas filas debe tener la \textit{QTable}. Este valor dependerá de las características seleccionadas para representar los estados, ya que según estas características tendremos un número diferente de filas en nuestra \textit{QTable}. Nos fijamos en la información que nos proporciona la función \textit{printInfo}, concretamente en la información de los mapas \textit{Walls} y \textit{Food}. Según esta información y las acciones que puede ejecutar el agente, las características que se han elegido son:
+En esta sección, a fin de definir los estados, hay que seleccionar unos valores adecuados para los parámetros: \textit{self.nRowsQTable, self.alpha, self.gamma y self.epsilon}. Primero intentaremos descubrir el valor del parámetro \textit{self.nRowsQTable}, o que es lo mismo, intentaremos descubrir cuántas filas debe tener la \textit{QTable}. Este valor dependerá de las características seleccionadas para representar los estados, ya que según estas características tendremos un número diferente de filas en la \textit{QTable}. Nos fijamos en la información que nos proporciona la función \textit{printInfo}, concretamente en la información de los mapas \textit{Walls} y \textit{Food}. Según esta información (T/F) y de los movimientos que puede ejecutar el agente: north, east, south y west, las características elegidas son:
 
 \begin{parcolumns}{2}
 	\colplacechunks
@@ -81,47 +81,42 @@ En esta sección, a fin de definir los estados, hay que seleccionar unos valores
 \end{parcolumns}
 \vspace*{3mm}
 
-Vemos que se han elegido 16 características, así que el valor del parámetro \textit{self.nRowsQTable} será igual a 16. Modificaremos su valor en la función \textit{registerInitialState} de la clase \textit{RLAgent(BustersAgent)} del archivo \textit{bustersAgents.py}, como se puede observar a continuación:
+Se han elegido 16 características, de este modo el valor del parámetro \textit{self.nRowsQTable} tendrá que ser igual a 16. Adaptamos el valor de \textit{self.nRowsQTable}:
 
 \begin{lstlisting}[language=python, basicstyle=\footnotesize]
 self.nRowsQTable = 16
 \end{lstlisting}
 
-A la hora de dar valor al resto de parámetros (\textit{self.alpha, self.gamma y self.epsilon}), entrenaremos a un agente \textit{Q-Learning} completamente aleatorio, con una tasa de aprendizaje determinada durante 50 episodios y observaremos si encuentra la política óptima. Para ello, haremos uso de la \href{https://poliformat.upv.es/portal/site/ESP_0_2835/tool/c07b745a-0cfd-44f0-a7a2-9bb22f80c3f7?panel=Main}{práctica 1} de la asignatura, pero esta vez solo usaremos 50 episodios para no tardar demasiado en encontrar la política óptima. Empezamos cambiando el valor predeterminado de aprendizaje (\textit{epsilon}) y de descuento (\textit{gamma}) a 0.05 y 0.8 respectivamente, copiándolos de la función \textit{\_\_init\_\_} de la clase \textit{PacmanQAgent(QLearningAgent)} del fichero \textit{qlearningAgents.py}, porqué me pareció una buena elección. Modificados los valores, entrenamos el agente con el siguiente comando:
+También tenemos que adaptar los parámetros \textit{self.alpha, self.gamma y self.epsilon}. Pero primero realizamos una pequeña descripción de estos:
+
+\begin{itemize}
+	\item Alpha ($\alpha$). Este valor toma valores entre 0 y 1. Cuando este valor es 0, entonces no hay aprendizaje y siempre se utiliza el valor de $Q(s,a)$ inicial. Cuando este valor es 1, entonces el aprendizaje no conserva ningún porcentaje del valor de $Q(s,a)$. Es decir, si el valor $\alpha$ se acerca a 0, el valor de $Q(s,a)$ no variará mucho; y si el valor $\alpha$ se acerca a 1, el valor de $Q(s,a)$ variará mucho.
+	\item Gamma ($\gamma$). Este valor toma valores entre 0 y 1. Cuando este valor es 0, entonces el aprendizaje ignorará el valor dado por el modelo de aprendizaje y aprenderá solo con el valor de la recompensa. Cuando este valor es 1, entonces el aprendizaje utilizará el valor total dado por el modelo de aprendizaje.
+	\item Epsilon ($\epsilon$). Numera los pasos para disminuir el valor $\alpha$. El valor $\alpha$ se reducirá para cada 10 decisiones tomadas. Por ejemplo, si este valor es 0.01, se reduce 0.01 el valor de $\alpha$ por cada 10 decisiones tomadas.
+\end{itemize}
+
+El proceso para adaptar los parámetros se realiza con el entrenamiento de una inteligencia simple (sin usar el aprendizaje automático). Esta inteligencia simple se compone de un objetivo muy singular, el agente Pac-Man atacando a uno de los fantasmas. Con esa finalidad, ejecutamos el siguiente comando con diferentes valores de \textit{self.alpha, self.gamma y self.epsilon} y observamos el valor resultante \textit{Average Score} en cada ejecución. Este valor nos indica el valor promedio máximo de las puntuaciones obtenidas durante las partidas, o lo que es lo mismo, el valor promedio máximo de $Q(s,a)$ durante las partidas.
 
 \begin{lstlisting}[language=bash, basicstyle=\footnotesize]
-python gridworld.py -a q -k 50 -n 0.2
+python busters.py -p RLAgent -k 1 -l lab1.lay -n 100
 \end{lstlisting}
 
-Vemos el resultado con una tasa de ruido igual a 0.2:
+Por ejemplo, con los valores: \textit{alpha = 1} , \textit{gamma = 0.8} y \textit{epsilon = 0.05}, el valor de \textit{Average Score} es igual a 190.09. Un segundo ejemplo, con los valores: \textit{self.alpha = 0.2}, \textit{self.gamma = 0.8} y \textit{self.epsilon = 0.05}, el valor de \textit{Average Score} es igual a 191.65. En este caso mejoramos el resultado del primer ejemplo, porqué el valor promedio es mayor. Otro ejemplo, con los valores: \textit{self.alpha = 0.4}, \textit{self.gamma = 0.8} y \textit{self.epsilon = 0.05}, el valor de \textit{Average Score} es igual a 191.43. En este caso no mejoramos el resultado anterior, porqué el valor promedio es menor.
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.5]{figures/50_0.05}
-	\caption{Interfaz del dominio GridWorld cuando \textit{epsilon} es igual a 0.05.}
-	\label{fig:50_0.05}
-\end{figure}
+Durante el proceso para adaptar los parámetros, los valores de \textit{epsilon} siempre toman valores muy próximos a 0, esto refleja un comportamiento aprendido en la \href{https://poliformat.upv.es/portal/site/ESP_0_2835/tool/c07b745a-0cfd-44f0-a7a2-9bb22f80c3f7?panel=Main}{práctica 1} de la asignatura. En esta práctica aprendimos que si en una estrategia $\epsilon$-greedy el valor de $\epsilon$ es más pequeño, entonces la probabilidad de que el agente \textit{Q-learning} tome decisiones aleatorias será menor. Así, si la aleatoriedad es menor, menor será la inestabilidad del agente Pac-Man. Como a consecuencia, el promedio del valor máximo de $Q(s,a)$ será mayor, que corresponde a una mejor puntuación en el videojego.
+\vspace*{3mm}
 
-Volvemos a ejecutar el mismo comando, pero con otro valor de aprendizaje. La Figura~\ref{fig:50_1} muestra el resultado de la ejecución con una tasa de aprendizaje igual a 1.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.5]{figures/50_1}
-	\caption{Interfaz del dominio GridWorld cuando \textit{epsilon} es igual a 1.}
-	\label{fig:50_1}
-\end{figure}
-
-Igual que descubrimos en la práctica 1, vemos que con un valor de aprendizaje menor (Figura~\ref{fig:50_0.05}), el agente no explora tanto y elige una ruta óptima mejor. En consecuencia modificaremos los valores de \textit{self.alpha, self.gamma y self.epsilon} en el archivo \textit{bustersAgents.py} como se puede observar a continuación:
+Los mejores valores encontrados para los parámetros son los siguientes:
 
 \begin{lstlisting}[language=python, basicstyle=\footnotesize]
-self.alpha = float(0.2)
-self.gamma = float(0.8)
-self.epsilon = float(0.05)
+self.alpha = 0.2
+self.gamma = 0.7
+self.epsilon = 0.01
 \end{lstlisting}
 
-Con este procedimiento nos aseguramos de elegir unos valores adecuados para Pac-Man.
-
 \section{Función de refuerzo}\label{refuerzo}
+
+Una vez que se han adaptado los parámetros del agente Pac-Man, podemos diseñar la función de refuerzo.
 
 \begin{lstlisting}[language=python, basicstyle=\footnotesize]
 def getReward(self, state, nextState):
