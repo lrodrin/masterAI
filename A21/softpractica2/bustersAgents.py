@@ -464,9 +464,10 @@ class RLAgent(BustersAgent):
         # distancia minima al fantasma en el siguiente estado
         min_position_ghost_next_state = min(next_state_ghost_position, key=lambda t: t[1])[0]
         # fantasma en el estado actual
-        nghost_actual_state = len(self.getGhostDistances(state.data.ghostDistances))
+        nghost_actual_state = len(list(filter(lambda d: d is not None, state.data.ghostDistances)))
         # fantasma en el estado siguiente
-        nghost_next_state = len(self.getGhostDistances(nextState.data.ghostDistances))
+        nghost_next_state = len(list(filter(lambda d: d is not None, nextState.data.ghostDistances)))
+
         # paredes en el estado actual
         actual_state_has_walls = self.directionIsBlocked(state, state.getGhostPositions()[min_position_ghost_next_state])
         # paredes en el estado siguiente
@@ -586,6 +587,3 @@ class RLAgent(BustersAgent):
         # print grid_beetween
         return np.any(np.all(grid_beetween, axis=1)) or np.any(np.all(grid_beetween, axis=0))
 
-    def getGhostDistances(self, distances):
-
-        return list(filter(lambda d: d is not None, distances))
