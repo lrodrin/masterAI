@@ -459,37 +459,40 @@ class RLAgent(BustersAgent):
         if nextState.isWin():
             return 1000
 
-        next_state_ghost_index_distances = self.getLivingGhostIndexDistances(nextState)
-        actual_state_ghost_index_distances = self.getLivingGhostIndexDistances(nextState)
-        min_distance_ghost_index_next_State = self.getMinumumIndex(next_state_ghost_index_distances)[0]
-        min_distance_ghost_index_actual_State = self.getMinumumIndex(actual_state_ghost_index_distances)[0]
-
-        min_ghost_distance_next_state = nextState.data.ghostDistances[min_distance_ghost_index_next_State]
-        min_ghost_distances_actual_state = state.data.ghostDistances[min_distance_ghost_index_actual_State]
-        number_ghost_actual_state = len(self.getAliveGhostDistances(state.data.ghostDistances))
-        number_ghost_next_state = len(self.getAliveGhostDistances(nextState.data.ghostDistances))
+        # distancia al fantasma en el siguiente estado
+        next_state_ghost_position = self.getGhostDistance(nextState)
+        # distancia minima al fantasma en el siguiente estado
+        min_position_ghost_next_state = min(next_state_ghost_position, key=lambda t: t[1])[0]
+        # fantasma en el estado actual
+        number_ghost_actual_state = len(self.getGhostDistances(state.data.ghostDistances))
+        # fantasma en el estado siguiente
+        number_ghost_next_state = len(self.getGhostDistances(nextState.data.ghostDistances))
+        # paredes en el estado actual
         actual_state_has_walls = self.directionIsBlocked(state,
-                                                         state.getGhostPositions()[min_distance_ghost_index_next_State])
-        next_state_has_walls = self.directionIsBlocked(nextState, nextState.getGhostPositions()[
-            min_distance_ghost_index_next_State])
+                                                         state.getGhostPositions()[min_position_ghost_next_state])
+        # paredes en el estado siguiente
+        next_state_has_walls = self.directionIsBlocked(nextState,
+                                                       nextState.getGhostPositions()[min_position_ghost_next_state])
 
-        if number_ghost_next_state < number_ghost_actual_state:
+        if number_ghost_next_state < number_ghost_actual_state:     # no fantasma en el siguiente estado
             reward += 100
-        if min_ghost_distance_next_state < min_ghost_distances_actual_state and not actual_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
-            reward += 3
-        elif min_ghost_distance_next_state > min_ghost_distances_actual_state and actual_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
-            reward += 1
-        elif min_ghost_distance_next_state < min_ghost_distances_actual_state and actual_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
-            reward += -1
-        elif (min_ghost_distance_next_state > min_ghost_distances_actual_state and not actual_state_has_walls) or \
-                (min_ghost_distance_next_state == min_ghost_distances_actual_state and number_ghost_next_state == number_ghost_actual_state):
-            reward += -min_ghost_distance_next_state
 
-        if not actual_state_has_walls and next_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
+        # fantasma en el siguiente estado y no paredes
+        if not actual_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
+            reward += 3
+        # fantasma en el siguiente y paredes
+        elif actual_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
+            reward += -1
+
+        # fantasma - paredes y en el estado siguiente hay paredes
+        if not actual_state_has_walls and next_state_has_walls \
+                and number_ghost_next_state == number_ghost_actual_state:
             reward -= 4
-        elif actual_state_has_walls and not next_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
+        # fantasma + paredes y en el estado siguiente no hay paredes
+        elif actual_state_has_walls and not next_state_has_walls \
+                and number_ghost_next_state == number_ghost_actual_state:
             reward += 1
-        #################################################################################################
+
         return reward
 
     def update(self, state, action, nextState, reward):
@@ -533,18 +536,14 @@ class RLAgent(BustersAgent):
         "Return the highest q value for a given state"
         return self.computeValueFromQValues(state)
 
-    def getMinumumIndex(self, distances):
-        return min(distances, key=lambda t: t[1])
-
-    def getLivingGhostIndexDistances(self, gameState):
-
+    #################################################################################################
+    @staticmethod
+    def getGhostDistance(gameState):
         return [(i, distance) for i, (distance, living) in
                 enumerate(zip(gameState.data.ghostDistances, gameState.getLivingGhosts()[1:])) if living]
 
-    def getManhattanDistance(self, pointa, pointb):
-        return abs(pointa[0] - pointb[0]) + abs(pointa[1] + pointb[1])
-
-    def getDirection(self, pacman, ghost):
+    @staticmethod
+    def getDirection(pacman, ghost):
 
         direction = []
         if (pacman[1] - ghost[1]) != 0 and (pacman[1] - ghost[1]) > 0:
@@ -560,8 +559,8 @@ class RLAgent(BustersAgent):
     def getNearestGhostDirection(self, gameState):
         pacman_position = gameState.getPacmanPosition()
 
-        living_ghosts_distances = self.getLivingGhostIndexDistances(gameState)
-        min_distance_ghost_index = self.getMinumumIndex(living_ghosts_distances)[0]
+        living_ghosts_distances = self.getGhostDistance(gameState)
+        min_distance_ghost_index = min(living_ghosts_distances, key=lambda t: t[1])[0]
 
         nearest_ghost_position = gameState.getGhostPositions()[min_distance_ghost_index]
 
@@ -588,6 +587,6 @@ class RLAgent(BustersAgent):
         # print grid_beetween
         return np.any(np.all(grid_beetween, axis=1)) or np.any(np.all(grid_beetween, axis=0))
 
-    def getAliveGhostDistances(self, distances):
+    def getGhostDistances(self, distances):
 
         return list(filter(lambda d: d is not None, distances))
