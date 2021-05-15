@@ -101,12 +101,12 @@ El proceso para adaptar los parámetros se realiza con el entrenamiento de una i
 python busters.py -p RLAgent -k 1 -l lab1.lay -n 100
 \end{lstlisting}
 
-Por ejemplo, con los valores: \textit{alpha = 1} , \textit{gamma = 0.8} y \textit{epsilon = 0.05}, el valor de \textit{Average Score} es igual a 190.09. Un segundo ejemplo, con los valores: \textit{self.alpha = 0.2}, \textit{self.gamma = 0.8} y \textit{self.epsilon = 0.05}, el valor de \textit{Average Score} es igual a 191.65. En este caso mejoramos el resultado del primer ejemplo, porqué el valor promedio es mayor. Otro ejemplo, con los valores: \textit{self.alpha = 0.4}, \textit{self.gamma = 0.8} y \textit{self.epsilon = 0.05}, el valor de \textit{Average Score} es igual a 191.43. En este caso no mejoramos el resultado anterior, porqué el valor promedio es menor.
+Por ejemplo, con los valores: \textit{alpha = 1} , \textit{gamma = 0.8} y \textit{epsilon = 0.05}, el valor de \textit{Average Score} es menor que con los valores: \textit{self.alpha = 0.2}, \textit{self.gamma = 0.8} y \textit{self.epsilon = 0.05}. Otro ejemplo, con los valores: \textit{self.alpha = 0.4}, \textit{self.gamma = 0.8} y \textit{self.epsilon = 0.05}, el valor de \textit{Average Score} también es menor que con los valores: \textit{self.alpha = 0.2}, \textit{self.gamma = 0.8} y \textit{self.epsilon = 0.05}. Así, consideramos que la mejor asignación de parámetros es con los valores: \textit{self.alpha = 0.2}, \textit{self.gamma = 0.8} y \textit{self.epsilon = 0.05}.
 
-Durante el proceso para adaptar los parámetros, los valores de \textit{epsilon} siempre toman valores muy próximos a 0, esto refleja un comportamiento aprendido en la \href{https://poliformat.upv.es/portal/site/ESP_0_2835/tool/c07b745a-0cfd-44f0-a7a2-9bb22f80c3f7?panel=Main}{práctica 1} de la asignatura. En esta práctica aprendimos que si en una estrategia $\epsilon$-greedy el valor de $\epsilon$ es más pequeño, entonces la probabilidad de que el agente \textit{Q-learning} tome decisiones aleatorias será menor. Así, si la aleatoriedad es menor, menor será la inestabilidad del agente Pac-Man. Como a consecuencia, el promedio del valor máximo de $Q(s,a)$ será mayor, que corresponde a una mejor puntuación en el videojego.
-\vspace*{3mm}
+Durante el proceso para adaptar los parámetros, los valores de \textit{epsilon} siempre toman valores muy próximos a 0, esto refleja un comportamiento aprendido en la \href{https://poliformat.upv.es/portal/site/ESP_0_2835/tool/c07b745a-0cfd-44f0-a7a2-9bb22f80c3f7?panel=Main}{práctica 1} de la asignatura. En esta práctica aprendimos que si en una estrategia $\epsilon$-greedy el valor de $\epsilon$ es más pequeño, entonces la probabilidad de que el agente \textit{Q-learning} tome decisiones aleatorias será menor. Así, si la aleatoriedad es menor, menor será la inestabilidad del agente Pac-Man. Como a consecuencia, el promedio del valor máximo de $Q(s,a)$ será mayor, que corresponde a una mejor puntuación en el videojuego.
 
 Los mejores valores encontrados para los parámetros son los siguientes:
+\vspace*{3mm}
 
 \begin{lstlisting}[language=python, basicstyle=\footnotesize]
 self.alpha = 0.2
@@ -116,57 +116,65 @@ self.epsilon = 0.01
 
 \section{Función de refuerzo}\label{refuerzo}
 
-Una vez que se han adaptado los parámetros del agente Pac-Man, podemos diseñar la función de refuerzo.
+Una vez que se han adaptado los parámetros del agente Pac-Man podemos diseñar la función de refuerzo. La función de refuerzo determinará las recompensas que obtenga el agente. Determinar las recompensas que obtiene el agente con cada acción es clave para su aprendizaje, pues marca cómo de buenas serán unas acciones frente a otras y por lo tanto determina qué tipo de comportamientos decidimos potenciar a la larga. La lista siguiente enumera los diferentes estados y sus acciones con sus valores de recompensa elegidos:
+
+\begin{itemize}
+	\item Ganar el juego son 1000 puntos.
+	\item 
+\end{itemize}
 
 \begin{lstlisting}[language=python, basicstyle=\footnotesize]
 def getReward(self, state, nextState):
 	"""
 	Return a reward value based on the information of state and nextState
-	"""	
+	"""
 	reward = 0
 	
 	if nextState.isWin():
-	return 1000
+		return 1000
 	
-	next_state_ghost_index_distances = self.getLivingGhostIndexDistances(nextState)
-	actual_state_ghost_index_distances = self.getLivingGhostIndexDistances(nextState)
-	min_distance_ghost_index_next_State = self.getMinIndex(next_state_ghost_index_distances)[0]
-	min_distance_ghost_index_actual_State = self.getMinIndex(actual_state_ghost_index_distances)[0]
+	# distancia al fantasma en el siguiente estado
+	next_state_ghost_position = self.getGhostDistance(nextState)
+	# distancia minima al fantasma en el siguiente estado
+	min_position_ghost_next_state = min(next_state_ghost_position, 
+		key=lambda t: t[1])[0]
+	# fantasma en el estado actual
+	nghost_actual_state = len(list(filter(lambda d: d is not None, 
+		state.data.ghostDistances)))
+	# fantasma en el estado siguiente
+	nghost_next_state = len(list(filter(lambda d: d is not None, 
+		nextState.data.ghostDistances)))
+	# paredes en el estado actual
+	actual_state_has_walls = self.directionIsBlocked(state, 
+		state.getGhostPositions()[min_position_ghost_next_state])
+	# paredes en el estado siguiente
+	next_state_has_walls = self.directionIsBlocked(nextState, 
+		nextState.getGhostPositions()[min_position_ghost_next_state])
 	
-	min_ghost_distance_next_state = nextState.data.ghostDistances[min_distance_ghost_index_next_State]
-	min_ghost_distances_actual_state = state.data.ghostDistances[min_distance_ghost_index_actual_State]
-	number_ghost_actual_state = len(self.getAliveGhostDistances(state.data.ghostDistances))
-	number_ghost_next_state = len(self.getAliveGhostDistances(nextState.data.ghostDistances))
-	actual_state_has_walls = self.directionIsBlocked(state, state.getGhostPositions()[min_distance_ghost_index_next_State])
-	next_state_has_walls = self.directionIsBlocked(nextState, nextState.getGhostPositions()[min_distance_ghost_index_next_State])
+	# no fantasma en el siguiente estado
+	if nghost_next_state < nghost_actual_state:
+		reward += 100
 	
-	if number_ghost_next_state < number_ghost_actual_state:
-	reward += 100
+	# fantasma en el siguiente estado y no paredes
+	if not actual_state_has_walls and nghost_next_state == nghost_actual_state:
+		reward += 3
+	# fantasma en el siguiente y paredes
+	elif actual_state_has_walls and nghost_next_state == nghost_actual_state:
+		reward += -1
 	
-	if min_ghost_distance_next_state < min_ghost_distances_actual_state and not actual_state_has_walls \
-	and number_ghost_next_state == number_ghost_actual_state:
-	reward += 3
-	
-	elif min_ghost_distance_next_state > min_ghost_distances_actual_state and actual_state_has_walls \
-	and number_ghost_next_state == number_ghost_actual_state:
-	reward += 1
-	
-	elif min_ghost_distance_next_state < min_ghost_distances_actual_state and actual_state_has_walls \
-	and number_ghost_next_state == number_ghost_actual_state:
-	reward += -1
-	
-	elif (min_ghost_distance_next_state > min_ghost_distances_actual_state and not actual_state_has_walls) or \
-	(min_ghost_distance_next_state == min_ghost_distances_actual_state and number_ghost_next_state == number_ghost_actual_state):
-	reward += -min_ghost_distance_next_state
-	
-	# If next_state_has_walls
-	if not actual_state_has_walls and next_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
-	reward -= 4
-	elif actual_state_has_walls and not next_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
+	# fantasma - paredes y en el estado siguiente hay paredes
+	if not actual_state_has_walls and next_state_has_walls \
+			and nghost_next_state == nghost_actual_state:
+		reward -= 4
+	# fantasma + paredes y en el estado siguiente no hay paredes
+			elif actual_state_has_walls and not next_state_has_walls \
+		and nghost_next_state == nghost_actual_state:
 	reward += 1
 	
 	return reward
 \end{lstlisting}
+
+Los métodos auxiliares se describen en la sección~\ref*{apendice_reward}.
 
 
 \section{Código desarrollado}\label{codigo}
@@ -217,13 +225,13 @@ Todo el contenido de esta práctica se puede encontrar en el repositorio persona
 
 \section{Apéndice}\label{apendice}
 
-\subsection{Métodos de la función \textit{get\_reward}}
+\subsection{Métodos de la función \textit{get\_reward}}\label{apendice_reward}
 
 \begin{lstlisting}[language=python, basicstyle=\footnotesize]
 	
 \end{lstlisting}
 
-\subsection{Métodos de la función \textit{update}}
+\subsection{Métodos de la función \textit{update}}\label{apendice_update}
 
 \begin{lstlisting}[language=python, basicstyle=\footnotesize]
 	
