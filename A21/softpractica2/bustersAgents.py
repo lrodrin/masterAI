@@ -497,11 +497,9 @@ class RLAgent(BustersAgent):
         elif min_ghost_distance_next_state < min_ghost_distances_actual_state and actual_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
             reward += -1
 
-        # distancia minima al fantasma mas cercana en el siguiente estado y hay paredes
-        # o distancia minima al fantasma igual de cercana en el siguiente estado y no come
-        elif (min_ghost_distance_next_state > min_ghost_distances_actual_state and not actual_state_has_walls) or \
-                (min_ghost_distance_next_state == min_ghost_distances_actual_state and number_ghost_next_state == number_ghost_actual_state):
-            reward += -min_ghost_distance_next_state
+        # distancia minima al fantasma mas cercana en el siguiente estado y no hay paredes y no come
+        elif min_ghost_distance_next_state > min_ghost_distances_actual_state and not actual_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
+            reward += -10
 
         # no hay paredes en el estado actual y hay paredes en el estado actual y no come
         if not actual_state_has_walls and next_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
