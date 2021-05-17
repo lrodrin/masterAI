@@ -539,8 +539,34 @@ class RLAgent(BustersAgent):
     #################################################################################################
     @staticmethod
     def getGhostDistance(gameState):
-        return [(i, distance) for i, (distance, living) in
-                enumerate(zip(gameState.data.ghostDistances, gameState.getLivingGhosts()[1:])) if living]
+        """
+        Return distances to each of the ghosts on the map.
+        """
+        return [(i, distance) for i, (distance, alive) in
+                enumerate(zip(gameState.data.ghostDistances, gameState.getLivingGhosts()[1:])) if alive]
+
+    @staticmethod
+    def directionIsBlocked(gameState, ghost_position):
+        """
+        Return True if directions are blocked (walls) and False otherwise (no walls).
+        It also returns distances to blocking elements and non-blocking elements.
+        """
+        walls = gameState.getWalls()
+        walls_array = np.array(walls.data)
+        pacman_position = gameState.getPacmanPosition()
+
+        x_min = min(pacman_position[0], ghost_position[0])
+        x_max = max(pacman_position[0], ghost_position[0]) + 1
+        y_min = min(pacman_position[1], ghost_position[1])
+        if y_min < 3:
+            y_min = 3
+
+        y_max = max(pacman_position[1], ghost_position[1]) + 1
+        grid_beetween = walls_array[x_min:x_max, y_min:y_max]
+        if len(grid_beetween) == 0:
+            return False
+
+        return np.any(np.all(grid_beetween, axis=1)) or np.any(np.all(grid_beetween, axis=0))
 
     @staticmethod
     def getDirection(pacman, ghost):
@@ -567,23 +593,3 @@ class RLAgent(BustersAgent):
         pacman_ghost_direction = self.getDirection(pacman_position, nearest_ghost_position)
 
         return pacman_ghost_direction, nearest_ghost_position
-
-    def directionIsBlocked(self, gameState, ghost_position):
-        walls = gameState.getWalls()
-        walls_arr = np.array(walls.data)
-        pacman_position = gameState.getPacmanPosition()
-        # print pacman_position
-        x_min = min(pacman_position[0], ghost_position[0])
-        x_max = max(pacman_position[0], ghost_position[0]) + 1
-        y_min = min(pacman_position[1], ghost_position[1])
-        if y_min < 3:
-            y_min = 3
-        y_max = max(pacman_position[1], ghost_position[1]) + 1
-        # print x_min, x_max, y_min, y_max
-        # print walls_arr
-        grid_beetween = walls_arr[x_min:x_max, y_min:y_max]
-        if len(grid_beetween) == 0:
-            return False
-        # print grid_beetween
-        return np.any(np.all(grid_beetween, axis=1)) or np.any(np.all(grid_beetween, axis=0))
-
