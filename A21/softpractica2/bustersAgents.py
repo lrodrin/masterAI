@@ -459,36 +459,36 @@ class RLAgent(BustersAgent):
         if nextState.isWin():
             return 1000
 
-        # distancia al fantasma en el siguiente estado
+        # distancias al fantasma mas cercano en el siguiente estado
         next_state_ghost_position = self.getGhostDistance(nextState)
-        # distancia minima al fantasma en el siguiente estado
+        # distancia minima al fantasma mas cercano en el siguiente estado
         min_position_ghost_next_state = min(next_state_ghost_position, key=lambda t: t[1])[0]
-        # fantasma en el estado actual
+        # distancia al fantasma mas cercano en el estado actual
         nghost_actual_state = len(list(filter(lambda d: d is not None, state.data.ghostDistances)))
-        # fantasma en el estado siguiente
+        # distancia al fantasma mas cercano en el estado siguiente
         nghost_next_state = len(list(filter(lambda d: d is not None, nextState.data.ghostDistances)))
 
-        # paredes en el estado actual
+        # distancia a la pared mas cercana en el estado siguiente
         actual_state_has_walls = self.directionIsBlocked(state, state.getGhostPositions()[min_position_ghost_next_state])
-        # paredes en el estado siguiente
+        # distancia a la pared mas cercana en el estado siguiente
         next_state_has_walls = self.directionIsBlocked(nextState, nextState.getGhostPositions()[min_position_ghost_next_state])
 
-        # no fantasma en el siguiente estado
+        # fantasma más cercano en el siguiente estado
         if nghost_next_state < nghost_actual_state:
             reward += 100
 
-        # fantasma en el siguiente estado y no paredes
+        # fantasma igual de cercano en el siguiente estado y paret cercana en el estado actual
         if not actual_state_has_walls and nghost_next_state == nghost_actual_state:
             reward += 3
-        # fantasma en el siguiente y paredes
+        # fantasma igual de cercano en el siguiente estado y paret no cercana en el estado actual
         elif actual_state_has_walls and nghost_next_state == nghost_actual_state:
             reward += -1
 
-        # fantasma - paredes y en el estado siguiente hay paredes
+        # fantasma igual de cercano en el siguiente estado y paret no cercana en el estado actual y pared cercana en el estado siguiente
         if not actual_state_has_walls and next_state_has_walls \
                 and nghost_next_state == nghost_actual_state:
             reward -= 4
-        # fantasma + paredes y en el estado siguiente no hay paredes
+        # fantasma igual de cercano en el siguiente estado y paret cercana en el estado actual y pared no cercana en el estado siguiente
         elif actual_state_has_walls and not next_state_has_walls \
                 and nghost_next_state == nghost_actual_state:
             reward += 1
