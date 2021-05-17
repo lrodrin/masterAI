@@ -95,7 +95,7 @@ También tenemos que adaptar los parámetros \textit{self.alpha, self.gamma y se
 	\item Epsilon ($\epsilon$). Numera los pasos para disminuir el valor $\alpha$. El valor $\alpha$ se reducirá para cada 10 decisiones tomadas. Por ejemplo, si este valor es 0.01, se reduce 0.01 el valor de $\alpha$ por cada 10 decisiones tomadas.
 \end{itemize}
 
-El proceso para adaptar los parámetros se realiza con el entrenamiento de una inteligencia simple (sin usar el aprendizaje automático). Esta inteligencia simple se compone de un objetivo muy singular, el agente Pac-Man atacando a uno de los fantasmas. Con esa finalidad, ejecutamos el siguiente comando con diferentes valores de \textit{self.alpha, self.gamma y self.epsilon} y observamos el valor resultante \textit{Average Score} en cada ejecución. Este valor nos indica el valor promedio máximo de las puntuaciones obtenidas durante las partidas, o lo que es lo mismo, el valor promedio máximo de $Q(s,a)$ durante las partidas.
+El proceso para adaptar los parámetros se realiza con el entrenamiento de una inteligencia simple (sin usar el aprendizaje automático). Esta inteligencia simple se compone de un objetivo muy singular, el agente Pac-Man atacando a uno de los fantasmas. Con esa finalidad, ejecutamos el siguiente comando con diferentes valores de \textit{self.alpha, self.gamma y self.epsilon} y observamos el valor resultante \textit{Average Score} en cada ejecución (ver Figura~\ref{average_score}). Este valor nos indica el valor promedio máximo de las puntuaciones obtenidas durante las partidas, o lo que es lo mismo, el valor promedio máximo de $Q(s,a)$ durante las partidas.
 
 \begin{lstlisting}[language=bash, basicstyle=\footnotesize]
 python busters.py -p RLAgent -k 1 -l lab1.lay -n 100
@@ -114,16 +114,32 @@ self.gamma = 0.7
 self.epsilon = 0.01
 \end{lstlisting}
 
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/average_score}
+	\caption{Ejemplo de ejecución que muestra el  \textit{Average Score} obtenido.}
+	\label{average_score}
+\end{figure}
+
+
 \section{Función de refuerzo}\label{refuerzo}
 
-Una vez que se han adaptado los parámetros del agente Pac-Man podemos diseñar la función de refuerzo. La función de refuerzo determinará las recompensas que obtenga el agente. Determinar las recompensas que obtiene el agente con cada acción es clave para su aprendizaje, pues marca cómo de buenas serán unas acciones frente a otras y por lo tanto determina qué tipo de comportamientos decidimos potenciar a la larga. La lista siguiente enumera los diferentes estados y sus acciones con sus valores de recompensa elegidos:
+Una vez que se han adaptado los parámetros del agente Pac-Man podemos diseñar la función de refuerzo. La función de refuerzo determinará las recompensas que obtenga el agente. Determinar las recompensas que obtiene el agente con cada acción es clave para su aprendizaje, pues marcará cómo de buenas serán unas acciones frente a otras y por lo tanto determinará qué tipo de comportamientos decidimos potenciar a la larga. La siguiente lista enumera las diferentes acciones con sus valores de recompensa que se han determinado en la función de refuerzo:
 
 \begin{itemize}
-	\item Ganar el juego son 1000 puntos.
-	\item 
+	\item Ganar: este estado se muestra cuando el agente Pac-Man gana la partida. Ganamos 1000 puntos.
+	\item Comer: este estado se muestra cuando el agente Pac-Man se come a un fantasma o a una fruta. Ganamos 100 puntos.
+	\item Lejos de un fantasma y lejos de una pared: este estado se muestra cuando el agente Pac-Man está al menos a cinco celdas del fantasma más cercano y de la pared más cercana. Ganamos 3 puntos.
+	\item Cerca de un fantasma y lejos de una pared: este estado se muestra cuando el agente Pac-Man está a un máximo de cuatro celdas del fantasma más cercano y está al menos a cinco celdas de la pared más cercana. Ganamos 1 punto.
+	\item Cerca de un fantasma y cerca de una pared: este estado se muestra cuando el agente Pac-Man está a un máximo de cuatro celdas del fantasma más cercano y de la pared más cercana. Perdemos 10 puntos.
+	\item Lejos de un fantasma y cerca de una pared: este estado se muestra cuando el agente Pac-Man está al menos a cinco celdas del fantasma más cercano y está a un máximo de cuatro celdas de la pared más cercana. Perdemos 1 punto.
+	\item Cerca de una pared: este estado se muestra cuando el agente Pac-Man está a un máximo de cuatro celdas de la pared más cercana. Perdemos 4 puntos.
+	\item Lejos de una pared: este estado se muestra cuando el agente Pac-Man está al menos a cinco celdas de la pared más cercana. Ganamos 1 punto.
 \end{itemize}
 
-\begin{lstlisting}[language=python, basicstyle=\footnotesize]
+En la acción de Comer, el agente Pac-Man recuerda la posición del fantasma más cercano y elige la dirección (north, east, south o west) que lo lleva hasta él por el camino más corto. La definición de las recompensas no es determinista, ya que las acciones dependen de la posición de los fantasmas. Por eso no se ha definido un destino para cada acción en particular. El destino se comprueba en tiempo de ejecución. Podemos observar la función de refuerzo desarrollada en la siguiente página.
+
+\begin{lstlisting}[language=python, basicstyle=\tiny]
 def getReward(self, state, nextState):
 	"""
 	Return a reward value based on the information of state and nextState
@@ -133,51 +149,64 @@ def getReward(self, state, nextState):
 	if nextState.isWin():
 		return 1000
 	
-	# distancia al fantasma en el siguiente estado
-	next_state_ghost_position = self.getGhostDistance(nextState)
-	# distancia minima al fantasma en el siguiente estado
-	min_position_ghost_next_state = min(next_state_ghost_position, 
-		key=lambda t: t[1])[0]
-	# fantasma en el estado actual
-	nghost_actual_state = len(list(filter(lambda d: d is not None, 
-		state.data.ghostDistances)))
-	# fantasma en el estado siguiente
-	nghost_next_state = len(list(filter(lambda d: d is not None, 
-		nextState.data.ghostDistances)))
-	# paredes en el estado actual
-	actual_state_has_walls = self.directionIsBlocked(state, 
-		state.getGhostPositions()[min_position_ghost_next_state])
-	# paredes en el estado siguiente
-	next_state_has_walls = self.directionIsBlocked(nextState, 
-		nextState.getGhostPositions()[min_position_ghost_next_state])
+	# distancias al fantasma mas cercano en el siguiente estado
+	next_state_ghost_distances = self.getGhostDistances(nextState)
+	# distancias al fantasma mas cercano en el estado actual
+	actual_state_ghost_distances = self.getGhostDistances(nextState)
 	
-	# no fantasma en el siguiente estado
-	if nghost_next_state < nghost_actual_state:
+	# distancia minima al fantasma mas cercano en el siguiente estado
+	min_distance_ghost_next_State = min(next_state_ghost_distances, key=lambda t: t[1])[0]
+	min_ghost_distance_next_state = nextState.data.ghostDistances[min_distance_ghost_next_State]
+	# distancia al fantasma mas cercano en el estado actual
+	min_distance_ghost_actual_State = min(actual_state_ghost_distances, key=lambda t: t[1])[0]
+	min_ghost_distances_actual_state = state.data.ghostDistances[min_distance_ghost_actual_State]
+	
+	# numero de fantasmas en el estado actual
+	number_ghost_actual_state = len(list(filter(lambda d: d is not None, state.data.ghostDistances)))
+	# numero de fantasmas en el siguiente estado
+	number_ghost_next_state = len(list(filter(lambda d: d is not None, nextState.data.ghostDistances)))
+	
+	# distancia a la pared mas cercana en el estado actual
+	actual_state_has_walls = self.directionIsBlocked(state, state.getGhostPositions()[min_distance_ghost_next_State])
+	# distancia a la pared mas cercana en el siguiente estado
+	next_state_has_walls = self.directionIsBlocked(nextState, nextState.getGhostPositions()[min_distance_ghost_next_State])
+	
+	# come fantasma o comida
+	if number_ghost_next_state < number_ghost_actual_state:
 		reward += 100
 	
-	# fantasma en el siguiente estado y no paredes
-	if not actual_state_has_walls and nghost_next_state == nghost_actual_state:
+	# distancia al fantasma menos cercana en el siguiente estado y no hay paredes y no come
+	if min_ghost_distance_next_state < min_ghost_distances_actual_state and not actual_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
 		reward += 3
-	# fantasma en el siguiente y paredes
-	elif actual_state_has_walls and nghost_next_state == nghost_actual_state:
+	
+	# distancia al fantasma mas cercana en el siguiente estado y hay paredes y no come
+	elif min_ghost_distance_next_state > min_ghost_distances_actual_state and actual_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
+		reward += 1
+	
+	# distancia minima al fantasma menos cercana en el siguiente estado y hay paredes y no come
+	elif min_ghost_distance_next_state < min_ghost_distances_actual_state and actual_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
 		reward += -1
 	
-	# fantasma - paredes y en el estado siguiente hay paredes
-	if not actual_state_has_walls and next_state_has_walls \
-			and nghost_next_state == nghost_actual_state:
+	# distancia minima al fantasma mas cercana en el siguiente estado y no hay paredes y no come
+	elif min_ghost_distance_next_state > min_ghost_distances_actual_state and not actual_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
+		reward += -10
+	
+	# no hay paredes en el estado actual y hay paredes en el estado actual y no come
+	if not actual_state_has_walls and next_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
 		reward -= 4
-	# fantasma + paredes y en el estado siguiente no hay paredes
-			elif actual_state_has_walls and not next_state_has_walls \
-		and nghost_next_state == nghost_actual_state:
-	reward += 1
+	# hay paredes en el estado actual y no hay paredes en el estado actual y no come
+	elif actual_state_has_walls and not next_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
+		reward += 1
 	
 	return reward
 \end{lstlisting}
 
-Los métodos auxiliares se describen en la sección~\ref*{apendice_reward}.
+Los métodos auxiliares \textit{getGhostDistance} y \textit{directionIsBlocked} se incluyen en la sección~\ref*{apendice_reward}.
 
 
 \section{Código desarrollado}\label{codigo}
+
+Una vez que hemos seleccionado los parámetros que vamos a utilizar para representar cada estado, y hemos desarrollado la función de refuerzo que vamos a emplear, procedemos a la construcción del agente Pac-Man. La implementación del agente consiste en determinar en que estado actual está. Dado este estado, elegirá la acción de acuerdo con los valores $Q(s,a)$. Una vez elegida la acción, se determina cuál es la dirección más apropiada para la acción dada. El siguiente paso para elegir la siguiente acción, actualizará el valor $Q(s,a)$ para el estado anterior y la acción dado el estado actual obtenido y la fórmula expresada en la Figura 4.1. Dado el estado actual, el proceso comenzará de nuevo eligiendo la siguiente acción.
 
 \begin{lstlisting}[language=python, basicstyle=\footnotesize]
 def update(self, state, action, nextState, reward):
@@ -217,9 +246,28 @@ El entrenamiento de PacMan de alguna manera ya no funcionará bien. Para resolve
 optimizar nuestro agente para implementar también un agente Q-learning aproximado que aprenda los pesos de
 características de los estados, donde muchos estados pueden compartir las mismas características.
 
+El objetivo de las pruebas es ver el comportamiento del agente Pac-Man para los tres mapas disponibles de la práctica.
+
 \section{Resultados}\label{resultados}
 
+En esta sección exponemos los resultados obtenidos en las ejecuciones realizadas en la sección anterior (ver sección~\ref{codigo}), además sacamos algunas conclusiones con respecto a los resultados. Los resultados obtenidos son:
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{|c|c|} 
+		\hline
+		Mapa & Average Score \\ 
+		\hline
+		1 & 191.91 \\ 
+		2 & 389.89 \\
+		3 & 578 \\
+		\hline
+	\end{tabular}
+	\caption{Resultados de las ejecuciones del agente Pac-Man.}
+	\label{resultados_ejecuciones}
+\end{table}
 \section{Conclusiones}\label{conclusiones}
+
 
 Todo el contenido de esta práctica se puede encontrar en el repositorio personal de GitHub: \url{https://github.com/lrodrin/masterAI/tree/master/A21/softpractica2}.
 
@@ -228,13 +276,44 @@ Todo el contenido de esta práctica se puede encontrar en el repositorio persona
 \subsection{Métodos de la función \textit{get\_reward}}\label{apendice_reward}
 
 \begin{lstlisting}[language=python, basicstyle=\footnotesize]
+def getGhostDistance(gameState):
+	"""
+	Return distances to each of the ghosts on the map.
+	"""
+	return [(i, distance) for i, (distance, alive) in enumerate(zip(
+		gameState.data.ghostDistances, gameState.getLivingGhosts()[1:])) if alive]
+\end{lstlisting}
+
+\begin{lstlisting}[language=python, basicstyle=\footnotesize]
+def directionIsBlocked(gameState, ghost_position):
+	"""
+	Return True if directions are blocked (walls) and False otherwise (no walls).
+	It also returns distances to blocking elements and non-blocking elements.
+	"""
+	walls = gameState.getWalls()
+	walls_array = np.array(walls.data)
+	pacman_position = gameState.getPacmanPosition()
 	
+	x_min = min(pacman_position[0], ghost_position[0])
+	x_max = max(pacman_position[0], ghost_position[0]) + 1
+	y_min = min(pacman_position[1], ghost_position[1])
+	if y_min < 3:
+		y_min = 3
+	
+	y_max = max(pacman_position[1], ghost_position[1]) + 1
+	grid_beetween = walls_array[x_min:x_max, y_min:y_max]
+	if len(grid_beetween) == 0:
+		return False
+	
+	return np.any(np.all(grid_beetween, axis=1)) or 
+		np.any(np.all(grid_beetween, axis=0))
+\end{lstlisting}
+
+\begin{lstlisting}[language=python, basicstyle=\footnotesize]
+
 \end{lstlisting}
 
 \subsection{Métodos de la función \textit{update}}\label{apendice_update}
 
-\begin{lstlisting}[language=python, basicstyle=\footnotesize]
-	
-\end{lstlisting}
 
 \end{document}
