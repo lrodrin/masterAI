@@ -473,7 +473,7 @@ class RLAgent(BustersAgent):
         # distancia a la pared mas cercana en el estado siguiente
         next_state_has_walls = self.directionIsBlocked(nextState, nextState.getGhostPositions()[min_position_ghost_next_state])
 
-        # fantasma más cercano en el siguiente estado
+        # fantasma mas cercano en el siguiente estado
         if nghost_next_state < nghost_actual_state:
             reward += 100
 
