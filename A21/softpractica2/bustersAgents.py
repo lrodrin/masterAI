@@ -12,19 +12,21 @@
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
 
-import util
 import os
 import os.path
+
 import numpy as np
-from game import Agent
-from game import Directions
-from keyboardAgents import KeyboardAgent
-import inference
+
 import busters
+import inference
+import util
+from keyboardAgents import KeyboardAgent
 
 
 class NullGraphics:
-    "Placeholder for graphics"
+    """
+    Placeholder for graphics.
+    """
 
     def initialize(self, state, isBlue=False):
         pass
@@ -51,7 +53,9 @@ class KeyboardInference(inference.InferenceModule):
     """
 
     def initializeUniformly(self, gameState):
-        "Begin with a uniform distribution over ghost positions."
+        """
+        Begin with a uniform distribution over ghost positions.
+        """
         self.beliefs = util.Counter()
         for p in self.legalPositions: self.beliefs[p] = 1.0
         self.beliefs.normalize()
@@ -76,17 +80,22 @@ class KeyboardInference(inference.InferenceModule):
 
 
 class BustersAgent:
-    "An agent that tracks and displays its beliefs about ghost positions."
+    """
+    An agent that tracks and displays its beliefs about ghost positions.
+    """
 
     def __init__(self, index=0, inference="ExactInference", ghostAgents=None, observeEnable=True,
                  elapseTimeEnable=True):
+
         inferenceType = util.lookup(inference, globals())
         self.inferenceModules = [inferenceType(a) for a in ghostAgents]
         self.observeEnable = observeEnable
         self.elapseTimeEnable = elapseTimeEnable
 
     def registerInitialState(self, gameState):
-        "Initializes beliefs and inference modules"
+        """
+        Initializes beliefs and inference modules.
+        """
         import __main__
         self.display = __main__._display
         for inference in self.inferenceModules:
@@ -95,13 +104,17 @@ class BustersAgent:
         self.firstMove = True
 
     def observationFunction(self, gameState):
-        "Removes the ghost states from the gameState"
+        """
+        Removes the ghost states from the gameState.
+        """
         agents = gameState.data.agentStates
         gameState.data.agentStates = [agents[0]] + [None for i in range(1, len(agents))]
         return gameState
 
     def getAction(self, gameState):
-        "Updates beliefs, then chooses an action based on updated beliefs."
+        """
+        Updates beliefs, then chooses an action based on updated beliefs.
+        """
         # for index, inf in enumerate(self.inferenceModules):
         #    if not self.firstMove and self.elapseTimeEnable:
         #        inf.elapseTime(gameState)
@@ -113,12 +126,16 @@ class BustersAgent:
         return self.chooseAction(gameState)
 
     def chooseAction(self, gameState):
-        "By default, a BustersAgent just stops.  This should be overridden."
+        """
+        By default, a BustersAgent just stops.  This should be overridden.
+        """
         return Directions.STOP
 
 
 class BustersKeyboardAgent(BustersAgent, KeyboardAgent):
-    "An agent controlled by the keyboard that displays beliefs about ghost positions."
+    """
+    An agent controlled by the keyboard that displays beliefs about ghost positions.
+    """
 
     def __init__(self, index=0, inference="KeyboardInference", ghostAgents=None):
         KeyboardAgent.__init__(self, index)
@@ -132,11 +149,8 @@ class BustersKeyboardAgent(BustersAgent, KeyboardAgent):
 
 
 from distanceCalculator import Distancer
-from game import Actions
 from game import Directions
-import random, sys
-
-'''Random PacMan Agent'''
+import random
 
 
 class RandomPAgent(BustersAgent):
@@ -145,21 +159,17 @@ class RandomPAgent(BustersAgent):
         BustersAgent.registerInitialState(self, gameState)
         self.distancer = Distancer(gameState.data.layout, False)
 
-    ''' Example of counting something'''
-
     def countFood(self, gameState):
         food = 0
         for width in gameState.data.food:
             for height in width:
-                if (height == True):
+                if height:
                     food = food + 1
         return food
 
-    ''' Print the layout'''
-
     def printGrid(self, gameState):
         table = ""
-        ##print(gameState.data.layout) ## Print by terminal
+        # print(gameState.data.layout) # Print by terminal
         for x in range(gameState.data.layout.width):
             for y in range(gameState.data.layout.height):
                 food, walls = gameState.data.food, gameState.data.layout.walls
@@ -169,20 +179,28 @@ class RandomPAgent(BustersAgent):
 
     def chooseAction(self, gameState):
         move = Directions.STOP
-        legal = gameState.getLegalActions(0)  ##Legal position from the pacman
+        legal = gameState.getLegalActions(0)  # Legal position from the pacman
         move_random = random.randint(0, 3)
-        if (move_random == 0) and Directions.WEST in legal:  move = Directions.WEST
-        if (move_random == 1) and Directions.EAST in legal: move = Directions.EAST
-        if (move_random == 2) and Directions.NORTH in legal:   move = Directions.NORTH
-        if (move_random == 3) and Directions.SOUTH in legal: move = Directions.SOUTH
+        if (move_random == 0) and Directions.WEST in legal:
+            move = Directions.WEST
+        if (move_random == 1) and Directions.EAST in legal:
+            move = Directions.EAST
+        if (move_random == 2) and Directions.NORTH in legal:
+            move = Directions.NORTH
+        if (move_random == 3) and Directions.SOUTH in legal:
+            move = Directions.SOUTH
         return move
 
 
 class GreedyBustersAgent(BustersAgent):
-    "An agent that charges the closest ghost."
+    """
+    An agent that charges the closest ghost.
+    """
 
     def registerInitialState(self, gameState):
-        "Pre-computes the distance between every two points."
+        """
+        Pre-computes the distance between every two points.
+        """
         BustersAgent.registerInitialState(self, gameState)
         self.distancer = Distancer(gameState.data.layout, False)
 
@@ -228,7 +246,7 @@ class RLAgent(BustersAgent):
     def registerInitialState(self, gameState):
         BustersAgent.registerInitialState(self, gameState)
         self.distancer = Distancer(gameState.data.layout, False)
-        ###########################	INSERTA TU CODIGO AQUI  #########################################
+        ###########################	INSERTA TU CODIGO AQUI  ############################################################
         #
         # INSTRUCCIONES:
         #
@@ -255,12 +273,12 @@ class RLAgent(BustersAgent):
         # a partir de esa informacion. Despues, hay que seleccionar unos valores adecuados para los parametros self.alpha,
         # self.gamma y self.epsilon.
         #
-        #################################################################################################
+        ################################################################################################################    TODO
         self.nRowsQTable = 16
         self.alpha = 0.2
         self.gamma = 0.7
         self.epsilon = 0.01
-        #################################################################################################
+        ################################################################################################################
         self.actions = {"North": 0, "East": 1, "South": 2, "West": 3, "Stop": 4, "None": 4}
         self.nColumnsQTable = 5
         if os.path.isfile("qtable.txt"):
@@ -271,13 +289,11 @@ class RLAgent(BustersAgent):
             self.q_table = (np.ones((self.nRowsQTable, self.nColumnsQTable))).tolist()
             self.writeQtable()
 
-    ''' Example of counting something'''
-
     def countFood(self, gameState):
         food = 0
         for width in gameState.data.food:
             for height in width:
-                if (height == True):
+                if height:
                     food = food + 1
         return food
 
@@ -298,8 +314,7 @@ class RLAgent(BustersAgent):
         # Posicion de los fantasmas
         print "\tGhosts positions: ", gameState.getGhostPositions()
         # Direciones de los fantasmas
-        print "\tGhosts directions: ", [gameState.getGhostDirections().get(i) for i in
-                                        range(0, gameState.getNumAgents() - 1)]
+        print "\tGhosts directions: ", [gameState.getGhostDirections().get(i) for i in range(0, gameState.getNumAgents() - 1)]
         # Distancia de manhattan a los fantasmas
         print "\tGhosts distances: ", gameState.data.ghostDistances
         # Puntos de comida restantes
@@ -316,7 +331,9 @@ class RLAgent(BustersAgent):
         print "\tScore: ", gameState.getScore()
 
     def readQtable(self):
-        "Read qtable from disc"
+        """
+        Read qtable from disc.
+        """
         table = self.table_file.readlines()
         q_table = []
 
@@ -328,7 +345,9 @@ class RLAgent(BustersAgent):
         return q_table
 
     def writeQtable(self):
-        "Write qtable to disc"
+        """
+        Write qtable to disc.
+        """
         self.table_file.seek(0)
         self.table_file.truncate()
 
@@ -341,7 +360,7 @@ class RLAgent(BustersAgent):
         """
         Compute the row of the qtable for a given state.
         """
-        ###########################	INSERTA TU CODIGO AQUI  #########################################
+        ###########################	INSERTA TU CODIGO AQUI  ############################################################
         #
         # INSTRUCCIONES:
         #
@@ -360,23 +379,21 @@ class RLAgent(BustersAgent):
         # Como antes, este es solo un ejemplo, y la transformacion dependera del tipo de representacion
         # para los estados hayamos utilizado
         #
-        #################################################################################################
+        ################################################################################################################    TODO
         pacman_ghost_direction, ghost_position = self.getNearestGhostDirection(state)
         hasWall = self.directionIsBlocked(state, ghost_position)
-        # pacman_position = state.getPacmanPosition()
-        # return (pacman_position[0]-1)+(pacman_position[1]-1)*state.data.layout.width
         actions_value = 0
         for i, direction in enumerate(pacman_ghost_direction):
-            actions_value += min(self.actions[direction], 2) + i * (4)
+            actions_value += min(self.actions[direction], 2) + i * 4
         return int(hasWall) * 8 + actions_value
-        #################################################################################################
+        ################################################################################################################
 
     def getQValue(self, state, action):
 
         """
-          Returns Q(state,action)
-          Should return 0.0 if we have never seen a state
-          or the Q node value otherwise
+        Returns Q(state,action)
+        Should return 0.0 if we have never seen a state
+        or the Q node value otherwise
         """
         position = self.computePosition(state)
         action_column = self.actions[action]
@@ -385,10 +402,10 @@ class RLAgent(BustersAgent):
 
     def computeValueFromQValues(self, state):
         """
-          Returns max_action Q(state,action)
-          where the max is over legal actions.  Note that if
-          there are no legal actions, which is the case at the
-          terminal state, you should return a value of 0.0.
+        Returns max_action Q(state,action)
+        where the max is over legal actions.  Note that if
+        there are no legal actions, which is the case at the
+        terminal state, you should return a value of 0.0.
         """
         legalActions = state.getLegalActions(0)
         if len(legalActions) == 0:
@@ -397,9 +414,9 @@ class RLAgent(BustersAgent):
 
     def computeActionFromQValues(self, state):
         """
-          Compute the best action to take in a state.  Note that if there
-          are no legal actions, which is the case at the terminal state,
-          you should return None.
+        Compute the best action to take in a state.  Note that if there
+        are no legal actions, which is the case at the terminal state,
+        you should return None.
         """
         legalActions = state.getLegalActions(0)
         if len(legalActions) == 0:
@@ -419,11 +436,11 @@ class RLAgent(BustersAgent):
 
     def getAction(self, state):
         """
-          Compute the action to take in the current state.  With
-          probability self.epsilon, we should take a random action and
-          take the best policy action otherwise.  Note that if there are
-          no legal actions, which is the case at the terminal state, you
-          should choose None as the action.
+        Compute the action to take in the current state.  With
+        probability self.epsilon, we should take a random action and
+        take the best policy action otherwise.  Note that if there are
+        no legal actions, which is the case at the terminal state, you
+        should choose None as the action.
         """
         legalActions = state.getLegalActions(0)
         action = None
@@ -432,16 +449,16 @@ class RLAgent(BustersAgent):
             return action
 
         flip = util.flipCoin(self.epsilon)
-
         if flip:
             return random.choice(legalActions)
+
         return self.getPolicy(state)
 
     def getReward(self, state, nextState):
         """
         Return a reward value based on the information of state and nextState
         """
-        ###########################	INSERTA TU CODIGO AQUI  #########################################
+        ###########################	INSERTA TU CODIGO AQUI  ############################################################
         #
         # INSTRUCCIONES:
         #
@@ -453,7 +470,7 @@ class RLAgent(BustersAgent):
         # comido todos los fantasmas. Teniendo en cuenta todo esto, disenya tu propia funcion de refuerzo
         # que premie el comportamiento del agente.
         #
-        #################################################################################################
+        ################################################################################################################    TODO
         reward = 0
 
         if nextState.isWin():
@@ -477,47 +494,55 @@ class RLAgent(BustersAgent):
         number_ghost_next_state = len(list(filter(lambda d: d is not None, nextState.data.ghostDistances)))
 
         # distancia a la pared mas cercana en el estado actual
-        actual_state_has_walls = self.directionIsBlocked(state, state.getGhostPositions()[min_distance_ghost_next_State])
+        actual_state_has_walls = self.directionIsBlocked(state,
+                                                         state.getGhostPositions()[min_distance_ghost_next_State])
         # distancia a la pared mas cercana en el siguiente estado
-        next_state_has_walls = self.directionIsBlocked(nextState, nextState.getGhostPositions()[min_distance_ghost_next_State])
+        next_state_has_walls = self.directionIsBlocked(nextState,
+                                                       nextState.getGhostPositions()[min_distance_ghost_next_State])
 
-        # come fantasma o comida
+        # come fantasma o punto
         if number_ghost_next_state < number_ghost_actual_state:
             reward += 100
 
-        # distancia al fantasma menos cercana en el siguiente estado y no hay paredes y no come
-        if min_ghost_distance_next_state < min_ghost_distances_actual_state and not actual_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
-            reward += 3
-
-        # distancia al fantasma mas cercana en el siguiente estado y hay paredes y no come
-        elif min_ghost_distance_next_state > min_ghost_distances_actual_state and actual_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
+        # mas lejos de un fantasma y lejos de una pared, no come
+        if min_ghost_distance_next_state < min_ghost_distances_actual_state and not actual_state_has_walls \
+                and number_ghost_next_state == number_ghost_actual_state:
             reward += 1
 
-        # distancia minima al fantasma menos cercana en el siguiente estado y hay paredes y no come
-        elif min_ghost_distance_next_state < min_ghost_distances_actual_state and actual_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
+        # mas lejos de un fantasma y cerca de una pared, no come
+        elif min_ghost_distance_next_state < min_ghost_distances_actual_state and actual_state_has_walls \
+                and number_ghost_next_state == number_ghost_actual_state:
             reward += -1
 
-        # distancia minima al fantasma mas cercana en el siguiente estado y no hay paredes y no come
-        elif min_ghost_distance_next_state > min_ghost_distances_actual_state and not actual_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
-            reward += -10
+        # mas cerca de un fantasma y lejos de una pared, no come
+        elif min_ghost_distance_next_state > min_ghost_distances_actual_state and not actual_state_has_walls \
+                and number_ghost_next_state == number_ghost_actual_state:
+            reward += 3
 
-        # no hay paredes en el estado actual y hay paredes en el estado actual y no come
-        if not actual_state_has_walls and next_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
+        # mas cerca de un fantasma y cerca de una pared, no come
+        elif min_ghost_distance_next_state > min_ghost_distances_actual_state and actual_state_has_walls \
+                and number_ghost_next_state == number_ghost_actual_state:
+            reward += -1
+
+        # cerca de una pared, no come
+        if not actual_state_has_walls and next_state_has_walls \
+                and number_ghost_next_state == number_ghost_actual_state:
             reward -= 4
-        # hay paredes en el estado actual y no hay paredes en el estado actual y no come
-        elif actual_state_has_walls and not next_state_has_walls and number_ghost_next_state == number_ghost_actual_state:
+        # lejos de una pared, no come
+        elif actual_state_has_walls and not next_state_has_walls \
+                and number_ghost_next_state == number_ghost_actual_state:
             reward += 1
 
         return reward
-        #################################################################################################
+        ################################################################################################################
 
     def update(self, state, action, nextState, reward):
         """
-          The parent class calls this to observe a
-          state = action => nextState and reward transition.
-          You should do your Q-Value update here
+        The parent class calls this to observe a
+        state = action => nextState and reward transition.
+        You should do your Q-Value update here
         """
-        reward = reward + self.getReward(state, nextState)
+        reward = reward + self.getReward(state, nextState)  # actualizar recompensa
         print "Started in state:"
         self.printInfo(state)
         print "Took action: ", action
@@ -525,19 +550,19 @@ class RLAgent(BustersAgent):
         self.printInfo(nextState)
         print "Got reward: ", reward
         print "---------------------------------"
-        ###########################	INSERTA TU CODIGO AQUI ##########################################
+        ###########################	INSERTA TU CODIGO AQUI #############################################################    TODO
         #
         # INSTRUCCIONES:
         #
         # Debemos desarrollar este metodo siguiendo un esquema similar al de la practica 1. En este caso,
         # para determinar si nextState es terminal o no, se puede utilizar la funcion nextState.isWin().
         #
-        #################################################################################################
+        ################################################################################################################
         state_position = self.computePosition(state)
         action_position = self.actions[action]
         self.q_table[state_position][action_position] = (1 - self.alpha) * self.q_table[state_position][
             action_position] + self.alpha * (reward + self.gamma * self.getValue(nextState))
-        #################################################################################################
+        ################################################################################################################
         if nextState.isWin():
             # If a terminal state is reached
             self.writeQtable()
@@ -545,11 +570,15 @@ class RLAgent(BustersAgent):
         #################################################################################################
 
     def getPolicy(self, state):
-        "Return the best action in the qtable for a given state"
+        """
+        Return the best action in the qtable for a given state.
+        """
         return self.computeActionFromQValues(state)
 
     def getValue(self, state):
-        "Return the highest q value for a given state"
+        """
+        Return the highest q value for a given state.
+        """
         return self.computeValueFromQValues(state)
 
     @staticmethod
@@ -573,9 +602,9 @@ class RLAgent(BustersAgent):
         x_min = min(pacman_position[0], ghost_position[0])
         x_max = max(pacman_position[0], ghost_position[0]) + 1
         y_min = min(pacman_position[1], ghost_position[1])
+        y_max = max(pacman_position[1], ghost_position[1]) + 1
         if y_min < 3:
             y_min = 3
-        y_max = max(pacman_position[1], ghost_position[1]) + 1
 
         grid_beetween = walls_array[x_min:x_max, y_min:y_max]
         if len(grid_beetween) == 0:
