@@ -48,6 +48,9 @@
 	
 \maketitle
 
+\renewcommand{\tablename}{Tabla}
+\renewcommand{\lstlistingname}{Código}
+
 \section{Introducción}\label{introduccion}
 
 Esta práctica se apoya en una plataforma que recrea el videojuego clásico \href{1https://en.wikipedia.org/wiki/Pac-Man}{Pac-Man}. Utiliza una versión muy simplificada del juego para poder desarrollar un sistema de control automático y explorar algunas capacidades del Aprendizaje por Refuerzo aprendidas durante la asignatura. Especialmente, en esta práctica se aplica el algoritmo \textit{Q-learning} para construir un agente que funcione de forma automática en los tres mapas disponibles: \textit{lab1.lay, lab2.lay y lab3.lay}. El objetivo de este agente será maximizar la puntuación obtenida en una partida.
@@ -58,7 +61,7 @@ En la sección~\ref{estados} se justifica el conjunto de atributos elegido y su 
 
 \section{Definición de los estados}\label{estados}
 
-En esta sección, a fin de definir los estados, hay que seleccionar unos valores adecuados para los parámetros: \textit{self.nRowsQTable, self.alpha, self.gamma y self.epsilon}. Primero intentaremos descubrir el valor del parámetro \textit{self.nRowsQTable}, o que es lo mismo, intentaremos descubrir cuántas filas debe tener la \textit{QTable}. Este valor dependerá de las características seleccionadas para representar los estados, ya que según estas características tendremos un número diferente de filas en la \textit{QTable}. Nos fijamos en la información que nos proporciona la función \textit{printInfo}, concretamente en la información de los mapas \textit{Walls} y \textit{Food}. Según esta información (T/F) y las direcciones que puede ejecutar el agente: north, east, south y west, las características elegidas son:
+En esta sección, a fin de definir los estados, hay que seleccionar unos valores adecuados para los parámetros: \textit{nRowsQTable, alpha, gamma y epsilon}. Primero intentaremos descubrir el valor del parámetro \textit{nRowsQTable}, o que es lo mismo, intentaremos descubrir cuántas filas debe tener la \textit{QTable}. Este valor dependerá de las características seleccionadas para representar los estados, ya que según estas características tendremos un número diferente de filas en la \textit{QTable}. Nos fijamos en la información que nos proporciona la función \textit{printInfo}, concretamente en la información de los mapas \textit{Walls} y \textit{Food}. Según esta información (T/F) y las direcciones que puede ejecutar el agente: north, east, south y west, las características elegidas son:
 
 \begin{parcolumns}{2}
 	\colplacechunks
@@ -87,13 +90,13 @@ En esta sección, a fin de definir los estados, hay que seleccionar unos valores
 \end{parcolumns}
 \vspace*{3mm}
 
-Se han elegido 16 características, de este modo el valor del parámetro \textit{self.nRowsQTable} tendrá que ser igual a 16. Adaptamos el valor de \textit{self.nRowsQTable}:
+Se han elegido 16 características, de este modo el valor del parámetro \textit{nRowsQTable} tendrá que ser igual a 16. Adaptamos el valor de \textit{nRowsQTable}:
 
 \begin{lstlisting}[language=python, basicstyle=\footnotesize]
 self.nRowsQTable = 16
 \end{lstlisting}
 
-También tenemos que adaptar los parámetros \textit{self.alpha, self.gamma y self.epsilon}. Pero primero realizamos una pequeña descripción de estos:
+También tenemos que adaptar los parámetros \textit{alpha, gamma y epsilon}. Pero primero realizamos una pequeña descripción de estos:
 
 \begin{itemize}
 	\item Alpha ($\alpha$). Este valor toma valores entre 0 y 1. Cuando este valor es 0, entonces no hay aprendizaje y siempre se utiliza el valor de $Q$ inicial. Cuando este valor es 1, entonces el aprendizaje no conserva ningún porcentaje del valor de $Q$. Es decir, si el valor $\alpha$ se acerca a 0, el valor de $Q$ no variará mucho; y si el valor $\alpha$ se acerca a 1, el valor de $Q$ variará mucho.
@@ -101,15 +104,17 @@ También tenemos que adaptar los parámetros \textit{self.alpha, self.gamma y se
 	\item Epsilon ($\epsilon$). Numera los pasos para disminuir el valor $\alpha$. El valor $\alpha$ se reducirá para cada 10 decisiones tomadas. Por ejemplo, si este valor es 0.01, se reduce 0.01 el valor de $\alpha$ por cada 10 decisiones tomadas.
 \end{itemize}
 
-El proceso para adaptar los parámetros se realiza con el entrenamiento de una inteligencia simple (sin usar el aprendizaje automático). Esta inteligencia simple se compone de un objetivo muy singular, el agente Pac-Man atacando a uno de los fantasmas. Con esa finalidad, ejecutamos el siguiente comando con diferentes valores de \textit{self.alpha, self.gamma y self.epsilon} y observamos el valor resultante \textit{Average Score} en cada ejecución (ver Figura~\ref{average_score}). Este valor nos indica el valor promedio máximo de las puntuaciones obtenidas durante las partidas, o lo que es lo mismo, el valor promedio máximo de $Q$ durante las partidas.
+El proceso para adaptar los parámetros se realiza con el entrenamiento de una inteligencia simple (sin usar el aprendizaje automático). Esta inteligencia simple se compone de un objetivo muy singular, el agente Pac-Man atacando a uno de los fantasmas. Con esa finalidad, ejecutamos el siguiente comando con diferentes valores de \textit{alpha, gamma y epsilon} y observamos el valor resultante \textit{Average Score} en cada ejecución (ver Figura~\ref{average_score}). Este valor nos indica el valor promedio máximo de las puntuaciones obtenidas durante las partidas, o lo que es lo mismo, el valor promedio máximo de $Q$ durante las partidas.
 
 \begin{lstlisting}[language=bash, basicstyle=\footnotesize]
 python busters.py -p RLAgent -k 1 -l lab1.lay -n 100
 \end{lstlisting}
 
-Por ejemplo, con los valores: \textit{alpha = 1} , \textit{gamma = 0.8} y \textit{epsilon = 0.05}, el valor de \textit{Average Score} es menor que con los valores: \textit{self.alpha = 0.2}, \textit{self.gamma = 0.8} y \textit{self.epsilon = 0.05}. Otro ejemplo, con los valores: \textit{self.alpha = 0.4}, \textit{self.gamma = 0.8} y \textit{self.epsilon = 0.05}, el valor de \textit{Average Score} también es menor que con los valores: \textit{self.alpha = 0.2}, \textit{self.gamma = 0.8} y \textit{self.epsilon = 0.05}. Así, consideramos que la mejor asignación de parámetros es con los valores: \textit{self.alpha = 0.2}, \textit{self.gamma = 0.8} y \textit{self.epsilon = 0.05}.
+Por ejemplo, con los valores: \textit{alpha = 1} , \textit{gamma = 0.8} y \textit{epsilon = 0.05}, el valor de \textit{Average Score} es menor que con los valores: \textit{alpha = 0.2}, \textit{gamma = 0.8} y \textit{epsilon = 0.05}. Otro ejemplo, con los valores: \textit{alpha = 0.4}, \textit{gamma = 0.8} y \textit{epsilon = 0.05}, el valor de \textit{Average Score} también es menor que con los valores: \textit{alpha = 0.2}, \textit{gamma = 0.8} y \textit{epsilon = 0.05}. Así, consideramos que la mejor asignación de parámetros es con los valores: \textit{alpha = 0.2}, \textit{gamma = 0.8} y \textit{epsilon = 0.05}.
 
 Durante el proceso para adaptar los parámetros, los valores de \textit{epsilon} siempre toman valores muy próximos a 0, esto refleja un comportamiento aprendido en la \href{https://poliformat.upv.es/portal/site/ESP_0_2835/tool/c07b745a-0cfd-44f0-a7a2-9bb22f80c3f7?panel=Main}{práctica 1} de la asignatura. En esta práctica aprendimos que si en una estrategia $\epsilon$-greedy el valor de $\epsilon$ es más pequeño, entonces la probabilidad de que el agente \textit{Q-learning} tome decisiones aleatorias será menor. Así, si la aleatoriedad es menor, menor será la inestabilidad del agente Pac-Man. Como a consecuencia, el promedio del valor máximo de $Q$ será mayor, que corresponde a una mejor puntuación en el videojuego.
+
+\newpage 
 
 Los mejores valores encontrados para los parámetros son los siguientes:
 \vspace*{3mm}
@@ -141,7 +146,7 @@ Una vez que se han adaptado los parámetros del agente Pac-Man podemos diseñar 
 	
 	\item \textbf{Lejos de un fantasma y cerca de una pared}: este estado se muestra cuando el agente Pac-Man está al menos a cinco celdas del fantasma más cercano y está a un máximo de cuatro celdas de la pared más cercana. En este caso, perdemos 1 punto de recompensa.
 	
-	\item \textbf{Cerca de un fantasma y lejos de una pared}: este estado se muestra cuando el agente Pac-Man está a un máximo de cuatro celdas del fantasma más cercano y está al menos a cinco celdas de la pared más cercana.  En este caso, ganamos 3 puntos de recompensa.
+	\item \textbf{Cerca de un fantasma y lejos de una pared}: este estado se muestra cuando el agente Pac-Man está a un máximo de cuatro celdas del fantasma más cercano y está al menos a cinco celdas de la pared más cercana.  En este caso, ganamos 1 punto de recompensa.
 	
 	\item \textbf{Cerca de un fantasma y cerca de una pared}: este estado se muestra cuando el agente Pac-Man está a un máximo de cuatro celdas del fantasma más cercano y de la pared más cercana. En este caso, perdemos 1 punto de recompensa.
 	
@@ -152,7 +157,7 @@ Una vez que se han adaptado los parámetros del agente Pac-Man podemos diseñar 
 
 En la acción Comer, el agente Pac-Man recuerda la posición del fantasma más cercano y elige la dirección (north, east, south o west) que lo lleva hasta él por el camino más corto. Como se puede observar, la definición de las recompensas es determinista, aunque las acciones dependan de la posición de los fantasmas. Por facilidad, se han definido valores de recompensa concretos para cada acción en particular. La función de refuerzo desarrollada se muestra a continuación:
 
-\begin{lstlisting}[language=python, basicstyle=\footnotesize]
+\begin{lstlisting}[caption={Función de refuerzo.}, label={reward}, language=python, basicstyle=\footnotesize]
 def getReward(self, state, nextState):
 	"""
 	Return a reward value based on the information of state and nextState
@@ -207,7 +212,7 @@ def getReward(self, state, nextState):
 	# mas cerca de un fantasma y lejos de una pared, no come
 	elif min_ghost_distance_next_state > min_ghost_distances_actual_state and not actual_state_has_walls \
 			and number_ghost_next_state == number_ghost_actual_state:
-		reward += 3
+		reward += 1
 	
 	# mas cerca de un fantasma y cerca de una pared, no come
 	elif min_ghost_distance_next_state > min_ghost_distances_actual_state and actual_state_has_walls \
@@ -226,12 +231,17 @@ def getReward(self, state, nextState):
 	return reward	
 \end{lstlisting}
 
-Los métodos auxiliares \textit{self.getGhostDistance} y \textit{self.directionIsBlocked} se incluyen en la sección~\ref*{apendice_reward}.
-
+Los métodos auxiliares \textit{getGhostDistances} (ver Código~\ref{getGhostDistances}) y \textit{directionIsBlocked} (ver Código~\ref{directionIsBlocked}) se incluyen en la sección~\ref*{apendice_reward}.
 
 \section{Código desarrollado}\label{codigo}
 
-Una vez que hemos seleccionado los parámetros que vamos a utilizar para representar cada estado, y hemos desarrollado la función de refuerzo que vamos a emplear, procedemos a la construcción del agente Pac-Man. La implementación del agente consiste en ir determinando el estado actual en que se encuentra. Dado este estado, se elige la acción de acuerdo con los valores $Q$. Una vez elegida la acción, se determina cuál es la dirección más apropiada para la acción dada. Para elegir la siguiente acción, se actualiza el valor $Q$ para el estado y la acción anterior, dado el estado actual obtenido y la mejor acción que devuelve la fórmula expresada en~\ref{formula}. Finalmente dado el estado actual, el proceso comenzará de nuevo eligiendo la siguiente acción.
+Una vez que hemos seleccionado los parámetros que vamos a utilizar para representar cada estado, y hemos desarrollado la función de refuerzo que vamos a emplear (ver Código~\ref{reward}), procedemos a la construcción del agente Pac-Man. La implementación del agente consiste en ir determinando el estado actual en que se encuentra. Dado este estado, se elige la acción de acuerdo con los valores $Q$. Una vez elegida la acción, se determina cuál es la dirección más apropiada para la acción dada. A la hora de elegir la siguiente acción, se actualiza el valor $Q$ para el estado y la acción anterior, dado el estado actual obtenido y la mejor acción que devuelve la fórmula expresada en la ecuación~\ref{formula}, que podemos observar en la página siguiente. Finalmente dado el estado actual, el proceso comenzará de nuevo eligiendo la siguiente acción. Este procedimiento se recoge en la función \textit{update} (ver Código~\ref{update}), que lleva a cabo el algoritmo \textit{Q-learning}. 
+
+Como se ha visto ya en la \href{https://poliformat.upv.es/portal/site/ESP_0_2835/tool/c07b745a-0cfd-44f0-a7a2-9bb22f80c3f7?panel=Main}{práctica 1} de la asignatura, los valores de la tabla $Q$ únicamente son actualizados cuando se cambia de estado, es decir, si al tomar una acción, el agente se mantiene en el mismo estado, la tabla $Q$ no se actualiza, sino que la recompensa se acumula, de forma que se suman todas las recompensas obtenidas mientras se permanece en un estado, y es cuando se pasa al siguiente, el momento de modificar la tabla $Q$. 
+
+\newpage
+
+La fórmula para obtener el nuevo valor $Q$:
 
 \begin{equation}\label{formula}
 	Q_{(t+1)}(s_{t},a_{t}) = (1-\alpha) * Q_{t}(s_{t},a_{t}) + \alpha * (R(s_{t},a_{t})) + V_{t}(s_{t+1}) - Q_{t}(s_{t},a_{t})
@@ -240,29 +250,52 @@ Una vez que hemos seleccionado los parámetros que vamos a utilizar para represe
 donde,
 
 \begin{conditions}
-Q_{(t+1)}(s_{t},a_{t}) & es el nuevo valor $Q$ dado el estado anterior $s_{t}$ y la acción anterior $a_{t}$. \\
-\alpha & es la tasa de aprendizaje. \\
-R(s_{t},a_{t}) & es el valor de recompensa dado el estado anterior $s_{t}$ y la acción anterior $a_{t}$.	\\
-Q_{t}(s_{t},a_{t}) & es el antiguo valor de $Q$ dado el estado anterior $s_{t}$ y la acción anterior $a_{t}$.	\\
-V_{t}(s_{t+1}) & es el valor de aprendizaje dado el nuevo estado $s_{t+1}$.
+	Q_{(t+1)}(s_{t},a_{t}) & es el nuevo valor $Q$ dado el estado anterior $s_{t}$ y la acción anterior $a_{t}$. \\
+	\alpha & es la tasa de aprendizaje. \\
+	R(s_{t},a_{t}) & es el valor de recompensa dado el estado anterior $s_{t}$ y la acción anterior $a_{t}$.	\\
+	Q_{t}(s_{t},a_{t}) & es el antiguo valor de $Q$ dado el estado anterior $s_{t}$ y la acción anterior $a_{t}$.	\\
+	V_{t}(s_{t+1}) & es el valor de aprendizaje dado el nuevo estado $s_{t+1}$.
 \end{conditions}
 
-\begin{lstlisting}[language=python, basicstyle=\footnotesize]
-TODO
+La función \textit{update} que lleva a cabo el algoritmo \textit{Q-learning}:
+\vspace*{3mm}
+
+\begin{lstlisting}[caption={Función update.}, label={update}, language=python, basicstyle=\footnotesize]
+def update(self, state, action, nextState, reward):
+	"""
+	The parent class calls this to observe a
+	state = action => nextState and reward transition.
+	You should do your Q-Value update here
+	"""
+	reward = reward + self.getReward(state, nextState)  # actualizar recompensa
+	
+	print "Started in state:"
+	self.printInfo(state)
+	print "Took action: ", action
+	print "Ended in state:"
+	self.printInfo(nextState)
+	print "Got reward: ", reward
+	print "---------------------------------"
+
+	# buscar el estado actual en la memoria de estados
+	state_position = self.computePosition(state)
+	action_position = self.actions[action]  # elegir accion
+	# actualizar la tabla Q con la accion elegida
+	self.q_table[state_position][action_position] = (1 - self.alpha) * 
+		self.q_table[state_position][action_position] + self.alpha * (reward + 
+			self.gamma * self.getValue(nextState))
+
+	if nextState.isWin():
+	# If a terminal state is reached
+		self.writeQtable()
 \end{lstlisting}
 
+En la función \textit{update}, primero actualizamos el valor de la recompensa. Esto se debe a que en la función \textit{getReward} (ver Código \ref{reward}), el valor de la variable \textit{reward} inicialmente siempre es 0. Después buscamos el estado actual en la memoria de estados con la función \textit{computePosition} (ver Código~\ref{computePosition}), método que se incluye en la sección~\ref{apendice_update}. Porqué con la finalidad de que el agente Pac-Man pueda aprender, necesita tener a mano todos los estados que ya haya visitado anteriormente, para poder detectar en cuál de ellos se encuentra a medida que va jugando y, en caso de encontrarse en una situación nueva, registrarla para utilizarla posteriormente. En la implementación de la función \textit{statesMemory}, método que se incluye en la sección~\ref{apendice_update}, estos estados se guardan en forma de lista a medida que se van descubriendo (ver Código~\ref{statesMemory}).
 
-Este proyecto se divide en varias tareas pequeñas que deben completarse en consecuencia. La primera tarea gira en torno al diseño de Value-Iteration Agent. Este agente puede planificar su acción dado el conocimiento del entorno antes incluso de interactuar con él. Para ello, debemos calcular los valores Q de las acciones que seguirá el agente y elegir la mejor acción que devolverá el valor Q máximo. Después de diseñar el agente de iteración de valor, necesitamos cambiar el valor de descuento, ruido y vida.
-recompensa para lograr la mejor política óptima.
-
-La siguiente tarea es escribir código para Q learning agent. Este agente, a diferencia del agente de iteración de valor, necesita interactuar activamente con el entorno para que pueda aprender a través de las experiencias. Necesitamos aproximar la función Q de los pares estado-acción a partir de las muestras de Q (s, a) que observamos durante la interacción con el medio ambiente. Después de una aproximación exitosa, el agente debería poder tomar la mejor acción para lograr el objetivo. Q-learning Pacman debería poder ganar al menos el 80\% del tiempo.
-
-Sin embargo, a medida que intentamos utilizar este agente en diseños más grandes, por ejemplo, el mundo Grid medio
-El entrenamiento de PacMan de alguna manera ya no funcionará bien. Para resolver este problema, debemos
-optimizar nuestro agente para implementar también un agente Q-learning aproximado que aprenda los pesos de
-características de los estados, donde muchos estados pueden compartir las mismas características.
-
-
+Como se vió cuando se hablaba de \textit{Q-learning}, el agente aprende modificando los valores
+de la función Q (los valores que hay almacenados en la tabla Q), de forma que cuando se
+realiza la acción action\_position desde el estado state\_position, es el valor Q(s,a) el que se ve modificado de acuerdo a
+la ecuación~\ref{formula}.
 
 Una vez modificado el agente, observamos su comportamiento en uno de los laberintos disponibles de la práctica, ejecutándolo con el siguiente comando:
 
@@ -309,7 +342,7 @@ Todo el contenido de esta práctica se puede encontrar en el repositorio persona
 
 \subsection{Métodos de la función \textit{get\_reward}}\label{apendice_reward}
 
-\begin{lstlisting}[language=python, basicstyle=\footnotesize]
+\begin{lstlisting}[caption={Función getGhostDistances.}, label={getGhostDistances}, language=python, basicstyle=\footnotesize]
 def getGhostDistances(gameState):
 	"""
 	Return distances to each of the ghosts on the map.
@@ -318,7 +351,7 @@ def getGhostDistances(gameState):
 		gameState.data.ghostDistances, gameState.getLivingGhosts()[1:])) if alive]
 \end{lstlisting}
 
-\begin{lstlisting}[language=python, basicstyle=\footnotesize]
+\begin{lstlisting}[caption={Función directionIsBlocked.}, label={directionIsBlocked}, language=python, basicstyle=\footnotesize]
 def directionIsBlocked(gameState, ghost_position):
 	"""
 	Return True if directions are blocked (walls) and False otherwise (no walls).
@@ -344,5 +377,50 @@ def directionIsBlocked(gameState, ghost_position):
 
 \subsection{Métodos de la función \textit{update}}\label{apendice_update}
 
+\begin{lstlisting}[caption={Función computePosition.}, label={computePosition}, language=python, basicstyle=\footnotesize]
+def computePosition(self, state):
+	"""
+	Compute the row of the qtable for a given state.
+	"""
+	pacman_ghost_direction, ghost_position = self.statesMemory(state)
+	hasWall = self.directionIsBlocked(state, ghost_position)
+	actions_value = 0
+	for i, direction in enumerate(pacman_ghost_direction):
+		actions_value += min(self.actions[direction], 2) + i * 4
+	return int(hasWall) * 8 + actions_value
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Función statesMemory.}, label={statesMemory}, language=python, basicstyle=\footnotesize]
+def statesMemory(self, gameState):
+	"""
+	Create states memory.
+	"""
+	# posicion de pacman
+	pacman_position = gameState.getPacmanPosition()
+	
+	# distancia minima al fantasma mas cercano
+	living_ghosts_distances = self.getGhostDistances(gameState)
+	min_distance_ghost_index = min(living_ghosts_distances, key=lambda t: t[1])[0]
+	
+	# posicion del fantasma mas cercano
+	nearest_ghost_position = gameState.getGhostPositions()[min_distance_ghost_index]
+	
+	pacman_ghost_direction = []
+	
+	if (pacman_position[1] - nearest_ghost_position[1]) != 0 \
+			and (pacman_position[1] - nearest_ghost_position[1]) > 0:
+		pacman_ghost_direction.append("South")
+	if (pacman_position[1] - nearest_ghost_position[1]) != 0 \
+			and (pacman_position[1] - nearest_ghost_position[1]) < 0:
+		pacman_ghost_direction.append("North")
+	if (pacman_position[0] - nearest_ghost_position[0]) != 0 \
+			and (pacman_position[0] - nearest_ghost_position[0]) > 0:
+		pacman_ghost_direction.append("West")
+	if (pacman_position[0] - nearest_ghost_position[0]) != 0 \
+			and (pacman_position[0] - nearest_ghost_position[0]) < 0:
+		pacman_ghost_direction.append("East")
+	
+	return pacman_ghost_direction, nearest_ghost_position
+\end{lstlisting}
 
 \end{document}
