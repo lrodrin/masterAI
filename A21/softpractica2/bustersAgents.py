@@ -380,7 +380,7 @@ class RLAgent(BustersAgent):
         # para los estados hayamos utilizado
         #
         ################################################################################################################    TODO
-        pacman_ghost_direction, ghost_position = self.getNearestGhostDirection(state)
+        pacman_ghost_direction, ghost_position = self.statesMem(state)
         hasWall = self.directionIsBlocked(state, ghost_position)
         actions_value = 0
         for i, direction in enumerate(pacman_ghost_direction):
@@ -516,7 +516,7 @@ class RLAgent(BustersAgent):
         # mas cerca de un fantasma y lejos de una pared, no come
         elif min_ghost_distance_next_state > min_ghost_distances_actual_state and not actual_state_has_walls \
                 and number_ghost_next_state == number_ghost_actual_state:
-            reward += 3
+            reward += 1
 
         # mas cerca de un fantasma y cerca de una pared, no come
         elif min_ghost_distance_next_state > min_ghost_distances_actual_state and actual_state_has_walls \
@@ -542,6 +542,7 @@ class RLAgent(BustersAgent):
         You should do your Q-Value update here
         """
         reward = reward + self.getReward(state, nextState)  # actualizar recompensa
+
         print "Started in state:"
         self.printInfo(state)
         print "Took action: ", action
@@ -557,12 +558,12 @@ class RLAgent(BustersAgent):
         # para determinar si nextState es terminal o no, se puede utilizar la funcion nextState.isWin().
         #
         ################################################################################################################
-        # determinar estado actual del agente
+        # buscar el estado actual en la memoria de estados
         state_position = self.computePosition(state)
         action_position = self.actions[action]  # elegir accion
-        # actualizar la tabla Q
-        self.q_table[state_position][action_position] = (1 - self.alpha) * self.q_table[state_position][
-            action_position] + self.alpha * (reward + self.gamma * self.getValue(nextState))
+        # actualizar la tabla Q con la accion elegida
+        self.q_table[state_position][action_position] = (1 - self.alpha) * self.q_table[state_position][action_position] \
+            + self.alpha * (reward + self.gamma * self.getValue(nextState))
         ################################################################################################################
         if nextState.isWin():
             # If a terminal state is reached
@@ -612,31 +613,34 @@ class RLAgent(BustersAgent):
 
         return np.any(np.all(grid_beetween, axis=1)) or np.any(np.all(grid_beetween, axis=0))
 
-    def getManhattanDistance(self, pointa, pointb):
-        return abs(pointa[0] - pointb[0]) + abs(pointa[1] + pointb[1])
-
-    def getDirection(self, pacman, ghost):
-
-        direction = []
-        if (pacman[1] - ghost[1]) != 0 and (pacman[1] - ghost[1]) > 0:
-            direction.append("South")
-        if (pacman[1] - ghost[1]) != 0 and (pacman[1] - ghost[1]) < 0:
-            direction.append("North")
-        if (pacman[0] - ghost[0]) != 0 and (pacman[0] - ghost[0]) > 0:
-            direction.append("West")
-        if (pacman[0] - ghost[0]) != 0 and (pacman[0] - ghost[0]) < 0:
-            direction.append("East")
-        return direction
-
-    def getNearestGhostDirection(self, gameState):
+    def statesMem(self, gameState):
+        """
+        Create states memory.
+        """
+        # posicion de pacman
         pacman_position = gameState.getPacmanPosition()
 
+        # distancia minima al fantasma mas cercano
         living_ghosts_distances = self.getGhostDistances(gameState)
         min_distance_ghost_index = min(living_ghosts_distances, key=lambda t: t[1])[0]
 
+        # posicion del fantasma mas cercano
         nearest_ghost_position = gameState.getGhostPositions()[min_distance_ghost_index]
 
-        pacman_ghost_direction = self.getDirection(pacman_position, nearest_ghost_position)
+        pacman_ghost_direction = []
+
+        if (pacman_position[1] - nearest_ghost_position[1]) != 0 \
+                and (pacman_position[1] - nearest_ghost_position[1]) > 0:
+            pacman_ghost_direction.append("South")
+        if (pacman_position[1] - nearest_ghost_position[1]) != 0 \
+                and (pacman_position[1] - nearest_ghost_position[1]) < 0:
+            pacman_ghost_direction.append("North")
+        if (pacman_position[0] - nearest_ghost_position[0]) != 0 \
+                and (pacman_position[0] - nearest_ghost_position[0]) > 0:
+            pacman_ghost_direction.append("West")
+        if (pacman_position[0] - nearest_ghost_position[0]) != 0 \
+                and (pacman_position[0] - nearest_ghost_position[0]) < 0:
+            pacman_ghost_direction.append("East")
 
         return pacman_ghost_direction, nearest_ghost_position
 
