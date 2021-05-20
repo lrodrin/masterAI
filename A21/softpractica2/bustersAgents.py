@@ -557,10 +557,12 @@ class RLAgent(BustersAgent):
         # para determinar si nextState es terminal o no, se puede utilizar la funcion nextState.isWin().
         #
         ################################################################################################################
-        state_position = self.computePosition(state)    # determinar estado actual del agente
+        # determinar estado actual del agente
+        state_position = self.computePosition(state)
         action_position = self.actions[action]  # elegir accion
+        # actualizar la tabla Q
         self.q_table[state_position][action_position] = (1 - self.alpha) * self.q_table[state_position][
-            action_position] + self.alpha * (reward + self.gamma * self.getValue(nextState))    # actualizar la tabla Q
+            action_position] + self.alpha * (reward + self.gamma * self.getValue(nextState))
         ################################################################################################################
         if nextState.isWin():
             # If a terminal state is reached
