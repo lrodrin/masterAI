@@ -389,7 +389,6 @@ class RLAgent(BustersAgent):
         ################################################################################################################
 
     def getQValue(self, state, action):
-
         """
         Returns Q(state,action)
         Should return 0.0 if we have never seen a state
@@ -558,16 +557,15 @@ class RLAgent(BustersAgent):
         # para determinar si nextState es terminal o no, se puede utilizar la funcion nextState.isWin().
         #
         ################################################################################################################
-        state_position = self.computePosition(state)
-        action_position = self.actions[action]
+        state_position = self.computePosition(state)    # determinar estado actual del agente
+        action_position = self.actions[action]  # elegir accion
         self.q_table[state_position][action_position] = (1 - self.alpha) * self.q_table[state_position][
-            action_position] + self.alpha * (reward + self.gamma * self.getValue(nextState))
+            action_position] + self.alpha * (reward + self.gamma * self.getValue(nextState))    # actualizar la tabla Q
         ################################################################################################################
         if nextState.isWin():
             # If a terminal state is reached
             self.writeQtable()
-
-        #################################################################################################
+        ################################################################################################################
 
     def getPolicy(self, state):
         """
