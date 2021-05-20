@@ -380,7 +380,7 @@ class RLAgent(BustersAgent):
         # para los estados hayamos utilizado
         #
         ################################################################################################################    TODO
-        pacman_ghost_direction, ghost_position = self.statesMem(state)
+        pacman_ghost_direction, ghost_position = self.statesMemory(state)
         hasWall = self.directionIsBlocked(state, ghost_position)
         actions_value = 0
         for i, direction in enumerate(pacman_ghost_direction):
@@ -613,7 +613,7 @@ class RLAgent(BustersAgent):
 
         return np.any(np.all(grid_beetween, axis=1)) or np.any(np.all(grid_beetween, axis=0))
 
-    def statesMem(self, gameState):
+    def statesMemory(self, gameState):
         """
         Create states memory.
         """
