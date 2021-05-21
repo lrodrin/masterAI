@@ -290,12 +290,8 @@ def update(self, state, action, nextState, reward):
 		self.writeQtable()
 \end{lstlisting}
 
-En la función \textit{update}, primero actualizamos el valor de la recompensa. Esto se debe a que en la función \textit{getReward} (ver Código \ref{reward}), el valor de la variable \textit{reward} inicialmente siempre es 0. Después buscamos el estado actual en la memoria de estados con la función \textit{computePosition} (ver Código~\ref{computePosition}), método que se incluye en la sección~\ref{apendice_update}. Porqué con la finalidad de que el agente Pac-Man pueda aprender, necesita tener a mano todos los estados que ya haya visitado anteriormente, para poder detectar en cuál de ellos se encuentra a medida que va jugando y, en caso de encontrarse en una situación nueva, registrarla para utilizarla posteriormente. En la implementación de la función \textit{statesMemory}, método que se incluye en la sección~\ref{apendice_update}, estos estados se guardan en forma de lista a medida que se van descubriendo (ver Código~\ref{statesMemory}).
-
-Como se vió cuando se hablaba de \textit{Q-learning}, el agente aprende modificando los valores
-de la función Q (los valores que hay almacenados en la tabla Q), de forma que cuando se
-realiza la acción action\_position desde el estado state\_position, es el valor Q(s,a) el que se ve modificado de acuerdo a
-la ecuación~\ref{formula}.
+En la función \textit{update}, primero actualizamos el valor de la recompensa. Esto se debe a que en la función \textit{getReward} (ver Código \ref{reward}), el valor de la variable \textit{reward} inicialmente siempre es 0. Después buscamos el estado actual en la memoria de estados con la función \textit{computePosition} (ver Código~\ref{computePosition}), método que se incluye en la sección~\ref{apendice_update}. El agente Pac-Man aprende modificando los valores $Q$ (valores que hay almacenados en la tabla $Q$), de forma que cuando se realiza la acción \textit{action\_position} desde el estado \textit{state\_position}, es el valor $Q(s,a)$ el que se ve modificado de acuerdo a la fórmula expresada en la ecuación~\ref{formula}. Con la finalidad de que el agente pueda aprender, necesita tener a mano todos los estados que ya haya visitado anteriormente, para poder detectar en cuál de ellos se encuentra a medida que va jugando y, en caso de encontrarse en una situación nueva, registrarla para utilizarla posteriormente. En la implementación de la función \textit{statesMemory}, método que se incluye en la sección~\ref{apendice_update}, estos estados se guardan en forma de lista a medida que se van descubriendo (ver Código~\ref{statesMemory}).
+\vspace*{3mm}
 
 Una vez modificado el agente, observamos su comportamiento en uno de los laberintos disponibles de la práctica, ejecutándolo con el siguiente comando:
 
@@ -303,7 +299,7 @@ Una vez modificado el agente, observamos su comportamiento en uno de los laberin
 python busters.py -p RLAgent -k 1 -l lab1.lay -n 100
 \end{lstlisting}
 
-Con ello, hemos ejecutado durante 100 partidas el agente que acabamos de crear en el laberinto \textit{lab1}, que únicamente tiene un fantasma. Lo volvemos a ejecutar, pero esta vez en el laberinto \textit{lab2} que tiene dos fantasmas, con el uso del siguiente comando:
+Con ello, hemos ejecutado durante 100 partidas el agente que acabamos de crear en el laberinto \textit{lab1}, que únicamente tiene un fantasma (ver Figura). Lo volvemos a ejecutar, pero esta vez en el laberinto \textit{lab2} que tiene dos fantasmas, con el uso del siguiente comando:
 
 \begin{lstlisting}[language=python, basicstyle=\footnotesize]
 python busters.py -p RLAgent -k 2 -l lab2.lay -n 100
@@ -314,6 +310,8 @@ Finalmente, también lo ejecutamos en el último de los laberintos disponibles d
 \begin{lstlisting}[language=python, basicstyle=\footnotesize]
 python busters.py -p RLAgent -k 3 -l lab3.lay -n 100
 \end{lstlisting}
+
+El agente Pac-Man toma decisiones cada vez que llega a una intersección, momento en que mira el estado del juego, ve en qué situación se encuentra, y en base a los conocimientos aprendidos toma la decisión de moverse en una dirección u otra. También, en aquellos momentos en que se le proporciona información acerca de los fantasmas, el agente también toma decisiones en el momento en que percibe a un fantasma demasiado cerca de él, momento en el cual decide atacar, aunque no se encuentre en una intersección. El agente aprende a perseguir a los fantasmas, que son los que le reportan mayor beneficio. Elige caminos que contienen la mayor cantidad de fantasmas, desviándose a veces si ve que tiene un fantasma comestible cerca.
 
 \section{Resultados}\label{resultados}
 
@@ -333,8 +331,14 @@ En esta sección exponemos los resultados obtenidos en las ejecuciones realizada
 	\caption{Resultados de las ejecuciones del agente Pac-Man.}
 	\label{resultados_ejecuciones}
 \end{table}
+
+Podemos ver que la técnica de \textit{Q-learning} implementada en el agente Pac-man es lo suficientemente inteligente para vencer en los tres mapas.
+ 
 \section{Conclusiones}\label{conclusiones}
 
+\textit{Q-learning} en estos casos, es sin duda un método que parece efectivo. Sin embargo, requiere realizar muchos experimentos para estudiar la viabilidad de las soluciones propuestas. En concreto lo que más problemas me ha dado ha sido la tarea de diseñar los casos, y de cómo utilizar la información que contienen para hacer que el sistema evolucione a medida que se simulan las partidas. Conseguir un equilibrio para que los casos no sean demasiado específicos (y por tanto se reutilicen pocas veces), ni tampoco demasiado generales (y no aporten soluciones especialmente útiles), es complicado y requiere de muchas pruebas hasta encontrar los parámetros que mejor se adaptasen al objetivo perseguido.
+
+Personalmente uno de los mayores retos de esta práctica ha sido la implementación de todo el código para operar con el agente Pac-Man. El videojuego que se utiliza parece a priori sencillo, pero representa un dominio que se puede volver extremadamente complejo cuando pretendes que un agente aprenda a jugar. Un jugador humano procesa información visual y la aplica muy rápido cuando toma decisiones, pero para conseguir que una máquina haga lo mismo, se necesita un grado de abstracción de esa información que en ocasiones se ha vuelto muy difícil de conseguir. Ha sido de gran ayuda que muchas personas hayan resuelto este problema de diferentes maneras, ya me ha dado la posibilidad de aprender y tener una implementación base con la que guiarme.
 
 Todo el contenido de esta práctica se puede encontrar en el repositorio personal de GitHub: \url{https://github.com/lrodrin/masterAI/tree/master/A21/softpractica2}.
 
