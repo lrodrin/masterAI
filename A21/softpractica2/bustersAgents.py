@@ -522,7 +522,7 @@ class RLAgent(BustersAgent):
         # mas cerca de un fantasma y cerca de una pared, no come
         elif min_ghost_distance_next_state > min_ghost_distances_actual_state and actual_state_has_walls \
                 and number_ghost_next_state == number_ghost_actual_state:
-            reward += 1
+            reward += 2
 
         # cerca de una pared, no come
         if not actual_state_has_walls and next_state_has_walls \
