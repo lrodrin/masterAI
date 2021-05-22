@@ -500,7 +500,7 @@ class RLAgent(BustersAgent):
         next_state_has_walls = self.directionIsBlocked(nextState,
                                                        nextState.getGhostPositions()[min_distance_ghost_next_State])
 
-        # come fantasma o punto
+        # come fantasma
         if number_ghost_next_state < number_ghost_actual_state:
             reward += 100
 
