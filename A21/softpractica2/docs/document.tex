@@ -9,6 +9,7 @@
 \usepackage{graphicx}
 \usepackage{parcolumns}
 \usepackage{array}
+\usepackage{caption}
 
 \newenvironment{conditions}
 {\par\vspace{\abovedisplayskip}\noindent\begin{tabular}{>{$}l<{$} @{${}\:{}$} l}}
@@ -128,37 +129,38 @@ self.epsilon = 0.01
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[scale=0.5]{average_score}
-	\caption{Ejemplo de ejecución que muestra el  \textit{Average Score} obtenido.}
+	\includegraphics[scale=0.6]{average_score}
+	\caption{Ejemplo de ejecución del agente Pac-Man \\ que nos muestra el \textit{Average Score} obtenido.}
 	\label{average_score}
 \end{figure}
 
 
 \section{Función de refuerzo}\label{refuerzo}
 
-Una vez que se han adaptado los parámetros del agente Pac-Man podemos diseñar la función de refuerzo. La función de refuerzo determinará las recompensas que obtenga el agente. Determinar las recompensas que obtiene el agente con cada acción es clave para su aprendizaje, pues marcará cómo de buenas serán unas acciones frente a otras y por lo tanto determinará qué tipo de comportamientos decidimos potenciar. La siguiente lista enumera las diferentes acciones con sus valores de recompensa que se han elegido:
+Una vez que se han adaptado los parámetros del agente Pac-Man ya podemos diseñar la función de refuerzo. La función de refuerzo determinará las recompensas que obtenga el agente. Determinar las recompensas que obtiene el agente con cada acción es clave para su aprendizaje, pues marcará cómo de buenas serán unas acciones frente a otras y por lo tanto determinará qué tipo de comportamientos decidimos potenciar. La siguiente lista enumera las diferentes acciones que he decidido potenciar, con sus valores de recompensa correspondientes:
 
 \begin{itemize}
 	\item \textbf{Ganar}: este estado se muestra cuando el agente Pac-Man gana la partida. Ganamos 1000 puntos de recompensa.
 	
-	\item \textbf{Comer}: este estado se muestra cuando el agente Pac-Man se come a un fantasma o a un punto. Ganamos 100 puntos de recompensa.
+	\item \textbf{Comer}: este estado se muestra cuando el agente Pac-Man se come a un fantasma. Ganamos 100 puntos de recompensa.
 	
 	\item \textbf{Lejos de un fantasma y lejos de una pared}: este estado se muestra cuando el agente Pac-Man está al menos a cinco celdas del fantasma más cercano y de la pared más cercana. En este caso, ganamos 1 punto de recompensa.
 	
 	\item \textbf{Lejos de un fantasma y cerca de una pared}: este estado se muestra cuando el agente Pac-Man está al menos a cinco celdas del fantasma más cercano y está a un máximo de cuatro celdas de la pared más cercana. En este caso, perdemos 1 punto de recompensa.
 	
-	\item \textbf{Cerca de un fantasma y lejos de una pared}: este estado se muestra cuando el agente Pac-Man está a un máximo de cuatro celdas del fantasma más cercano y está al menos a cinco celdas de la pared más cercana.  En este caso, ganamos 1 punto de recompensa.
+	\item \textbf{Cerca de un fantasma y lejos de una pared}: este estado se muestra cuando el agente Pac-Man está a un máximo de cuatro celdas del fantasma más cercano y está al menos a cinco celdas de la pared más cercana.  En este caso, ganamos 3 puntos de recompensa.
 	
-	\item \textbf{Cerca de un fantasma y cerca de una pared}: este estado se muestra cuando el agente Pac-Man está a un máximo de cuatro celdas del fantasma más cercano y de la pared más cercana. En este caso, perdemos 1 punto de recompensa.
+	\item \textbf{Cerca de un fantasma y cerca de una pared}: este estado se muestra cuando el agente Pac-Man está a un máximo de cuatro celdas del fantasma más cercano y de la pared más cercana. En este caso, ganamos 2 puntos de recompensa.
 	
-	\item \textbf{Cerca de una pared}: este estado se muestra cuando el agente Pac-Man está a un máximo de cuatro celdas de la pared más cercana. En este caso, perdemos 4 puntos de recompensa.
+	\item \textbf{Cerca de una pared}: este estado se muestra cuando el agente Pac-Man está a un máximo de cuatro celdas de la pared más cercana. En este caso, perdemos 3 puntos de recompensa.
 	
 	\item \textbf{Lejos de una pared}: este estado se muestra cuando el agente Pac-Man está al menos a cinco celdas de la pared más cercana. En este caso, ganamos 1 punto de recompensa.
 \end{itemize}
 
-En la acción Comer, el agente Pac-Man recuerda la posición del fantasma más cercano y elige la dirección (north, east, south o west) que lo lleva hasta él por el camino más corto. Como se puede observar, la definición de las recompensas es determinista, aunque las acciones dependan de la posición de los fantasmas. Por facilidad, se han definido valores de recompensa concretos para cada acción en particular. La función de refuerzo desarrollada se muestra a continuación:
+En todas las acciones, el agente Pac-Man recuerda la posición del fantasma más cercano y elige una de las direcciones disponibles: \textit{north, east, south o west} para llegar al fantasma por el camino más corto. Como se puede observar, se han definido las recompensas mediante valores enteros, aunque las acciones dependan de la posición de los fantasmas respecto a la posición del agente. Se ha tomado esta decisión al fin de facilitar el código desarrollado y se han definido los valores de recompensa para cada acción en particular. La elección de los valores concretos de recompensa se han realizado un poco al azar, siguiendo mi propio criterio. La función de refuerzo desarrollada se muestra a continuación:
+\vspace*{3mm}
 
-\begin{lstlisting}[caption={Función de refuerzo.}, label={reward}, language=python, basicstyle=\footnotesize]
+\begin{lstlisting}[caption={Función de refuerzo.}, label={reward}, language=python, basicstyle=\scriptsize]
 def getReward(self, state, nextState):
 	"""
 	Return a reward value based on the information of state and nextState
@@ -174,12 +176,11 @@ def getReward(self, state, nextState):
 	actual_state_ghost_distances = self.getGhostDistances(nextState)
 	
 	# distancia minima al fantasma mas cercano en el siguiente estado
-	min_distance_ghost_next_State = min(next_state_ghost_distances, 
-		key=lambda t: t[1])[0]
-	min_ghost_distance_next_state = nextState.data.ghostDistances[min_distance_ghost_next_State]
+	min_distance_ghost_next_State = min(next_state_ghost_distances, key=lambda t: t[1])[0]
+	min_ghost_distance_next_state = nextState.data.ghostDistances[
+		min_distance_ghost_next_State]
 	# distancia al fantasma mas cercano en el estado actual
-	min_distance_ghost_actual_State = min(actual_state_ghost_distances, 
-		key=lambda t: t[1])[0]
+	min_distance_ghost_actual_State = min(actual_state_ghost_distances, key=lambda t: t[1])[0]
 	min_ghost_distances_actual_state = state.data.ghostDistances[min_distance_ghost_actual_State]
 	
 	# numero de fantasmas en el estado actual
@@ -191,48 +192,53 @@ def getReward(self, state, nextState):
 	
 	# distancia a la pared mas cercana en el estado actual
 	actual_state_has_walls = self.directionIsBlocked(state,
-		state.getGhostPositions()[min_distance_ghost_next_State])
+	state.getGhostPositions()[min_distance_ghost_next_State])
 	# distancia a la pared mas cercana en el siguiente estado
-		next_state_has_walls = self.directionIsBlocked(nextState,
+	next_state_has_walls = self.directionIsBlocked(nextState,
 	nextState.getGhostPositions()[min_distance_ghost_next_State])
 	
-	# come fantasma o punto
+	# come fantasma
 	if number_ghost_next_state < number_ghost_actual_state:
 		reward += 100
 	
 	# mas lejos de un fantasma y lejos de una pared, no come
-	if min_ghost_distance_next_state < min_ghost_distances_actual_state and not actual_state_has_walls \
-			and number_ghost_next_state == number_ghost_actual_state:
+	if min_ghost_distance_next_state < min_ghost_distances_actual_state \
+			and not actual_state_has_walls \
+				and number_ghost_next_state == number_ghost_actual_state:
 		reward += 1
 	
 	# mas lejos de un fantasma y cerca de una pared, no come
-	elif min_ghost_distance_next_state < min_ghost_distances_actual_state and actual_state_has_walls \
-			and number_ghost_next_state == number_ghost_actual_state:
-		reward += -1
+	elif min_ghost_distance_next_state < min_ghost_distances_actual_state \
+			and actual_state_has_walls \
+				and number_ghost_next_state == number_ghost_actual_state:
+		reward -= 1
 	
 	# mas cerca de un fantasma y lejos de una pared, no come
-	elif min_ghost_distance_next_state > min_ghost_distances_actual_state and not actual_state_has_walls \
-			and number_ghost_next_state == number_ghost_actual_state:
-		reward += 1
+	elif min_ghost_distance_next_state > min_ghost_distances_actual_state \
+			and not actual_state_has_walls \
+				and number_ghost_next_state == number_ghost_actual_state:
+		reward += 3
 	
 	# mas cerca de un fantasma y cerca de una pared, no come
-	elif min_ghost_distance_next_state > min_ghost_distances_actual_state and actual_state_has_walls \
+	elif min_ghost_distance_next_state > min_ghost_distances_actual_state \
+		and actual_state_has_walls \
 			and number_ghost_next_state == number_ghost_actual_state:
-		reward += -1
+		reward += 2
 	
 	# cerca de una pared, no come
 	if not actual_state_has_walls and next_state_has_walls \
 			and number_ghost_next_state == number_ghost_actual_state:
-		reward -= 4
+		reward -= 3
+		
 	# lejos de una pared, no come
 	elif actual_state_has_walls and not next_state_has_walls \
 			and number_ghost_next_state == number_ghost_actual_state:
 		reward += 1
 	
-	return reward	
+	return reward
 \end{lstlisting}
 
-Los métodos auxiliares \textit{getGhostDistances} (ver Código~\ref{getGhostDistances}) y \textit{directionIsBlocked} (ver Código~\ref{directionIsBlocked}) se incluyen en la sección~\ref*{apendice_reward}.
+Los métodos auxiliares de la función de refuerzo como el método \textit{getGhostDistances}, que muestra las distancias entre los fantasmas y el agente Pac-Man (ver Código~\ref{getGhostDistances}), y el método \textit{directionIsBlocked}, que nos indica si la dirección tomada por el agente se bloquea por una pared (ver Código~\ref{directionIsBlocked}), se incluyen en la sección~\ref*{apendice_reward}.
 
 \section{Código desarrollado}\label{codigo}
 
