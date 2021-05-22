@@ -54,3 +54,18 @@ Ejecutar un agente que controla a pac-man de forma automática. Para ello, ejecu
 ```bash
 python busters.py -p RLAgent
 ```
+
+- en lab1:
+```bash
+python busters.py -p RLAgent -k 1 -l lab1.lay -n 100
+```
+
+- en lab2:
+```bash
+python busters.py -p RLAgent -k 2 -l lab2.lay -n 100
+```
+  
+- en lab3:
+```bash
+python busters.py -p RLAgent -k 3 -l lab3.lay -n 100
+```
