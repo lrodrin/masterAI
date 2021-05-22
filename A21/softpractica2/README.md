@@ -49,7 +49,7 @@ Options:
                         [Default: 0.1]
 ```
 
-Ejecutar un agente que controla a pac-man de forma automática. Para ello, ejecuta el siguiente comando:
+Ejecutar un agente que controla a Pac-Man de forma automática. Para ello:
 
 ```bash
 python busters.py -p RLAgent
