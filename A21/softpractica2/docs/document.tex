@@ -61,7 +61,11 @@ En la sección~\ref{estados} se justifica el conjunto de atributos elegido y su 
 
 \section{Definición de los estados}\label{estados}
 
-En esta sección, a fin de definir los estados, hay que seleccionar unos valores adecuados para los parámetros: \textit{nRowsQTable, alpha, gamma y epsilon}. Primero intentaremos descubrir el valor del parámetro \textit{nRowsQTable}, o que es lo mismo, intentaremos descubrir cuántas filas debe tener la \textit{QTable}. Este valor dependerá de las características seleccionadas para representar los estados, ya que según estas características tendremos un número diferente de filas en la \textit{QTable}. Nos fijamos en la información que nos proporciona la función \textit{printInfo}, concretamente en la información de los mapas \textit{Walls} y \textit{Food}. Según esta información (T/F) y las direcciones que puede ejecutar el agente: north, east, south y west, las características elegidas son:
+En esta sección, a fin de definir los estados, hay que seleccionar unos valores adecuados para los parámetros: \textit{nRowsQTable, alpha, gamma y epsilon}. Primero intentaremos descubrir el valor del parámetro \textit{nRowsQTable}, o que es lo mismo, intentaremos descubrir cuántas filas debe tener la \textit{QTable}. Este valor dependerá de las características seleccionadas para representar los estados, ya que según estas características nos modificará el número de filas de nuestra \textit{QTable}. Nos fijamos en la información que nos proporciona la función \textit{printInfo} durante una ejecución manual del agente, concretamente nos fijamos en la información de los mapas \textit{Walls} y \textit{Food}. Según esta información, que nos indica la presencia y ausencia de paredes y comida en los mapas \textit{Walls} y \textit{Food}, y la información de las direcciones que puede ejecutar el agente Pac-Man: \textit{north, east, south y west}, elegimos 16 características.
+
+\newpage
+
+Las 16 características elegidas son:
 
 \begin{parcolumns}{2}
 	\colplacechunks
@@ -90,31 +94,28 @@ En esta sección, a fin de definir los estados, hay que seleccionar unos valores
 \end{parcolumns}
 \vspace*{3mm}
 
-Se han elegido 16 características, de este modo el valor del parámetro \textit{nRowsQTable} tendrá que ser igual a 16. Adaptamos el valor de \textit{nRowsQTable}:
+Según el número de características (16), modificamos el valor del parámetro \textit{nRowsQTable}, de la función \textit{registerInitialState} en la clase \textit{RLAgent} del archivo \textit{bustersAgents.py}, de la siguiente manera:
 
 \begin{lstlisting}[language=python, basicstyle=\footnotesize]
 self.nRowsQTable = 16
 \end{lstlisting}
 
-También tenemos que adaptar los parámetros \textit{alpha, gamma y epsilon}. Pero primero realizamos una pequeña descripción de estos:
+También tenemos que modificar los parámetros \textit{alpha, gamma y epsilon}. Pero primero realizamos una pequeña descripción de estos a continuación:
 
 \begin{itemize}
-	\item Alpha ($\alpha$). Este valor toma valores entre 0 y 1. Cuando este valor es 0, entonces no hay aprendizaje y siempre se utiliza el valor de $Q$ inicial. Cuando este valor es 1, entonces el aprendizaje no conserva ningún porcentaje del valor de $Q$. Es decir, si el valor $\alpha$ se acerca a 0, el valor de $Q$ no variará mucho; y si el valor $\alpha$ se acerca a 1, el valor de $Q$ variará mucho.
+	\item Alpha ($\alpha$). Este valor toma valores entre 0 y 1. Cuando este valor es 0, entonces no hay aprendizaje y siempre se utiliza el valor $Q$ inicial. Cuando este valor es 1, entonces el aprendizaje no conserva ningún porcentaje del valor $Q$. Es decir, si el valor $\alpha$ se acerca a 0, el valor $Q$ no variará mucho, y si el valor $\alpha$ se acerca a 1, el valor $Q$ variará mucho.
+	
 	\item Gamma ($\gamma$). Este valor toma valores entre 0 y 1. Cuando este valor es 0, entonces el aprendizaje ignorará el valor dado por el modelo de aprendizaje y aprenderá solo con el valor de la recompensa. Cuando este valor es 1, entonces el aprendizaje utilizará el valor total dado por el modelo de aprendizaje.
-	\item Epsilon ($\epsilon$). Numera los pasos para disminuir el valor $\alpha$. El valor $\alpha$ se reducirá para cada 10 decisiones tomadas. Por ejemplo, si este valor es 0.01, se reduce 0.01 el valor de $\alpha$ por cada 10 decisiones tomadas.
+	
+	\item Epsilon ($\epsilon$). Numera los pasos para disminuir el valor $\alpha$. El valor $\alpha$ se reducirá para cada $n$ decisiones tomadas. Por ejemplo, si este valor es 0.01, se reduciría 0.01 el valor de $\alpha$ por cada 10 decisiones tomadas, donde $n$=10.
 \end{itemize}
 
-El proceso para adaptar los parámetros se realiza con el entrenamiento de una inteligencia simple (sin usar el aprendizaje automático). Esta inteligencia simple se compone de un objetivo muy singular, el agente Pac-Man atacando a uno de los fantasmas. Con esa finalidad, ejecutamos el siguiente comando con diferentes valores de \textit{alpha, gamma y epsilon} y observamos el valor resultante \textit{Average Score} en cada ejecución (ver Figura~\ref{average_score}). Este valor nos indica el valor promedio máximo de las puntuaciones obtenidas durante las partidas, o lo que es lo mismo, el valor promedio máximo de $Q$ durante las partidas.
+El proceso para elegir los parámetros \textit{nRowsQTable, alpha, gamma y epsilon} se ha realizado con el entrenamiento de una inteligencia simple (sin usar el aprendizaje automático). Esta inteligencia simple se compone de un objetivo muy singular: el agente Pac-Man atacando a uno de los fantasmas en el primer laberinto disponible (\textit{lab1.lay}). Con esa finalidad, ejecutamos el comando \textit{python busters.py -p RLAgent -k 1 -l lab1.lay -n 100} varias veces, con diferentes valores de \textit{alpha, gamma y epsilon} observando el valor resultante \textit{Average Score} de las distintas ejecuciones (ver Figura~\ref{average_score}). El valor \textit{Average Score} nos indicará el valor promedio máximo de las puntuaciones obtenidas durante 100 partidas, o lo que es lo mismo, el valor promedio máximo $Q$ durante 100 partidas. Si este valor es positivo habremos ganado la partida, en caso contrario, habremos perdido la partida.
 
-\begin{lstlisting}[language=bash, basicstyle=\footnotesize]
-python busters.py -p RLAgent -k 1 -l lab1.lay -n 100
-\end{lstlisting}
+Por ejemplo, con los valores: \textit{alpha=1} , \textit{gamma=0.8} y \textit{epsilon=0.05} observaremos que el valor \textit{Average Score} será menor que con los valores: \textit{alpha=0.2}, \textit{gamma=0.8} y \textit{epsilon=0.05}. Otro ejemplo, con los valores: \textit{alpha=0.4}, \textit{gamma=0.8} y \textit{epsilon=0.05} observaremos que el valor \textit{Average Score} también será menor que con los valores: \textit{alpha=0.2}, \textit{gamma=0.8} y \textit{epsilon=0.05}. Así, consideramos que la mejor asignación de los parámetros en estos ejemplos son los valores: \textit{alpha=0.2}, \textit{gamma=0.8} y \textit{epsilon=0.05}.
 
-Por ejemplo, con los valores: \textit{alpha = 1} , \textit{gamma = 0.8} y \textit{epsilon = 0.05}, el valor de \textit{Average Score} es menor que con los valores: \textit{alpha = 0.2}, \textit{gamma = 0.8} y \textit{epsilon = 0.05}. Otro ejemplo, con los valores: \textit{alpha = 0.4}, \textit{gamma = 0.8} y \textit{epsilon = 0.05}, el valor de \textit{Average Score} también es menor que con los valores: \textit{alpha = 0.2}, \textit{gamma = 0.8} y \textit{epsilon = 0.05}. Así, consideramos que la mejor asignación de parámetros es con los valores: \textit{alpha = 0.2}, \textit{gamma = 0.8} y \textit{epsilon = 0.05}.
-
-Durante el proceso para adaptar los parámetros, los valores de \textit{epsilon} siempre toman valores muy próximos a 0, esto refleja un comportamiento aprendido en la \href{https://poliformat.upv.es/portal/site/ESP_0_2835/tool/c07b745a-0cfd-44f0-a7a2-9bb22f80c3f7?panel=Main}{práctica 1} de la asignatura. En esta práctica aprendimos que si en una estrategia $\epsilon$-greedy el valor de $\epsilon$ es más pequeño, entonces la probabilidad de que el agente \textit{Q-learning} tome decisiones aleatorias será menor. Así, si la aleatoriedad es menor, menor será la inestabilidad del agente Pac-Man. Como a consecuencia, el promedio del valor máximo de $Q$ será mayor, que corresponde a una mejor puntuación en el videojuego.
-
-\newpage 
+Durante el proceso para elegir los parámetros, los valores de \textit{epsilon} siempre han tomado valores muy próximos a 0, esto refleja un comportamiento aprendido en la \href{https://poliformat.upv.es/portal/site/ESP_0_2835/tool/c07b745a-0cfd-44f0-a7a2-9bb22f80c3f7?panel=Main}{práctica 1} de la asignatura. En esta práctica aprendimos que si en una estrategia $\epsilon$-greedy el valor de $\epsilon$ es más pequeño, entonces la probabilidad de que el agente \textit{Q-learning} tome decisiones aleatorias será menor. Si la aleatoriedad es menor, menor será la inestabilidad del agente \textit{Q-learning}, en este caso la del agente Pac-Man. Como a consecuencia, el promedio del valor máximo $Q$ será mayor, que es equivalente a una mejor puntuación en el videojuego alcanzando el objetivo del agente.
+\vspace*{3mm}
 
 Los mejores valores encontrados para los parámetros son los siguientes:
 \vspace*{3mm}
