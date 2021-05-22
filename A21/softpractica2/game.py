@@ -715,8 +715,8 @@ class Game:
                 boinc.set_fraction_done(self.getProgress())
 
 	    if "update" in dir( agent ) :
-		#reward = agent.getReward(observation, self.state)
-		agent.update(observation, action, self.state, 0)
+		reward = agent.getReward(observation, self.state)
+		agent.update(observation, action, self.state, reward)
 
         # inform a learning agent of the game result
         for agentIndex, agent in enumerate(self.agents):

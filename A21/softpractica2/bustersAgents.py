@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -57,7 +57,8 @@ class KeyboardInference(inference.InferenceModule):
         Begin with a uniform distribution over ghost positions.
         """
         self.beliefs = util.Counter()
-        for p in self.legalPositions: self.beliefs[p] = 1.0
+        for p in self.legalPositions:
+            self.beliefs[p] = 1.0
         self.beliefs.normalize()
 
     def observe(self, observation, gameState):
@@ -511,28 +512,29 @@ class RLAgent(BustersAgent):
         # mas lejos de un fantasma y cerca de una pared, no come
         elif min_ghost_distance_next_state < min_ghost_distances_actual_state and actual_state_has_walls \
                 and number_ghost_next_state == number_ghost_actual_state:
-            reward += -1
+            reward -= 1
 
         # mas cerca de un fantasma y lejos de una pared, no come
         elif min_ghost_distance_next_state > min_ghost_distances_actual_state and not actual_state_has_walls \
                 and number_ghost_next_state == number_ghost_actual_state:
-            reward += 1
+            reward += 3
 
         # mas cerca de un fantasma y cerca de una pared, no come
         elif min_ghost_distance_next_state > min_ghost_distances_actual_state and actual_state_has_walls \
                 and number_ghost_next_state == number_ghost_actual_state:
-            reward += -1
+            reward += 1
 
         # cerca de una pared, no come
         if not actual_state_has_walls and next_state_has_walls \
                 and number_ghost_next_state == number_ghost_actual_state:
-            reward -= 4
+            reward -= 3
         # lejos de una pared, no come
         elif actual_state_has_walls and not next_state_has_walls \
                 and number_ghost_next_state == number_ghost_actual_state:
             reward += 1
 
         return reward
+
         ################################################################################################################
 
     def update(self, state, action, nextState, reward):
@@ -541,8 +543,6 @@ class RLAgent(BustersAgent):
         state = action => nextState and reward transition.
         You should do your Q-Value update here
         """
-        reward = reward + self.getReward(state, nextState)  # actualizar recompensa
-
         print "Started in state:"
         self.printInfo(state)
         print "Took action: ", action
@@ -643,4 +643,3 @@ class RLAgent(BustersAgent):
             pacman_ghost_direction.append("East")
 
         return pacman_ghost_direction, nearest_ghost_position
-
