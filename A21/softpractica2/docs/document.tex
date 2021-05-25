@@ -150,7 +150,7 @@ Una vez que se han adaptado los parámetros del agente Pac-Man ya podemos diseñ
 	
 	\item \textbf{Lejos de un fantasma y cerca de una pared}. Este estado se muestra cuando el agente Pac-Man está al menos a cinco celdas del fantasma más cercano y está a un máximo de cuatro celdas de la pared más cercana. En este caso, perdemos 1 punto de recompensa.
 	
-	\item \textbf{Cerca de un fantasma y lejos de una pared} o \textbf{no moverse}. El primer estado (cerca de un fantasma y lejos de una pared) se muestra cuando el agente Pac-Man está a un máximo de cuatro celdas del fantasma más cercano y está al menos a cinco celdas de la pared más cercana. El segundo estado (no moverse) se ha añadido por la dificultad del laberinto 3, que incorpora una pared en el interior del mapa (ver Figura~\ref{lab3}). En una de las ejecuciones de prueba, visualmente me fijé que el agente en cierto momento no se movía y provocaba que la partida no pudiera acabar. En el caso que el agente no se mueva, perdemos los puntos de recompensa equivalentes a la distancia al fantasma más cercano. Esto también se aplica en el primer estado, así que esta situación revela un caso donde claramente se tendría que mejorar el código de la función de refuerzo, ya que si el agente se encuentra cerca de un fantasma y lejos de una pared, no se tendría que penalizar.
+	\item \textbf{Cerca de un fantasma y lejos de una pared} o \textbf{no moverse}. El primer estado (cerca de un fantasma y lejos de una pared) se muestra cuando el agente Pac-Man está a un máximo de cuatro celdas del fantasma más cercano y está al menos a cinco celdas de la pared más cercana. El segundo estado (no moverse) se ha añadido porqué en una de las ejecuciones de prueba, visualmente me fijé que el agente a veces no se movía. Esto provocaba que la partida no pudiera acabar. No llegué a encontrar la solución y añadí este estado junto al primer estado, ya que este fenómeno parecía que sucedía más cuando el agente se acercaba a un fantasma y se alejaba de una pared. Pero habiendo aleatoriedad, no lo supe resolver. En el caso que el agente no se mueva, perdemos los puntos de recompensa equivalentes a la distancia al fantasma más cercano. Esto también se aplica en el primer estado, así que esta situación revela un caso donde claramente se tendría que mejorar el código de la función de refuerzo, porqué si el agente se encuentra cerca de un fantasma y lejos de una pared, no se tendría que penalizar.
 	
 	\item \textbf{Cerca de un fantasma y cerca de una pared}. Este estado se muestra cuando el agente Pac-Man está a un máximo de cuatro celdas del fantasma más cercano y de la pared más cercana. En este caso, ganamos 2 puntos de recompensa.
 	
@@ -318,59 +318,97 @@ En la función \textit{update} buscamos el estado actual del agente Pac-Man dent
 	\label{lab3}
 \end{figure}
 
-
 \section{Resultados}\label{resultados}
 
-Una vez creado el agente, observamos su comportamiento en el primero de los laberintos disponibles de la práctica ejecutándolo con el siguiente comando:
+Una vez creado el agente, observamos su comportamiento en el primero de los laberintos disponibles de la práctica, ejecutándolo con el siguiente comando:
 
 \begin{lstlisting}[language=python, basicstyle=\footnotesize]
-	python busters.py -p RLAgent -k 1 -l lab1.lay -n 100
+python busters.py -p RLAgent -k 1 -l lab1.lay -n 100
 \end{lstlisting}
-\vspace*{3mm}
 
-Vemos el resultado:
+Con este comando hemos ejecutado durante 100 partidas al agente Pac-Man en el laberinto \textit{lab1}, que únicamente tiene un fantasma (ver Figura~\ref{lab1}). Durante la ejecución veremos que el agente encuentra rápidamente la mejor solución para resolver el problema a partir de la segunda partida (ver Figura~\ref{result_lab1}). La puntuación obtenida (\textit{Average Score}) por el agente es:
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.6]{result_lab1}
-	\caption{Comportamiento de Pac-Man \\ en el laberinto número uno.}
+	\caption{Puntuación obtenida por Pac-Man \\ en el laberinto número uno.}
 	\label{result_lab1}
 \end{figure}
 
-Con el comando, hemos ejecutado durante 100 partidas el agente Pac-Man en el laberinto \textit{lab1} que únicamente tiene un fantasma (ver Figura~\ref{lab1}). Nos fijamos que el agente muy rápidamente encuentra la mejor política para resolver el problema y que ha ganado en la mayoría de las 100 partidas porqué el valor de \textit{Average Score} es positivo.
-\vspace*{3mm}
+El agente Pac-Man ha ganado en todas las partidas (\textit{Win Rate: 100/100}). La puntuación media obtenida es positiva, concretamente su valor es igual a 191.86. La mejor puntuación obtenida en una partida es igual a 192. Para ganar una partida y obtener la mejor puntuación, el agente necesita realizar 9 movimientos. Estos movimientos son:
 
-Volvemos a ejecutar al agente, pero esta vez en el laberinto \textit{lab2} que tiene dos fantasmas (ver Figura~\ref{lab2}). Usamos el siguiente comando:
+\begin{center}
+	\begin{tabular}{ |c|c|c|c|c| } 
+		\hline
+		Movimiento & \begin{tabular}[c]{@{}c@{}}Posición\\ de Pac-Man\end{tabular} & \begin{tabular}[c]{@{}c@{}}Dirección\\ de Pac-Man\end{tabular} & Recompensa & Puntuación \\
+		\hline
+		1 & (6,3) & North & 1 & -1 \\
+		2 & (6,4) & North & 1 & -2 \\
+		3 & (6,5) & North & 1 & -3 \\
+		4 & (6,6) & West & 1 & -4 \\
+		5 & (5,6) & West & 1 & -5 \\
+		6 & (4,6) & West & 1 & -6 \\
+		7 & (3,6) & West & 1 & -7 \\
+		8 & (2,6) & West & 1 & -8 \\
+		9 & (1,6) & - & 100 & 192 \\
+		\hline
+	\end{tabular}
+\end{center}
+
+Volvemos a ejecutar al agente, pero esta vez en el laberinto \textit{lab2} que tiene dos fantasmas (ver Figura~\ref{lab2}). Lo hacemos con el siguiente comando:
 
 \begin{lstlisting}[language=python, basicstyle=\footnotesize]
-	python busters.py -p RLAgent -k 2 -l lab2.lay -n 100
+python busters.py -p RLAgent -k 2 -l lab2.lay -n 100
 \end{lstlisting}
-\vspace*{3mm}
 
-Vemos el resultado:
+Durante esta ejecución también veremos como el agente encuentra rápidamente la mejor solución para resolver el problema a partir de la segunda partida (ver Figura~\ref{result_lab2}). La puntuación obtenida (\textit{Average Score}) por el agente es:
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[scale=0.5]{result_lab2}
-	\caption{Comportamiento de Pac-Man en el laberinto número dos.}
+	\includegraphics[scale=0.6]{result_lab2}
+	\caption{Puntuación obtenida por Pac-Man \\ en el laberinto número dos.}
 	\label{result_lab2}
 \end{figure}
 
-Finalmente, ejecutamos el agente en el último de los laberintos disponibles de la práctica, el laberinto \textit{lab3} que tiene 3 fantasmas (ver Figura~\ref{lab3}), una pared interior y un punto. Usamos el comando siguiente:
+El agente Pac-Man vuelve a ganar en todas las partidas (\textit{Win Rate: 100/100}). La puntuación media obtenida también es positiva, concretamente su valor es igual a 390.9. La mejor puntuación obtenida en una partida es igual a 391. Esta vez, para ganar una partida y obtener la mejor puntuación el agente necesita realizar 10 movimientos. Estos movimientos son:
+
+\begin{center}
+	\begin{tabular}{ |c|c|c|c|c| } 
+		\hline
+		Movimiento & \begin{tabular}[c]{@{}c@{}}Posición\\ de Pac-Man\end{tabular} & \begin{tabular}[c]{@{}c@{}}Dirección\\ de Pac-Man\end{tabular} & Recompensa & Puntuación \\
+		\hline
+		1 & (1,3) & East & 1 & -1 \\
+		2 & (2,3) & East & 1 & -2 \\
+		3 & (3,3) & East & 1 & -3 \\
+		4 & (4,3) & East & 1 & -4 \\
+		5 & (5,3) & North & 100 & 195 \\
+		6 & (5,4) & East & 1 & 194 \\
+		7 & (6,4) & East & 1 & 193 \\
+		8 & (7,4) & North & 1 & 192 \\
+		9 & (7,5) & North & 1 & 191 \\
+		10 & (7,6) & - & 100 & 391 \\
+		\hline
+	\end{tabular}
+\end{center}
+
+Finalmente, ejecutamos el agente en el último de los laberintos disponibles, el laberinto \textit{lab3}, que tiene 3 fantasmas, una pared interior y un punto (ver Figura~\ref{lab3}). Para ello, usamos el siguiente comando:
 
 \begin{lstlisting}[language=python, basicstyle=\footnotesize]
-	python busters.py -p RLAgent -k 3 -l lab3.lay -n 100
+python busters.py -p RLAgent -k 3 -l lab3.lay -n 100
 \end{lstlisting}
 
-Vemos el resultado:
+Durante esta ejecución también vemos como el agente rápidamente encuentra la mejor solución para resolver el problema. La puntuación obtenida (\textit{Average Score}) por el agente es:
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[scale=0.5]{result_lab3}
-	\caption{Comportamiento de Pac-Man en el laberinto número tres.}
+	\includegraphics[scale=0.6]{result_lab3}
+	\caption{Puntuación obtenida por Pac-Man \\ en el laberinto número tres.}
 	\label{result_lab3}
 \end{figure}
 
+En cada ejecución se tiene que inicializar la tabla Q a 0.
+Comentar el primer caso, normalmente con la menor puntuación. el escalado de ir más rápido cada vez del enunciado.
+Q-learning determinista. Análisis de la variable Gamma - \url{https://e-archivo.uc3m.es/handle/10016/25749}
 
 El agente Pac-Man toma decisiones cada vez que llega a una intersección, momento en que mira el estado del juego, ve en qué situación se encuentra, y en base a los conocimientos aprendidos toma la decisión de moverse en una dirección u otra. También, en aquellos momentos en que se le proporciona información acerca de los fantasmas, el agente también toma decisiones en el momento en que percibe a un fantasma demasiado cerca de él, momento en el cual decide atacar, aunque no se encuentre en una intersección. El agente aprende a perseguir a los fantasmas, que son los que le reportan mayor beneficio. Elige caminos que contienen la mayor cantidad de fantasmas, desviándose a veces si ve que tiene un fantasma comestible cerca.
 
