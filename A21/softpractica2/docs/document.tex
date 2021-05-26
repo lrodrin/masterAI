@@ -320,59 +320,156 @@ En la función \textit{update} buscamos el estado actual del agente Pac-Man dent
 
 \section{Resultados}\label{resultados}
 
-Una vez creado el agente, observamos su comportamiento en el primero de los laberintos disponibles de la práctica, ejecutándolo con el siguiente comando:
+Una vez creado el agente Pac-Man, observamos su comportamiento en el primero de los laberintos disponibles de la práctica, ejecutándolo con el siguiente comando:
 
 \begin{lstlisting}[language=python, basicstyle=\footnotesize]
 python busters.py -p RLAgent -k 1 -l lab1.lay -n 100
 \end{lstlisting}
 
-Con este comando hemos ejecutado durante 100 partidas al agente Pac-Man en el laberinto \textit{lab1}, que únicamente tiene un fantasma (ver Figura~\ref{lab1}). Durante la ejecución veremos que el agente encuentra rápidamente la mejor solución para resolver el problema a partir de la segunda partida (ver Figura~\ref{result_lab1}). La puntuación obtenida (\textit{Average Score}) por el agente es:
+Con este comando ejecutamos durante 100 partidas al agente en el laberinto \textit{lab1}, que únicamente tiene un fantasma (ver Figura~\ref{lab1}). En este punto, me parece importante comentar que en cada ejecución del agente tenemos que inicializar la tabla $Q$ para el algoritmo \textit{Q-learning}. La tabla se puede encontrar en el fichero \textit{qtable.txt}. Si no inicializamos la tabla $Q$, puede que la ejecución del agente no finalice satisfactoriamente. Durante la ejecución del agente en el primer laberinto, veremos que este encontrará rápidamente la mejor solución para resolver el problema a partir de la segunda partida (ver Figura~\ref{result_lab1}), y cada vez veremos que irá más rápido. La puntuación media obtenida (\textit{Average Score}) por el agente es:
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[scale=0.6]{result_lab1}
+	\includegraphics[scale=0.65]{result_lab1}
 	\caption{Puntuación obtenida por Pac-Man \\ en el laberinto número uno.}
 	\label{result_lab1}
 \end{figure}
 
-El agente Pac-Man ha ganado en todas las partidas (\textit{Win Rate: 100/100}). La puntuación media obtenida es positiva, concretamente su valor es igual a 191.86. La mejor puntuación obtenida en una partida es igual a 192. Para ganar una partida y obtener la mejor puntuación, el agente necesita realizar 9 movimientos. Estos movimientos son:
+El agente Pac-Man ha ganado en todas las partidas (\textit{Win Rate: 100/100 (1.00)}). La puntuación media obtenida es igual a 191.86. La mejor puntuación obtenida en una partida es igual a 192. Para ganar una partida obteniendo esta puntuación, donde el fantasma se encuentra en la posición (1,6) y el agente inicialmente en la posición (6,3), se realizan los 8 movimientos siguientes:
 
-\begin{center}
+\begin{table}[H]
+	\centering
 	\begin{tabular}{ |c|c|c|c|c| } 
 		\hline
 		Movimiento & \begin{tabular}[c]{@{}c@{}}Posición\\ de Pac-Man\end{tabular} & \begin{tabular}[c]{@{}c@{}}Dirección\\ de Pac-Man\end{tabular} & Recompensa & Puntuación \\
 		\hline
-		1 & (6,3) & North & 1 & -1 \\
-		2 & (6,4) & North & 1 & -2 \\
-		3 & (6,5) & North & 1 & -3 \\
-		4 & (6,6) & West & 1 & -4 \\
-		5 & (5,6) & West & 1 & -5 \\
-		6 & (4,6) & West & 1 & -6 \\
-		7 & (3,6) & West & 1 & -7 \\
-		8 & (2,6) & West & 1 & -8 \\
-		9 & (1,6) & - & 100 & 192 \\
+		1 & (6,3) & West & 1 & -1 \\
+		2 & (5,3) & West & 1 & -2 \\
+		3 & (4,3) & West & 1 & -3 \\
+		4 & (3,3) & West & 1 & -4 \\
+		5 & (2,3) & West & 1 & -5 \\
+		6 & (1,3) & North & 1 & -6 \\
+		7 & (1,4) & North & 1 & -7 \\
+		8 & (1,5) & North & 100 & -8 \\
+		- & (1,6) & - & 1000 & 192 \\
 		\hline
 	\end{tabular}
-\end{center}
+	\caption{Movimientos de Pac-Man \\ en el laberinto número uno.}
+	\label{movimientos_lab1}
+\end{table}
 
-Volvemos a ejecutar al agente, pero esta vez en el laberinto \textit{lab2} que tiene dos fantasmas (ver Figura~\ref{lab2}). Lo hacemos con el siguiente comando:
+\newpage
+
+Gráficamente:
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{ccccccccc}
+		&
+		0 &
+		1 &
+		2 &
+		3 &
+		4 &
+		5 &
+		6 &
+		7 \\ \cline{2-9} 
+		\multicolumn{1}{c|}{7} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} \\ \cline{2-9} 
+		\multicolumn{1}{c|}{6} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{G} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} \\ \cline{2-9} 
+		\multicolumn{1}{c|}{5} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{X} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} \\ \cline{2-9} 
+		\multicolumn{1}{c|}{4} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{X} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} \\ \cline{2-9} 
+		\multicolumn{1}{c|}{3} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{X} &
+		\multicolumn{1}{c|}{X} &
+		\multicolumn{1}{c|}{X} &
+		\multicolumn{1}{c|}{X} &
+		\multicolumn{1}{c|}{X} &
+		\multicolumn{1}{c|}{P} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} \\ \cline{2-9} 
+		\multicolumn{1}{c|}{2} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} \\ \cline{2-9} 
+		\multicolumn{1}{c|}{1} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} \\ \cline{2-9} 
+		\multicolumn{1}{c|}{0} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} \\ \cline{2-9} 
+	\end{tabular}
+	\caption{Movimientos de Pac-Man \\ en el laberinto número uno.}
+	\label{tabla_lab1}
+\end{table}
+
+Volvemos a ejecutar al agente Pac-Man, pero esta vez en el laberinto \textit{lab2} que tiene dos fantasmas (ver Figura~\ref{lab2}). Para ello ejecutamos el siguiente comando:
 
 \begin{lstlisting}[language=python, basicstyle=\footnotesize]
 python busters.py -p RLAgent -k 2 -l lab2.lay -n 100
 \end{lstlisting}
 
-Durante esta ejecución también veremos como el agente encuentra rápidamente la mejor solución para resolver el problema a partir de la segunda partida (ver Figura~\ref{result_lab2}). La puntuación obtenida (\textit{Average Score}) por el agente es:
+Durante la ejecución del agente Pac-Man en el segundo laberinto, igual que en el primer laberinto, veremos como el agente encontrará rápidamente la mejor solución para resolver el problema a partir de la segunda partida (ver Figura~\ref{result_lab2}). Aunque en este laberinto, el agente encontrará la solución al problema más lentamente que en la ejecución realizada en el primer laberinto, porqué en el segundo laberinto hay dos fantasmas. En este caso también veremos cómo cada vez irá más rápido. La puntuación media obtenida (\textit{Average Score}) por el agente es:
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[scale=0.6]{result_lab2}
+	\includegraphics[scale=0.65]{result_lab2}
 	\caption{Puntuación obtenida por Pac-Man \\ en el laberinto número dos.}
 	\label{result_lab2}
 \end{figure}
 
-El agente Pac-Man vuelve a ganar en todas las partidas (\textit{Win Rate: 100/100}). La puntuación media obtenida también es positiva, concretamente su valor es igual a 390.9. La mejor puntuación obtenida en una partida es igual a 391. Esta vez, para ganar una partida y obtener la mejor puntuación el agente necesita realizar 10 movimientos. Estos movimientos son:
+El agente Pac-Man vuelve a ganar en todas las partidas (\textit{Win Rate: 100/100} (1.00)). La puntuación media obtenida es igual a 390.9. La mejor puntuación obtenida en una partida es igual a 391. En este caso, a diferencia de la ejecución en el primer laberinto, para ganar una partida obteniendo esta puntuación, donde los fantasmas se encuentran en las posiciones (7,6) y (5,4) y el agente inicialmente en la posición (1,3), se realizan 9 movimientos. En la siguiente página se muestran los movimientos.
 
-\begin{center}
+\begin{table}[H]
+	\centering
 	\begin{tabular}{ |c|c|c|c|c| } 
 		\hline
 		Movimiento & \begin{tabular}[c]{@{}c@{}}Posición\\ de Pac-Man\end{tabular} & \begin{tabular}[c]{@{}c@{}}Dirección\\ de Pac-Man\end{tabular} & Recompensa & Puntuación \\
@@ -385,19 +482,122 @@ El agente Pac-Man vuelve a ganar en todas las partidas (\textit{Win Rate: 100/10
 		6 & (5,4) & East & 1 & 194 \\
 		7 & (6,4) & East & 1 & 193 \\
 		8 & (7,4) & North & 1 & 192 \\
-		9 & (7,5) & North & 1 & 191 \\
-		10 & (7,6) & - & 100 & 391 \\
+		9 & (7,5) & North & 100 & 191 \\
+		- & (7,6) & - & 1000 & 391 \\
 		\hline
 	\end{tabular}
-\end{center}
+	\caption{Movimientos de Pac-Man \\ en el laberinto número dos.}
+	\label{movimientos_lab2}
+\end{table}
+\vspace*{3mm}
 
-Finalmente, ejecutamos el agente en el último de los laberintos disponibles, el laberinto \textit{lab3}, que tiene 3 fantasmas, una pared interior y un punto (ver Figura~\ref{lab3}). Para ello, usamos el siguiente comando:
+Gráficamente:
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{cccccccccc}
+		&
+		0 &
+		1 &
+		2 &
+		3 &
+		4 &
+		5 &
+		6 &
+		7 &
+		8 \\ \cline{2-9}
+		\multicolumn{1}{c|}{7} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\cellcolor[HTML]{000000} \\ \cline{2-9}
+		\multicolumn{1}{c|}{6} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{G} &
+		\cellcolor[HTML]{000000} \\ \cline{2-9}
+		\multicolumn{1}{c|}{5} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{X} &
+		\cellcolor[HTML]{000000} \\ \cline{2-9}
+		\multicolumn{1}{c|}{4} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{G} &
+		\multicolumn{1}{c|}{X} &
+		\multicolumn{1}{c|}{X} &
+		\cellcolor[HTML]{000000} \\ \cline{2-9}
+		\multicolumn{1}{c|}{3} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{P} &
+		\multicolumn{1}{c|}{X} &
+		\multicolumn{1}{c|}{X} &
+		\multicolumn{1}{c|}{X} &
+		\multicolumn{1}{c|}{X} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\cellcolor[HTML]{000000} \\ \cline{2-9}
+		\multicolumn{1}{c|}{2} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\cellcolor[HTML]{000000} \\ \cline{2-9}
+		\multicolumn{1}{c|}{1} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\cellcolor[HTML]{000000} \\ \cline{2-9}
+		\multicolumn{1}{c|}{0} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\cellcolor[HTML]{000000} \\ \cline{2-9}
+	\end{tabular}
+	\caption{Movimientos de Pac-Man \\ en el laberinto número dos.}
+	\label{tabla_lab2}
+\end{table}
+
+Finalmente, ejecutamos el agente Pac-Man en el último de los laberintos disponibles, el laberinto \textit{lab3}. Este laberinto tiene 3 fantasmas, una pared interior y un punto (ver Figura~\ref{lab3}). Para ejecutar el agente usamos el siguiente comando:
 
 \begin{lstlisting}[language=python, basicstyle=\footnotesize]
 python busters.py -p RLAgent -k 3 -l lab3.lay -n 100
 \end{lstlisting}
 
-Durante esta ejecución también vemos como el agente rápidamente encuentra la mejor solución para resolver el problema. La puntuación obtenida (\textit{Average Score}) por el agente es:
+Durante la ejecución del agente Pac-Man en el tercer laberinto, veremos que le costará más trabajo encontrar la mejor solución para resolver el problema. Este comportamiento es normal porqué el laberinto es bastante más grande que los laberintos uno y dos, y además incluye más elementos (tres fantasmas, un muro interior y un punto). Igualmente, podremos observar como en la mayoría de las veces no encontrará la mejor solución al problema (comer los tres fantasmas y el punto). En la mayoría de las veces, la mejor solución al problema será que el agente solo se coma a los tres fantasmas. Seguramente este comportamiento se debe a mi implementación de la función de refuerzo. Este comportamiento se puede ver reflejado en la siguiente figura (ver Figura), también la puntuación media obtenida (\textit{Average Score}) por el agente.
 
 \begin{figure}[H]
 	\centering
@@ -406,8 +606,172 @@ Durante esta ejecución también vemos como el agente rápidamente encuentra la 
 	\label{result_lab3}
 \end{figure}
 
-En cada ejecución se tiene que inicializar la tabla Q a 0.
-Comentar el primer caso, normalmente con la menor puntuación. el escalado de ir más rápido cada vez del enunciado.
+El agente Pac-Man ha ganado en todas las partidas (\textit{Win Rate: 100/100 (1.00)}). La puntuación media obtenida es igual a 613.72. La mejor puntuación obtenida en una partida es igual a 678. En este caso, a diferencia de las ejecuciones en el primer y en el segundo laberinto, para ganar una partida obteniendo esta puntuación, donde los fantasmas se encuentran en las posiciones (10,6), (10,3) y (3,4), el punto en la posición (10,4) y el agente inicialmente en la posición (1,3), se realizan los 22 movimientos siguientes:
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{ |c|c|c|c|c| } 
+		\hline
+		Movimiento & \begin{tabular}[c]{@{}c@{}}Posición\\ de Pac-Man\end{tabular} & \begin{tabular}[c]{@{}c@{}}Dirección\\ de Pac-Man\end{tabular} & Recompensa & Puntuación \\
+		\hline
+		1 & (1,3) & North & 1 & -1 \\
+		2 & (1,4) & East & 1 & -2 \\
+		3 & (2,4) & East & 100 & 197 \\
+		4 & (3,4) & East & 1 & 196 \\
+		5 & (4,4) & East & 1 & 195 \\
+		6 & (5,4) & East & 1 & 194 \\
+		7 & (6,4) & East & 1 & 193 \\
+		8 & (7,4) & East & 1 & 192 \\
+		9 & (8,4) & East & 1 & 191 \\
+		10 & (9,4) & East & 1 & 290 \\
+		11 & (10,4) & South & 100 & 489 \\
+		12 & (10,3) & West & 2 & 488 \\
+		13 & (9,3) & West & 2 & 487 \\
+		14 & (8,3) & West & 2 & 486 \\
+		15 & (7,3) & West & 3 & 485 \\
+		16 & (6,3) & North & 1 & 484 \\
+		17 & (6,4) & North & 1 & 483 \\
+		18 & (6,5) & North & 1 & 482 \\
+		19 & (6,6) & East & 1 & 481 \\
+		20 & (7,6) & East & 1 & 480 \\
+		21 & (8,6) & East & 1 & 479 \\
+		22 & (9,6) & East & 100 & 578 \\
+		- & (10,6) & - & 1000 & 678 \\
+		\hline
+	\end{tabular}
+	\caption{Movimientos de Pac-Man en el laberinto número tres.}
+	\label{movimientos_lab3}
+\end{table}
+
+Gráficamente:
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{ccccccccccccc}
+		&
+		0 &
+		1 &
+		2 &
+		3 &
+		4 &
+		5 &
+		6 &
+		7 &
+		8 &
+		9 &
+		10 &
+		11 \\ \cline{2-9}
+		\multicolumn{1}{c|}{7} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\cellcolor[HTML]{000000} &
+		\cellcolor[HTML]{000000} &
+		\cellcolor[HTML]{000000} &
+		\cellcolor[HTML]{000000} \\ \cline{2-12}
+		\multicolumn{1}{c|}{6} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{X} &
+		\multicolumn{1}{c|}{X} &
+		\multicolumn{1}{c|}{X} &
+		\multicolumn{1}{c|}{X} &
+		\multicolumn{1}{c|}{G} &
+		\cellcolor[HTML]{000000} \\ \cline{2-12}
+		\multicolumn{1}{c|}{5} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{X} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\cellcolor[HTML]{000000} \\ \cline{2-12}
+		\multicolumn{1}{c|}{4} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{X} &
+		\multicolumn{1}{c|}{X} &
+		\multicolumn{1}{c|}{G} &
+		\multicolumn{1}{c|}{X} &
+		\multicolumn{1}{c|}{X} &
+		\multicolumn{1}{c|}{X} &
+		\multicolumn{1}{c|}{X} &
+		\multicolumn{1}{c|}{X} &
+		\multicolumn{1}{c|}{X} &
+		\multicolumn{1}{c|}{$\bullet$} &
+		\cellcolor[HTML]{000000} \\ \cline{2-12}
+		\multicolumn{1}{c|}{3} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{P} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{X} &
+		\multicolumn{1}{c|}{X} &
+		\multicolumn{1}{c|}{X} &
+		\multicolumn{1}{c|}{X} &
+		\multicolumn{1}{c|}{G} &
+		\cellcolor[HTML]{000000} \\ \cline{2-12}
+		\multicolumn{1}{c|}{2} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\cellcolor[HTML]{000000} \\ \cline{2-12}
+		\multicolumn{1}{c|}{1} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\multicolumn{1}{c|}{} &
+		\cellcolor[HTML]{000000} \\ \cline{2-12}
+		\multicolumn{1}{c|}{0} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\multicolumn{1}{c|}{\cellcolor[HTML]{000000}} &
+		\cellcolor[HTML]{000000}{\color[HTML]{333333} } &
+		\cellcolor[HTML]{000000}{\color[HTML]{333333} } &
+		\cellcolor[HTML]{000000}{\color[HTML]{333333} } &
+		\cellcolor[HTML]{000000}{\color[HTML]{333333} } \\ \cline{2-9}
+	\end{tabular}
+	\caption{Movimientos de Pac-Man \\ en el laberinto número tres.}
+	\label{tabla_lab3}
+\end{table}
+
+% TODO
+
 Q-learning determinista. Análisis de la variable Gamma - \url{https://e-archivo.uc3m.es/handle/10016/25749}
 
 El agente Pac-Man toma decisiones cada vez que llega a una intersección, momento en que mira el estado del juego, ve en qué situación se encuentra, y en base a los conocimientos aprendidos toma la decisión de moverse en una dirección u otra. También, en aquellos momentos en que se le proporciona información acerca de los fantasmas, el agente también toma decisiones en el momento en que percibe a un fantasma demasiado cerca de él, momento en el cual decide atacar, aunque no se encuentre en una intersección. El agente aprende a perseguir a los fantasmas, que son los que le reportan mayor beneficio. Elige caminos que contienen la mayor cantidad de fantasmas, desviándose a veces si ve que tiene un fantasma comestible cerca.
