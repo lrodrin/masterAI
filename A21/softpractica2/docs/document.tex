@@ -11,7 +11,7 @@
 \usepackage{array}
 \usepackage{caption}
 \usepackage{subcaption} 
-
+\usepackage{multicol}
 
 \newenvironment{conditions}
 {\par\vspace{\abovedisplayskip}\noindent\begin{tabular}{>{$}l<{$} @{${}\:{}$} l}}
@@ -56,75 +56,97 @@
 
 \section{Introducción}\label{introduccion}
 
-Esta práctica se apoya en una plataforma que recrea el videojuego clásico \href{1https://en.wikipedia.org/wiki/Pac-Man}{Pac-Man}. Utiliza una versión muy simplificada del juego para poder desarrollar un sistema de control automático y explorar algunas capacidades del Aprendizaje por Refuerzo aprendidas durante la asignatura. Especialmente, en esta práctica se aplica el algoritmo \textit{Q-learning} para construir un agente Pac-Man que funcione de forma automática, con el objetivo de maximizar la puntuación obtenida en una partida por cada mapa disponible para la práctica: \textit{lab1.lay, lab2.lay y lab3.lay}. En concreto se utiliza el algoritmo \textit{Q-learning} reemplazando la tabla $Q$ y los estados por una base de casos. El uso de los casos permitirá lidiar con una completa representación del estado del juego, y utilizar conocimiento experto sobre el dominio del juego tanto en la recuperación de casos como en la adaptación de soluciones.  
+Esta práctica se apoya en una plataforma que recrea el videojuego clásico de \href{1https://en.wikipedia.org/wiki/Pac-Man}{Pac-Man}. Emplea una versión muy simplificada del videojuego para poder desarrollar un sistema de control automático y explorar algunas capacidades del Aprendizaje por Refuerzo aprendidas durante la asignatura. En concreto, en esta práctica se aplica el algoritmo \textit{Q-learning} para construir un agente Pac-Man que funcione de forma automática. El objetivo de este agente es maximizar la puntuación obtenida en una partida, en cada uno de los laberintos disponibles de la práctica: \textit{lab1.lay, lab2.lay y lab3.lay}. El algoritmo \textit{Q-learning} se usa con el fin de ir reemplazando la tabla $Q$ con los estados del agente por una serie de casos. El uso de estos casos nos permitirá lidiar con una completa representación del estado del agente en el videojuego y utilizar conocimiento experto sobre el dominio del videojuego, tanto en la recompensa de los casos como en la adaptación de las diferentes soluciones que iremos encontrando. 
 \vspace*{2mm}
 
-Asimismo, se presenta este documento donde se describen las tareas de la práctica realizadas, que se dividen en distintas fases (definición de los estados, función de refuerzo, construcción del agente Pac-Man y evaluación), y que se detallan a continuación.
+Además, se presenta este documento donde se describen las tareas realizadas durante la práctica, que se pueden dividir en distintas secciones como: la definición de los estados, la función de refuerzo, la construcción del agente Pac-Man y su evaluación. Las secciones del documento se detallan a continuación.
 \vspace*{2mm}
 
-En la sección~\ref{estados} del documento se justifica el conjunto de atributos elegido y su rango para la definición de los estados. Una vez se ha elegido el conjunto de atributos que se van a utilizar para representar cada estado, en la sección~\ref{refuerzo} se detalla el diseño de la función de refuerzo que vamos a emplear y que permitirá al agente Pac-Man lograr su objetivo de maximizar la puntuación obtenida en una partida. Después de esto, en la sección~\ref{codigo} se explica cómo se ha procedido a la construcción del agente con el fin de funcionar bien en todos los laberintos. Cuando se obtiene el agente, en la sección~\ref{resultados} se presentan los resultados de las puntuaciones que ha obtenido en los mapas proporcionados y se añaden comentarios sobre su comportamiento. Finalmente, en la parte final del documento se añaden las conclusiones (sección~\ref{conclusiones}) y un apéndice que contiene métodos auxiliares del código desarrollado en las secciones~\ref{refuerzo} y \ref{codigo}.
-\vspace*{2mm}
+Primero, en la sección~\ref{estados} del documento se justifica el conjunto de parámetros elegido y su rango para la definición de los estados. Una vez se ha elegido el conjunto de parámetros que se van a utilizar para representar cada estado, en la sección~\ref{refuerzo} se detalla el diseño y la implementación de la función de refuerzo desarrollada y que permitirá al agente Pac-Man lograr su objetivo de maximizar la puntuación obtenida de las partidas en los diferentes laberintos disponibles de la práctica. Después de esto, en la sección~\ref{codigo} se describe cómo se ha procedido con la construcción del agente a fin de funcionar bien en todos los laberintos proporcionados. Cuando se obtiene el agente, en la sección~\ref{resultados} se presentan los resultados de las ejecuciones del agente en cada uno de los laberintos con sus puntuaciones obtenidas. En esta sección, también se evalúan los resultados y se añaden comentarios sobre el comportamiento del agente en cada una de las ejecuciones. Finalmente, en la parte final del documento se incorporan las conclusiones (sección~\ref{conclusiones}) y un apéndice que contiene los métodos auxiliares del código desarrollado en las secciones~\ref{refuerzo} y \ref{codigo}.
+\vspace*{4mm}
 
-El código completo de esta práctica puede encontrarse en: \url{https://github.com/lrodrin/masterAI/tree/master/A21/softpractica2}.
+Junto a este documento se entrega el archivo de código fuente modificado \textit{busterAgents.py}. El desarrollo completo de esta práctica se puede encontrar en el siguiente enlace: \url{https://github.com/lrodrin/masterAI/tree/master/A21/softpractica2}.
 
 \section{Definición de los estados}\label{estados}
 
-En esta sección, a fin de definir los estados, hay que seleccionar unos valores adecuados para los parámetros: \textit{nRowsQTable, alpha, gamma y epsilon}. Primero intentaremos descubrir el valor del parámetro \textit{nRowsQTable}, o que es lo mismo, intentaremos descubrir cuántas filas debe tener la \textit{QTable}. Este valor dependerá de las características seleccionadas para representar los estados, ya que según estas características nos modificará el número de filas de nuestra \textit{QTable}. Nos fijamos en la información que nos proporciona la función \textit{printInfo} durante una ejecución manual del agente, concretamente nos fijamos en la información de los mapas \textit{Walls} y \textit{Food}. Según esta información, que nos indica la presencia y ausencia de paredes y comida en los mapas \textit{Walls} y \textit{Food}, y la información de las direcciones que puede ejecutar el agente Pac-Man: \textit{north, east, south y west}, elegimos las siguientes 16 características:
+En esta sección, a fin de definir los estados, hay que seleccionar unos valores adecuados para los parámetros: \textit{nRowsQTable, alpha, gamma y epsilon}. Primero intentaremos descubrir el valor del parámetro \textit{nRowsQTable}, o que es lo mismo, el número de filas que debe tener la tabla de estados de \textit{Q-learning}. Este valor dependerá de las características seleccionadas para representar los estados, ya que según estas características el número de filas de nuestra tabla $Q$ cambiará. Para encontrar el número de filas que debe tener la tabla $Q$, inicialmente nos fijaremos en la información que nos proporciona la función \textit{printInfo}, durante una ejecución manual del agente Pac-Man usando el comando: \textit{python busters.py}. Durante la ejecución manual del agente veremos la información que nos proporcionan los mapas \textit{Walls} y \textit{Food}. Según esta información, que nos indica la presencia (T) y la ausencia (F) de paredes y comida en los mapas \textit{Walls} y \textit{Food}, más la información de las direcciones que sabemos puede ejecutar el agente: \textit{north, east, south y west}, elegimos las siguientes características:
 
-\begin{parcolumns}{2}
-	\colplacechunks
-	\colchunk{
-		\begin{itemize}
-			\item nearest\_ghost\_north, no\_wall
-			\item nearest\_ghost\_south, no\_wall
-			\item nearest\_ghost\_east, no\_wall
-			\item nearest\_ghost\_west, no\_wall
-			\item nearest\_ghost\_north, wall
-			\item nearest\_ghost\_south, wall
-			\item nearest\_ghost\_east, wall
-			\item nearest\_ghost\_west, wall
-		\end{itemize}}
-	\colchunk{
-		\begin{itemize}
-			\item nearest\_ghost\_north, no\_food
-			\item nearest\_ghost\_south, no\_food
-			\item nearest\_ghost\_east, no\_food
-			\item nearest\_ghost\_west, no\_food
-			\item nearest\_ghost\_north, food
-			\item nearest\_ghost\_south, food
-			\item nearest\_ghost\_east, food
-			\item nearest\_ghost\_west, food
-		\end{itemize}}
-\end{parcolumns}
+\begin{multicols}{2}
+	\begin{itemize}
+		\item nearest\_ghost\_north, no\_wall
+		\item nearest\_ghost\_south, no\_wall
+		\item nearest\_ghost\_east, no\_wall
+		\item nearest\_ghost\_west, no\_wall
+		\item nearest\_ghost\_north, wall
+		\item nearest\_ghost\_south, wall
+		\item nearest\_ghost\_east, wall
+		\item nearest\_ghost\_west, wall
+	\end{itemize}
+	\columnbreak
+	\begin{itemize}
+		\item nearest\_ghost\_north, no\_food
+		\item nearest\_ghost\_south, no\_food
+		\item nearest\_ghost\_east, no\_food
+		\item nearest\_ghost\_west, no\_food
+		\item nearest\_ghost\_north, food
+		\item nearest\_ghost\_south, food
+		\item nearest\_ghost\_east, food
+		\item nearest\_ghost\_west, food
+	\end{itemize}
+\end{multicols}
 \vspace*{3mm}
 
-Según el número de características (16), modificamos el valor del parámetro \textit{nRowsQTable}, de la función \textit{registerInitialState} en la clase \textit{RLAgent} del archivo \textit{bustersAgents.py}, de la siguiente manera:
+El número de características escogidas es igual a 16. Se han dividido las características conforme a la existencia o no existencia de las paredes y conforme la existencia o no existencia de la comida. Además, se han organizado según las direcciones que puede realizar el agente Pac-Man. Ahora que sabemos el número de características, modificamos el valor del parámetro \textit{nRowsQTable}, de la función \textit{registerInitialState} en la clase \textit{RLAgent} del archivo \textit{bustersAgents.py}:
+\vspace*{2mm}
 
 \begin{lstlisting}[language=python, basicstyle=\footnotesize]
 self.nRowsQTable = 16
 \end{lstlisting}
+\vspace*{2mm}
 
-También tenemos que modificar los parámetros \textit{alpha, gamma y epsilon}. Pero primero realizamos una pequeña descripción de estos a continuación:
+Los siguientes parámetros a modificar son los valores de \textit{alpha, gamma y epsilon}. Antes, realizamos una pequeña descripción de estos a continuación:
 
 \begin{itemize}
 	\item Alpha ($\alpha$). Este valor toma valores entre 0 y 1. Cuando este valor es 0, entonces no hay aprendizaje y siempre se utiliza el valor $Q$ inicial. Cuando este valor es 1, entonces el aprendizaje no conserva ningún porcentaje del valor $Q$. Es decir, si el valor $\alpha$ se acerca a 0, el valor $Q$ no variará mucho, y si el valor $\alpha$ se acerca a 1, el valor $Q$ variará mucho.
 	
-	\item Gamma ($\gamma$). Este valor toma valores entre 0 y 1. Cuando este valor es 0, entonces el aprendizaje ignorará el valor dado por el modelo de aprendizaje y aprenderá solo con el valor de la recompensa. Cuando este valor es 1, entonces el aprendizaje utilizará el valor total dado por el modelo de aprendizaje.
+	\item Gamma ($\gamma$). Este valor toma valores entre 0 y 1. Cuando este valor es 0, entonces el aprendizaje automático ignorará el valor dado por el modelo de aprendizaje y aprenderá solo con el valor de la recompensa. Cuando este valor es 1, entonces el aprendizaje utilizará el valor total dado por el modelo de aprendizaje.
 	
-	\item Epsilon ($\epsilon$). Numera los pasos para disminuir el valor $\alpha$. El valor $\alpha$ se reducirá para cada $n$ decisiones tomadas. Por ejemplo, si este valor es 0.01, se reduciría 0.01 el valor de $\alpha$ por cada 10 decisiones tomadas, donde $n$=10.
+	\item Epsilon ($\epsilon$). Este valor numera los pasos a fin de disminuir el valor $\alpha$. El valor $\alpha$ se reducirá para cada $n$ decisiones tomadas. Por ejemplo, si este valor es 0.01, se reduciría 0.01 el valor $\alpha$ por cada 10 decisiones tomadas, siendo $n$=10.
 \end{itemize}
 
-El proceso para elegir los parámetros \textit{nRowsQTable, alpha, gamma y epsilon} se ha realizado con el entrenamiento de una inteligencia simple (sin usar el aprendizaje automático). Esta inteligencia simple se compone de un objetivo muy singular: el agente Pac-Man atacando a uno de los fantasmas en el primer laberinto disponible (\textit{lab1.lay}). Con esa finalidad, ejecutamos el comando \textit{python busters.py -p RLAgent -k 1 -l lab1.lay -n 100} varias veces, con diferentes valores de \textit{alpha, gamma y epsilon} observando el valor resultante \textit{Average Score} de las distintas ejecuciones (ver Figura~\ref{average_score}). El valor \textit{Average Score} nos indicará el valor promedio máximo de las puntuaciones obtenidas durante 100 partidas, o lo que es lo mismo, el valor promedio máximo $Q$ durante 100 partidas. Si este valor es positivo habremos ganado la partida, en caso contrario, habremos perdido la partida.
+El proceso para elegir los parámetros  se ha realizado con el entrenamiento de una inteligencia simple (sin usar aún \textit{Q-learning}). Esta inteligencia simple se compone de un objetivo singular: el agente Pac-Man atacando a los fantasmas del laberinto de la Figura~\ref{score}. Con esa finalidad, ejecutamos el comando \textit{python busters.py -p RLAgent} varias veces, con diferentes valores de \textit{alpha, gamma y epsilon}, para observar el valor resultante \textit{Score}. El valor \textit{Score} nos indicará el valor máximo de las puntuaciones obtenidas durante las ejecuciones (el valor máximo $Q$). Cuanto mayor sea ese valor, mejor puntuación habremos obtenido durante una partida, a consecuencia de ello los valores \textit{alpha, gamma y epsilon} serán mejores. Veamos algunas ejecuciones:
 \vspace*{2mm}
 
-Por ejemplo, con los valores: \textit{alpha=1} , \textit{gamma=0.8} y \textit{epsilon=0.05} observaremos que el valor \textit{Average Score} será menor que con los valores: \textit{alpha=0.2}, \textit{gamma=0.8} y \textit{epsilon=0.05}. Otro ejemplo, con los valores: \textit{alpha=0.4}, \textit{gamma=0.8} y \textit{epsilon=0.05} observaremos que el valor \textit{Average Score} también será menor que con los valores: \textit{alpha=0.2}, \textit{gamma=0.8} y \textit{epsilon=0.05}. Así, consideramos que la mejor asignación de los parámetros en estos ejemplos son los valores: \textit{alpha=0.2}, \textit{gamma=0.8} y \textit{epsilon=0.05}.
+\begin{table}[H]
+	\centering
+	\begin{tabular}{|c|c|c|c|}
+		\hline
+		$\alpha$ & $\gamma$ & $\beta$ & Score \\ \hline \hline
+		0   & 0   & 1    &  -361 \\ \hline
+		0   & 0   & 0.5  &  -113 \\ \hline
+		1   & 0   & 0.05 &  751 \\ \hline
+		1   & 0.8 & 0.05 &  699 \\ \hline
+		0.2 & 0.8 & 0.05 &  760 \\ \hline
+		0.4 & 0.8 & 0.05 &  754 \\ \hline
+		0.2 & 0.7 & 0.01 &  761 \\ \hline
+	\end{tabular}
+	\caption{Puntuación obtenida por Pac-Man \\ con una inteligencia simple.}
+	\label{score}
+\end{table}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.4]{score}
+	\vspace*{-7mm}
+	\caption{Laberinto \textit{oneHunt}.}
+	\label{average_score}
+\end{figure}
+
+Durante el proceso para elegir los parámetros \textit{alpha, gamma y epsilon}, los mayoría de los valores de \textit{epsilon} han tomado valores muy próximos a 0, cosa que ha representado una mejora muy significativa en la puntuación obtenida. Esto refleja un comportamiento ya aprendido en la \href{https://poliformat.upv.es/portal/site/ESP_0_2835/tool/c07b745a-0cfd-44f0-a7a2-9bb22f80c3f7?panel=Main}{práctica 1} de la asignatura. En esa práctica aprendimos que si en una estrategia $\epsilon$-greedy el valor de $\epsilon$ es más pequeño, entonces la probabilidad de que un agente tome decisiones aleatorias será menor. Si la aleatoriedad es menor, menor será la inestabilidad del agente, en este caso la del agente Pac-Man. Como consecuencia, el promedio del valor máximo $Q$ será mayor, que es equivalente a una mejor puntuación en el videojuego alcanzando el objetivo del agente. 
 \vspace*{2mm}
 
-Durante el proceso para elegir los parámetros, los valores de \textit{epsilon} siempre han tomado valores muy próximos a 0, esto refleja un comportamiento aprendido en la \href{https://poliformat.upv.es/portal/site/ESP_0_2835/tool/c07b745a-0cfd-44f0-a7a2-9bb22f80c3f7?panel=Main}{práctica 1} de la asignatura. En esta práctica aprendimos que si en una estrategia $\epsilon$-greedy el valor de $\epsilon$ es más pequeño, entonces la probabilidad de que el agente \textit{Q-learning} tome decisiones aleatorias será menor. Si la aleatoriedad es menor, menor será la inestabilidad del agente \textit{Q-learning}, en este caso la del agente Pac-Man. Como a consecuencia, el promedio del valor máximo $Q$ será mayor, que es equivalente a una mejor puntuación en el videojuego alcanzando el objetivo del agente.
-\vspace*{3mm}
-
-Los mejores valores encontrados para los parámetros son los siguientes:
-\vspace*{3mm}
+Los mejores valores encontrados para los parámetros \textit{alpha, gamma y epsilon} son: 0.2, 0.7 y 0.01, respectivamente. A continuación, modificamos su valor en la función \textit{registerInitialState} de la clase \textit{RLAgent} del archivo \textit{bustersAgents.py} de la siguiente manera:
+\vspace*{2mm}
 
 \begin{lstlisting}[language=python, basicstyle=\footnotesize]
 self.alpha = 0.2
@@ -132,28 +154,20 @@ self.gamma = 0.7
 self.epsilon = 0.01
 \end{lstlisting}
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{average_score}
-	\caption{Ejemplo de ejecución del agente Pac-Man \\ que nos muestra el \textit{Average Score} obtenido.}
-	\label{average_score}
-\end{figure}
-
-
 \section{Función de refuerzo}\label{refuerzo}
 
 Una vez que se han adaptado los parámetros del agente Pac-Man ya podemos diseñar la función de refuerzo. La función de refuerzo determinará las recompensas que obtenga el agente. Determinar las recompensas que obtiene el agente con cada acción es clave para su aprendizaje, pues marcará cómo de buenas serán unas acciones frente a otras y por lo tanto determinará qué tipo de comportamientos decidimos potenciar. La siguiente lista enumera las diferentes acciones que he decidido potenciar, con sus valores de recompensa correspondientes:
 
 \begin{itemize}
-	\item \textbf{Ganar}: Este estado se muestra cuando el agente Pac-Man gana la partida. Ganamos 1000 puntos de recompensa.
+	\item \textbf{Ganar}. Este estado se muestra cuando el agente Pac-Man gana la partida. Ganamos 1000 puntos de recompensa.
 	
 	\item \textbf{Comer}. Este estado se muestra cuando el agente Pac-Man se come a un fantasma. Ganamos 100 puntos de recompensa.
 	
 	\item \textbf{Lejos de un fantasma y lejos de una pared}. Este estado se muestra cuando el agente Pac-Man está al menos a cinco celdas del fantasma más cercano y de la pared más cercana. En este caso, ganamos 1 punto de recompensa.
 	
-	\item \textbf{Lejos de un fantasma y cerca de una pared}. Este estado se muestra cuando el agente Pac-Man está al menos a cinco celdas del fantasma más cercano y está a un máximo de cuatro celdas de la pared más cercana. En este caso, perdemos 1 punto de recompensa.
+	\item \textbf{Lejos de un fantasma y cerca de una pared}. Este estado se muestra cuando el agente Pac-Man está al menos a cinco celdas del fantasma más cercano y a un máximo de cuatro celdas de la pared más cercana. En este caso, perdemos 1 punto de recompensa.
 	
-	\item \textbf{Cerca de un fantasma y lejos de una pared} o \textbf{no moverse}. El primer estado (cerca de un fantasma y lejos de una pared) se muestra cuando el agente Pac-Man está a un máximo de cuatro celdas del fantasma más cercano y está al menos a cinco celdas de la pared más cercana. El segundo estado (no moverse) se ha añadido porqué en una de las ejecuciones de prueba, visualmente me fijé que el agente a veces no se movía. Esto provocaba que la partida no pudiera acabar. No llegué a encontrar la solución y añadí este estado junto al primer estado, ya que este fenómeno parecía que sucedía más cuando el agente se acercaba a un fantasma y se alejaba de una pared. Pero habiendo aleatoriedad, no lo supe resolver. En el caso que el agente no se mueva, perdemos los puntos de recompensa equivalentes a la distancia al fantasma más cercano. Esto también se aplica en el primer estado, así que esta situación revela un caso donde claramente se tendría que mejorar el código de la función de refuerzo, porqué si el agente se encuentra cerca de un fantasma y lejos de una pared, no se tendría que penalizar.
+	\item \textbf{Cerca de un fantasma y lejos de una pared} o \textbf{no moverse}. El primer estado (cerca de un fantasma y lejos de una pared) se muestra cuando el agente Pac-Man está a un máximo de cuatro celdas del fantasma más cercano y al menos a cinco celdas de la pared más cercana. El segundo estado (no moverse) se ha añadido porqué en varias de las ejecuciones de prueba, visualmente me fijé que el agente a veces no se movía. Esto provocaba que la partida no pudiera acabar. No llegué a encontrar la solución y añadí este estado aquí, ya que este fenómeno a mi parecer sucedía con más frecuencia cuando el agente se acercaba a un fantasma y se alejaba de una pared. En el caso que el agente no se mueva, perdemos los puntos de recompensa equivalentes a la distancia al fantasma más cercano. Esto también se aplica al primer estado, así que esta situación reveló un caso donde claramente se tendría que mejorar el código de la función de refuerzo, porqué si el agente se encuentra cerca de un fantasma y lejos de una pared, no se tendría que penalizar.
 	
 	\item \textbf{Cerca de un fantasma y cerca de una pared}. Este estado se muestra cuando el agente Pac-Man está a un máximo de cuatro celdas del fantasma más cercano y de la pared más cercana. En este caso, ganamos 2 puntos de recompensa.
 	
@@ -162,8 +176,8 @@ Una vez que se han adaptado los parámetros del agente Pac-Man ya podemos diseñ
 	\item \textbf{Lejos de una pared}. Este estado se muestra cuando el agente Pac-Man está al menos a cinco celdas de la pared más cercana. En este caso, ganamos 1 punto de recompensa.
 \end{itemize}
 
-En todas las acciones, el agente Pac-Man recuerda la posición del fantasma más cercano y elige una de las direcciones disponibles: \textit{north, east, south o west} para llegar al fantasma por el camino más corto. Como se puede observar, se han definido las recompensas mediante valores enteros, aunque las acciones dependan de la posición de los fantasmas respecto a la posición del agente. Se ha tomado esta decisión al fin de facilitar el código desarrollado y se han definido los valores de recompensa para cada acción en particular. La elección de los valores concretos de recompensa se han realizado un poco al azar, siguiendo mi propio criterio. La función de refuerzo desarrollada se muestra a continuación:
-\vspace*{3mm}
+En todas las acciones, el agente Pac-Man recuerda la posición del fantasma más cercano y elegirá una de las direcciones disponibles: \textit{north, east, south o west} para llegar al fantasma por el camino más corto. Como se puede observar, se han definido las recompensas mediante valores enteros, aunque las acciones dependan de la posición de los fantasmas respecto a la posición del agente. Se ha tomado esa decisión al fin de facilitar el código desarrollado y se han definido los valores de recompensa para cada acción en particular. La elección de los valores concretos de recompensa se ha realizado un poco al azar, siguiendo mi propio criterio. La función de refuerzo desarrollada se muestra a continuación:
+\vspace*{2mm}
 
 \begin{lstlisting}[caption={Función de refuerzo.}, label={reward}, language=python, basicstyle=\scriptsize]
 def getReward(self, state, nextState):
@@ -245,14 +259,14 @@ def getReward(self, state, nextState):
 	return reward
 \end{lstlisting}
 
-Los métodos auxiliares de la función de refuerzo como el método \textit{getGhostDistances}, que muestra las distancias entre los fantasmas y el agente Pac-Man (ver Código~\ref{getGhostDistances}), y el método \textit{directionIsBlocked}, que nos indica si la dirección tomada por el agente se bloquea por una pared (ver Código~\ref{directionIsBlocked}), se incluyen en la sección~\ref*{apendice_reward}.
+Los métodos auxiliares de la función de refuerzo como el método \textit{getGhostDistances}, que muestra las distancias entre los fantasmas y el agente Pac-Man (ver Código~\ref{getGhostDistances}), y el método \textit{directionIsBlocked}, que nos indica si la dirección elegida por el agente sería bloqueada por una pared (ver Código~\ref{directionIsBlocked}), se incluyen en la sección~\ref{apendice_reward}.
 
 \section{Código desarrollado}\label{codigo}
 
-Una vez que hemos seleccionado los parámetros que vamos a utilizar para representar cada estado y hemos desarrollado la función de refuerzo que vamos a emplear (ver Código~\ref{reward}), procedemos a la construcción del agente Pac-Man. La implementación del agente consiste en ir determinando el estado actual en que se encuentra. Dado este estado, se elige la acción de acuerdo con los valores $Q$. Una vez elegida la acción, se determina cuál es la dirección más apropiada para la acción dada. A la hora de elegir la siguiente acción, se actualiza el valor $Q$ para el estado y la acción anterior, sobre el estado actual obtenido y la mejor acción que devuelva la fórmula expresada en la ecuación~\ref{formula}. Finalmente dado el estado actual del agente, el proceso comenzará de nuevo eligiendo la siguiente acción. Este procedimiento se recoge en la función \textit{update} en la clase \textit{RLAgent} del archivo \textit{bustersAgents.py} (ver Código~\ref{update}), que lleva a cabo el algoritmo \textit{Q-learning}. 
-\vspace*{2mm}
+Una vez que hemos seleccionado los parámetros que vamos a utilizar para representar cada estado y hemos desarrollado la función de refuerzo que vamos a emplear (ver Código~\ref{reward}), procedemos a la construcción del agente Pac-Man. La implementación del agente consistirá en ir determinando su estado actual en el videojuego. Dado ese estado, se elegirá la acción a dar de acuerdo con los valores de la tabla $Q$. Una vez elegida la acción, se determinará cuál es la dirección más apropiada para la acción dada. A la hora de elegir la siguiente acción, se actualizará el valor $Q$ en la tabla para el estado y la acción anterior, sobre el estado actual obtenido y la mejor acción que devuelve la fórmula expresada en la ecuación~\ref{formula}. Finalmente dado el estado actual del agente, el proceso comenzará de nuevo eligiendo la siguiente acción. Este procedimiento se recoge en la función \textit{update} de la clase \textit{RLAgent} del archivo \textit{bustersAgents.py} (ver Código~\ref{update}), que lleva a cabo el algoritmo \textit{Q-learning}.
+\vspace*{3mm}
 
-Como se ha visto ya en la \href{https://poliformat.upv.es/portal/site/ESP_0_2835/tool/c07b745a-0cfd-44f0-a7a2-9bb22f80c3f7?panel=Main}{práctica 1} de la asignatura, los valores de la tabla $Q$ únicamente son actualizados cuando se cambia de estado, es decir, si al tomar una acción el agente se mantiene en el mismo estado, la tabla $Q$ no se actualiza, sino que la recompensa se acumula de forma que se suman todas las recompensas obtenidas mientras se permanece en un estado, y es cuando se pasa al siguiente el momento de modificar la tabla $Q$. La fórmula para obtener el nuevo valor $Q$:
+La fórmula para obtener un nuevo valor $Q$:
 
 \begin{equation}\label{formula}
 	Q_{(t+1)}(s_{t},a_{t}) = (1-\alpha) * Q_{t}(s_{t},a_{t}) + \alpha * (R(s_{t},a_{t})) + V_{t}(s_{t+1}) - Q_{t}(s_{t},a_{t})
@@ -270,7 +284,7 @@ donde,
 \vspace*{3mm}
 
 La función \textit{update} que lleva a cabo el algoritmo \textit{Q-learning}:
-\vspace*{3mm}
+\vspace*{2mm}
 
 \begin{lstlisting}[caption={Función update.}, label={update}, language=python, basicstyle=\footnotesize]
 def update(self, state, action, nextState, reward):
@@ -300,18 +314,18 @@ def update(self, state, action, nextState, reward):
 		self.writeQtable()
 \end{lstlisting}
 
-En la función \textit{update} buscamos el estado actual del agente Pac-Man dentro de la memoria de estados con la función \textit{computePosition} (ver Código~\ref{computePosition}), método que se incluye en la sección~\ref{apendice_update}. El agente aprende modificando los valores $Q$ (valores que hay almacenados en la tabla $Q$), de forma que cuando se realiza la acción \textit{action\_position} desde el estado \textit{state\_position}, es el valor $Q$ el que se ve modificado de acuerdo a la fórmula expresada en la ecuación~\ref{formula}. Con la finalidad de que el agente pueda aprender, necesita tener a mano todos los estados que ya haya visitado anteriormente, para poder detectar en cuál de ellos se encuentra a medida que va jugando y, en caso de encontrarse en una situación nueva, registrarla para utilizarla posteriormente. En la implementación de la función \textit{statesMemory}, método que se incluye en la sección~\ref{apendice_update}, estos estados se guardan en forma de lista a medida que se van descubriendo (ver Código~\ref{statesMemory}) y que nombramos como memoria de estados.
+En la función \textit{update} buscamos el estado actual del agente Pac-Man dentro de la memoria de estados con la función \textit{computePosition} (ver Código~\ref{computePosition}), método que se incluye en la sección~\ref{apendice_update}. El agente aprende modificando los valores $Q$ (valores que hay almacenados en la tabla $Q$), de forma que cuando se realiza la acción \textit{action\_position} desde el estado \textit{state\_position}, es el valor $Q$ el que se ve modificado de acuerdo con la fórmula expresada en la ecuación~\ref{formula}. Con la finalidad de que el agente pueda aprender, necesita tener a mano todos los estados que ya haya visitado anteriormente, para poder detectar en cuál de ellos se encuentra a medida que va jugando y, en caso de encontrarse en una situación nueva, registrarla para utilizarla posteriormente. En la implementación de la función \textit{statesMemory}, método que se incluye en la sección~\ref{apendice_update}, estos estados se guardan en forma de lista a medida que se van descubriendo (ver Código~\ref{statesMemory}) y que nombramos memoria de estados.
 
 \begin{figure}[H]
 	\begin{minipage}[c]{0.35\linewidth}
-		\includegraphics[scale=0.35]{lab1}
+		\includegraphics[scale=0.4]{lab1}
 		\vspace*{-7mm}
 		\caption{Laberinto número uno.}
 		\label{lab1}
 	\end{minipage}
 	\hfill
 	\begin{minipage}[c]{0.35\linewidth}
-		\includegraphics[scale=0.35]{lab2}
+		\includegraphics[scale=0.4]{lab2}
 		\vspace*{-7mm}
 		\caption{Laberinto número dos.}
 		\label{lab2}
@@ -322,21 +336,26 @@ En la función \textit{update} buscamos el estado actual del agente Pac-Man dent
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[scale=0.35]{lab3}
+	\includegraphics[scale=0.4]{lab3}
 	\vspace*{-7mm}
 	\caption{Laberinto número tres.}
 	\label{lab3}
 \end{figure}
 
+Como ya se ha visto en la \href{https://poliformat.upv.es/portal/site/ESP_0_2835/tool/c07b745a-0cfd-44f0-a7a2-9bb22f80c3f7?panel=Main}{práctica 1} de la asignatura, los valores de la tabla $Q$ únicamente son actualizados cuando se cambia de estado, es decir, si al tomar una acción el agente se mantiene en el mismo estado, la tabla $Q$ no se actualiza, sino que la recompensa se acumula de forma que se suman todas las recompensas obtenidas mientras se permanece en un estado, y es cuando se pasa al siguiente estado el momento de modificar la tabla $Q$. 
+\vspace*{3mm}
+
 \section{Resultados}\label{resultados}
 
-Una vez creado el agente Pac-Man, observamos su comportamiento en el primero de los laberintos disponibles de la práctica, ejecutándolo con el siguiente comando:
+En esta sección, una vez se ha construido el agente Pac-Man, observaremos su comportamiento en los tres laberintos disponibles. Para empezar, observaremos su comportamiento en el laberinto número uno (ver Figura~\ref{lab1}), ejecutándolo con el siguiente comando:
+\vspace*{2mm}
 
 \begin{lstlisting}[language=python, basicstyle=\footnotesize]
 python busters.py -p RLAgent -k 1 -l lab1.lay -n 100
 \end{lstlisting}
 
-Con este comando ejecutamos durante 100 partidas al agente en el laberinto \textit{lab1}, que únicamente tiene un fantasma (ver Figura~\ref{lab1}). En este punto, me parece importante comentar que en cada ejecución del agente tenemos que inicializar la tabla $Q$ para el algoritmo \textit{Q-learning}. La tabla se puede encontrar en el fichero \textit{qtable.txt}. Si no inicializamos la tabla $Q$, puede que la ejecución del agente no finalice satisfactoriamente. Durante la ejecución del agente en el primer laberinto, veremos que este encontrará rápidamente la mejor solución para resolver el problema a partir de la segunda partida (ver Figura~\ref{result_lab1}), y cada vez veremos que irá más rápido. La puntuación media obtenida (\textit{Average Score}) por el agente es:
+Con este comando ejecutamos durante 100 partidas al agente Pac-Man en el laberinto \textit{lab1}, que únicamente tiene un fantasma (ver Figura~\ref{lab1}). En este punto, me parece importante comentar que en cada ejecución del agente tenemos que inicializar la tabla $Q$ para el algoritmo \textit{Q-learning}. La tabla se puede encontrar en el fichero \textit{qtable.txt}. Si no inicializamos la tabla $Q$, puede que la ejecución del agente no finalice satisfactoriamente. Durante la ejecución del agente en el primer laberinto, veremos que este encontrará rápidamente la mejor solución para resolver el problema a partir de la segunda partida (ver Figura~\ref{result_lab1}), y cada vez veremos que irá más rápido. La puntuación media obtenida (\textit{Average Score}) por el agente es:
+\vspace*{2mm}
 
 \begin{figure}[H]
 	\centering
@@ -345,7 +364,8 @@ Con este comando ejecutamos durante 100 partidas al agente en el laberinto \text
 	\label{result_lab1}
 \end{figure}
 
-El agente Pac-Man ha ganado en todas las partidas (\textit{Win Rate: 100/100 (1.00)}). La puntuación media obtenida es igual a 191.86. La mejor puntuación obtenida en una partida es igual a 192. Para ganar una partida obteniendo esta puntuación, donde el fantasma se encuentra en la posición (1,6) y el agente inicialmente en la posición (6,3), se realizan los 8 movimientos siguientes:
+En esta ejecución, él agente Pac-Man ha ganado en todas las partidas (\textit{Win Rate: 100/100 (1.00)}). La puntuación media obtenida es igual a 191.86 y la mejor puntuación obtenida en una partida es igual a 192. Para ganar una partida obteniendo esta puntuación, donde el fantasma se encuentra en la posición (1,6) y el agente inicialmente en la posición (6,3), el agente debe realizar los 8 movimientos siguientes:
+\vspace*{2mm}
 
 \begin{table}[H]
 	\centering
@@ -461,13 +481,16 @@ Gráficamente:
 	\label{tabla_lab1}
 \end{table}
 
-Volvemos a ejecutar al agente Pac-Man, pero esta vez en el laberinto \textit{lab2} que tiene dos fantasmas (ver Figura~\ref{lab2}). Para ello ejecutamos el siguiente comando:
+Volvemos a ejecutar al agente Pac-Man, pero esta vez en el laberinto \textit{lab2}, que tiene dos fantasmas (ver Figura~\ref{lab2}). Para ello ejecutamos el siguiente comando:
+\vspace*{2mm}
 
 \begin{lstlisting}[language=python, basicstyle=\footnotesize]
 python busters.py -p RLAgent -k 2 -l lab2.lay -n 100
 \end{lstlisting}
+\vspace*{2mm}
 
-Durante la ejecución del agente Pac-Man en el segundo laberinto, igual que en el primer laberinto, veremos como el agente encontrará rápidamente la mejor solución para resolver el problema a partir de la segunda partida (ver Figura~\ref{result_lab2}). Aunque en este laberinto, el agente encontrará la solución al problema más lentamente que en la ejecución realizada en el primer laberinto, porqué en el segundo laberinto hay dos fantasmas. En este caso también veremos cómo cada vez irá más rápido. La puntuación media obtenida (\textit{Average Score}) por el agente es:
+Durante la ejecución del agente Pac-Man en el segundo laberinto, igual que en el primer laberinto, veremos como el agente encontrará rápidamente la mejor solución para resolver el problema a partir de la segunda partida (ver Figura~\ref{result_lab2}). Aunque en este laberinto tardará un poco más que en la ejecución realizada en el primer laberinto, porqué en el segundo laberinto hay dos fantasmas y en el primer laberinto solo uno. En este caso también veremos cómo cada vez irá más rápido. La puntuación media obtenida (\textit{Average Score}) por el agente es:
+\vspace*{2mm}
 
 \begin{figure}[H]
 	\centering
@@ -476,7 +499,7 @@ Durante la ejecución del agente Pac-Man en el segundo laberinto, igual que en e
 	\label{result_lab2}
 \end{figure}
 
-El agente Pac-Man vuelve a ganar en todas las partidas (\textit{Win Rate: 100/100} (1.00)). La puntuación media obtenida es igual a 390.9. La mejor puntuación obtenida en una partida es igual a 391. En este caso, a diferencia de la ejecución en el primer laberinto, para ganar una partida obteniendo esta puntuación, donde los fantasmas se encuentran en las posiciones (7,6) y (5,4) y el agente inicialmente en la posición (1,3), se realizan 9 movimientos. En la siguiente página se muestran los movimientos.
+El agente Pac-Man vuelve a ganar en todas las partidas (\textit{Win Rate: 100/100} (1.00)). La puntuación media obtenida es igual a 390.9. La mejor puntuación obtenida en una partida es igual a 391. En este caso, a diferencia de la ejecución en el primer laberinto, para ganar una partida obteniendo esta puntuación, donde los fantasmas se encuentran en las posiciones (7,6) y (5,4) y el agente inicialmente en la posición (1,3), el agente tiene que realizar 9 movimientos. En la siguiente página se muestran los movimientos.
 
 \begin{table}[H]
 	\centering
@@ -602,12 +625,14 @@ Gráficamente:
 \end{table}
 
 Finalmente, ejecutamos el agente Pac-Man en el último de los laberintos disponibles, el laberinto \textit{lab3}. Este laberinto tiene 3 fantasmas, una pared interior y una píldora (ver Figura~\ref{lab3}). Para ejecutar el agente usamos el siguiente comando:
+\vspace*{2mm}
 
 \begin{lstlisting}[language=python, basicstyle=\footnotesize]
 python busters.py -p RLAgent -k 3 -l lab3.lay -n 100
 \end{lstlisting}
+\vspace*{2mm}
 
-Durante la ejecución del agente Pac-Man en el tercer laberinto, veremos que le costará más trabajo encontrar la mejor solución para resolver el problema. Este comportamiento es normal porqué el laberinto es bastante más grande que los laberintos uno y dos, y además incluye más elementos (tres fantasmas, un muro interior y una píldora). Igualmente, podremos observar como en la mayoría de las veces no encontrará la mejor solución al problema (comer los tres fantasmas y la píldora). En la mayoría de las veces, la mejor solución al problema será que el agente solo se coma a los tres fantasmas. Seguramente este comportamiento se debe a mi implementación de la función de refuerzo. Este comportamiento se puede ver reflejado en la siguiente figura (ver Figura), también la puntuación media obtenida (\textit{Average Score}) por el agente.
+Durante la ejecución del agente Pac-Man en el tercer laberinto, veremos que al agente le costará bastante más trabajo encontrar la mejor solución para resolver el problema. Este comportamiento es normal porqué el laberinto es más grande que los laberintos uno y dos, y además incluye más elementos (tres fantasmas, un muro interior y una píldora). Igualmente, podremos observar como en la mayoría de las veces no encontrará la mejor solución al problema (comer los tres fantasmas y la píldora). En la mayoría de las veces, la mejor solución al problema será que el agente solo se coma a los tres fantasmas. Este comportamiento se puede ver reflejado en la Figura~\ref{result_lab3}. Seguramente este comportamiento se debe a mi implementación de la función de refuerzo. 
 
 \begin{figure}[H]
 	\centering
@@ -616,7 +641,8 @@ Durante la ejecución del agente Pac-Man en el tercer laberinto, veremos que le 
 	\label{result_lab3}
 \end{figure}
 
-El agente Pac-Man ha ganado en todas las partidas (\textit{Win Rate: 100/100 (1.00)}). La puntuación media obtenida es igual a 613.72. La mejor puntuación obtenida en una partida es igual a 678. En este caso, a diferencia de las ejecuciones en el primer y en el segundo laberinto, para ganar una partida obteniendo esta puntuación, donde los fantasmas se encuentran en las posiciones (10,6), (10,3) y (3,4), la píldora en la posición (10,4) y el agente inicialmente en la posición (1,3), se realizan los 22 movimientos siguientes:
+Aún así, el agente Pac-Man ha ganado en todas las partidas (\textit{Win Rate: 100/100 (1.00)}). La puntuación media obtenida es igual a 613.72. La mejor puntuación obtenida en una partida es igual a 678. En este caso, a diferencia de las ejecuciones en el primer y en el segundo laberinto, para ganar una partida obteniendo esta puntuación, donde los fantasmas se encuentran en las posiciones (10,6), (10,3) y (3,4), la píldora en la posición (10,4) y el agente inicialmente en la posición (1,3), el agente tiene que realizar los 22 movimientos siguientes:
+\vspace*{2mm}
 
 \begin{table}[H]
 	\centering
@@ -780,21 +806,36 @@ Gráficamente:
 	\label{tabla_lab3}
 \end{table}
 
-Durante todas las ejecuciones hemos podido observar que el algoritmo \textit{Q-learning} desarrollado en el agente Pac-man es lo suficientemente inteligente para vencer en los tres mapas disponibles. En cada una de ellas, el agente Pac-Man ha ido tomando decisiones cada vez que llegaba a una intersección, momento en que miraba el estado actual para ver en qué situación se encontraba, y en base a los conocimientos aprendidos ha tomado la decisión de moverse en una dirección u otra. En aquellos momentos donde también se le ha proporcionado información acerca de los fantasmas, el agente ha tomado decisiones en el momento en que ha percibido a un fantasma demasiado cerca de él, momento en el cual decide atacar, aunque no se encuentre en una intersección. En resumen, el agente ha aprendido a perseguir a los fantasmas, que son los que le reportan mayor beneficio, eligiendo caminos que contienen la mayor cantidad de fantasmas, desviándose a veces si veía que tenía a un fantasma comestible cerca.
+Durante todas las ejecuciones hemos podido observar que el algoritmo \textit{Q-learning} desarrollado en el agente Pac-man es lo suficientemente inteligente para vencer en los tres laberintos disponibles. En cada una de las ejecuciones, el agente Pac-Man ha ido tomando decisiones cada vez que llegaba a una intersección, momento en que miraba el estado actual para ver en qué situación se encontraba, y en base a los conocimientos aprendidos ha tomado la decisión de moverse en una dirección u otra. En aquellos momentos donde también se le ha proporcionado información acerca de los fantasmas, el agente ha tomado decisiones en el momento en que ha percibido a un fantasma demasiado cerca de él, momento en el cual decide atacar, aunque no se encuentre en una intersección. Como no se le ha proporcionado información sobre las píldoras, en el laberinto número tres hemos visto que aparece la aleatoriedad, y según el azar el agente obtendrá una mayor o menor puntuación. Un aspecto a muy importante a mejorar. En resumen, hemos podido comprobar que el agente Pac-Man ha aprendido automáticamente a perseguir a los fantasmas, que son los que le reportan mayor beneficio, eligiendo caminos que contienen la mayor cantidad de fantasmas, desviándose a veces si veía que tenía a un fantasma comestible cerca.
 
 \section{Conclusiones}\label{conclusiones}
 
-En esta práctica se aplicado el algoritmo \textit{Q-learning} en su versión determinista para construir un agente Pac-Man que funciona de manera automática y que maximiza la puntuación obtenida en una partida por cada mapa disponible de la práctica: \textit{lab1.lay, lab2.lay y lab3.lay}.  
+En esta práctica se ha aplicado el algoritmo \textit{Q-learning} en su versión determinista para construir un agente Pac-Man que funciona de manera automática y que maximiza la puntuación obtenida en una partida por cada mapa disponible de la práctica: \textit{lab1.lay, lab2.lay y lab3.lay}.  
 \vspace*{2mm}
 
 El algoritmo \textit{Q-learning} en este caso, es sin duda un método que parece efectivo. Sin embargo, requiere realizar muchos experimentos para estudiar la viabilidad de las soluciones propuestas. En concreto lo que más problemas me ha causado ha sido la tarea de diseñar los casos, y cómo utilizar la información que contienen estos casos para hacer que el sistema vaya evolucionando a medida que se simulan las partidas en los diferentes laberintos. Conseguir un equilibrio para que los casos no sean demasiado específicos (y por tanto se reutilicen pocas veces), ni tampoco demasiado generales (y no aporten soluciones especialmente útiles), es complicado y requiere de muchas pruebas hasta encontrar los parámetros que mejor se adapten al objetivo perseguido.
 \vspace*{2mm}
 
-Personalmente uno de los mayores retos de esta práctica ha sido la implementación de todo el código para operar con el agente Pac-Man. El videojuego que se utiliza parece a priori sencillo, pero representa un dominio que se puede volver extremadamente complejo cuando pretendes que un agente aprenda a jugar de manera automática. Como jugadores humanos procesamos información visualmente y la aplicamos muy rápidamente a la toma de decisiones, pero para conseguir que una máquina haga lo mismo, se necesita un grado de abstracción de esa información que en ocasiones se ha vuelto difícil de conseguir. En ese momento, ha sido de gran ayuda que el proyecto en el que se basa esta práctica sea tan conocido, ya que muchas personas han tratado de resolver este problema de diferentes maneras, y por la red corren muchos tipos de soluciones que en mi caso me ha dado la posibilidad de aprender y tener una implementación base con la que guiarme.
+Los resultados obtenidos por el algoritmo \textit{Q-learning} son mejores de los esperados. Aunque en el tercer laberinto el funcionamiento no es perfecto, la velocidad para encontrar la mejor solución al problema en cada uno de ellos es alta. Seguramente sería muy interesante añadir el comportamiento de diferentes algoritmos estudiados durante la asignatura como \textit{Monte-Carlo} o \textit{SARSA}, y comparar los resultados obtenidos entre ellos.
+\vspace*{2mm}
+
+Personalmente uno de los mayores retos de esta práctica ha sido la implementación de todo el código para operar con el agente Pac-Man. El videojuego que se utiliza parece a priori sencillo, pero representa un dominio que se puede volver extremadamente complejo cuando pretendes que un agente aprenda a jugar de manera automática. Como jugadores humanos procesamos información visualmente y la aplicamos muy rápidamente a la toma de decisiones, pero para conseguir que una máquina haga lo mismo, se necesita un alto grado de abstracción de esa información que en ocasiones se ha vuelto un poco difícil de conseguir. En ese momento, ha sido de gran ayuda que el proyecto en el que se basa esta práctica sea tan conocido, ya que muchas personas han tratado de resolver este problema de diferentes maneras, y por la red corren muchos tipos de soluciones que en mi caso me ha dado la posibilidad de aprender y tener una implementación base con la que guiarme.
 
 \section{Apéndice}\label{apendice}
 
+En esta sección se muestran los métodos auxiliares de las funciones \textit{get\_reward} y \textit{update}.
+
 \subsection{Métodos de la función \textit{get\_reward}}\label{apendice_reward}
+
+La función de refuerzo incorpora dos funciones auxiliares que son:
+
+\begin{itemize}
+	\item La función \textit{getGhostDistances}, que devuelve las distancias a cada uno de los fantasmas del laberinto en el que se esté ejecutando el agente Pac-Man.
+	\item La función \textit{directionIsBlocked}, que devuelve True si la nueva dirección a tomar por el agente Pac-Man será bloqueada por una pared. Devuelve False en caso contrario. También devuelve las distancias a los elementos que bloquean (paredes) y a los elementos que no bloquean (fantasmas).
+\end{itemize}
+
+A continuación, observamos su implementación:
+\vspace*{3mm}
 
 \begin{lstlisting}[caption={Función getGhostDistances.}, label={getGhostDistances}, language=python, basicstyle=\footnotesize]
 def getGhostDistances(gameState):
@@ -826,12 +867,21 @@ def directionIsBlocked(gameState, ghost_position):
 	if len(grid_beetween) == 0:
 		return False
 	
-	return np.any(np.all(grid_beetween, axis=1)) or np.any(np.all(grid_beetween, axis=0))
+	return np.any(np.all(grid_beetween, axis=1)) or np.any(np.all(grid_beetween, 
+		axis=0))
 \end{lstlisting}
 
-\newpage
-
 \subsection{Métodos de la función \textit{update}}\label{apendice_update}
+
+La función \textit{update} también incorpora dos funciones auxiliares que son:
+
+\begin{itemize}
+	\item La función \textit{computePosition}, que devuelve la mejor acción dado un estado de la memoria de estados.
+	\item La función \textit{statesMemory}, que crea la memoria de estados a medida que el agente Pac-Man se va moviendo en el laberinto en el que se esté ejecutando.
+\end{itemize}
+
+A continuación, observamos su implementación:
+\vspace*{3mm}
 
 \begin{lstlisting}[caption={Función computePosition.}, label={computePosition}, language=python, basicstyle=\footnotesize]
 def computePosition(self, state):
