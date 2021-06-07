@@ -44,17 +44,23 @@ object Clustering {
   }
 
   def featurizeData(df: DataFrame): DataFrame = {
-    df.groupBy(col("InvoiceNo")).agg(
-      avg(col("UnitPrice").alias("AvgUnitPrice")),
-      min(col("UnitPrice").alias("MinUnitPrice")),
-      max(col("UnitPrice").alias("MaxUnitPrice")),
-      last(col("Hour").alias("Time")),
-      sum(col("Quantity").alias("NumberItems"))
+    df.groupBy("InvoiceNo").agg(
+      mean("UnitPrice").alias("AvgUnitPrice"),
+      min("UnitPrice").alias("MinUnitPrice"),
+      max("UnitPrice").alias("MaxUnitPrice"),
+      first("Hour").alias("Time"),
+      sum("Quantity").alias("NumberItems")
     )
   }
 
   def filterData(df: DataFrame): DataFrame = {
-    df.filter(col("CustomerID").isNotNull).filter(!col("InvoiceNo").startsWith("C"))
+    df.filter(not(substring(column("InvoiceNo"), 0, 1).equalTo("C"))
+      .and(column("AvgUnitPrice").isNotNull)
+      .and(column("MinUnitPrice").isNotNull)
+      .and(column("MaxUnitPrice").isNotNull)
+      .and(column("Time").isNotNull)
+      .and(column("NumberItems").isNotNull)
+    )
   }
 
   def toDataset(df: DataFrame): RDD[Vector] = {
