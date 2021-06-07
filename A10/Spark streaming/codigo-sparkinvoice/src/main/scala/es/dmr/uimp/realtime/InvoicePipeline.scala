@@ -27,7 +27,6 @@ object InvoicePipeline {
 
 
 
-
   def main(args: Array[String]) {
 
     val Array(modelFile, thresholdFile, modelFileBisect, thresholdFileBisect, zkQuorum, group, topics, numThreads, brokers) = args
@@ -38,18 +37,86 @@ object InvoicePipeline {
     // Checkpointing
     ssc.checkpoint("./checkpoint")
 
-    // TODO: Load model and broadcast
+    val KMeans = loadKMeansAndThreshold(sc, modelFile, thresholdFile)
+    val KMeansModel = ssc.sparkContext.broadcast(KMeans._1)
+    val KMeansThreshold = ssc.sparkContext.broadcast(KMeans._2)
 
-    // TODO: Build pipeline
+    val KMeansBisect = loadKMeansAndThreshold(sc, modelFileBisect, thresholdFileBisect)
+    val KMeansBisectModel : Broadcast[BisectingKMeansModel] = ssc.sparkContext.broadcast(KMeansBisect._1)
+    val KMeansBisectThreshold : Broadcast[Double] = ssc.sparkContext.broadcast(KMeansBisect._2)
 
+    val broadcastBrokers : Broadcast[String] = ssc.sparkContext.broadcast(brokers)
 
-    // connect to kafka
-    val purchasesFeed = connectToPurchases(ssc, zkQuorum, group, topics, numThreads)
+    // Connect to kafka
+    val purchasesFeed : DStream[(String, String)] = connectToPurchases(ssc, zkQuorum, group, topics, numThreads)
+    val purchasesStream = getpurchasesStream(purchasesFeed)
+
+    detectCancelPurchases(purchasesStream, broadcastBrokers)
+    detectWrongPurchases(purchasesStream, broadcastBrokers)
 
     // TODO: rest of pipeline
 
     ssc.start() // Start the computation
     ssc.awaitTermination()
+  }
+
+  def getpurchasesStream(purchasesFeed : DStream[(String, String)]) : DStream[(String, Purchase)] = {
+    val purchasesStream = purchasesFeed.transform { inputRDD =>
+      inputRDD.map { input =>
+        val invoiceID = input._1
+        val purchaseAsString = input._2
+
+        val purchase = parsePurchase(purchaseAsString)
+
+        (invoiceID, purchase)
+      }
+    }
+    purchasesStream
+  }
+
+  def parsePurchase(purchase : String) : Purchase = {
+    val csvParserSettings = new CsvParserSettings()
+    val csvParser = new CsvParser(csvParserSettings)
+    val parsedPurchase = csvParser.parseRecord(purchase)
+
+    Purchase(
+      parsedPurchase.getString(0),
+      parsedPurchase.getInt(3),
+      parsedPurchase.getString(4),
+      parsedPurchase.getDouble(5),
+      parsedPurchase.getString(6),
+      parsedPurchase.getString(7)
+    )
+  }
+
+  def detectCancelPurchases(purchaseStream : DStream[(String, Purchase)], broadcastBrokers : Broadcast[String]) : Unit = {
+    purchaseStream
+      .filter(data => data._2.invoiceNo.startsWith("C"))
+      .countByWindow(Minutes(8), Minutes(1))
+      .transform { invoicesTupleRDD =>
+        invoicesTupleRDD.map(count => (count.toString, "The number of invoices cancelled are: " + count.toString))
+      }
+      .foreachRDD { rdd =>
+        publishToKafka("cancelledPurchases")(broadcastBrokers)(rdd)
+      }
+  }
+
+  def detectWrongPurchases(purchaseStream : DStream[(String, Purchase)], broadcastBrokers : Broadcast[String]) : Unit = {
+    purchaseStream
+      .filter(data => isWrongPurchase(data._2))
+      .transform { rdd =>
+        rdd.map(purchase => (purchase._1, "The invoice " + purchase._1 + "contains wrong purchases."))
+      }
+      .foreachRDD { rdd =>
+        publishToKafka("wrongPurchases")(broadcastBrokers)(rdd)
+      }
+  }
+
+  def isWrongPurchase(purchase: Purchase) : Boolean = {
+    (purchase.invoiceNo == null || purchase.invoiceDate == null || purchase.customerID == null ||
+      purchase.invoiceNo.isEmpty || purchase.invoiceDate.isEmpty || purchase.customerID.isEmpty || purchase.country.isEmpty ||
+      purchase.unitPrice.isNaN || purchase.quantity.isNaN ||
+      purchase.unitPrice.<(0) ) && !purchase.invoiceNo.startsWith("C")
   }
 
   def publishToKafka(topic : String)(kafkaBrokers : Broadcast[String])(rdd : RDD[(String, String)]) = {
