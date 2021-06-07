@@ -33,15 +33,29 @@ object KMeansClusterInvoices {
     // Print a sampl
     dataset.take(5).foreach(println)
 
-    val model = trainModel(dataset)
-    // Save model
-    model.save(sc, args(1))
+    if (args(3) == "kmeans") {
+      val model = trainModel(dataset)
+      // Save model
+      model.save(sc, args(1))
 
-    // Save threshold
-    val distances = dataset.map(d => distToCentroid(d, model))
-    val threshold = distances.top(2000).last // set the last of the furthest 2000 data points as the threshold
+      // Save threshold
+      val distances = dataset.map(d => distToCentroid(d, model))
+      val threshold = distances.top(2000).last // set the last of the furthest 2000 data points as the threshold
 
-    saveThreshold(threshold, args(2))
+      saveThreshold(threshold, args(2))
+    }
+    else {
+      val model = trainModelBisect(dataset)
+      // Save model
+      model.save(sc, args(1))
+
+      // Save threshold
+      val distances = dataset.map(d => distToCentroidBisect(d, model))
+      val threshold = distances.top(2000).last // set the last of the furthest 2000 data points as the threshold
+
+      saveThreshold(threshold, args(2))
+
+    }
   }
 
   /**
@@ -51,6 +65,24 @@ object KMeansClusterInvoices {
 
     val models = 1 to 20 map { k =>
       val kmeans = new KMeans()
+      kmeans.setK(k) // find that one center
+      kmeans.run(data)
+    }
+
+    val costs = models.map(model => model.computeCost(data))
+
+    val selected = elbowSelection(costs, 0.7)
+    System.out.println("Selecting model: " + models(selected).k)
+    models(selected)
+  }
+
+  /**
+   * Train a KMean model using invoice data.
+   */
+  def trainModelBisect(data: RDD[Vector]): BisectingKMeansModel = {
+
+    val models = 1 to 20 map { k =>
+      val kmeans = new BisectingKMeans()
       kmeans.setK(k) // find that one center
       kmeans.run(data)
     }
