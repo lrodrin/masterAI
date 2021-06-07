@@ -1,6 +1,5 @@
 package es.dmr.uimp.realtime
 
-import org.apache.commons.lang3.StringUtils
 import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
 import org.apache.spark.mllib.clustering._
@@ -43,7 +42,7 @@ object InvoicePipeline {
     val KMeansModel = ssc.sparkContext.broadcast(KMeans._1)
     val KMeansThreshold = ssc.sparkContext.broadcast(KMeans._2)
 
-    val KMeansBisect = loadKMeansAndThreshold(sc, modelFileBisect, thresholdFileBisect)
+    val KMeansBisect = loadKMeansBisectAndThreshold(sc, modelFileBisect, thresholdFileBisect)
     val KMeansBisectModel: Broadcast[BisectingKMeansModel] = ssc.sparkContext.broadcast(KMeansBisect._1)
     val KMeansBisectThreshold: Broadcast[Double] = ssc.sparkContext.broadcast(KMeansBisect._2)
 
@@ -61,9 +60,8 @@ object InvoicePipeline {
       .window(Seconds(40), Seconds(1))
       .updateStateByKey(updateFunc = calculateInvoice)
 
-    val anomalies = isAnomaly(KMeansModel, KMeansBisectModel, KMeansThreshold, KMeansBisectThreshold)(_, _)
-    detectAnomaly(invoices, "kmeans", broadcastBrokers)(anomalies)
-    detectAnomaly(invoices, "bisection", broadcastBrokers)(anomalies)
+    detectAnomaly(invoices, KMeansModel.value, KMeansThreshold.value, "kmeans", broadcastBrokers)
+    detectAnomaly(invoices, KMeansBisectModel.value, KMeansBisectThreshold.value, "bisection", broadcastBrokers)
 
     ssc.start() // Start the computation
     ssc.awaitTermination()
@@ -128,50 +126,40 @@ object InvoicePipeline {
       purchase.unitPrice.<(0)) && !purchase.invoiceNo.startsWith("C")
   }
 
-  def calculateInvoice(newValues: Seq[Purchase], state: Option[Invoice]): Option[Invoice] = {
-    val invoiceNo = newValues.head.invoiceNo
-    val unitPrices = newValues.map(purchase => purchase.unitPrice)
+  def calculateInvoice(purchases: Seq[Purchase], state: Option[Invoice]): Option[Invoice] = {
+    val invoiceNo = purchases.head.invoiceNo
+    val unitPrices = purchases.map(purchase => purchase.unitPrice)
 
-    val avgUnitPrice = unitPrices.sum / unitPrices.length
-    val minUnitPrice = unitPrices.min
-    val maxUnitPrice = unitPrices.max
-    val time = newValues.head.invoiceDate.split(' ')(1).split(':')(0).toDouble
-    val numberItems = newValues.map(purchase => purchase.quantity).sum
-    val customerID = newValues.head.customerID
+    val avgUnitPrice: Double = unitPrices.sum / unitPrices.length
+    val minUnitPrice: Double = unitPrices.min
+    val maxUnitPrice: Double = unitPrices.max
+    val time = purchases.head.invoiceDate.split(' ')(1).split(':')(0).toDouble
+    val numberItems = purchases.map(purchase => purchase.quantity).sum
+    val customerID = purchases.head.customerID
 
-    val lines = newValues.length
+    val lines = purchases.length
     val lastUpdated = 0
 
     Some(Invoice(invoiceNo, avgUnitPrice, minUnitPrice, maxUnitPrice, time, numberItems, lastUpdated, lines, customerID))
   }
 
-  def detectAnomaly(invoices: DStream[(String, Invoice)], model: String, broadcastBrokers: Broadcast[String])
-                   (anomalies: (Invoice, String) => Boolean) = {
+  def detectAnomaly(invoices: DStream[(String, Invoice)], model: Saveable, threshold: Double, topic: String,
+                    broadcastBrokers: Broadcast[String]): Unit = {
 
-    def sendInvoices(topic: String) = {
-      invoices
-        .filter { data =>
-          anomalies(data._2, model)
-        }
-        .transform { rdd =>
-          rdd.map(data => (data._1, "Anomaly detected by " + model + " inside invoice: " + data._1.toString))
-        }
-        .foreachRDD { rdd =>
-          publishToKafka(topic)(broadcastBrokers)(rdd)
-        }
-    }
-
-    if (model == "kmeans") {
-      sendInvoices("anomalyKMeans")
-    }
-    else {
-      sendInvoices("anomalyBisection")
-    }
+    invoices
+      .filter { data =>
+        val invoice: Invoice = data._2
+        isAnomaly(invoice, model, threshold)
+      }
+      .transform { rdd =>
+        rdd.map(data => (data._1, "Anomaly detected by " + model + " inside invoice: " + data._1))
+      }
+      .foreachRDD { rdd =>
+        publishToKafka(topic)(broadcastBrokers)(rdd)
+      }
   }
 
-  def isAnomaly(KMeansModel: Broadcast[KMeansModel], KMeansBisectModel: Broadcast[BisectingKMeansModel],
-                KMeansThreshold: Broadcast[Double], KMeansBisectTreshold: Broadcast[Double])
-               (invoice: Invoice, modelType: String): Boolean = {
+  def isAnomaly(invoice: Invoice, model: Saveable, threshold: Double): Boolean = {
 
     val features = ArrayBuffer[Double]()
     features.append(invoice.avgUnitPrice)
@@ -181,14 +169,12 @@ object InvoicePipeline {
     features.append(invoice.numberItems)
 
     val featuresVector = Vectors.dense(features.toArray)
-    if (modelType == "kmeans") {
-      val distanceKmeans = KMeansClusterInvoices.distToCentroid(featuresVector, KMeansModel.value)
-      distanceKmeans > KMeansThreshold.value
+
+    val distance = model match {
+      case model: KMeansModel => KMeansClusterInvoices.distToCentroid(featuresVector, model.asInstanceOf[KMeansModel])
+      case model: BisectingKMeansModel => KMeansClusterInvoices.distToCentroidBisect(featuresVector, model.asInstanceOf[BisectingKMeansModel])
     }
-    else {
-      val distancesBisect = KMeansClusterInvoices.distToCentroid(featuresVector, KMeansBisectModel.value)
-      distancesBisect > KMeansBisectTreshold.value
-    }
+    distance.>(threshold)
   }
 
   def publishToKafka(topic: String)(kafkaBrokers: Broadcast[String])(rdd: RDD[(String, String)]) = {
@@ -221,6 +207,18 @@ object InvoicePipeline {
     (kmeans, threshold)
   }
 
+  /**
+   * Load the bisection model information: centroid and threshold
+   */
+  def loadKMeansBisectAndThreshold(sc: SparkContext, modelFile: String, thresholdFile: String): (BisectingKMeansModel, Double) = {
+    val kmeans = BisectingKMeansModel.load(sc, modelFile)
+    // parse threshold file
+    val rawData = sc.textFile(thresholdFile, 20)
+    val threshold = rawData.map { line => line.toDouble }.first()
+
+    (kmeans, threshold)
+  }
+
 
   def connectToPurchases(ssc: StreamingContext, zkQuorum: String, group: String,
                          topics: String, numThreads: String): DStream[(String, String)] = {
@@ -231,3 +229,10 @@ object InvoicePipeline {
   }
 
 }
+
+
+
+
+
+
+
