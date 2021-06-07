@@ -18,7 +18,7 @@ object KMeansClusterInvoices {
     // load data
     val df = loadData(sc, args(0))
 
-   // Very simple feature extraction from an invoice
+    // Very simple feature extraction from an invoice
     val featurized = featurizeData(df)
 
     // Filter not valid entries
@@ -65,7 +65,15 @@ object KMeansClusterInvoices {
   /**
    * Calculate distance between data point to centroid.
    */
-  def distToCentroid(datum: Vector, model: KMeansModel) : Double = {
+  def distToCentroid(datum: Vector, model: KMeansModel): Double = {
+    val centroid = model.clusterCenters(model.predict(datum)) // if more than 1 center
+    Vectors.sqdist(datum, centroid)
+  }
+
+  /**
+   * Calculate distance between data point to centroid given BisectingKMeansModel
+   */
+  def distToCentroidBisect(datum: Vector, model: BisectingKMeansModel): Double = {
     val centroid = model.clusterCenters(model.predict(datum)) // if more than 1 center
     Vectors.sqdist(datum, centroid)
   }
