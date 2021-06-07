@@ -7,7 +7,7 @@ Para ejecutar la pipeline, primero se tiene que abrir un servidor en el que envi
 $ nc -l 19999
 ```
 
-Compilar la aplicación y ejecutar. Comprobar que `execute.sh` la pipeline se ejecutará a un cluster local. Para hacerlo en un cluster remoto, solo habría que cambiar el argumento master.
+Compilar la aplicación y ejecutar. Antes comprobar que la pipeline se ejecutará a un cluster local. Para hacerlo en un cluster remoto, solo habría que cambiar el argumento master.
 ```bash
 $ sbt clean assembly
 $ chmod +x execute.sh 
