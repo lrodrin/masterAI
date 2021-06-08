@@ -33,35 +33,37 @@ object KMeansClusterInvoices {
     // Print a sampl
     dataset.take(5).foreach(println)
 
-    if (args(3) == "kmeans") {
-      val model = trainModel(dataset)
+    if (args(1) == "kMeans") {
+
+      val model = trainKMeansModel(dataset)
+
       // Save model
       model.save(sc, args(1))
 
       // Save threshold
-      val distances = dataset.map(d => distToCentroid(d, model))
+      val distances = dataset.map(d => distToCentroidFromKMeans(d, model))
       val threshold = distances.top(2000).last // set the last of the furthest 2000 data points as the threshold
 
       saveThreshold(threshold, args(2))
     }
-    else {
-      val model = trainModelBisect(dataset)
+    else { // BisKMeans
+      val model = trainBisectingKMeansModel(dataset)
+
       // Save model
       model.save(sc, args(1))
 
       // Save threshold
-      val distances = dataset.map(d => distToCentroidBisect(d, model))
+      val distances = dataset.map(d => distToCentroidFromBisectingKMeans(d, model))
       val threshold = distances.top(2000).last // set the last of the furthest 2000 data points as the threshold
 
       saveThreshold(threshold, args(2))
-
     }
   }
 
   /**
    * Train a KMean model using invoice data.
    */
-  def trainModel(data: RDD[Vector]): KMeansModel = {
+  def trainKMeansModel(data: RDD[Vector]): KMeansModel = {
 
     val models = 1 to 20 map { k =>
       val kmeans = new KMeans()
@@ -77,9 +79,9 @@ object KMeansClusterInvoices {
   }
 
   /**
-   * Train a KMean model using invoice data.
+   * Train a KMean Bisection model using invoice data.
    */
-  def trainModelBisect(data: RDD[Vector]): BisectingKMeansModel = {
+  def trainBisectingKMeansModel(data: RDD[Vector]): BisectingKMeansModel = {
 
     val models = 1 to 20 map { k =>
       val kmeans = new BisectingKMeans()
@@ -95,20 +97,18 @@ object KMeansClusterInvoices {
   }
 
   /**
-   * Calculate distance between data point to centroid.
+   * Calculate distance between data point to centroid for a KMeansModel.
    */
-  def distToCentroid(datum: Vector, model: KMeansModel): Double = {
+  def distToCentroidFromKMeans(datum: Vector, model: KMeansModel): Double = {
     val centroid = model.clusterCenters(model.predict(datum)) // if more than 1 center
     Vectors.sqdist(datum, centroid)
   }
 
   /**
-   * Calculate distance between data point to centroid given BisectingKMeansModel
+   * Calculate distance between data point to centroid for a BisectingKMeansModel.
    */
-  def distToCentroidBisect(datum: Vector, model: BisectingKMeansModel): Double = {
+  def distToCentroidFromBisectingKMeans(datum: Vector, model: BisectingKMeansModel): Double = {
     val centroid = model.clusterCenters(model.predict(datum)) // if more than 1 center
     Vectors.sqdist(datum, centroid)
   }
-
 }
-
