@@ -171,8 +171,8 @@ object InvoicePipeline {
     val featuresVector = Vectors.dense(features.toArray)
 
     val distance = model match {
-      case model: KMeansModel => KMeansClusterInvoices.distToCentroid(featuresVector, model.asInstanceOf[KMeansModel])
-      case model: BisectingKMeansModel => KMeansClusterInvoices.distToCentroidBisect(featuresVector, model.asInstanceOf[BisectingKMeansModel])
+      case model: KMeansModel => KMeansClusterInvoices.distToCentroidFromKMeans(featuresVector, model.asInstanceOf[KMeansModel])
+      case model: BisectingKMeansModel => KMeansClusterInvoices.distToCentroidFromBisectingKMeans(featuresVector, model.asInstanceOf[BisectingKMeansModel])
     }
     distance.>(threshold)
   }
