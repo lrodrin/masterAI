@@ -45,22 +45,27 @@ object Clustering {
 
   def featurizeData(df: DataFrame): DataFrame = {
     df.groupBy("InvoiceNo").agg(
-      mean("UnitPrice").alias("AvgUnitPrice"),
-      min("UnitPrice").alias("MinUnitPrice"),
-      max("UnitPrice").alias("MaxUnitPrice"),
-      first("Hour").alias("Time"),
-      sum("Quantity").alias("NumberItems")
+      mean("UnitPrice") as "AvgUnitPrice",
+      min("UnitPrice") as "MinUnitPrice",
+      max("UnitPrice") as "MaxUnitPrice",
+      first("Hour") as "Time",
+      sum("Quantity") as "NumberItems"
     )
   }
 
   def filterData(df: DataFrame): DataFrame = {
-    df.filter(not(substring(column("InvoiceNo"), 0, 1).equalTo("C"))
-      .and(column("AvgUnitPrice").isNotNull)
-      .and(column("MinUnitPrice").isNotNull)
-      .and(column("MaxUnitPrice").isNotNull)
-      .and(column("Time").isNotNull)
-      .and(column("NumberItems").isNotNull)
-    )
+    df.filter(row => {
+      row.getAs[String]("InvoiceNo").nonEmpty &&
+        row.getAs[String]("StockCode").nonEmpty &&
+        row.getAs[String]("InvoiceDate").nonEmpty &&
+        !row.getAs[Double]("UnitPrice").isNaN &&
+        !row.getAs[Int]("Quantity").isNaN &&
+        !row.getAs[Int]("CustomerID").isNaN &&
+        row.getAs[String]("Country").nonEmpty &&
+        !row.getAs[Double]("Hour").isNaN &&
+        row.getAs[Int]("Quantity").>(1) &&
+        row.getAs[Double]("UnitPrice").>(0.0f)
+    })
   }
 
   def toDataset(df: DataFrame): RDD[Vector] = {
@@ -81,8 +86,9 @@ object Clustering {
 
   def elbowSelection(costs: Seq[Double], ratio: Double): Int = {
     costs.toList.sliding(2).map {
-      case x :: y :: _ => y.toDouble / x.toDouble
+      case x :: y :: _ => y / x
       case _ => 0.0
+
     }.indexWhere(x => x > ratio) + 2
   }
 
