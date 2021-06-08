@@ -28,11 +28,12 @@ object InvoiceDataProducer extends App {
   for (line <- Source.fromFile(args(0)).getLines()) {
     // Get invoice id
     val invoiceNo = line.split(",")(0)
+
     val data = new ProducerRecord[String, String](topic, invoiceNo, line)
     producer.send(data)
 
     // Introduce random delay
-    Thread.sleep(5 +  (5*Random.nextFloat()).toInt)
+    Thread.sleep(5 + (5 * Random.nextFloat()).toInt)
   }
 
   producer.close()
