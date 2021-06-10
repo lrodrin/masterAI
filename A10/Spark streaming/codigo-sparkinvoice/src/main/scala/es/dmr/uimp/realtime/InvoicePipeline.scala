@@ -18,14 +18,12 @@ import org.apache.spark.rdd.RDD
 
 object InvoicePipeline {
 
-  case class Purchase(invoiceNo : String, quantity : Int, invoiceDate : String,
-                      unitPrice : Double, customerID : String, country : String)
+  case class Purchase(invoiceNo: String, quantity: Int, invoiceDate: String,
+                      unitPrice: Double, customerID: String, country: String)
 
-  case class Invoice(invoiceNo : String, avgUnitPrice : Double,
-                     minUnitPrice : Double, maxUnitPrice : Double, time : Double,
-                     numberItems : Double, lastUpdated : Long, lines : Int, customerId : String)
-
-
+  case class Invoice(invoiceNo: String, avgUnitPrice: Double,
+                     minUnitPrice: Double, maxUnitPrice: Double, time: Double,
+                     numberItems: Double, lastUpdated: Long, lines: Int, customerId: String)
 
 
   def main(args: Array[String]) {
@@ -39,12 +37,22 @@ object InvoicePipeline {
     ssc.checkpoint("./checkpoint")
 
     // TODO: Load model and broadcast
+    val kMeansData = loadKMeansAndThreshold(sc, modelFile, thresholdFile)
+    val kMeansModel: Broadcast[KMeansModel] = ssc.sparkContext.broadcast(kMeansData._1)
+    val kMeansThreshold: Broadcast[Double] = ssc.sparkContext.broadcast(kMeansData._2)
+
+    val bisectionKMeansData = loadBisectingKMeansAndThreshold(sc, modelFileBisect, thresholdFileBisect)
+    val bisectionKMeans: Broadcast[BisectingKMeansModel] = ssc.sparkContext.broadcast(bisectionKMeansData._1)
+    val bisectionThreshold: Broadcast[Double] = ssc.sparkContext.broadcast(bisectionKMeansData._2)
+
+    val broadcastBrokers: Broadcast[String] = ssc.sparkContext.broadcast(brokers)
 
     // TODO: Build pipeline
 
 
     // connect to kafka
     val purchasesFeed = connectToPurchases(ssc, zkQuorum, group, topics, numThreads)
+    val purchasesStream = getPurchasesStream(purchasesFeed)
 
     // TODO: rest of pipeline
 
@@ -52,17 +60,17 @@ object InvoicePipeline {
     ssc.awaitTermination()
   }
 
-  def publishToKafka(topic : String)(kafkaBrokers : Broadcast[String])(rdd : RDD[(String, String)]) = {
-    rdd.foreachPartition( partition => {
+  def publishToKafka(topic: String)(kafkaBrokers: Broadcast[String])(rdd: RDD[(String, String)]) = {
+    rdd.foreachPartition(partition => {
       val producer = new KafkaProducer[String, String](kafkaConf(kafkaBrokers.value))
-      partition.foreach( record => {
-        producer.send(new ProducerRecord[String, String](topic, record._1,  record._2.toString))
+      partition.foreach(record => {
+        producer.send(new ProducerRecord[String, String](topic, record._1, record._2.toString))
       })
       producer.close()
     })
   }
 
-  def kafkaConf(brokers : String) = {
+  def kafkaConf(brokers: String) = {
     val props = new HashMap[String, Object]()
     props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers)
     props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer")
@@ -71,24 +79,78 @@ object InvoicePipeline {
   }
 
   /**
-   * Load the model information: centroid and threshold
+   * Load the KMeans model information: centroid and threshold
    */
-  def loadKMeansAndThreshold(sc: SparkContext, modelFile : String, thresholdFile : String) : Tuple2[KMeansModel,Double] = {
+  def loadKMeansAndThreshold(sc: SparkContext, modelFile: String, thresholdFile: String): (KMeansModel, Double) = {
     val kmeans = KMeansModel.load(sc, modelFile)
     // parse threshold file
     val rawData = sc.textFile(thresholdFile, 20)
-    val threshold = rawData.map{line => line.toDouble}.first()
+    val threshold = rawData.map { line => line.toDouble }.first()
+
+    (kmeans, threshold)
+  }
+
+  /**
+   * Load the KMeans bisection model information: centroid and threshold
+   */
+  def loadBisectingKMeansAndThreshold(sc: SparkContext, modelFile: String, thresholdFile: String): (BisectingKMeansModel, Double) = {
+    val kmeans = BisectingKMeansModel.load(sc, modelFile)
+    // parse threshold file
+    val rawData = sc.textFile(thresholdFile, 20)
+    val threshold = rawData.map { line => line.toDouble }.first()
 
     (kmeans, threshold)
   }
 
 
-  def connectToPurchases(ssc: StreamingContext, zkQuorum : String, group : String,
-                         topics : String, numThreads : String): DStream[(String, String)] ={
+  def connectToPurchases(ssc: StreamingContext, zkQuorum: String, group: String,
+                         topics: String, numThreads: String): DStream[(String, String)] = {
 
     ssc.checkpoint("checkpoint")
     val topicMap = topics.split(",").map((_, numThreads.toInt)).toMap
     KafkaUtils.createStream(ssc, zkQuorum, group, topicMap)
+  }
+
+  /**
+   * Transforms the Kafka Stream into a new stream
+   * with a the value parsed as a Purchase class
+   */
+  def getPurchasesStream(purchasesFeed: DStream[(String, String)]): DStream[(String, Purchase)] = {
+    val purchasesStream = purchasesFeed.transform { inputRDD =>
+      inputRDD.map { input =>
+        val invoiceId = input._1
+        val purchaseAsString = input._2
+
+        val purchase = parsePurchase(purchaseAsString)
+
+        (invoiceId, purchase)
+      }
+    }
+
+    purchasesStream
+  }
+
+  /**
+   * Given a purchases feed formatted as csv-like strings,
+   * returns those purchases parsed as objects by using a
+   * csv parser
+   */
+  def parsePurchase(purchase: String): Purchase = {
+    val csvParserSettings = new CsvParserSettings()
+    csvParserSettings.detectFormatAutomatically()
+
+    val csvParser = new CsvParser(csvParserSettings)
+    val parsedPurchase = csvParser.parseRecord(purchase)
+
+    // Given a parsedPurchase object, create a Purchase object
+    Purchase(
+      parsedPurchase.getString(0),
+      parsedPurchase.getInt(3),
+      parsedPurchase.getString(4),
+      parsedPurchase.getDouble(5),
+      parsedPurchase.getString(6),
+      parsedPurchase.getString(7)
+    )
   }
 
 }
