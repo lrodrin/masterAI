@@ -54,6 +54,9 @@ object InvoicePipeline {
     val purchasesFeed = connectToPurchases(ssc, zkQuorum, group, topics, numThreads)
     val purchasesStream = getPurchasesStream(purchasesFeed)
 
+    detectWrongPurchases(purchasesStream, broadcastBrokers)
+    detectCancellations(purchasesStream, broadcastBrokers)
+
     // TODO: rest of pipeline
 
     ssc.start() // Start the computation
@@ -151,6 +154,48 @@ object InvoicePipeline {
       parsedPurchase.getString(6),
       parsedPurchase.getString(7)
     )
+  }
+
+  /**
+   * Given a Purchase Stream, detects the wrong purchases (with any missing or wrong field)
+   * and sends the feedback to the facturas_erroneas Kafka topic
+   */
+  def detectWrongPurchases(purchasesStream: DStream[(String, Purchase)], broadcastBrokers: Broadcast[String]): Unit = {
+    purchasesStream
+      .filter(tuple => isWrongPurchase(tuple._2))
+      .transform { purchasesTupleRDD =>
+        purchasesTupleRDD.map(purchase => (purchase._1, purchase._2.toString))
+      }
+      .foreachRDD { rdd =>
+        publishToKafka("facturas_erroneas")(broadcastBrokers)(rdd)
+      }
+  }
+
+  /**
+   * Checks if the purchase has any missing or wrong property
+   */
+  def isWrongPurchase(purchase: Purchase): Boolean = {
+    purchase.invoiceNo == null || purchase.invoiceDate == null || purchase.customerID == null ||
+      purchase.invoiceNo.isEmpty || purchase.invoiceDate.isEmpty || purchase.customerID.isEmpty ||
+      purchase.unitPrice.isNaN || purchase.quantity.isNaN || purchase.country.isEmpty ||
+      purchase.unitPrice.<(0)
+  }
+
+  /**
+   * Given a Purchase Stream, detects the cancellations (the quantity property is negative)
+   * and calculates the number of cancellations for the last 8 minutes.
+   * It gives this feedback to the cancelaciones Kafka topic every second
+   */
+  def detectCancellations(purchasesStream: DStream[(String, Purchase)], broadcastBrokers: Broadcast[String]): Unit = {
+    purchasesStream
+      .filter(tuple => tuple._2.quantity.<(0))
+      .countByWindow(Minutes(8), Seconds(1))
+      .transform { invoicesTupleRDD =>
+        invoicesTupleRDD.map(count => (count.toString, count.toString))
+      }
+      .foreachRDD { rdd =>
+        publishToKafka("cancelaciones")(broadcastBrokers)(rdd)
+      }
   }
 
 }
