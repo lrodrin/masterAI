@@ -1,4 +1,5 @@
 #!/bin/bash
 
-FILE=./src/main/resources/production.csv
-java -classpath target/scala-2.11/anomalyDetection-assembly-1.0.jar es.dmr.uimp.simulation.InvoiceDataProducer ${FILE} purchases localhost:9092
+FILE=../resources/training.csv
+./execute.sh es.dmr.uimp.clustering.KMeansClusterInvoices ${FILE} ./clustering ./threshold kMeans &
+./execute.sh es.dmr.uimp.clustering.KMeansClusterInvoices ${FILE} ./clustering_bisect ./threshold_bisect BisKMeans &
