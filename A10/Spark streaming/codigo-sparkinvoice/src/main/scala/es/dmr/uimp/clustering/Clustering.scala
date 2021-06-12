@@ -55,16 +55,7 @@ object Clustering {
 
   def filterData(df: DataFrame): DataFrame = {
     df.filter(row => {
-      row.getAs[String]("InvoiceNo").nonEmpty &&
-        row.getAs[String]("StockCode").nonEmpty &&
-        row.getAs[String]("InvoiceDate").nonEmpty &&
-        !row.getAs[Double]("UnitPrice").isNaN &&
-        !row.getAs[Int]("Quantity").isNaN &&
-        !row.getAs[Int]("CustomerID").isNaN &&
-        row.getAs[String]("Country").nonEmpty &&
-        !row.getAs[Double]("Hour").isNaN &&
-        row.getAs[Int]("Quantity").>(1) &&
-        row.getAs[Double]("UnitPrice").>(0.0f)
+      row.getAs[String]("InvoiceNo").nonEmpty
     })
   }
 
