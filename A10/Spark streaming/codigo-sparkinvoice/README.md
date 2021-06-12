@@ -27,18 +27,13 @@ Utilizamos la opción --list de `kafka-topics.sh`para verificar que el topic se 
 ```bash
 bin/kafka-topics.sh --list --zookeeper localhost:2181
 ```
-
-[comment]: <> (```bash)
-
-[comment]: <> (bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic cancelaciones --from-beginning)
-
-[comment]: <> (bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic facturas_erroneas --from-beginning)
-
-[comment]: <> (bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic anomalias_kmeans --from-beginning)
-
-[comment]: <> (bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic anomalias_bisect_kmeans --from-beginning)
-
-[comment]: <> (```)
+Para consumir los `topics` definidos, ejecutamos:
+```bash
+bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic cancelaciones --from-beginning
+bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic facturas_erroneas --from-beginning
+bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic anomalias_kmeans --from-beginning
+bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic anomalias_bisect_kmeans --from-beginning
+```
 
 ## Entrenamiento
 
@@ -58,16 +53,17 @@ Una vez finalizado el entrenamiento, se deberan haber creado las siguientes carp
 
 ## Simulación
 
-Añadimos "purchases" en el cluster Kafka y ejecutamos la pipeline:
+Añadimos "purchases" en el cluster Kafka y ejecutamos el simulador de compras:
 ```bash
 bin/kafka-topics.sh --create --zookeeper localhost:2181 --topic purchases --replication-factor 1 --partitions 3
-chmod +x start_pipeline.sh
-./start_pipeline.sh
-```
-
-Una vez que se está ejecutando la aplicación de análisis de transmisión, podemos ejecutar el simulador de compras:
-```bash
+bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic purchases --from-beginning
 chmod +x productiondata.sh
 ./productiondata.sh
+```
+
+Una vez que se está ejecutando la aplicación de análisis de transmisión, podemos ejecutar la pipeline:
+```bash
+chmod +x start_pipeline.sh
+./start_pipeline.sh
 ```
 
