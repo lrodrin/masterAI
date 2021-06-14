@@ -8,7 +8,6 @@ import org.apache.spark.streaming.dstream.DStream
 import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerConfig, ProducerRecord}
 
-import java.util.HashMap
 import com.univocity.parsers.csv.{CsvParser, CsvParserSettings}
 import es.dmr.uimp.clustering.KMeansClusterInvoices
 import org.apache.spark.broadcast.Broadcast
@@ -40,11 +39,12 @@ object InvoicePipeline {
     ssc.checkpoint("./checkpoint")
 
     // TODO: Load model and broadcast
-    val kMeansData = loadKMeansAndThreshold(sc, modelFile, thresholdFile)
-    val kMeansModel: Broadcast[KMeansModel] = ssc.sparkContext.broadcast(kMeansData._1)
-    val kMeansThreshold: Broadcast[Double] = ssc.sparkContext.broadcast(kMeansData._2)
 
-    val bisectionKMeansData = loadBisectingKMeansAndThreshold(sc, modelFileBisect, thresholdFileBisect)
+    val kMeansData = loadKMeansAndThreshold(sc, modelFile, thresholdFile)
+    val kMeansModel = ssc.sparkContext.broadcast(kMeansData._1)
+    val kMeansThreshold = ssc.sparkContext.broadcast(kMeansData._2)
+
+    val bisectionKMeansData = loadBisectAndThreshold(sc, modelFileBisect, thresholdFileBisect)
     val bisectionKMeans: Broadcast[BisectingKMeansModel] = ssc.sparkContext.broadcast(bisectionKMeansData._1)
     val bisectionThreshold: Broadcast[Double] = ssc.sparkContext.broadcast(bisectionKMeansData._2)
 
@@ -54,7 +54,7 @@ object InvoicePipeline {
 
 
     // connect to kafka
-    val purchasesFeed = connectToPurchases(ssc, zkQuorum, group, topics, numThreads)
+    val purchasesFeed : DStream[(String, String)] = connectToPurchases(ssc, zkQuorum, group, topics, numThreads)
     val purchasesStream = getPurchasesStream(purchasesFeed)
 
     detectWrongPurchases(purchasesStream, broadcastBrokers)
@@ -95,11 +95,11 @@ object InvoicePipeline {
   /**
    * Load the KMeans model information: centroid and threshold.
    */
-  def loadKMeansAndThreshold(sc: SparkContext, modelFile: String, thresholdFile: String): (KMeansModel, Double) = {
+  def loadKMeansAndThreshold(sc: SparkContext, modelFile : String, thresholdFile : String) : Tuple2[KMeansModel,Double] = {
     val kmeans = KMeansModel.load(sc, modelFile)
     // parse threshold file
     val rawData = sc.textFile(thresholdFile, 20)
-    val threshold = rawData.map { line => line.toDouble }.first()
+    val threshold = rawData.map{line => line.toDouble}.first()
 
     (kmeans, threshold)
   }
@@ -107,11 +107,11 @@ object InvoicePipeline {
   /**
    * Load the KMeans bisection model information: centroid and threshold.
    */
-  def loadBisectingKMeansAndThreshold(sc: SparkContext, modelFile: String, thresholdFile: String): (BisectingKMeansModel, Double) = {
+  def loadBisectAndThreshold(sc: SparkContext, modelFile : String, thresholdFile : String) : Tuple2[BisectingKMeansModel,Double] = {
     val kmeans = BisectingKMeansModel.load(sc, modelFile)
     // parse threshold file
     val rawData = sc.textFile(thresholdFile, 20)
-    val threshold = rawData.map { line => line.toDouble }.first()
+    val threshold = rawData.map{line => line.toDouble}.first()
 
     (kmeans, threshold)
   }
