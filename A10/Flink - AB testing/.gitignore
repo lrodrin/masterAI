@@ -3,3 +3,4 @@ target/*
 spark-warehouse/*
 checkpoint/*
 project/*
+/.bsp/
