@@ -25,7 +25,7 @@ object Clustering {
     val gethour = udf[Double, String]((date: String) => {
       var out = -1.0
       if (!StringUtils.isEmpty(date)) {
-        val hour = date.split(" ")(1).split(":")(0)
+        val hour = date.split(" ")(1).split(":")(0) // TODO change format
         if (!StringUtils.isEmpty(hour))
           out = hour.trim.toDouble
       }
@@ -43,7 +43,7 @@ object Clustering {
     df
   }
 
-  def featurizeData(df: DataFrame): DataFrame = {
+  def featurizeData(df: DataFrame): DataFrame = { // TODO featurizeData
     df.groupBy("InvoiceNo").agg(
       mean("UnitPrice") as "AvgUnitPrice",
       min("UnitPrice") as "MinUnitPrice",
@@ -53,7 +53,7 @@ object Clustering {
     )
   }
 
-  def filterData(df: DataFrame): DataFrame = {
+  def filterData(df: DataFrame): DataFrame = {  // TODO filterData
     df.filter(row => {
       row.getAs[String]("InvoiceNo").nonEmpty
     })
@@ -75,7 +75,7 @@ object Clustering {
     data
   }
 
-  def elbowSelection(costs: Seq[Double], ratio: Double): Int = {
+  def elbowSelection(costs: Seq[Double], ratio: Double): Int = {  // TODO recursive elbowSelection
     costs.toList.sliding(2).map {
       case x :: y :: _ => y / x
       case _ => 0.0

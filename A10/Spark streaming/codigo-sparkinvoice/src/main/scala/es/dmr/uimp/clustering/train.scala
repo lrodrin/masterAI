@@ -33,6 +33,7 @@ object KMeansClusterInvoices {
     // Print a sampl
     dataset.take(5).foreach(println)
 
+    // TODO training
     if (args(1) == "kMeans") {
 
       val model = trainKMeansModel(dataset)
@@ -46,7 +47,7 @@ object KMeansClusterInvoices {
 
       saveThreshold(threshold, args(2))
     }
-    else { // BisKMeans
+    else { // BisKMeans // TODO make better with else if case and raise exception in else case
       val model = trainBisectingKMeansModel(dataset)
 
       // Save model
@@ -61,7 +62,7 @@ object KMeansClusterInvoices {
   }
 
   /**
-   * Train a k-means model using invoice data.
+   * Train a K-means model using invoice data.
    */
   def trainKMeansModel(data: RDD[Vector]): KMeansModel = {
 
@@ -97,7 +98,7 @@ object KMeansClusterInvoices {
   }
 
   /**
-   * Calculate distance between data point to centroid for a KMeansModel.
+   * Calculate distance between data point to centroid for a K-means model.
    */
   def distToCentroidFromKMeans(datum: Vector, model: KMeansModel): Double = {
     val centroid = model.clusterCenters(model.predict(datum)) // if more than 1 center
@@ -105,7 +106,7 @@ object KMeansClusterInvoices {
   }
 
   /**
-   * Calculate distance between data point to centroid for a BisectingKMeansModel.
+   * Calculate distance between data point to centroid for a Bisecting k-means.
    */
   def distToCentroidFromBisectingKMeans(datum: Vector, model: BisectingKMeansModel): Double = {
     val centroid = model.clusterCenters(model.predict(datum)) // if more than 1 center
