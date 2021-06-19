@@ -37,7 +37,7 @@ We use the --list option of `kafka-topics.sh` to verify that the topics were cre
 
 ## Execution
 
-### Model train
+### Model training
 
 First, the [K-means](https://spark.apache.org/docs/2.4.4/ml-clustering.html#k-means) and 
 [Bisecting k-means](https://spark.apache.org/docs/2.4.4/ml-clustering.html#bisecting-k-means) models must be trained:
@@ -55,7 +55,7 @@ Once the training is over, should have created the following folders and files:
 * threshold
 * threshold_bisect
 
-## Streaming run
+### Streaming run
 
 Streaming pipeline application execution:
 
@@ -64,11 +64,20 @@ chmod +x start_pipeline.sh
 ./start_pipeline.sh
 ```
 
-Once the streaming analysis application is running, we may run the purchases simulator:
+Once the streaming pipeline application is running, we can run the purchases simulator:
+
 ```bash
 chmod +x productiondata.sh
 ./productiondata.sh
 ```
 
-## Flowchart
-![Flowchart](docs/diagram.svg)
+### Result
+
+The information created/extracted by the streaming pipeline execution is saved into `cancelaciones`, `facturas_erroneas`, 
+`anomalias_kmeans` and `anomalias_bisect_kmeans` Kafka topics.
+
+## Scenario
+
+![Scenario](https://raw.githubusercontent.com/lrodrin/masterAI/master/A10/Spark%20streaming/codigo-sparkinvoice/docs/diagram.png)
+
+Credits: https://github.com/jgoodman8/streaming-retail-analysis/blob/master/assets/SparkStreaming.png
