@@ -10,13 +10,13 @@ val sparkVersion = "2.4.4"
 
 libraryDependencies ++= {
   Seq(
-    "org.apache.spark" %% "spark-core" % sparkVersion,
-    "org.apache.spark" %% "spark-sql" % sparkVersion,
-    "org.apache.spark" %% "spark-streaming" % sparkVersion,
-    "org.apache.spark" %% "spark-mllib" % sparkVersion,
-    "com.databricks" %% "spark-csv" % sparkVersion,
-    "org.slf4j" % "slf4j-simple" % sparkVersion,
-    "com.univocity" % "univocity-parsers" % sparkVersion
+    "org.apache.spark" %% "spark-core" % sparkVersion % "provided",
+    "org.apache.spark" %% "spark-sql" % sparkVersion % "provided",
+    "org.apache.spark" %% "spark-streaming-kafka-0-8" % sparkVersion,
+    "org.apache.spark" %% "spark-mllib" % sparkVersion % "provided",
+    "com.databricks" %% "spark-csv" % "1.5.0",
+    "org.slf4j" % "slf4j-simple" % "1.7.2",
+    "com.univocity" % "univocity-parsers" % "1.5.1"
   )
 }
 
