@@ -25,7 +25,7 @@ object Clustering {
     val gethour = udf[Double, String]((date: String) => {
       var out = -1.0
       if (!StringUtils.isEmpty(date)) {
-        val hour = date.substring(10).split(":")(0)
+        val hour = date.split(" ")(1).split(":")(0)
         if (!StringUtils.isEmpty(hour))
           out = hour.trim.toDouble
       }
