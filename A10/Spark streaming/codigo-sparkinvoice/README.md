@@ -1,69 +1,74 @@
 # Spark Streaming
 
-- [Spark: 2.0.0](https://spark.apache.org/releases/spark-release-2-0-0.html)
-- [Scala: 2.11](https://www.scala-lang.org/download/2.11.12.html)
+## Requirements
 
-Para compilar el proyecto basta con ejecutar el siguiente comando desde el directorio del proyecto:
+* [Apache Spark 2.4.4](https://spark.apache.org/releases/spark-release-2-4-4.html)
+* [Apache Kafka 2.3.0](https://archive.apache.org/dist/kafka/2.3.0/kafka_2.12-2.3.0.tgz) (with Scala 2.11.12)
+
+## Setup
+
+Compile and run the application:
+
 ```bash
 sbt clean assembly
 ```
 
-A continuación, arrancamos los servidores de [Zookeeper](https://zookeeper.apache.org/) y [Kafka](https://kafka.apache.org/):
+Start Kafka, [Zookeeper](https://zookeeper.apache.org/) and [Kafka](https://kafka.apache.org/) servers, 
+in two different sessions:
+
 ```bash
-cd /opt/Kafka/kafka_2.11-2.3.0/
-sudo bin/zookeeper-server-start.sh config/zookeeper.properties &
-sudo bin/kafka-server-start.sh config/server.properties &
+sudo /opt/Kafka/kafka_2.11-2.3.0/bin/zookeeper-server-start.sh config/zookeeper.properties
+sudo /opt/Kafka/kafka_2.11-2.3.0/bin/kafka-server-start.sh config/server.properties
 ```
 
-Definimos los `topics`: cancelaciones, facturas_erroneas, anomalias_kmeans y anomalias_bisect_kmeans.
+Create the Kafka topics `cancelaciones`, `facturas_erroneas`, `anomalias_kmeans`, `anomalias_bisect_kmeans`
+and `purchases`:
+
 ```bash
-bin/kafka-topics.sh --create --zookeeper localhost:2181 --topic cancelaciones --replication-factor 1 --partitions 3
-bin/kafka-topics.sh --create --zookeeper localhost:2181 --topic facturas_erroneas --replication-factor 1 --partitions 3
-bin/kafka-topics.sh --create --zookeeper localhost:2181 --topic anomalias_kmeans --replication-factor 1 --partitions 3
-bin/kafka-topics.sh --create --zookeeper localhost:2181 --topic anomalias_bisect_kmeans --replication-factor 1 --partitions 3
+chmod +x create_topics.sh
+./create_topics.sh
 ```
 
-Utilizamos la opción --list de `kafka-topics.sh`para verificar que el topic se ha creado correctamente.
+We use the --list option of `kafka-topics.sh` to verify that the topics were created correctly:
+
 ```bash
-bin/kafka-topics.sh --list --zookeeper localhost:2181
-```
-Para consumir los `topics` definidos, ejecutamos:
-```bash
-bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic cancelaciones --from-beginning &
-bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic facturas_erroneas --from-beginning &
-bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic anomalias_kmeans --from-beginning &
-bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic anomalias_bisect_kmeans --from-beginning &
+/opt/Kafka/kafka_2.11-2.3.0/bin/kafka-topics.sh --list --zookeeper localhost:2181
 ```
 
-## Entrenamiento
+## Execution
 
-Efectuamos el entrenamiento de Kmeans y BisectionKmeans:
+### Model train
+
+First, the [K-means](https://spark.apache.org/docs/2.4.4/ml-clustering.html#k-means) and 
+[Bisecting k-means](https://spark.apache.org/docs/2.4.4/ml-clustering.html#bisecting-k-means) models must be trained:
+
 ```bash
 chmod +x execute.sh
+chmod +x start_training.sh
+./start_training.sh
+```
+
+Once the training is over, should have created the following folders and files:
+
+* clustering/
+* clustering_bisect/
+* threshold
+* threshold_bisect
+
+## Streaming run
+
+Streaming pipeline application execution:
+
+```bash
 chmod +x start_pipeline.sh
 ./start_pipeline.sh
 ```
 
-Una vez finalizado el entrenamiento, se deberan haber creado las siguientes carpetas y archivos:
-
-- clustering/
-- clustering_bisect/
-- threshold
-- threshold_bisect
-
-## Simulación
-
-Añadimos "purchases" en el cluster Kafka y ejecutamos el simulador de compras:
+Once the streaming analysis application is running, we may run the purchases simulator:
 ```bash
-bin/kafka-topics.sh --create --zookeeper localhost:2181 --topic purchases --replication-factor 1 --partitions 3
-bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic purchases --from-beginning
 chmod +x productiondata.sh
 ./productiondata.sh
 ```
 
-Una vez que se está ejecutando la aplicación de análisis de transmisión, podemos ejecutar la pipeline:
-```bash
-chmod +x start_pipeline.sh
-./start_pipeline.sh
-```
-
+## Flowchart
+![Flowchart](docs/diagram.svg)
