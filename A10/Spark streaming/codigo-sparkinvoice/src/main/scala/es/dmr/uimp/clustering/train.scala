@@ -61,7 +61,7 @@ object KMeansClusterInvoices {
   }
 
   /**
-   * Train a KMean model using invoice data.
+   * Train a k-means model using invoice data.
    */
   def trainKMeansModel(data: RDD[Vector]): KMeansModel = {
 
@@ -79,7 +79,7 @@ object KMeansClusterInvoices {
   }
 
   /**
-   * Train a KMean Bisection model using invoice data.
+   * Train a Bisecting k-means model using invoice data.
    */
   def trainBisectingKMeansModel(data: RDD[Vector]): BisectingKMeansModel = {
 
