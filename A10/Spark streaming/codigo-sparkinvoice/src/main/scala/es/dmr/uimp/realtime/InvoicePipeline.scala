@@ -12,7 +12,6 @@ import com.univocity.parsers.csv.{CsvParser, CsvParserSettings}
 import es.dmr.uimp.clustering.KMeansClusterInvoices
 import org.apache.spark.broadcast.Broadcast
 import org.apache.spark.mllib.linalg.Vectors
-import org.apache.spark.mllib.util.Saveable
 import org.apache.spark.rdd.RDD
 
 import java.util
@@ -68,8 +67,9 @@ object InvoicePipeline {
       .updateStateByKey(updateFunction)
 
     // detect anomalias_kmeans and anomalias_bisect_kmeans
-    detectAnomalies(invoices, kMeansModel.value, kMeansThreshold.value, "anomalias_kmeans", broadcastBrokers)
-    detectAnomalies(invoices, bisectionKMeans.value, bisectionThreshold.value, "anomalias_bisect_kmeans", broadcastBrokers)
+    val anomalies = isAnomaly(kMeansModel, bisectionKMeans, kMeansThreshold, bisectionThreshold)(_,_)
+    detectAnomalies(invoices, "kMeans", broadcastBrokers)(anomalies)
+    detectAnomalies(invoices, "BisKMeans", broadcastBrokers)(anomalies)
 
     ssc.start() // Start the computation
     ssc.awaitTermination()
@@ -233,19 +233,28 @@ object InvoicePipeline {
    * For a given sequence of purchases (owning to the same invoice), it calculates the invoice properties
    * and returns a proper formatted object for each sequence.
    */
-  def detectAnomalies(invoices: DStream[(String, Invoice)], model: Saveable, threshold: Double, topic: String,
-                      broadcastBrokers: Broadcast[String]): Unit = {
-    invoices
-      .filter { tuple =>
-        val invoice: Invoice = tuple._2
-        isAnomaly(invoice, model, threshold)
-      }
-      .transform { invoicesTupleRDD =>
-        invoicesTupleRDD.map(invoiceTuple => (invoiceTuple._1, invoiceTuple._2.toString))
-      }
-      .foreachRDD { rdd =>
-        publishToKafka(topic)(broadcastBrokers)(rdd)
-      }
+  def detectAnomalies(invoices: DStream[(String, Invoice)], model: String, broadcastBrokers: Broadcast[String])
+                     (anomalies: (Invoice, String) => Boolean) = {
+
+    def sendInvoices(topic: String) = {
+      invoices
+        .filter { tuple =>
+          anomalies(tuple._2, model)
+        }
+        .transform { rdd =>
+          rdd.map(tuple => (tuple._1, "Anomaly detected by " + model + " method into invoice number: " + tuple._1))
+        }
+        .foreachRDD { rdd =>
+          publishToKafka(topic)(broadcastBrokers)(rdd)
+        }
+    }
+
+    if (model == "kMeans") {
+      sendInvoices("anomalias_kmeans")
+    }
+    else { // BisKMeans // TODO make better with else if case and raise exception in else case
+      sendInvoices("anomalias_bisect_kmeans")
+    }
   }
 
   /**
@@ -253,7 +262,10 @@ object InvoicePipeline {
    * It predicts the distance to the assigned centroid for the trained model. If the distance is greater than the
    * given threshold, it is an anomaly.
    */
-  def isAnomaly(invoice: Invoice, model: Saveable, threshold: Double): Boolean = {
+  def isAnomaly(kMeansModel: Broadcast[KMeansModel], bisectionKMeans: Broadcast[BisectingKMeansModel],
+                kMeansThreshold: Broadcast[Double], bisectionThreshold: Broadcast[Double])
+               (invoice: Invoice, modelType: String): Boolean = {
+
     val featuresBuffer = ArrayBuffer[Double]()
 
     featuresBuffer.append(invoice.avgUnitPrice)
@@ -264,12 +276,13 @@ object InvoicePipeline {
 
     val features = Vectors.dense(featuresBuffer.toArray)
 
-    val distance = model match {
-      case model: KMeansModel => KMeansClusterInvoices.distToCentroidFromKMeans(features, model)
-      case model: BisectingKMeansModel => KMeansClusterInvoices.distToCentroidFromBisectingKMeans(features, model)
+    if (modelType == "kMeans") {
+      val distanceKMeans = KMeansClusterInvoices.distToCentroidFromKMeans(features, kMeansModel.value)
+      distanceKMeans > kMeansThreshold.value
     }
-
-    distance.>(threshold)
+    else { // BisKMeans // TODO make better with else if case and raise exception in else case
+      val distanceBisect = KMeansClusterInvoices.distToCentroidFromBisectingKMeans(features, bisectionKMeans.value)
+      distanceBisect > bisectionThreshold.value
+    }
   }
-
 }
