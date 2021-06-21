@@ -32,7 +32,7 @@ object InvoicePipeline {
     val Array(modelFile, thresholdFile, modelFileBisect, thresholdFileBisect, zkQuorum, group, topics, numThreads, brokers) = args
     val sparkConf = new SparkConf().setAppName("InvoicePipeline")
     val sc = new SparkContext(sparkConf)
-    val ssc = new StreamingContext(sc, Seconds(20))
+    val ssc = new StreamingContext(sc, Seconds(1))
 
     // Checkpointing
     ssc.checkpoint("./checkpoint")
