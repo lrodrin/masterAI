@@ -34,7 +34,7 @@ object KMeansClusterInvoices {
     dataset.take(5).foreach(println)
 
     // TODO training
-    if (args(1) == "kMeans") {
+    if (args(3) == "kMeans") {
 
       val model = trainKMeansModel(dataset)
 
@@ -47,7 +47,7 @@ object KMeansClusterInvoices {
 
       saveThreshold(threshold, args(2))
     }
-    else { // BisKMeans // TODO make better with else if case and raise exception in else case
+    else if (args(3) == "BisKMeans") {
       val model = trainBisectingKMeansModel(dataset)
 
       // Save model
@@ -58,6 +58,9 @@ object KMeansClusterInvoices {
       val threshold = distances.top(2000).last // set the last of the furthest 2000 data points as the threshold
 
       saveThreshold(threshold, args(2))
+    }
+    else {
+      throw new Exception("The model to be trained has not been specified.")
     }
   }
 
